@@ -8,5 +8,5 @@ pydub==0.25.1
 PyYAML==6.0.1
 faiss-cpu==1.13.0
 tiktoken==0.5.2
-numpy==1.24.3
+numpy==1.26.4
 supabase==2.0.0
