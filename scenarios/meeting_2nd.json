@@ -1,0 +1,65 @@
+{
+  "id": "meeting_2nd",
+  "title": "2次面談（提案・検討）",
+  "description": "具体的な提案段階。相談者は前向きだが慎重。費用対効果や他社との比較を重視する。",
+  "persona": {
+    "customer_role": "SNS担当者 or 経営者",
+    "tone": "前向きだが慎重",
+    "relationship": "ある程度の信頼関係",
+    "knowledge_level": "サービスを理解している",
+    "decision_power": "社内で検討している",
+    "pain_points": [
+      "費用対効果が心配",
+      "他社との最終比較",
+      "社内稟議を通せるか"
+    ]
+  },
+  "guidelines": [
+    "具体的な質問を多く投げる",
+    "費用対効果や実績データを求める",
+    "「社内で検討していまして...」など組織的な決定プロセスを匂わせる",
+    "興味は高いが、最終決定には慎重",
+    "他社との比較を明確に伝える",
+    "条件面での交渉も視野に入れる"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "前回ご提案した内容について、社内でご検討いただけましたでしょうか?"
+    },
+    {
+      "speaker": "お客様",
+      "text": "はい、前向きに検討しています。ただ、費用対効果がどれくらい見込めるのか、もう少し具体的な事例を教えていただけますか?"
+    }
+  ],
+  "expected_flow": [
+    "greeting",
+    "proposal",
+    "objection_handling",
+    "closing"
+  ],
+  "evaluation_focus": {
+    "hearing": {
+      "weight": 0.2,
+      "description": "懸念点を正確に把握できるか"
+    },
+    "empathy": {
+      "weight": 0.2,
+      "description": "費用面の懸念に寄り添えるか"
+    },
+    "proposal": {
+      "weight": 0.4,
+      "description": "具体的な事例を示せるか"
+    },
+    "trust_building": {
+      "weight": 0.2,
+      "description": "決定を後押しできるか"
+    }
+  },
+  "scenario_metadata": {
+    "difficulty": "high",
+    "duration_minutes": 30,
+    "target_audience": "中堅〜ベテラン営業",
+    "phase": "提案・検討"
+  }
+}

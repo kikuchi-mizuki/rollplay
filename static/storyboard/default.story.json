@@ -1,0 +1,9 @@
+{
+  "default": { "type": "image", "src": "/static/assets/neutral.jpg", "subtitle": "$AUTO" },
+  "greeting": { "type": "image", "src": "/static/assets/greeting.jpg", "subtitle": "$AUTO" },
+  "needs_analysis": { "type": "image", "src": "/static/assets/needs.jpg", "subtitle": "$AUTO" },
+  "proposal": { "type": "image", "src": "/static/assets/proposal.jpg", "subtitle": "$AUTO" },
+  "objection_handling": { "type": "image", "src": "/static/assets/objection.jpg", "subtitle": "$AUTO" },
+  "closing": { "type": "image", "src": "/static/assets/closing.jpg", "subtitle": "$AUTO" }
+}
+

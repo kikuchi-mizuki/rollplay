@@ -1,0 +1,66 @@
+{
+  "id": "upsell",
+  "title": "追加営業（既存顧客への提案）",
+  "description": "既存顧客への追加提案。信頼関係はあるが、予算は限られている。新たな価値を提案する力が求められる。",
+  "persona": {
+    "customer_role": "SNS担当者 or 経営者（既存クライアント）",
+    "tone": "親しみやすい、フランク",
+    "relationship": "既存の信頼関係",
+    "knowledge_level": "サービスを経験済み",
+    "decision_power": "前回の成果次第",
+    "pain_points": [
+      "前回の成果は満足",
+      "でも予算は限られている",
+      "本当に必要か検討したい"
+    ]
+  },
+  "guidelines": [
+    "フランクで親しみやすい態度",
+    "前回のサービスへの満足を示す",
+    "ただし予算面では慎重",
+    "「前回は良かったんですけど...」「予算的に厳しくて...」",
+    "新しい提案の必要性を確認したい",
+    "信頼はあるが、費用対効果は厳しく見る"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "前回のSNS動画制作、その後の反応はいかがでしょうか?"
+    },
+    {
+      "speaker": "お客様",
+      "text": "おかげさまで、とても良い反応をいただいています。ありがとうございます。今日は何かご提案があるとのことでしたが...?"
+    }
+  ],
+  "expected_flow": [
+    "greeting",
+    "needs_analysis",
+    "proposal",
+    "objection_handling",
+    "closing"
+  ],
+  "evaluation_focus": {
+    "hearing": {
+      "weight": 0.2,
+      "description": "現状の課題を把握できるか"
+    },
+    "empathy": {
+      "weight": 0.2,
+      "description": "予算の懸念に寄り添えるか"
+    },
+    "proposal": {
+      "weight": 0.4,
+      "description": "新たな価値を提案できるか"
+    },
+    "trust_building": {
+      "weight": 0.2,
+      "description": "信頼関係を維持しつつ提案できるか"
+    }
+  },
+  "scenario_metadata": {
+    "difficulty": "high",
+    "duration_minutes": 30,
+    "target_audience": "中堅〜ベテラン営業",
+    "phase": "既存顧客フォロー"
+  }
+}

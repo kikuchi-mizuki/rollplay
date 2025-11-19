@@ -1,0 +1,94 @@
+version: "1.0"
+
+evaluation_criteria:
+  - id: "questioning_skill"
+    name: "質問力"
+    description: "顧客のニーズ・課題を適切に引き出す質問"
+    levels:
+      - score: 1
+        label: "質問なし"
+        description: "質問が見られない"
+      - score: 2
+        label: "一般的な質問のみ"
+        description: "形式的な質問のみ"
+      - score: 3
+        label: "状況に応じた質問"
+        description: "会話の流れに沿った質問"
+      - score: 4
+        label: "深掘り質問あり"
+        description: "課題を掘り下げる質問"
+      - score: 5
+        label: "核心を的確に把握"
+        description: "顧客の真の課題を引き出す質問"
+  
+  - id: "listening_skill"
+    name: "傾聴力"
+    description: "相手の発言を理解し、適切に受容・共感"
+    levels:
+      - score: 1
+        label: "話を聞いていない"
+        description: "聞いている姿勢が見られない"
+      - score: 2
+        label: "表面的な理解"
+        description: "言葉のみを理解"
+      - score: 3
+        label: "内容を理解している"
+        description: "内容を把握している"
+      - score: 4
+        label: "共感・確認を示している"
+        description: "相槌や確認で共感を示す"
+      - score: 5
+        label: "背景まで理解して対応"
+        description: "背景・感情まで理解して適切に対応"
+
+  - id: "proposal_skill"
+    name: "提案力"
+    description: "顧客の課題に対する具体的な解決策を提示"
+    levels:
+      - score: 1
+        label: "提案なし"
+        description: "具体的な提案が見られない"
+      - score: 2
+        label: "抽象的提案"
+        description: "曖昧な提案"
+      - score: 3
+        label: "一般的な提案"
+        description: "汎用的な提案"
+      - score: 4
+        label: "具体的な提案"
+        description: "具体的な解決策を提示"
+      - score: 5
+        label: "顧客固有のニーズに最適化"
+        description: "顧客の課題に最適化された提案"
+
+  - id: "closing_skill"
+    name: "クロージング力"
+    description: "次のアクション・決定を促す適切なクロージング"
+    levels:
+      - score: 1
+        label: "クロージングなし"
+        description: "次のアクションへの誘導がない"
+      - score: 2
+        label: "唐突な押し付け"
+        description: "タイミングを誤った強いクロージング"
+      - score: 3
+        label: "弱いクロージング"
+        description: "曖昧なクロージング"
+      - score: 4
+        label: "適切なタイミング"
+        description: "会話の流れに沿ったクロージング"
+      - score: 5
+        label: "自然で効果的なクロージング"
+        description: "顧客が納得できる自然なクロージング"
+
+output_format:
+  score_total: true
+  score_average: true
+  detailed_feedback: true
+  improvement_suggestions: true
+  next_steps: true
+
+export_formats: ["JSON", "CSV", "PDF"]
+
+
+

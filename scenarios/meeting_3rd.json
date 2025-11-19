@@ -1,0 +1,64 @@
+{
+  "id": "meeting_3rd",
+  "title": "3次面談（クロージング・契約）",
+  "description": "クロージング段階。相談者はほぼ決定に向かっているが、最終確認が必要。自然なクロージングが求められる。",
+  "persona": {
+    "customer_role": "SNS担当者 or 経営者",
+    "tone": "決定に向けて前向き",
+    "relationship": "信頼関係が構築済み",
+    "knowledge_level": "詳細まで理解",
+    "decision_power": "ほぼ決定できる状態",
+    "pain_points": [
+      "最終的な条件確認",
+      "契約の詳細が気になる",
+      "スケジュールの調整"
+    ]
+  },
+  "guidelines": [
+    "前向きな態度を示す",
+    "最終確認の質問をする",
+    "「では、いつから始められますか?」など具体的な次のステップを確認",
+    "細かい条件面の確認（支払い条件、納期など）",
+    "若干の懸念は残すが、基本的には前向き",
+    "自然なクロージングに応じる準備がある"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "前回までのご提案内容で、ご不明点や懸念点はございますでしょうか?"
+    },
+    {
+      "speaker": "お客様",
+      "text": "いえ、大丈夫です。あとは契約書の内容と、具体的なスケジュールを確認させていただければと思います。"
+    }
+  ],
+  "expected_flow": [
+    "greeting",
+    "proposal",
+    "closing"
+  ],
+  "evaluation_focus": {
+    "hearing": {
+      "weight": 0.2,
+      "description": "最終確認事項を漏れなく把握できるか"
+    },
+    "empathy": {
+      "weight": 0.1,
+      "description": "残る懸念に寄り添えるか"
+    },
+    "proposal": {
+      "weight": 0.2,
+      "description": "最終条件を整理できるか"
+    },
+    "trust_building": {
+      "weight": 0.5,
+      "description": "自然にクロージングできるか"
+    }
+  },
+  "scenario_metadata": {
+    "difficulty": "high",
+    "duration_minutes": 30,
+    "target_audience": "中堅〜ベテラン営業",
+    "phase": "クロージング"
+  }
+}

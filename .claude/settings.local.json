@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 app.py 5001)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

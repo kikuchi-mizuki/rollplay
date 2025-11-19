@@ -1,0 +1,293 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS変数定義 */
+:root {
+  --header-h: 64px;
+  --footer-h: 96px;
+  --footer-offset: 16px; /* bottom-4 = 1rem = 16px */
+  --footer-safe: calc(var(--footer-h) + var(--footer-offset) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ルートの高さとスクロール挙動を安定化 */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  scrollbar-gutter: stable both-edges;
+}
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-[#0D0E20] via-[#16172B] to-[#272A46] text-text;
+    color-scheme: dark;
+    min-height: 100dvh;
+    min-height: 100svh;
+    min-height: -webkit-fill-available; /* 旧iOS用 */
+    overflow-y: auto;
+    overscroll-behavior-y: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* ボタン基本スタイル */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-medium shadow-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply p-3 rounded-full bg-gradient-to-r from-[#6C5CE7] to-[#A29BFE] shadow-lg hover:scale-105 active:scale-95 transition text-white disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-white/10 text-slate-200 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/20 transition;
+  }
+
+  .btn-outline {
+    @apply border border-white/20 bg-white/10 backdrop-blur-sm text-slate-200 hover:bg-white/20 active:scale-[0.99];
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-white/80 hover:text-white hover:bg-white/10 active:scale-[0.99];
+  }
+
+  .btn-icon {
+    @apply p-3 rounded-full bg-[#6C5CE7]/90 hover:bg-[#7E70F7] active:scale-95 shadow-md transition text-white focus-visible:ring-2 focus-visible:ring-primary/60;
+  }
+
+  /* 入力フィールド */
+  .input {
+    @apply w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:border-primary transition-colors;
+  }
+
+  .textarea {
+    @apply input resize-none leading-6 min-h-[44px] max-h-40 overflow-y-auto;
+  }
+
+  /* テキストエリアのフォーカス時の影 */
+  textarea:focus {
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+  }
+
+  /* カード - ガラス効果 */
+  .card {
+    background-color: rgba(255, 255, 255, 0.08);
+    @apply backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300;
+  }
+
+  /* ガラスカード（チャット・メディアパネル用） */
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.08);
+    @apply backdrop-blur-xl shadow-2xl border border-white/10 rounded-2xl;
+  }
+
+  /* メッセージバブル - リッチデザイン */
+  .message-bubble-bot {
+    @apply bg-slate-700/50 text-slate-100 shadow-md rounded-2xl px-5 py-3 max-w-[85%] md:max-w-[75%];
+  }
+
+  .message-bubble-user {
+    @apply bg-gradient-to-br from-[#6C5CE7] to-[#A29BFE] text-white shadow-md rounded-2xl px-5 py-3 max-w-[85%] md:max-w-[75%];
+  }
+
+  .message-bubble-grouped-top {
+    @apply rounded-t-2xl rounded-b-lg;
+  }
+
+  .message-bubble-grouped-middle {
+    @apply rounded-t-lg rounded-b-lg;
+  }
+
+  .message-bubble-grouped-bottom {
+    @apply rounded-t-lg rounded-b-2xl;
+  }
+}
+
+@layer utilities {
+  /* スクロールバーのスタイル */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.5);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.7);
+  }
+}
+
+/* アニメーション */
+@keyframes pulse-recording {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-recording {
+  animation: pulse-recording 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 録音波形アニメーション */
+@keyframes wave {
+  0%, 100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.wave-bar {
+  animation: wave 1s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(1) { animation-delay: 0s; }
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+/* Safe Area対応（モバイルのノッチ等） */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* スライドインアニメーション */
+@keyframes slide-in-from-top {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.slide-in-from-top-5 {
+  animation: slide-in-from-top 0.3s ease-out;
+}
+
+.slide-in-from-bottom {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
+
+.slide-in-from-bottom-4 {
+  animation: slide-in-from-bottom 0.4s ease-out;
+}
+
+/* フェードインアニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* フェードインアップアニメーション */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.25s ease-out;
+}
+
+/* ポップインアニメーション */
+@keyframes popIn {
+  0% {
+    transform: translateY(4px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-popIn {
+  animation: popIn 0.25s ease-out;
+}
+
+/* フロートインアニメーション */
+@keyframes floatIn {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-floatIn {
+  animation: floatIn 0.3s ease-out;
+}
+
+/* 高さユーティリティ（dvh/svh対応） */
+.height-screen {
+  height: 100dvh;
+  height: 100svh;
+  height: -webkit-fill-available; /* 旧iOS用 */
+}
+
+/* アンカーのスクロールマージン（ヘッダーで隠れないように） */
+#media-anchor,
+#chat-anchor {
+  scroll-margin-top: calc(var(--header-h) + 8px);
+}
+

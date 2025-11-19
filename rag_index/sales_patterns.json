@@ -1,0 +1,492 @@
+[
+  {
+    "type": "customer_response",
+    "text": "大体約30分くらいお時間いただければと思っておりますので",
+    "scene": "greeting",
+    "topics": [
+      "timeline"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "はい お願いいたします",
+    "scene": "greeting",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "お名前 ショウ様ってお間違いないですかね すみません",
+    "scene": "greeting",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "ありがとうございます",
+    "scene": "greeting",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "今回動画を制作しようと思った背景だったり",
+    "scene": "greeting",
+    "topics": [
+      "video"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "こんな会社ですよ こんな動画作りたいんです",
+    "scene": "needs_analysis",
+    "topics": [
+      "video"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "はい ありがとうございます",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "はい お願いいたします",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "はい こちら見えていますでしょうか",
+    "scene": "proposal",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "ありがとうございます",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "キウイのつのりの株式会社の",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "よろしくお願いいたします",
+    "scene": "greeting",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "弊社はですね 主に人間関係の悩みを解決したいということを",
+    "scene": "needs_analysis",
+    "topics": [
+      "concerns"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "人間関係に悩んでいる方々に対して",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "考えているスタートアップでございます",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "こちらですね 今回動画の作成以来に関しては",
+    "scene": "proposal",
+    "topics": [
+      "video"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "ぜひお願いできればなと思っておりまして",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "先月の9月にローンチいたしました",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "主にこのメインキャラクターの占いがいまして",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "いろんな占い師場について",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "今までの占い師場と主な構造としては",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "言いっぱなしの構造でかなりアフターケアが少ないという",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "基本的に人が占い師を行っているので",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "人が開催している点で高額な時間書きモデルになっているという",
+    "scene": "needs_analysis",
+    "topics": [
+      "timeline"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "弊社が主に考えているペルソナに関しましては",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "主にターゲットにしたいなと思っておりまして",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "占いをしている方というよりかは",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "自分の判断基準を誰かにサポートしてほしいという",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "主にペルソナとして考えております",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "主にAIを用いて行っておりまして",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "どのようなことをしたらいいのかというネクストアクションを",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "悩みが発生した時に",
+    "scene": "needs_analysis",
+    "topics": [
+      "concerns"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "このウラッチが話していくと",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "AIが勝手に判断いたします",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "占い師が紹介されるようになっております",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "かなりジャンルがありまして",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "恋愛のジャンルが得意な占い師が",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "占いに移りますと",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "恋愛相談なんですが",
+    "scene": "needs_analysis",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "例えばLINEの履歴ですとか",
+    "scene": "proposal",
+    "topics": [
+      "examples"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "そちらのトーク履歴を出力してこのアプリに入れます",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "2人のことについて完全に理解した上で",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "悩みですとか不安とかについて",
+    "scene": "closing",
+    "topics": [
+      "concerns"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "占い終了後はですね",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "占いの内容を踏まえた上で",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "どういうアクションをこの後起こした方がいいのかっていうのを",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "ワークスフローになっております",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "マネタイズもそうですね",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "type": "customer_response",
+    "text": "チケットがありまして",
+    "scene": "closing",
+    "topics": [
+      "general"
+    ],
+    "scenario_id": "unknown",
+    "source_file": "肖佳男_様_音声_sample.wav"
+  }
+]

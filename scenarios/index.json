@@ -1,0 +1,68 @@
+{
+  "default_id": "meeting_1st",
+  "scenarios": [
+    {
+      "id": "meeting_1st",
+      "file": "meeting_1st.json",
+      "title": "1次面談（初回接触・関係構築）",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "meeting_1_5th",
+      "file": "meeting_1_5th.json",
+      "title": "1.5次面談（関係構築・情報交換）",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "meeting_2nd",
+      "file": "meeting_2nd.json",
+      "title": "2次面談（提案・検討）",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "meeting_3rd",
+      "file": "meeting_3rd.json",
+      "title": "3次面談（クロージング・契約）",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "id": "kickoff_meeting",
+      "file": "kickoff_meeting.json",
+      "title": "キックオフMTG（プロジェクト開始）",
+      "enabled": true,
+      "order": 5
+    },
+    {
+      "id": "upsell",
+      "file": "upsell.json",
+      "title": "追加営業（既存顧客への提案）",
+      "enabled": true,
+      "order": 6
+    },
+    {
+      "id": "rp_intro_v1",
+      "file": "rp_intro_v1.json",
+      "title": "初回ヒアリング（旧バージョン）",
+      "enabled": false,
+      "order": 99
+    },
+    {
+      "id": "rp_pricing_v1",
+      "file": "rp_pricing_v1.json",
+      "title": "価格交渉（旧バージョン）",
+      "enabled": false,
+      "order": 99
+    },
+    {
+      "id": "rp_肖佳男_様_音声_sample",
+      "file": "rp_肖佳男_様_音声_sample.json",
+      "title": "実録ロープレ：肖佳男_様_音声_sample",
+      "enabled": false,
+      "order": 99
+    }
+  ]
+}

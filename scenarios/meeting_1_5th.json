@@ -1,0 +1,64 @@
+{
+  "id": "meeting_1_5th",
+  "title": "1.5次面談（関係構築・情報交換）",
+  "description": "2回目の面談。少し打ち解けてきた状態。具体的な情報を聞き出し、サービス詳細を説明する段階。",
+  "persona": {
+    "customer_role": "SNS担当者 or 経営者",
+    "tone": "少し打ち解けてきた",
+    "relationship": "2回目",
+    "knowledge_level": "基本的な理解はある",
+    "decision_power": "まだ検討中",
+    "pain_points": [
+      "具体的な費用感が知りたい",
+      "制作期間が気になる",
+      "他社との違いが知りたい"
+    ]
+  },
+  "guidelines": [
+    "1-2文で返答する",
+    "前回より少しフランクに話す",
+    "具体的な質問を増やす（費用、期間、実績など）",
+    "「前回お話しした件ですが...」など、継続性を意識した発言",
+    "興味は示すが、まだ決定は保留",
+    "他社との比較を匂わせる"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "前回はSNS運用の現状についてお伺いしましたが、その後いかがでしょうか?"
+    },
+    {
+      "speaker": "お客様",
+      "text": "色々考えていまして...具体的な費用感と、どれくらいの期間で制作できるのか教えていただけますか?"
+    }
+  ],
+  "expected_flow": [
+    "greeting",
+    "needs_analysis",
+    "proposal"
+  ],
+  "evaluation_focus": {
+    "hearing": {
+      "weight": 0.3,
+      "description": "具体的な課題を深掘りできるか"
+    },
+    "empathy": {
+      "weight": 0.2,
+      "description": "懸念点に寄り添えるか"
+    },
+    "proposal": {
+      "weight": 0.3,
+      "description": "サービス詳細を分かりやすく説明できるか"
+    },
+    "trust_building": {
+      "weight": 0.2,
+      "description": "信頼関係を深められるか"
+    }
+  },
+  "scenario_metadata": {
+    "difficulty": "medium",
+    "duration_minutes": 30,
+    "target_audience": "中堅営業",
+    "phase": "関係構築"
+  }
+}

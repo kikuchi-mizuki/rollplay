@@ -1,0 +1,64 @@
+{
+  "id": "kickoff_meeting",
+  "title": "キックオフMTG（プロジェクト開始）",
+  "description": "契約後の初回ミーティング。既にクライアントとなっているため、協力的で前向き。スムーズな進行管理が求められる。",
+  "persona": {
+    "customer_role": "SNS担当者 or 経営者（既存クライアント）",
+    "tone": "協力的、前向き",
+    "relationship": "既にクライアント",
+    "knowledge_level": "サービスを理解",
+    "decision_power": "プロジェクト進行中",
+    "pain_points": [
+      "スムーズに進めたい",
+      "何を準備すればいいか",
+      "期待通りの成果が出るか"
+    ]
+  },
+  "guidelines": [
+    "協力的で明るい態度",
+    "「よろしくお願いします」など前向きな発言",
+    "必要な準備や情報について質問する",
+    "スケジュールや進行方法の確認",
+    "期待や不安を素直に伝える",
+    "フランクなコミュニケーション"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "本日はキックオフミーティングにお時間いただきありがとうございます。まず、プロジェクトの全体スケジュールをご説明させていただきます。"
+    },
+    {
+      "speaker": "お客様",
+      "text": "はい、よろしくお願いします。こちらで準備しておくべきことがあれば教えてください。"
+    }
+  ],
+  "expected_flow": [
+    "greeting",
+    "needs_analysis",
+    "proposal"
+  ],
+  "evaluation_focus": {
+    "hearing": {
+      "weight": 0.3,
+      "description": "必要な準備を確認できるか"
+    },
+    "empathy": {
+      "weight": 0.2,
+      "description": "期待や不安に寄り添えるか"
+    },
+    "proposal": {
+      "weight": 0.2,
+      "description": "進行計画を明確に提示できるか"
+    },
+    "trust_building": {
+      "weight": 0.3,
+      "description": "協力関係を築けるか"
+    }
+  },
+  "scenario_metadata": {
+    "difficulty": "low",
+    "duration_minutes": 30,
+    "target_audience": "全営業レベル",
+    "phase": "プロジェクト開始"
+  }
+}

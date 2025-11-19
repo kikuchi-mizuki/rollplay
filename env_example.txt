@@ -1,0 +1,6 @@
+# OpenAI API設定（Whisper統一版）
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Flask設定
+FLASK_ENV=development
+FLASK_DEBUG=True

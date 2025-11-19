@@ -1,0 +1,29 @@
+{
+  "id": "rp_pricing_v1",
+  "title": "価格交渉",
+  "persona": {
+    "customer_role": "店舗オーナー",
+    "tone": "慎重",
+    "pain_points": ["予算制約", "コスト削減"],
+    "business_size": "中小規模"
+  },
+  "guidelines": [
+    "価格に関する懸念を積極的に表現する",
+    "予算の制約を明確に伝える",
+    "交渉に前向きだが慎重な態度",
+    "具体的な金額を尋ねる",
+    "割引や特典に興味を示す"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "ご提案させていただいたプランについて、いかがでしょうか？"
+    },
+    {
+      "speaker": "お客様",
+      "text": "価格の点で、もう少し抑えられませんか？"
+    }
+  ],
+  "expected_flow": ["proposal", "objection_handling", "closing"]
+}
+

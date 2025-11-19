@@ -1,0 +1,65 @@
+{
+  "id": "meeting_1st",
+  "title": "1次面談（初回接触・関係構築）",
+  "description": "初回接触。相談者は警戒心があり、慎重な態度。営業はヒアリング力と共感力で信頼関係を構築する段階。",
+  "persona": {
+    "customer_role": "SNS担当者 or 経営者",
+    "tone": "警戒心あり、慎重",
+    "relationship": "初対面",
+    "knowledge_level": "動画制作について不明",
+    "decision_power": "情報収集段階",
+    "pain_points": [
+      "SNSの反応が悪い",
+      "動画制作の知識がない",
+      "予算が不明確",
+      "他社との比較をしたい"
+    ]
+  },
+  "guidelines": [
+    "1-2文で簡潔に返す",
+    "警戒心のある態度を示す",
+    "具体的な情報はまだ出し渋る",
+    "「まだ検討段階で...」「他社も見ていて...」など慎重な発言を挟む",
+    "予算や期間について明確な回答は避ける",
+    "SNS運用の悩みは素直に伝える"
+  ],
+  "utterances": [
+    {
+      "speaker": "営業",
+      "text": "本日はお時間いただきありがとうございます。まず、現在のSNS運用状況についてお聞かせいただけますか?"
+    },
+    {
+      "speaker": "お客様",
+      "text": "InstagramとTikTokをやっていますが、正直あまり反応が良くなくて...まだ検討段階なんですけど。"
+    }
+  ],
+  "expected_flow": [
+    "greeting",
+    "needs_analysis",
+    "proposal"
+  ],
+  "evaluation_focus": {
+    "hearing": {
+      "weight": 0.3,
+      "description": "SNS運用状況を自然に聞き出せるか"
+    },
+    "empathy": {
+      "weight": 0.3,
+      "description": "不安を受け止められるか"
+    },
+    "proposal": {
+      "weight": 0.2,
+      "description": "押し売りせず、軽い提案ができるか"
+    },
+    "trust_building": {
+      "weight": 0.2,
+      "description": "安心感を与え、次回面談につなげられるか"
+    }
+  },
+  "scenario_metadata": {
+    "difficulty": "medium",
+    "duration_minutes": 30,
+    "target_audience": "新人〜中堅営業",
+    "phase": "初回接触"
+  }
+}
