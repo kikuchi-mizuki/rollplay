@@ -1477,12 +1477,13 @@ def get_store_analytics(store_id):
 
 if __name__ == '__main__':
     import sys
-    port = 5001
+    # 環境変数PORTを優先、次にコマンドライン引数、最後にデフォルト5001
+    port = int(os.getenv('PORT', 5001))
     if len(sys.argv) > 1:
         try:
             port = int(sys.argv[1])
         except ValueError:
-            print("無効なポート番号です。デフォルトの5001を使用します。")
+            print("無効なポート番号です。環境変数またはデフォルトを使用します。")
 
-    print(f"サーバーを起動中... http://localhost:{port}")
+    print(f"サーバーを起動中... ポート:{port}")
     app.run(debug=False, use_reloader=False, host='0.0.0.0', port=port)
