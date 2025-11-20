@@ -15,22 +15,23 @@ export interface Avatar {
 
 /**
  * ファイル名をサニタイズ（英数字とハイフン、アンダースコアのみ）
+ * 将来の機能拡張のために保持（現在は未使用）
  */
-function sanitizeFileName(fileName: string): string {
-  // 日本語や特殊文字を削除し、英数字とハイフン、アンダースコアのみ残す
-  return fileName
-    .normalize('NFD') // Unicode正規化
-    .replace(/[\u0300-\u036f]/g, '') // アクセント記号を削除
-    .replace(/[^a-zA-Z0-9-_\.]/g, '-') // 英数字以外をハイフンに変換
-    .replace(/--+/g, '-') // 連続するハイフンを1つに
-    .replace(/^-|-$/g, '') // 先頭と末尾のハイフンを削除
-    .toLowerCase();
-}
+// function sanitizeFileName(fileName: string): string {
+//   // 日本語や特殊文字を削除し、英数字とハイフン、アンダースコアのみ残す
+//   return fileName
+//     .normalize('NFD') // Unicode正規化
+//     .replace(/[\u0300-\u036f]/g, '') // アクセント記号を削除
+//     .replace(/[^a-zA-Z0-9-_\.]/g, '-') // 英数字以外をハイフンに変換
+//     .replace(/--+/g, '-') // 連続するハイフンを1つに
+//     .replace(/^-|-$/g, '') // 先頭と末尾のハイフンを削除
+//     .toLowerCase();
+// }
 
 /**
  * アバター画像をSupabaseにアップロード
  */
-export async function uploadAvatarImage(file: File, name: string): Promise<string | null> {
+export async function uploadAvatarImage(file: File, _name?: string): Promise<string | null> {
   try {
     // ファイル拡張子を取得（.を含まない形式）
     const fileExt = file.name.split('.').pop()?.toLowerCase() || 'png';
