@@ -31,7 +31,7 @@ function RoleplayApp() {
   const [imageSrc, setImageSrc] = useState<string | undefined>(); // 画像のURL
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [_conversationId, setConversationId] = useState<string | null>(null);
   const conversationStartTime = useRef<Date | null>(null);
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
