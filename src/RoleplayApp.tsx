@@ -27,8 +27,8 @@ function RoleplayApp() {
   const [isConnected] = useState(true);
   const [mediaSubtitle, setMediaSubtitle] = useState<string>('');
   const [showMedia, setShowMedia] = useState(false); // モバイル時のメディア表示状態（デフォルト: チャット表示）
-  const [videoSrc, setVideoSrc] = useState<string | undefined>('/video.mp4?v=' + Date.now()); // 動画のURL（初期表示、キャッシュ回避）
-  const [imageSrc, setImageSrc] = useState<string | undefined>(); // 画像のURL
+  const [videoSrc, setVideoSrc] = useState<string | undefined>(); // 動画のURL
+  const [imageSrc, setImageSrc] = useState<string | undefined>('https://d-id-public-bucket.s3.amazonaws.com/alice.jpg'); // アバター画像（D-IDデフォルト）
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [_conversationId, setConversationId] = useState<string | null>(null);
