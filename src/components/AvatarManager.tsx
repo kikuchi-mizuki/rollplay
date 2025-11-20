@@ -61,7 +61,8 @@ export function AvatarManager({ onSelectAvatar, currentScenarioTags }: AvatarMan
       const name = prompt('アバター名を入力してください:', 'カスタムアバター');
       if (!name) return;
 
-      const tags = prompt('タグを入力してください（カンマ区切り）:', 'custom').split(',').map(t => t.trim());
+      const tagsInput = prompt('タグを入力してください（カンマ区切り）:', 'custom');
+      const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()) : ['custom'];
 
       const newAvatar = await createAvatar({
         name,
