@@ -32,13 +32,21 @@ function sanitizeFileName(fileName: string): string {
  */
 export async function uploadAvatarImage(file: File, name: string): Promise<string | null> {
   try {
-    const fileExt = file.name.split('.').pop();
-    // ファイル名をサニタイズ（日本語を削除）
-    const sanitizedName = sanitizeFileName(name || 'avatar');
-    // タイムスタンプとランダム文字列でユニークなファイル名を生成
-    const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-    const fileName = `${sanitizedName}-${uniqueId}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
+    // ファイル拡張子を取得（.を含まない形式）
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'png';
+
+    // タイムスタンプとランダム文字列でユニークなファイル名を生成（シンプルに）
+    const uniqueId = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const fileName = `avatar_${uniqueId}.${fileExt}`;
+    const filePath = fileName; // avatars/プレフィックスを削除
+
+    console.log('Uploading file:', {
+      originalName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      generatedFileName: fileName,
+      filePath: filePath
+    });
 
     const { data, error } = await supabase.storage
       .from('avatars')
@@ -47,17 +55,24 @@ export async function uploadAvatarImage(file: File, name: string): Promise<strin
         upsert: false
       });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase upload error:', error);
+      throw error;
+    }
+
+    console.log('Upload successful:', data);
 
     // 公開URLを取得
     const { data: { publicUrl } } = supabase.storage
       .from('avatars')
       .getPublicUrl(data.path);
 
+    console.log('Public URL:', publicUrl);
+
     return publicUrl;
   } catch (error) {
     console.error('Avatar upload error:', error);
-    return null;
+    throw error; // エラーを上位に伝播
   }
 }
 
