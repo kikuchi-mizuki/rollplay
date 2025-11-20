@@ -1,6 +1,16 @@
 # ベースイメージ: Python 3.11
 FROM python:3.11-slim
 
+# ビルド引数として環境変数を受け取る
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_API_BASE_URL
+
+# 環境変数として設定
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # 作業ディレクトリを設定
 WORKDIR /app
 
@@ -26,7 +36,7 @@ RUN npm install
 # プロジェクトファイルをコピー
 COPY . .
 
-# フロントエンドをビルド
+# フロントエンドをビルド（環境変数がビルドに含まれる）
 RUN npm run build
 
 # ポートを公開
