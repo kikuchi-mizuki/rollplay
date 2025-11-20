@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Supabase Upload Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Supabase Avatar Upload Test</h1>
+
+  <input type="file" id="fileInput" accept="image/*">
+  <button onclick="testUpload()">Test Upload</button>
+
+  <div id="result" style="margin-top: 20px; padding: 10px; background: #f0f0f0;"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://guargnhnblhiupjumkhe.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1YXJnbmhuYmxoaXVwanVta2hlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NjAxMTIsImV4cCI6MjA3ODMzNjExMn0.UYmflAhojEj_N_tGei_L4DgqSrTMPCVtWbiQQ8DQTMM';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function log(message, isError = false) {
+      const result = document.getElementById('result');
+      const color = isError ? 'red' : 'green';
+      result.innerHTML += `<div style="color: ${color};">${message}</div>`;
+      console.log(message);
+    }
+
+    async function testUpload() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        log('ファイルを選択してください', true);
+        return;
+      }
+
+      document.getElementById('result').innerHTML = '';
+
+      log(`📁 ファイル情報:`);
+      log(`- 名前: ${file.name}`);
+      log(`- タイプ: ${file.type}`);
+      log(`- サイズ: ${file.size} bytes`);
+      log('');
+
+      // ファイル名を生成
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'png';
+      const uniqueId = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      const fileName = `avatar_${uniqueId}.${fileExt}`;
+
+      log(`📝 生成されたファイル名: ${fileName}`);
+      log('');
+
+      // 認証状態を確認
+      const { data: { session } } = await supabase.auth.getSession();
+      log(`🔐 認証状態: ${session ? 'ログイン済み' : '未ログイン'}`);
+
+      if (!session) {
+        log('⚠️ ログインしていません。アプリでログインしてからもう一度お試しください。', true);
+        return;
+      }
+
+      log('');
+      log('📤 アップロード開始...');
+
+      try {
+        const { data, error } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) {
+          log(`❌ エラー: ${error.message}`, true);
+          log(`詳細: ${JSON.stringify(error, null, 2)}`, true);
+          return;
+        }
+
+        log(`✅ アップロード成功!`);
+        log(`パス: ${data.path}`);
+
+        // 公開URLを取得
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(data.path);
+
+        log(`🌐 公開URL: ${publicUrl}`);
+        log('');
+        log('アップロードが成功しました！🎉');
+
+      } catch (error) {
+        log(`❌ 例外エラー: ${error.message}`, true);
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
