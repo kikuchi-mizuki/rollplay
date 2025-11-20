@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface DIDVideoResponse {
   success: boolean;
@@ -7,12 +7,18 @@ interface DIDVideoResponse {
   error?: string;
 }
 
-export function DIDAvatar() {
+interface DIDVideoProps {
+  text: string;
+  avatarUrl?: string;
+  onVideoReady?: (url: string) => void;
+}
+
+export function DIDAvatar({ text, avatarUrl, onVideoReady }: DIDVideoProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generateVideo = async (text: string, avatarUrl?: string) => {
+  const generateVideo = useCallback(async (messageText: string, avatar?: string) => {
     setLoading(true);
     setError(null);
 
@@ -23,8 +29,8 @@ export function DIDAvatar() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text,
-          avatar_url: avatarUrl || 'https://d-id-public-bucket.s3.amazonaws.com/alice.jpg',
+          text: messageText,
+          avatar_url: avatar || 'https://d-id-public-bucket.s3.amazonaws.com/alice.jpg',
           voice_id: 'ja-JP-NanamiNeural'
         }),
       });
@@ -33,6 +39,9 @@ export function DIDAvatar() {
 
       if (data.success && data.video_url) {
         setVideoUrl(data.video_url);
+        if (onVideoReady) {
+          onVideoReady(data.video_url);
+        }
       } else {
         setError(data.error || '動画生成に失敗しました');
       }
@@ -41,7 +50,14 @@ export function DIDAvatar() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [onVideoReady]);
+
+  // テキストが変更されたら動画を生成
+  useEffect(() => {
+    if (text) {
+      generateVideo(text, avatarUrl);
+    }
+  }, [text, avatarUrl, generateVideo]);
 
   return (
     <div className="did-avatar">
