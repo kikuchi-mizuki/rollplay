@@ -11,6 +11,8 @@ import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluat
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
 import { useDIDAvatar } from './components/DIDAvatar';
+import { AvatarManager } from './components/AvatarManager';
+import { Avatar } from './lib/avatarManager';
 
 /**
  * ロープレメインアプリケーションコンポーネント
@@ -36,6 +38,10 @@ function RoleplayApp() {
   const conversationStartTime = useRef<Date | null>(null);
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
+
+  // アバター管理
+  const [showAvatarManager, setShowAvatarManager] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
 
   // D-IDアバター統合
   const { loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
