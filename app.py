@@ -1475,6 +1475,26 @@ def get_store_analytics(store_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# キャッチオールルート: React Routerのクライアント側ルーティングをサポート
+@app.route('/<path:path>')
+def catch_all(path):
+    """
+    APIルート以外のすべてのパスでindex.htmlを返す
+    これによりReact Routerがクライアント側でルーティングを処理できる
+    """
+    # APIルートは除外
+    if path.startswith('api/'):
+        return jsonify({'error': 'Not found'}), 404
+
+    # distディレクトリのindex.htmlを返す
+    dist_path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
+    if os.path.exists(dist_path):
+        with open(dist_path, 'r', encoding='utf-8') as f:
+            return f.read()
+
+    return jsonify({'error': 'Frontend not built'}), 404
+
+
 if __name__ == '__main__':
     import sys
     # 環境変数PORTを優先、次にコマンドライン引数、最後にデフォルト5001
