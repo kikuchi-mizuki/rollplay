@@ -1491,6 +1491,7 @@ def catch_all(path):
     APIルート以外のすべてのパスでindex.htmlを返す
     これによりReact Routerがクライアント側でルーティングを処理できる
     """
+    from flask import send_from_directory
     print(f"🔍 Catch-all route called with path: {path}")
 
     # APIルートは除外
@@ -1498,17 +1499,25 @@ def catch_all(path):
         print(f"❌ API route, returning 404: {path}")
         return jsonify({'error': 'Not found'}), 404
 
-    # distディレクトリのindex.htmlを返す
-    dist_path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
-    print(f"📁 Looking for index.html at: {dist_path}")
-    print(f"✅ File exists: {os.path.exists(dist_path)}")
+    # メディアファイル（動画・画像）を配信
+    if path.endswith(('.mp4', '.webm', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico')):
+        dist_path = os.path.join(os.path.dirname(__file__), 'dist')
+        file_path = os.path.join(dist_path, path)
+        if os.path.exists(file_path):
+            print(f"📹 Serving media file: {path}")
+            return send_from_directory(dist_path, path)
 
-    if os.path.exists(dist_path):
+    # distディレクトリのindex.htmlを返す
+    dist_index = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
+    print(f"📁 Looking for index.html at: {dist_index}")
+    print(f"✅ File exists: {os.path.exists(dist_index)}")
+
+    if os.path.exists(dist_index):
         print(f"✅ Serving index.html for path: {path}")
-        with open(dist_path, 'r', encoding='utf-8') as f:
+        with open(dist_index, 'r', encoding='utf-8') as f:
             return f.read()
 
-    print(f"❌ index.html not found at: {dist_path}")
+    print(f"❌ index.html not found at: {dist_index}")
     return jsonify({'error': 'Frontend not built', 'path': path}), 404
 
 
