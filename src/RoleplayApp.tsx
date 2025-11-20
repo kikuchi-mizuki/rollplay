@@ -38,7 +38,7 @@ function RoleplayApp() {
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
 
   // D-IDアバター統合
-  const { videoUrl: didVideoUrl, loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
+  const { loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
 
   // シナリオ一覧を取得
   useEffect(() => {
@@ -226,6 +226,8 @@ function RoleplayApp() {
 
       // D-ID動画を生成（リップシンク付き）
       console.log('🎬 Generating D-ID video for:', response);
+      setMediaSubtitle(didLoading ? '動画を生成中...' : response);
+
       const didVideo = await generateAndPlayVideo(response);
 
       if (didVideo) {
@@ -233,10 +235,12 @@ function RoleplayApp() {
         console.log('✅ D-ID video ready:', didVideo);
         setVideoSrc(didVideo);
         setImageSrc(undefined); // 画像を非表示
+        setMediaSubtitle(response); // 字幕を元に戻す
       } else {
         // D-ID動画生成失敗時はWeb Speech APIで音声出力
         console.log('⚠️ D-ID failed, using Web Speech API');
         speakText(response);
+        setMediaSubtitle(response);
       }
     } catch (error) {
       console.error('送信エラー:', error);
