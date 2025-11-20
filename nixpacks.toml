@@ -1,9 +1,5 @@
-[providers]
-python = "3.11"
-nodejs = "18"
-
 [phases.setup]
-nixPkgs = ["ffmpeg"]
+nixPkgs = ["python311", "nodejs-18_x", "npm-9_x", "ffmpeg"]
 
 [phases.install]
 cmds = [

@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+flask.log
+transcribe_log.txt
+test_transcribe.log
+
+# Environment
+.env
+.env.local
+
+# Documentation
+*.md
+!README.md
+
+# Build artifacts (will be rebuilt in Docker)
+dist/

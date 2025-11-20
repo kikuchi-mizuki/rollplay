@@ -1,0 +1,36 @@
+# ベースイメージ: Python 3.11
+FROM python:3.11-slim
+
+# 作業ディレクトリを設定
+WORKDIR /app
+
+# 必要なシステムパッケージをインストール
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js 18.xをインストール
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python依存関係をコピーしてインストール
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# フロントエンド依存関係をコピーしてインストール
+COPY package*.json ./
+RUN npm install
+
+# プロジェクトファイルをコピー
+COPY . .
+
+# フロントエンドをビルド
+RUN npm run build
+
+# ポートを公開
+EXPOSE 5000
+
+# アプリケーションを起動
+CMD ["python", "app.py"]
