@@ -1482,17 +1482,25 @@ def catch_all(path):
     APIルート以外のすべてのパスでindex.htmlを返す
     これによりReact Routerがクライアント側でルーティングを処理できる
     """
+    print(f"🔍 Catch-all route called with path: {path}")
+
     # APIルートは除外
     if path.startswith('api/'):
+        print(f"❌ API route, returning 404: {path}")
         return jsonify({'error': 'Not found'}), 404
 
     # distディレクトリのindex.htmlを返す
     dist_path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
+    print(f"📁 Looking for index.html at: {dist_path}")
+    print(f"✅ File exists: {os.path.exists(dist_path)}")
+
     if os.path.exists(dist_path):
+        print(f"✅ Serving index.html for path: {path}")
         with open(dist_path, 'r', encoding='utf-8') as f:
             return f.read()
 
-    return jsonify({'error': 'Frontend not built'}), 404
+    print(f"❌ index.html not found at: {dist_path}")
+    return jsonify({'error': 'Frontend not built', 'path': path}), 404
 
 
 if __name__ == '__main__':
