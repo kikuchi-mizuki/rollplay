@@ -10,6 +10,7 @@ import { Message, Evaluation, RecordingState } from './types';
 import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
+import { useDIDAvatar } from './components/DIDAvatar';
 
 /**
  * ロープレメインアプリケーションコンポーネント
@@ -35,6 +36,9 @@ function RoleplayApp() {
   const conversationStartTime = useRef<Date | null>(null);
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
+
+  // D-IDアバター統合
+  const { videoUrl: didVideoUrl, loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
 
   // シナリオ一覧を取得
   useEffect(() => {
@@ -219,15 +223,21 @@ function RoleplayApp() {
       };
       setMessages((prev) => [...prev, botMessage]);
       setMediaSubtitle(response);
-      
-      // Web Speech APIで音声出力（TTS）
-      speakText(response);
-      
-      // 静的ファイルとして読み込む
-      // public/video.mp4 に配置した動画ファイルを読み込む
-      // 動画ファイルがない場合は、この行をコメントアウトしてください
-      // キャッシュを回避するためにタイムスタンプを追加
-      setVideoSrc('/video.mp4?v=' + Date.now());
+
+      // D-ID動画を生成（リップシンク付き）
+      console.log('🎬 Generating D-ID video for:', response);
+      const didVideo = await generateAndPlayVideo(response);
+
+      if (didVideo) {
+        // D-ID動画が生成された場合
+        console.log('✅ D-ID video ready:', didVideo);
+        setVideoSrc(didVideo);
+        setImageSrc(undefined); // 画像を非表示
+      } else {
+        // D-ID動画生成失敗時はWeb Speech APIで音声出力
+        console.log('⚠️ D-ID failed, using Web Speech API');
+        speakText(response);
+      }
     } catch (error) {
       console.error('送信エラー:', error);
       setToast({
