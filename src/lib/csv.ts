@@ -114,7 +114,7 @@ export function downloadConversationsCSV(
  */
 export function downloadSingleEvaluationCSV(
   evaluation: any,
-  options?: { messages?: any[] }
+  _options?: { messages?: any[] }
 ) {
   const data = [{
     created_at: new Date(evaluation.created_at).toLocaleString('ja-JP'),
