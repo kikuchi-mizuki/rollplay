@@ -190,22 +190,97 @@ driver_options = {
 - **Basic**: $29/月（600クレジット）
 - **Advanced**: $196/月（5,000クレジット）
 
-### コスト削減のヒント
+### コスト削減のヒント（重要）
 
-1. **キャッシュを活用**
+**キャッシング戦略で70-90%コスト削減可能！**
+
+1. **動画キャッシング実装（推奨）**
    ```typescript
-   // 同じテキストの動画を再利用
-   const videoCache = new Map<string, string>();
+   import crypto from 'crypto';
 
-   if (videoCache.has(text)) {
-     return videoCache.get(text);
+   // テキスト+アバターのハッシュ値でキャッシュキー生成
+   function getCacheKey(text: string, avatarUrl: string): string {
+     return crypto
+       .createHash('md5')
+       .update(`${text}:${avatarUrl}`)
+       .digest('hex');
+   }
+
+   // Supabase Storageでキャッシュ管理
+   async function getCachedVideo(text: string, avatarUrl: string): Promise<string | null> {
+     const cacheKey = getCacheKey(text, avatarUrl);
+
+     const { data } = await supabase.storage
+       .from('did-videos')
+       .download(`cache/${cacheKey}.mp4`);
+
+     if (data) {
+       return URL.createObjectURL(data);
+     }
+     return null;
+   }
+
+   // 動画生成後にキャッシュ保存
+   async function cacheVideo(text: string, avatarUrl: string, videoBlob: Blob) {
+     const cacheKey = getCacheKey(text, avatarUrl);
+
+     await supabase.storage
+       .from('did-videos')
+       .upload(`cache/${cacheKey}.mp4`, videoBlob);
+   }
+
+   // 使用例
+   async function generateOrGetVideo(text: string, avatarUrl: string) {
+     // キャッシュチェック
+     const cached = await getCachedVideo(text, avatarUrl);
+     if (cached) {
+       console.log('キャッシュヒット！API呼び出しなし');
+       return cached;
+     }
+
+     // 新規生成
+     const videoUrl = await generateDIDVideo(text, avatarUrl);
+
+     // キャッシュに保存
+     const blob = await fetch(videoUrl).then(r => r.blob());
+     await cacheVideo(text, avatarUrl, blob);
+
+     return videoUrl;
    }
    ```
 
-2. **短い応答を優先**
+2. **よく使われる応答を事前生成**
+   ```typescript
+   // 初期構築フェーズで実行
+   const COMMON_RESPONSES = [
+     'それはどうしてですか？',
+     'なるほど、もう少し詳しく教えてください',
+     '具体的にはどのようなイメージですか？',
+     'ありがとうございます',
+     'そうなんですね',
+     'わかりました',
+     // ... 200-500本
+   ];
+
+   async function prebuildCache() {
+     for (const text of COMMON_RESPONSES) {
+       await generateOrGetVideo(text, DEFAULT_AVATAR);
+     }
+   }
+   ```
+
+3. **コスト試算**
+   ```
+   キャッシュなし: 100店舗 × 50回 × 4本 = 20,000本/月 = 30-60万円
+   キャッシュあり: 20,000本 × 20% = 4,000本/月 = 2-4万円
+
+   削減率: 約80-90%
+   ```
+
+4. **短い応答を優先**
    - 長い応答は分割して複数の短い動画に
 
-3. **Webhook を使用**
+5. **Webhook を使用**
    - 同期的に待機せず、Webhookで通知を受け取る
 
 ## 🔧 トラブルシューティング
