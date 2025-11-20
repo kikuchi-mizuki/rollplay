@@ -57,7 +57,7 @@ except ImportError as e:
 # 環境変数を読み込み
 load_dotenv()
 
-app = Flask(__name__, static_folder='dist', static_url_path='')
+app = Flask(__name__)
 if CORS_AVAILABLE and CORS:
     # CORS設定：開発環境と本番環境の両方に対応
     allowed_origins = [
@@ -1473,6 +1473,15 @@ def get_store_analytics(store_id):
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# 静的アセットを配信
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    """Viteでビルドされたアセットファイルを配信"""
+    from flask import send_from_directory
+    assets_path = os.path.join(os.path.dirname(__file__), 'dist', 'assets')
+    return send_from_directory(assets_path, filename)
 
 
 # キャッチオールルート: React Routerのクライアント側ルーティングをサポート
