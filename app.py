@@ -179,6 +179,38 @@ def load_rubric():
 
 load_rubric()
 
+# ===== Few-shot評価サンプル読込（Week 5：評価精度向上） =====
+EVALUATION_SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'evaluation_samples')
+EVALUATION_SAMPLES_CACHE = {}
+
+def load_evaluation_samples(scenario_id: str):
+    """シナリオIDに対応するFew-shot評価サンプルを読み込む"""
+    global EVALUATION_SAMPLES_CACHE
+
+    if not scenario_id:
+        return None
+
+    # キャッシュチェック
+    if scenario_id in EVALUATION_SAMPLES_CACHE:
+        return EVALUATION_SAMPLES_CACHE[scenario_id]
+
+    # ファイルパスを構築
+    samples_file = os.path.join(EVALUATION_SAMPLES_DIR, f"{scenario_id}_samples.json")
+
+    if not os.path.exists(samples_file):
+        print(f"評価サンプルファイルが見つかりません: {samples_file}")
+        return None
+
+    try:
+        with open(samples_file, 'r', encoding='utf-8') as f:
+            samples_data = json.load(f)
+        EVALUATION_SAMPLES_CACHE[scenario_id] = samples_data
+        print(f"評価サンプル読込完了: {scenario_id} ({len(samples_data.get('few_shot_examples', []))}件)")
+        return samples_data
+    except Exception as e:
+        print(f"評価サンプル読込エラー({scenario_id}): {e}")
+        return None
+
 # ===== RAGインデックス読込（STEP6：RAG連携） =====
 RAG_INDEX_DIR = os.path.join(os.path.dirname(__file__), 'rag_index')
 RAG_INDEX_PATH = os.path.join(RAG_INDEX_DIR, 'sales_patterns.faiss')
@@ -826,37 +858,85 @@ def evaluate_conversation():
     try:
         data = request.get_json()
         conversation = data.get('conversation', [])
-        
+        scenario_id = data.get('scenario_id')  # シナリオIDを取得
+
         # 営業の発言のみを抽出
         sales_utterances = [msg['text'] for msg in conversation if msg['speaker'] == '営業']
-        
+
         if not sales_utterances:
             return jsonify({
                 'success': False,
                 'error': '営業の発言が見つかりません'
             }), 400
-        
-        # 講評生成（Whisper統一版: GPT-4を使用）
-        evaluation = generate_evaluation_with_gpt4(sales_utterances)
-        
+
+        # 講評生成（Week 5改善版: シナリオ別Few-shot対応）
+        evaluation = generate_evaluation_with_gpt4(sales_utterances, scenario_id)
+
         return jsonify({
             'success': True,
             'evaluation': evaluation,
             'timestamp': datetime.now().isoformat()
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
             'error': str(e)
         }), 500
 
-def generate_evaluation_with_gpt4(sales_utterances):
-    """GPT-4を使用した営業スキル評価（Whisper統一版）"""
+def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
+    """GPT-4を使用した営業スキル評価（Week 5改善版: シナリオ別Few-shot対応）"""
     try:
         # 営業の発言を結合
         sales_text = " ".join(sales_utterances)
-        
+
+        # シナリオ情報とFew-shotサンプルを読み込む
+        scenario_context = ""
+        few_shot_examples = ""
+
+        if scenario_id:
+            # シナリオ情報を読み込む
+            scenario_obj = load_scenario_object(scenario_id)
+            if scenario_obj:
+                scenario_title = scenario_obj.get('title', '')
+                scenario_context = f"\n【シナリオ】: {scenario_title}\n"
+                scenario_context += f"【シナリオの重点評価項目】:\n"
+                persona = scenario_obj.get('persona', {})
+                if persona:
+                    scenario_context += f"- 相談者の状態: {persona.get('tone', '')} ({persona.get('relationship', '')})\n"
+
+            # Few-shotサンプルを読み込む
+            samples_data = load_evaluation_samples(scenario_id)
+            if samples_data:
+                eval_focus = samples_data.get('evaluation_focus', [])
+                if eval_focus:
+                    scenario_context += "- 評価の重点: " + ", ".join(eval_focus) + "\n"
+
+                # Few-shotサンプルを構築（良い例1件、悪い例1件）
+                examples = samples_data.get('few_shot_examples', [])
+                good_examples = [ex for ex in examples if ex.get('quality') == 'good']
+                poor_examples = [ex for ex in examples if ex.get('quality') == 'poor']
+
+                if good_examples:
+                    good_ex = good_examples[0]  # 最初の良い例を使用
+                    few_shot_examples += "\n【評価サンプル1：良い例】\n"
+                    few_shot_examples += "営業の発言: " + " → ".join(good_ex['conversation'][::2][:3]) + "...\n"
+                    few_shot_examples += f"評価スコア: 質問力={good_ex['evaluation']['scores']['questioning_skill']}, "
+                    few_shot_examples += f"傾聴力={good_ex['evaluation']['scores']['listening_skill']}, "
+                    few_shot_examples += f"提案力={good_ex['evaluation']['scores']['proposal_skill']}, "
+                    few_shot_examples += f"クロージング={good_ex['evaluation']['scores']['closing_skill']}\n"
+                    few_shot_examples += f"評価理由: {good_ex['evaluation']['strengths'][0]}\n"
+
+                if poor_examples:
+                    poor_ex = poor_examples[0]  # 最初の悪い例を使用
+                    few_shot_examples += "\n【評価サンプル2：改善が必要な例】\n"
+                    few_shot_examples += "営業の発言: " + " → ".join(poor_ex['conversation'][::2][:3]) + "...\n"
+                    few_shot_examples += f"評価スコア: 質問力={poor_ex['evaluation']['scores']['questioning_skill']}, "
+                    few_shot_examples += f"傾聴力={poor_ex['evaluation']['scores']['listening_skill']}, "
+                    few_shot_examples += f"提案力={poor_ex['evaluation']['scores']['proposal_skill']}, "
+                    few_shot_examples += f"クロージング={poor_ex['evaluation']['scores']['closing_skill']}\n"
+                    few_shot_examples += f"評価理由: {poor_ex['evaluation']['improvements'][0]}\n"
+
         # Rubricから評価基準を構築
         rubric_description = ""
         if RUBRIC_DATA and 'evaluation_criteria' in RUBRIC_DATA:
@@ -872,19 +952,19 @@ def generate_evaluation_with_gpt4(sales_utterances):
 - 傾聴力: 相手の発言を理解し、適切に受容・共感
 - 提案力: 顧客の課題に対する具体的な解決策を提示
 - クロージング力: 次のアクション・決定を促す適切なクロージング"""
-        
-        # GPT-4で評価を生成
-        evaluation_prompt = f"""
-        以下の営業の発言を分析して、営業スキルを評価してください。
 
+        # GPT-4で評価を生成（Few-shot対応）
+        evaluation_prompt = f"""
+        あなたはSNS動画制作営業のスキル評価の専門家です。以下の営業の発言を分析して、営業スキルを詳細に評価してください。
+        {scenario_context}
         【営業の発言】
         {sales_text}
 
         【評価項目】（5点満点で評価）
         {rubric_description}
+        {few_shot_examples}
 
-        【出力形式】
-        JSON形式で以下の構造で出力してください：
+        上記のサンプルを参考に、以下のJSON形式で評価を出力してください：
         {{
             "scores": {{
                 "questioning": 数値,
