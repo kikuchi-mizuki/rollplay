@@ -405,8 +405,8 @@ function RoleplayApp() {
 
     setShowEvaluation(true);
     try {
-      // 講評を取得
-      const evalData = await getEvaluation(messages);
+      // 講評を取得（Week 5: シナリオIDを渡す）
+      const evalData = await getEvaluation(messages, selectedScenarioId);
       setEvaluation(evalData);
 
       // 会話履歴を保存（Supabase統合）

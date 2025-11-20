@@ -38,7 +38,7 @@ export async function sendMessage(message: string, history: Message[]): Promise<
 /**
  * 講評取得API（実際のバックエンド呼び出し）
  */
-export async function getEvaluation(history: Message[]): Promise<Evaluation> {
+export async function getEvaluation(history: Message[], _scenarioId?: string): Promise<Evaluation> {
   try {
     // 会話履歴をFlask形式に変換
     const conversation = history.map(msg => ({

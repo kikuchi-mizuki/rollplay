@@ -63,8 +63,10 @@ export async function sendMessage(message: string, history: Message[], scenarioI
 
 /**
  * 講評取得API（実際のバックエンド呼び出し）
+ * @param history - 会話履歴
+ * @param scenarioId - シナリオID（Week 5: Few-shot評価対応）
  */
-export async function getEvaluation(history: Message[]): Promise<Evaluation> {
+export async function getEvaluation(history: Message[], scenarioId?: string): Promise<Evaluation> {
   try {
     // 会話履歴をFlask形式に変換
     const conversation = history.map(msg => ({
@@ -78,7 +80,8 @@ export async function getEvaluation(history: Message[]): Promise<Evaluation> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        conversation: conversation
+        conversation: conversation,
+        scenario_id: scenarioId  // Week 5: シナリオIDを送信
       })
     });
 
