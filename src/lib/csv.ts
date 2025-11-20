@@ -108,3 +108,43 @@ export function downloadConversationsCSV(
   const filename = `conversations_${timestamp}.csv`;
   downloadCSV(data, filename, headers);
 }
+
+/**
+ * 単一の評価をCSV出力（講評シート用）
+ */
+export function downloadSingleEvaluationCSV(
+  evaluation: any,
+  options?: { messages?: any[] }
+) {
+  const data = [{
+    created_at: new Date(evaluation.created_at).toLocaleString('ja-JP'),
+    scenario_id: evaluation.scenario_id,
+    average_score: evaluation.average_score.toFixed(2),
+    questioning_skill: evaluation.scores.questioning_skill.toFixed(2),
+    listening_skill: evaluation.scores.listening_skill.toFixed(2),
+    proposal_skill: evaluation.scores.proposal_skill.toFixed(2),
+    closing_skill: evaluation.scores.closing_skill.toFixed(2),
+    total_score: evaluation.total_score,
+    overall_comment: evaluation.comments?.overall || '',
+    strengths: evaluation.comments?.strengths?.join('; ') || '',
+    improvements: evaluation.comments?.improvements?.join('; ') || ''
+  }];
+
+  const headers = [
+    'created_at',
+    'scenario_id',
+    'average_score',
+    'questioning_skill',
+    'listening_skill',
+    'proposal_skill',
+    'closing_skill',
+    'total_score',
+    'overall_comment',
+    'strengths',
+    'improvements'
+  ];
+
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `evaluation_${timestamp}.csv`;
+  downloadCSV(data, filename, headers);
+}

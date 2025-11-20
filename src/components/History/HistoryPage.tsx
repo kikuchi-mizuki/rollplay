@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getConversations, getEvaluations, getScenarios } from '../../lib/api';
-import { downloadEvaluationsCSV, downloadConversationsCSV } from '../../lib/csv';
+import { downloadEvaluationsCSV } from '../../lib/csv';
 import { History, BarChart3, TrendingUp, Calendar, Download } from 'lucide-react';
 
 interface Conversation {
