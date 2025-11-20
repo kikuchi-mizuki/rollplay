@@ -49,21 +49,25 @@ export function AvatarManager({ onSelectAvatar, currentScenarioTags }: AvatarMan
     setIsUploading(true);
 
     try {
-      // 1. 画像をアップロード
-      const imageUrl = await uploadAvatarImage(file, 'custom');
-
-      if (!imageUrl) {
-        alert('アップロードに失敗しました');
+      // 1. アバター情報を先に入力
+      const name = prompt('アバター名を入力してください:', 'カスタムアバター');
+      if (!name) {
+        setIsUploading(false);
         return;
       }
-
-      // 2. アバターをデータベースに登録
-      const name = prompt('アバター名を入力してください:', 'カスタムアバター');
-      if (!name) return;
 
       const tagsInput = prompt('タグを入力してください（カンマ区切り）:', 'custom');
       const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()) : ['custom'];
 
+      // 2. 画像をアップロード（ファイル名はサニタイズされます）
+      const imageUrl = await uploadAvatarImage(file, name);
+
+      if (!imageUrl) {
+        alert('アップロードに失敗しました。ファイル形式やサイズを確認してください。');
+        return;
+      }
+
+      // 3. アバターをデータベースに登録
       const newAvatar = await createAvatar({
         name,
         image_url: imageUrl,
@@ -71,12 +75,14 @@ export function AvatarManager({ onSelectAvatar, currentScenarioTags }: AvatarMan
       });
 
       if (newAvatar) {
-        alert('アバターを登録しました！');
+        alert(`アバター「${name}」を登録しました！`);
         await loadAvatars();
+      } else {
+        alert('アバターの登録に失敗しました');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('エラーが発生しました');
+      alert(`エラーが発生しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
     } finally {
       setIsUploading(false);
     }

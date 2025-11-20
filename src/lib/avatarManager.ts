@@ -14,12 +14,30 @@ export interface Avatar {
 }
 
 /**
+ * ファイル名をサニタイズ（英数字とハイフン、アンダースコアのみ）
+ */
+function sanitizeFileName(fileName: string): string {
+  // 日本語や特殊文字を削除し、英数字とハイフン、アンダースコアのみ残す
+  return fileName
+    .normalize('NFD') // Unicode正規化
+    .replace(/[\u0300-\u036f]/g, '') // アクセント記号を削除
+    .replace(/[^a-zA-Z0-9-_\.]/g, '-') // 英数字以外をハイフンに変換
+    .replace(/--+/g, '-') // 連続するハイフンを1つに
+    .replace(/^-|-$/g, '') // 先頭と末尾のハイフンを削除
+    .toLowerCase();
+}
+
+/**
  * アバター画像をSupabaseにアップロード
  */
 export async function uploadAvatarImage(file: File, name: string): Promise<string | null> {
   try {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${name}-${Date.now()}.${fileExt}`;
+    // ファイル名をサニタイズ（日本語を削除）
+    const sanitizedName = sanitizeFileName(name || 'avatar');
+    // タイムスタンプとランダム文字列でユニークなファイル名を生成
+    const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const fileName = `${sanitizedName}-${uniqueId}.${fileExt}`;
     const filePath = `avatars/${fileName}`;
 
     const { data, error } = await supabase.storage
