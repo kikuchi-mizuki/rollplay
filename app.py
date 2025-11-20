@@ -12,6 +12,7 @@ import tempfile
 from dotenv import load_dotenv
 from shutil import which
 from supabase import create_client, Client
+from d_id_client import get_did_client
 
 # flask-corsのインポート（エラーハンドリング付き）
 try:
@@ -565,6 +566,74 @@ def text_to_speech():
         import traceback
         traceback.print_exc()
         return jsonify(success=False, error=str(e)), 500
+
+
+@app.route('/api/did-video', methods=['POST'])
+def generate_did_video():
+    """
+    D-ID APIを使用してリップシンク動画を生成
+
+    Request:
+        {
+            "text": "こんにちは",
+            "avatar_url": "https://...",  # オプション: アバター画像URL
+            "voice_id": "ja-JP-NanamiNeural"  # オプション: 音声ID
+        }
+
+    Response:
+        {
+            "success": true,
+            "video_url": "https://...",
+            "talk_id": "..."
+        }
+    """
+    try:
+        data = request.json
+        text = data.get('text', '')
+        avatar_url = data.get('avatar_url', 'https://d-id-public-bucket.s3.amazonaws.com/alice.jpg')
+        voice_id = data.get('voice_id', 'ja-JP-NanamiNeural')
+
+        if not text:
+            return jsonify(success=False, error='テキストが必要です'), 400
+
+        # D-IDクライアントを取得
+        did_client = get_did_client()
+        if not did_client:
+            return jsonify(success=False, error='D-ID APIが設定されていません'), 500
+
+        # D-ID動画を生成（テキストから直接）
+        print(f"🎬 Generating D-ID video for text: {text[:50]}...")
+        result = did_client.create_talk_from_text(
+            text=text,
+            voice_id=voice_id,
+            source_url=avatar_url
+        )
+
+        talk_id = result.get('id')
+        print(f"📝 D-ID talk created: {talk_id}")
+
+        # 完了を待機（最大120秒）
+        video_url = did_client.wait_for_completion(talk_id, timeout=120)
+
+        if video_url:
+            print(f"✅ D-ID video ready: {video_url}")
+            return jsonify(
+                success=True,
+                video_url=video_url,
+                talk_id=talk_id
+            )
+        else:
+            return jsonify(
+                success=False,
+                error='動画生成がタイムアウトしました',
+                talk_id=talk_id
+            ), 500
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify(success=False, error=str(e)), 500
+
 
 @app.route('/api/transcribe', methods=['POST'])
 def transcribe():
