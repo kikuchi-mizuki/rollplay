@@ -62,7 +62,7 @@ function RoleplayApp() {
       });
   }, []);
 
-  // シナリオ選択時に、会話をリセットして顧客役の最初のメッセージを自動表示
+  // シナリオ選択時に、会話をリセット（ユーザーが最初に話しかける形式）
   useEffect(() => {
     if (selectedScenarioId) {
       // シナリオが切り替わったら会話をリセット
@@ -72,66 +72,11 @@ function RoleplayApp() {
       setConversationId(null);
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
 
-      // シナリオ詳細を取得して、最初の顧客メッセージを表示
-      fetch(`/api/scenarios/${selectedScenarioId}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success && data.scenario) {
-            const utterances = data.scenario.utterances || [];
-            // 最初の「お客様」発話を探す
-            const firstCustomerMessage = utterances.find((u: { speaker: string }) => 
-              u.speaker === 'お客様' || u.speaker === '顧客'
-            );
-            
-            if (firstCustomerMessage) {
-              const initialMessage: Message = {
-                id: `bot-initial-${Date.now()}`,
-                role: 'bot',
-                text: firstCustomerMessage.text,
-                timestamp: new Date(),
-              };
-              setMessages([initialMessage]);
-              setMediaSubtitle(firstCustomerMessage.text);
-              speakText(firstCustomerMessage.text);
-            } else {
-              // シナリオに顧客発話がない場合は、デフォルトメッセージ
-              const defaultMessage: Message = {
-                id: `bot-initial-${Date.now()}`,
-                role: 'bot',
-                text: 'こんにちは！30分無料相談でお伺いしました。よろしくお願いします。',
-                timestamp: new Date(),
-              };
-              setMessages([defaultMessage]);
-              setMediaSubtitle(defaultMessage.text);
-              speakText(defaultMessage.text);
-            }
-          } else {
-            // エラー時はデフォルトメッセージ
-            const defaultMessage: Message = {
-              id: `bot-initial-${Date.now()}`,
-              role: 'bot',
-              text: 'こんにちは！30分無料相談でお伺いしました。よろしくお願いします。',
-              timestamp: new Date(),
-            };
-            setMessages([defaultMessage]);
-            setMediaSubtitle(defaultMessage.text);
-            speakText(defaultMessage.text);
-          }
-        })
-        .catch(() => {
-          // エラー時はデフォルトメッセージ
-          const defaultMessage: Message = {
-            id: `bot-initial-${Date.now()}`,
-            role: 'bot',
-            text: 'こんにちは！30分無料相談でお伺いしました。よろしくお願いします。',
-            timestamp: new Date(),
-          };
-          setMessages([defaultMessage]);
-          setMediaSubtitle(defaultMessage.text);
-          speakText(defaultMessage.text);
-        });
+      // 字幕をクリア（ユーザーが最初に話しかけるまで何も表示しない）
+      setMediaSubtitle('');
     }
   }, [selectedScenarioId]);
+
 
   // OpenAI TTSで音声出力（より自然な音声）
   const speakText = async (text: string) => {
