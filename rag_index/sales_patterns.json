@@ -488,5 +488,2597 @@
     ],
     "scenario_id": "unknown",
     "source_file": "肖佳男_様_音声_sample.wav"
+  },
+  {
+    "text": "営業: ちなみにコニス様はどちらでこのショート動画屋さんのことをご存知になられたんですか\n顧客: あ、多分TikTokとか\n営業: アカウントでありますよね\n顧客: 私結構TikTokユーザーでめっちゃ見てるんですけど\n営業: ショート動画屋さんのTikTokを",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 0.0,
+    "end_time": 16.200000762939453,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あ、やってきました多分\n営業: めちゃくちゃ嬉しいです ありがとうございます\n顧客: 本望ですよね\n営業: 本望ですね ありがとうございます\n顧客: お問い合わせに記載いただいてた内容が",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 16.200000762939453,
+    "end_time": 27.799999237060547,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: クリーニングの授業を御社でされてらっしゃるというところで\n顧客: 今もショート動画を結構いろいろ作ってらっしゃるんですかね\n営業: そうですね 自社で結構作ってて\n顧客: それがなかなか本数スケールしないので\n営業: どこか入っていただける会社さん探してるって感じです",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 27.799999237060547,
+    "end_time": 43.79999923706055,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: かしこまりました\n営業: 今はちなみに月間何本ぐらい作られてらっしゃいますか\n顧客: 今弊社が繁忙期と監査期みたいな感じで\n営業: 結構強く分かれるので\n顧客: 繁忙期だと大体15本とか20本は社内で作って",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 43.79999923706055,
+    "end_time": 58.599998474121094,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: それに余る、もうちょっと欲しいなという分は\n顧客: 外注に頼んでるって感じですね\n営業: なるほどなるほど ありがとうございます\n顧客: これから秋に、春と秋が繁忙期なんですけど\n営業: 秋は9月から12月までは",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 58.599998474121094,
+    "end_time": 75.80000305175781,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 月で15本ずつぐらい作成したいねみたいな話をちょっと言いまして\n営業: そうなってくるとちょっと忙しいから\n顧客: 難しいなっていうところですね\n営業: かしこまりました\n顧客: 今ちなみに外注されてらっしゃる会社さんは",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 75.80000305175781,
+    "end_time": 90.80000305175781,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 月間何本ぐらい任されてらっしゃるんですか\n顧客: ちょっと答えにくいんですけど\n営業: もともと弊社のデザイナーで活躍していたメンバーがフリー\n顧客: どこですか\n営業: 出してるみたいな感じです",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 90.80000305175781,
+    "end_time": 108.80000305175781,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 月で何本とかっていう契約も特に決めておらず\n営業: 必要になったらちょっと依頼させていただいてるっていうのが\n顧客: まず一つです\n営業: あともともと御社のことを知ったきっかけがですね\n顧客: 弊社の法人様向けのクリーニングの動画を作るときに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 108.80000305175781,
+    "end_time": 131.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 御社が作成されている法人の\n顧客: 例えばマーケ系のツールだったりとか\n営業: ご紹介するような動画だったと思うんですけど\n顧客: あれちなみ屋さんだったっけ\n営業: あれそうだよ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 131.8000030517578,
+    "end_time": 144.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私がめちゃくちゃこの動画分かりやすいみたいな感じで\n営業: スクールじゃなくて何だっけな\n顧客: クロールみたいな\n営業: 事例にも載せて\n顧客: その経由でも御社が出てきた",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 144.8000030517578,
+    "end_time": 162.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 簡単データクローラー\n顧客: それがめっちゃ見やすくて\n営業: ありがとうございます\n顧客: そんなところまで見てください\n営業: 確かにそんなところまで見てました",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 163.8000030517578,
+    "end_time": 173.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: 参考にできる動画が\n顧客: ショート動画やその動画が結構テイスト近いってことですね\n営業: はい\n顧客: わかりましたありがとうございます",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 173.8000030517578,
+    "end_time": 182.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: インスタグラムもちょっとチラッとだけ\n顧客: 拝見させてもらったんですけれども\n営業: 撮影とかも今自社でされてらっしゃる部分が\n顧客: 結構あられるっていう感じですか\n営業: そうです",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 182.8000030517578,
+    "end_time": 193.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: かしこまりました\n営業: じゃあもう撮影も編集とかも全部外注\n顧客: 全部じゃないかもしれないですけど\n営業: ある程度外注してっていう感じですか\n顧客: 撮影だけ弊社でやる分に関しては弊社でして",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 193.8000030517578,
+    "end_time": 205.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: それをお願いしてるって感じです\n顧客: それをもとに\n営業: かしこまりました\n顧客: ちなみにコスト感的には\n営業: 大体どれぐらいのレンジで考えられてらっしゃいますか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 205.8000030517578,
+    "end_time": 216.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 一本単価みたいな感じですか\n営業: そうですね\n顧客: 一本あたりの単価で言うと\n営業: 大体他の会社さん見てると\n顧客: 5万円から7万円ぐらいの相場感なのかな",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 216.8000030517578,
+    "end_time": 226.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていうのが思ってる\n顧客: その通りですね\n営業: なるほど\n顧客: かしこまりました\n営業: もちろんプランによっても",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 226.8000030517578,
+    "end_time": 236.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今の金額よりもちょこっとお安くなったり\n営業: っていうのはありますので\n顧客: アッパー7万で見ていただいたら\n営業: 私たちは大丈夫かなというところです\n顧客: かしこまりました",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 236.8000030517578,
+    "end_time": 246.8000030517578,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 弊社のサービスの内容とかも\n顧客: ご紹介させていただきまして\n営業: どういう動画のテイストにしていくか\n顧客: みたいなところもお伺いできればなと思いますので\n営業: ちょっと画面共有をお借りさせていただきます",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 247.8000030517578,
+    "end_time": 260.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今こちら画面映っていますでしょうか\n営業: はい\n顧客: ありがとうございます\n営業: 今日お送りさせていただいている\n顧客: アジェンダのご提案資料",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 260.79998779296875,
+    "end_time": 268.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていうところに入っております\n顧客: Canvaの資料につきまして\n営業: ご説明させていただきますので\n顧客: またこちらからも見返せるようになっておりますので\n営業: ご覧いただければと思います",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 268.79998779296875,
+    "end_time": 279.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: まずショート動画屋さんの\n営業: ちょっと簡単なご紹介ですけれども\n顧客: ショート動画屋さんっていう名前で\n営業: 登録商標を取得しているサービスで\n顧客: 私たちの価値といたしまして",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 279.79998779296875,
+    "end_time": 288.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 早く安くきれいという\n顧客: 吉野家の牛丼みたいなコンセプトで\n営業: やらせてもらっております\n顧客: SNSの広告動画\n営業: 他にもフォロワー再生数伸ばしたい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 288.79998779296875,
+    "end_time": 298.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていうところで\n営業: SNSの動画作らせていただくことが\n顧客: ほとんどの会社なんですけれども\n営業: 一部通販のページに\n顧客: 動画を埋め込みたいだったりとか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 298.79998779296875,
+    "end_time": 307.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ホームページに埋め込みたい\n顧客: 他にも営業用のマニュアルの動画だったりとか\n営業: 資金調達に使うような\n顧客: ショート動画だったりというところで\n営業: ショート動画という",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 307.79998779296875,
+    "end_time": 315.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: コミュニケーション手段のところで\n営業: いろんな会社さんに\n顧客: 今ご依頼をいただいております\n営業: クレボさんという\n顧客: アニメーションの動画を作られる会社さんだったりとか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 315.79998779296875,
+    "end_time": 322.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: PCJさんという\n顧客: テレビのCMを作られる会社さんとも\n営業: 業務提供させてもらっております\n顧客: 目的もどこかに絞ってってわけじゃなくて\n営業: 本当にいろんな目的で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 322.79998779296875,
+    "end_time": 332.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 作らせてもらっておりまして\n営業: ここに記載している主な目的の他にも\n顧客: いろいろ作らせてもらっております\n営業: 今リリースして2年半ほど\n顧客: やらせてもらってるんですけれども",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 332.79998779296875,
+    "end_time": 342.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 160社以上の動画を\n顧客: 今まで作らせてきてもらっておりまして\n営業: 一人社長の方から\n顧客: 日本を代表するような企業さんまで\n営業: いろんな動画を作らせてもらっております",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 342.79998779296875,
+    "end_time": 352.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 先ほど簡単データクローラーの\n営業: サービスで出てきましたけれども\n顧客: そこを運営されてらっしゃる\n営業: コモンテクノロジーズさんという会社さん\n顧客: 先ほどの動画で制約数めちゃくちゃ出た",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 352.79998779296875,
+    "end_time": 364.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: というふうに事例のインタビューとかも\n顧客: 撮らせていただきまして\n営業: 分かりやすいというふうな\n顧客: お声いただきましたけれども\n営業: 実際やっぱり効果があったみたい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 364.79998779296875,
+    "end_time": 372.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: というところも\n営業: お声をいただいたりしております\n顧客: ショート動画屋さん\n営業: TikTokとかInstagramとか\n顧客: 最近見つけていただく方も",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 372.79998779296875,
+    "end_time": 380.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 徐々に増えてきている\n顧客: というところなんですけれども\n営業: 結構検索で来ていただく\n顧客: みたいなところもありまして\n営業: ショート動画製作会社とか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 380.79998779296875,
+    "end_time": 388.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 検索していただきましたら\n営業: 結構比較サイトで\n顧客: 私たちのサービスが\n営業: いろんなウェブサイトに\n顧客: 掲載していただいている状態に",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 388.79998779296875,
+    "end_time": 394.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: なっておりまして\n顧客: 私たちが特段この記事広告を\n営業: 依頼しているというわけではなくて\n顧客: 勝手にもう\n営業: 掲載をしていただいている",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 394.79998779296875,
+    "end_time": 401.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: というふうな流れになっております\n営業: これが何で起きているか\n顧客: というところなんですけれども\n営業: キャストを私たちに使える\n顧客: というふうなところで",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 401.79998779296875,
+    "end_time": 410.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 演者が使える\n顧客: で 撮影もやってくれる\n営業: というところがありまして\n顧客: 加えて出張でお伺いして\n営業: 撮影するというところも",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 410.79998779296875,
+    "end_time": 416.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: どちらもできるというふうな\n営業: 内容になっています\n顧客: 加えてこちらが\n営業: かなりリーズナブルに\n顧客: できるというところで",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 416.79998779296875,
+    "end_time": 422.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あと納期もある程度早いし\n顧客: みたいなところで\n営業: ご好評いただいている\n顧客: というところが\n営業: 主な理由になっております",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 422.79998779296875,
+    "end_time": 430.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 実際作っているちょっと動画の\n営業: 簡単な一例ですけれども\n顧客: これはそれこそ出張で撮影して\n営業: ストリートスナップを\n顧客: やってますよみたいな動画",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 430.79998779296875,
+    "end_time": 437.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こういう形で体を張って\n顧客: 作ったりすることもありますし\n営業: これはアプリのインストールを\n顧客: 促す会社で\n営業: これは私たちの会社で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 437.79998779296875,
+    "end_time": 445.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと私たちのオフィスとかも\n営業: 使いながら撮らせてもらったもの\n顧客: なんですけれども\n営業: こういうよく見るSNSのテイストも\n顧客: 作らせてもらったりしておりますし",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 445.79998779296875,
+    "end_time": 452.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 縦だけじゃなくて横の動画も\n顧客: 作ったりみたいなところで\n営業: これはオフィスのビジョンに\n顧客: 放映したいというところで\n営業: 東京の企業さんから",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 452.79998779296875,
+    "end_time": 460.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いただいて作らせてもらったり\n営業: というのもあったりしますので\n顧客: 本当にいろんなテイストに\n営業: 対応できるというのが\n顧客: ショート動画屋さんの",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 460.79998779296875,
+    "end_time": 466.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 強みになっております\n顧客: そんな中で私たちが大事にしている\n営業: ミッションといたしまして\n顧客: 人生を美しく\n営業: 手紙のようなぬくもりを",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 466.79998779296875,
+    "end_time": 473.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: というところで\n営業: このショート動画の史上\n顧客: これからどんどん\n営業: 伸びていきますけれども\n顧客: ただ伸びていくから",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 473.79998779296875,
+    "end_time": 479.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ノリでやっていく\n顧客: というわけじゃなくて\n営業: ちゃんとお客さんのためになるように\n顧客: 幸せに思っていただけるような\n営業: 動画を届けていって",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 479.79998779296875,
+    "end_time": 485.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みんなの給与量を\n営業: 高めていくというところを\n顧客: 大事にして\n営業: 弊社一同サービスを\n顧客: 届けております",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 485.79998779296875,
+    "end_time": 490.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: というところです\n顧客: ちょっとここから\n営業: 御社向きに\n顧客: 作らせていただいた\n営業: ものになるんですけれども",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 490.79998779296875,
+    "end_time": 497.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 根のためちょっと\n営業: 動線の確認というか\n顧客: サービスの\n営業: 御社の目的のところの\n顧客: ご確認をできればな",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 497.79998779296875,
+    "end_time": 504.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: と思うんですけれども\n顧客: 今ちょっとここに書いている\n営業: 内容としては\n顧客: SNSを見ていただいて\n営業: そこから御社の",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 504.79998779296875,
+    "end_time": 510.79998779296875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ウェブサイトとか\n営業: LP見ていただいて\n顧客: 予約して\n営業: 来店というよりは\n顧客: あれですよね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 510.79998779296875,
+    "end_time": 517.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 宅配クリーンなんか\n顧客: 取りに来てもらう\n営業: みたいな感じで\n顧客: あってますかね\n営業: はい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 517.7999877929688,
+    "end_time": 524.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 注文みたいな感じですね\n営業: はい\n顧客: かしこめました\n営業: ここが注文という風に\n顧客: 捉えていただいて",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 524.7999877929688,
+    "end_time": 529.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: リピートを生んで\n顧客: いけるように\n営業: このフロントのところで\n顧客: 見していく\n営業: という風な想定で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 529.7999877929688,
+    "end_time": 534.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 考えております\n営業: 今回の目的としては\n顧客: この注文数を増やす\n営業: だったりとか\n顧客: リピートのお客さんを増やす",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 534.7999877929688,
+    "end_time": 542.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: みたいなところ\n顧客: っていう認識で\n営業: お間違いないですか\n顧客: 今回のKPIでいくと\n営業: 公式のLINE登録の方が",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 542.7999877929688,
+    "end_time": 549.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 動画動線だと近しいかな\n営業: という感じ\n顧客: 最終的には注文数\n営業: 増やしたいんですけど\n顧客: まずもう少し",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 549.7999877929688,
+    "end_time": 555.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ライトなところで\n顧客: っていうところで\n営業: はい\n顧客: かしこめました\n営業: それは広告を出してなのか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 555.7999877929688,
+    "end_time": 561.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: オーガニックで\n営業: 広告出して\n顧客: LP遷移させて\n営業: そこのCVが\n顧客: LINE登録になります",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 561.7999877929688,
+    "end_time": 569.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: かしこめました\n顧客: 今はもう\n営業: このLINEのCPAとかも\n顧客: 測られてらっしゃる\n営業: ご状況ですか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 569.7999877929688,
+    "end_time": 575.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: 測ってます\n顧客: その後注文したかどうかの\n営業: CPAまで見てます\n顧客: おー",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 575.7999877929688,
+    "end_time": 580.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はいはい\n顧客: 今回のこの\n営業: ショート動画屋さんに\n顧客: ご依頼したとして\n営業: どれぐらいの目標値を",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 580.7999877929688,
+    "end_time": 585.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 目指していくみたいな\n営業: 数値観ってあったり\n顧客: されますか\n営業: 実登録\n顧客: 実LINE登録で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 585.7999877929688,
+    "end_time": 591.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: だいたい2000円とか\n顧客: おー\n営業: はいはいはい\n顧客: 意外に収まるように\n営業: 秋が半冒険なんですけど",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 591.7999877929688,
+    "end_time": 596.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そこが\n営業: まずメインで\n顧客: 達成したいところになります\n営業: かしこめました\n顧客: 今はちなみに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 596.7999877929688,
+    "end_time": 601.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どれぐらいですか\n顧客: CPAは\n営業: 一番良かったのが\n顧客: 1000円台だったんですけど\n営業: 最近ちょっと",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 601.7999877929688,
+    "end_time": 606.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 動画の本数とかも\n営業: いろいろ\n顧客: あれになっちゃってて\n営業: 3000円とか\n顧客: 4000円とか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 606.7999877929688,
+    "end_time": 611.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: なっちゃってるので\n顧客: そこを安定的に\n営業: 1000円2000円にしたいね\n顧客: っていうので\n営業: もう",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 611.7999877929688,
+    "end_time": 616.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと\n営業: ちょっと\n顧客: ちょっと\n営業: 裏側の意図としては\n顧客: あったりとかします",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 616.7999877929688,
+    "end_time": 622.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: うんうん\n顧客: かしこめました\n営業: でも半冒険だったら\n顧客: 下がりやすいとか\n営業: もしかしたらあるんですかね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 622.7999877929688,
+    "end_time": 627.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あっそうですね\n営業: あと動画の本数が\n顧客: 多分コンスタントにあれば\n営業: もう少し\n顧客: 費用感に耐えられるような",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 627.7999877929688,
+    "end_time": 632.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 配信にはなるかな\n顧客: っていう感じですね\n営業: ちなみに\n顧客: 広告の費用感は\n営業: だいたい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 632.7999877929688,
+    "end_time": 637.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: どれぐらいなんですか\n営業: えっと\n顧客: 大きい時でいくと\n営業: メタだけで\n顧客: 1000万弱みたいな",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 637.7999877929688,
+    "end_time": 642.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 8000万\n顧客: 800万\n営業: えー\n顧客: とか月間\n営業: で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 642.7999877929688,
+    "end_time": 647.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 使うみたいな感じなので\n営業: そこだと\n顧客: 割と本数ないと\n営業: 結構\n顧客: そうですね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 647.7999877929688,
+    "end_time": 652.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 耐えられなくなっちゃうので\n顧客: 今ちょっと\n営業: 課題感があるって感じ\n顧客: うーん\n営業: 今年の春はですね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 652.7999877929688,
+    "end_time": 657.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっとあの\n営業: 3、4ヶ月を\n顧客: えっと\n営業: 動画15本から\n顧客: 20本ぐらいで",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 657.7999877929688,
+    "end_time": 662.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: やっちゃったんですけど\n営業: はい\n顧客: その出兵会社が\n営業: 今来てて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 662.7999877929688,
+    "end_time": 667.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと\n営業: CPAが落とした\n顧客: あー\n営業: はい\n顧客: なんで",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 667.7999877929688,
+    "end_time": 672.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 製作本数ある程度\n顧客: 作んないとやっぱり\n営業: まずいねっていうので\n顧客: いろんな会社さんに\n営業: ちょっといろいろ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 672.7999877929688,
+    "end_time": 677.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お話を\n営業: お伺いさせていただいている\n顧客: 状況です\n営業: ありがとうございます\n顧客: もうだからもう",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 677.7999877929688,
+    "end_time": 682.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: フリークエンシーが\n顧客: どんどん上がっちゃってるみたいな\n営業: 3とか4とか\n顧客: なってるみたいな\n営業: 感じですか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 682.7999877929688,
+    "end_time": 687.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: フリークエンシー自体は\n営業: あの\n顧客: メタが\n営業: まあちょっと優秀っていうのも\n顧客: あと2回とかに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 687.7999877929688,
+    "end_time": 692.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 留まってるんですけど\n顧客: どっちかっていうと\n営業: 摩耗してって\n顧客: その\n営業: あんまりこう",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 692.7999877929688,
+    "end_time": 697.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: インペーションが\n営業: リーチができなくなって\n顧客: 新規のお客さんを\n営業: 連れてこれなくなったっていう\n顧客: 方が大きいかなって",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 697.7999877929688,
+    "end_time": 702.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 新規リーチ率が下がっちゃった\n顧客: っていう方が\n営業: 大きいかなって感じで\n顧客: ちょっと\n営業: お話を",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 702.7999877929688,
+    "end_time": 708.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お伺いさせていただいた\n営業: CPMが\n顧客: すごく高くなって\n営業: あっですですですはい\n顧客: 足困りました",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 708.7999877929688,
+    "end_time": 713.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね\n顧客: やっぱクリエイティブによって\n営業: CPM\n顧客: だいぶばらつきも\n営業: あると思いますし",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 713.7999877929688,
+    "end_time": 718.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっといろいろ\n営業: ぜひ試していけたらなと\n顧客: 思っております\n営業: 会員者の\n顧客: 動画に関しましては",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 718.7999877929688,
+    "end_time": 723.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 著作権は\n顧客: 御社に譲渡します\n営業: っていう風な流れで\n顧客: いつもやっておりますので\n営業: どのSNSで",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 723.7999877929688,
+    "end_time": 728.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 使っていただいても\n営業: 大丈夫ですし\n顧客: 例えば\n営業: LINEに遷移していただいた後の\n顧客: LINEで動画を",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 728.7999877929688,
+    "end_time": 734.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 使っていただく\n顧客: みたいな使い方でも\n営業: 大丈夫ですので\n顧客: ぜひ\n営業: いろんなところで",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 734.7999877929688,
+    "end_time": 739.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お使いいただけると\n営業: よいかなと\n顧客: 思っております\n営業: ありがとうございます\n顧客: ちなみに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 739.7999877929688,
+    "end_time": 744.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その作ったやつを\n顧客: 例えば\n営業: リサイズしちゃう\n顧客: だったりとか\n営業: 固定の上下に",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 744.7999877929688,
+    "end_time": 749.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: バナーを入れる\n営業: みたいな編集も\n顧客: 別に大丈夫\n営業: っていう理解で\n顧客: あってますか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 749.7999877929688,
+    "end_time": 754.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね\n顧客: リサイズは\n営業: 先に例えば\n顧客: ある程度\n営業: いただいておきましたら",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 754.7999877929688,
+    "end_time": 759.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 正方形で\n営業: 後で切り抜きやすい\n顧客: リサイズで\n営業: 作っておいて\n顧客: とかいただいたら",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 759.7999877929688,
+    "end_time": 764.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 自然に\n顧客: 生きるかな\n営業: と思うんですけれども\n顧客: 納品後に\n営業: 私たちに",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 764.7999877929688,
+    "end_time": 769.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: リサイズしてほしい\n営業: っていう風な\n顧客: ご相談になると\n営業: 追加で\n顧客: 5000円とか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 769.7999877929688,
+    "end_time": 774.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 1万円とか\n顧客: いただくっていう\n営業: 形になりますので\n顧客: そこだけ\n営業: ご了承いただけると",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 774.7999877929688,
+    "end_time": 779.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 助かります\n営業: わかりました\n顧客: 納品したデータを\n営業: 元に\n顧客: 弊社のデザイナーが",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 779.7999877929688,
+    "end_time": 784.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 編集する\n顧客: みたいなことは\n営業: 別に大丈夫なんですか\n顧客: そうですね\n営業: 契約上は",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 784.7999877929688,
+    "end_time": 789.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 両方許可が\n営業: 確認いただいて\n顧客: 基本は\n営業: OK出してる\n顧客: という感じで",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 789.7999877929688,
+    "end_time": 794.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: わかりました\n顧客: そういう場合は\n営業: ご相談させていただいて\n顧客: っていう感じですね\n営業: そうですね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 794.7999877929688,
+    "end_time": 799.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そのため\n営業: キャストさんとか\n顧客: 映ってるときに\n営業: 一応\n顧客: キャストに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 799.7999877929688,
+    "end_time": 804.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 取っていただいて\n顧客: お願いします\n営業: ありがとうございます\n顧客: ありがとうございます\n営業: で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 804.7999877929688,
+    "end_time": 809.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: どういうクリエイティブに\n営業: していくか\n顧客: っていうところ\n営業: なんですけれども\n顧客: いろいろ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 809.7999877929688,
+    "end_time": 814.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 私たちも\n顧客: 作ってる中では\n営業: こういう風に\n顧客: 顔が出てるものとか\n営業: 語りかける",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 814.7999877929688,
+    "end_time": 819.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいな動画も\n営業: もちろんあったりしますし\n顧客: ファーストビューでは\n営業: 顔が映らないみたいな\n顧客: っていう動画も",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 819.7999877929688,
+    "end_time": 824.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あったりもしますし\n顧客: これもそうですね\n営業: UGC風に見せる\n顧客: みたいな感じで\n営業: 若干テロップ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 824.7999877929688,
+    "end_time": 829.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 小さに目に入れて\n営業: 丸型のフォント使う\n顧客: みたいな感じで\n営業: やったり\n顧客: みたいなのも",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 829.7999877929688,
+    "end_time": 834.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あったりとか\n顧客: 場合によっては\n営業: こういう\n顧客: カッチリした感じで\n営業: 実際に",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 834.7999877929688,
+    "end_time": 839.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: スマホを操作してる\n営業: みたいな感じを入れて\n顧客: 動画をしていく\n営業: みたいなのも\n顧客: あったりします",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 839.7999877929688,
+    "end_time": 844.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: では\n営業: 次は\n顧客: 先ほどの\n営業: これですね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 844.7999877929688,
+    "end_time": 849.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私も参考になるかな\n営業: という風に思って\n顧客: 用意させてもらって\n営業: いたんですけど\n顧客: この動画で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 849.7999877929688,
+    "end_time": 854.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あってますよね\n顧客: はい\n営業: この動画です\n顧客: 何回も見ました\n営業: これ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 854.7999877929688,
+    "end_time": 859.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私がこれいいんだけど\n営業: って言って\n顧客: 事例に載せるみたい\n営業: 勝手に\n顧客: 車内で共有しました",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 859.7999877929688,
+    "end_time": 864.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます\n顧客: そうですね\n営業: この動画も\n顧客: ぜひ参考に\n営業: できれば",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 864.7999877929688,
+    "end_time": 869.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 他にも\n営業: これ宅配と\n顧客: ちょっと近いですけど\n営業: 運送アドバイス\n顧客: っていうのが",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 869.7999877929688,
+    "end_time": 874.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あって\n顧客: 宅配と\n営業: ちょっと近いですけど\n顧客: 運送アプリで\n営業: 荷物を取りに来てもらう",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 874.7999877929688,
+    "end_time": 879.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていう風な\n営業: アプリを\n顧客: 私たちやってるものがあって\n営業: で\n顧客: この会社さんは",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 879.7999877929688,
+    "end_time": 884.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 結構何回も\n顧客: 作らしてもらってるんです\n営業: けれども\n顧客: 女性が出てるものとか\n営業: 男性が出てるもの",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 884.7999877929688,
+    "end_time": 889.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいな感じで\n営業: ABテストして\n顧客: 最近だったら\n営業: 関西弁を入れた動画が\n顧客: 結構テンポが良くて",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 889.7999877929688,
+    "end_time": 894.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ハマりやすいとか\n顧客: そういうのが\n営業: いろいろあったり\n顧客: してます\n営業: 他にも",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 894.7999877929688,
+    "end_time": 899.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お子さん出して\n営業: みたいな感じで\n顧客: 私たちキャストに\n営業: 赤ちゃんが\n顧客: いたりもしますので",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 899.7999877929688,
+    "end_time": 904.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういうところも\n顧客: 使って\n営業: みたいなのも\n顧客: できます\n営業: 他にも",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 904.7999877929688,
+    "end_time": 909.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こういうお金を\n営業: バーって出して\n顧客: みたいなところで\n営業: やると\n顧客: やっぱりお金とか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 909.7999877929688,
+    "end_time": 914.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 恋愛系は\n顧客: すごく浮気が良かったり\n営業: するので\n顧客: そういうところを\n営業: ちょっと絡めつつ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 914.7999877929688,
+    "end_time": 919.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいなのも\n営業: あったり\n顧客: 先ほどの\n営業: ちょっとUGC風に\n顧客: 近いですけど",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 919.7999877929688,
+    "end_time": 924.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: もっとテロップを\n顧客: 小さく\n営業: 白黒で入れて\n顧客: みたいな感じで\n営業: ちょっと今っぽい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 924.7999877929688,
+    "end_time": 929.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 20代の女性っぽい\n営業: みたいな感じで\n顧客: やるとか\n営業: あと\n顧客: これは実際",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 929.7999877929688,
+    "end_time": 935.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 洗濯物畳みながら\n顧客: 動画を\n営業: 撮ってるもので\n顧客: ちょっと入れて\n営業: みたんですけど",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 935.7999877929688,
+    "end_time": 940.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あ\n営業: ごめんなさい\n顧客: いけるかな\n営業: あー\n顧客: 全然関係ないとこ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 940.7999877929688,
+    "end_time": 945.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ですね\n顧客: そう\n営業: こういう感じで\n顧客: よいしょ\n営業: そうです",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 945.7999877929688,
+    "end_time": 950.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 洗濯物畳みながら\n営業: とかだったら\n顧客: 結構場面も\n営業: そういった\n顧客: そういった",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 950.7999877929688,
+    "end_time": 955.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういった\n顧客: そういった\n営業: そういった\n顧客: そういった\n営業: そういった",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 955.7999877929688,
+    "end_time": 960.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そういった\n営業: そういった\n顧客: そういうっていう\n営業: そこが結構\n顧客: 場面も",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 960.7999877929688,
+    "end_time": 965.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 想起しやすいかな\n顧客: と思ったりするので\n営業: やっていくのも\n顧客: ありかなって\n営業: 思ってます",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 965.7999877929688,
+    "end_time": 970.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていう感じなんですけど\n営業: どういうクリエイティブ\n顧客: にしていきたいな\n営業: だったりとか\n顧客: こういうクリエイティブが",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 970.7999877929688,
+    "end_time": 975.7999877929688,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今\n顧客: 効果がいいみたいなのって\n営業: あったりされますか\n顧客: けっこう\n営業: 服付の型に向けたものだったりとか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 975.7999877929688,
+    "end_time": 984.5999755859375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: はい\n顧客: はい\n営業: か\n顧客: 基本多いですかね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 984.5999755859375,
+    "end_time": 989.5999755859375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: えーと\n顧客: 服付\n営業: 服付\n顧客: 服付の型に\n営業: なんかけっこう",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 989.5999755859375,
+    "end_time": 996.4000244140625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ベネフィットを\n営業: いろいろ\n顧客: 伝えたりとか\n営業: まあ\n顧客: UGC風ですけど",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 996.4000244140625,
+    "end_time": 1001.4000244140625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: うーん\n顧客: あとはあの\n営業: 工場の\n顧客: えーと\n営業: シーンを",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1001.4000244140625,
+    "end_time": 1006.4000244140625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 入れた動画だったりとかも\n営業: えー\n顧客: とかが\n営業: けっこう\n顧客: 良かった",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1006.4000244140625,
+    "end_time": 1012.9600219726562,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ですかね\n顧客: すごいですね\n営業: 工場のシーン\n顧客: っていうのは\n営業: 実際の",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1012.9600219726562,
+    "end_time": 1017.9600219726562,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: 実際の工場で\n顧客: クリーニングしてる\n営業: 様子だったりとか\n顧客: そういう感じで",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1017.9600219726562,
+    "end_time": 1022.9600219726562,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: えーと\n顧客: やってますみたいな\n営業: 見せながら\n顧客: はい\n営業: こういう",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1022.9600219726562,
+    "end_time": 1027.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: えーと\n営業: サービスの特徴があります\n顧客: みたいなのを\n営業: お伝えしたい\n顧客: えー",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1027.9599609375,
+    "end_time": 1032.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていう\n顧客: あれはめちゃくちゃ面白いですね\n営業: あんまりなんか他社でもないんで\n顧客: けっこう\n営業: サービス化していて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1032.9599609375,
+    "end_time": 1037.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: って感じです\n営業: おー\n顧客: 小西さん\n営業: なんか他あったの\n顧客: あーなんか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1037.9599609375,
+    "end_time": 1042.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: うちの\n顧客: あの\n営業: なんていうんですか\n顧客: 多分主なターゲット層が\n営業: やっぱり",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1042.9599609375,
+    "end_time": 1047.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 高いので\n営業: うん\n顧客: あの割と\n営業: クリーニングが\n顧客: メインになるっていうところもあって",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1047.9599609375,
+    "end_time": 1052.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 服が割とこう好きでケアされてるとか\n顧客: ケアしたいみたいな\n営業: あのニーズに対して\n顧客: あの動画を刺すと\n営業: なんか割と",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1052.9599609375,
+    "end_time": 1060.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今まで刺さってきたっていう感じの\n営業: あの傾向があって\n顧客: まあそこを結構中心的に作っていたりとかするのと\n営業: あとやっぱ店舗利用されてる方っていうのは\n顧客: 割とクリーニングに信用性があるので",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1060.9599609375,
+    "end_time": 1065.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 高いクリーニング使って乗り換えていただく\n顧客: みたいなところにもあったりするので\n営業: そこの利用されてる方っていうのは\n顧客: 割とクリーニングに信用性があるので\n営業: 高いクリーニング使って乗り換えていただく",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1065.9599609375,
+    "end_time": 1070.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいなところにもあったりするので\n営業: そこの利便性\n顧客: 何かその箱に詰めて渡すだけだよとか\n営業: 本当に鍵解決できるよみたいなところの\n顧客: 推し方で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1070.9599609375,
+    "end_time": 1075.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今まではこう\n顧客: まあある程度\n営業: コンバージョン取ってきたみたいなところではあるんですけど\n顧客: まあちょっとそれとは別に\n営業: なんかお医者に頼むので",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1075.9599609375,
+    "end_time": 1080.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: なんかその別のなんか軸とか分からないですけど\n営業: なんかそういった所も\n顧客: なんか一応\n営業: 今のところは\n顧客: 問題がない方とか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1080.9599609375,
+    "end_time": 1085.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 僕も来てruitで\n顧客: それを\n営業: その\n顧客: それは\n営業: 改めて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1085.9599609375,
+    "end_time": 1090.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 僕も\n営業: 今\n顧客: あー\n営業: 僕は\n顧客: 今",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1090.9599609375,
+    "end_time": 1095.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今\n顧客: ポッペアーの\n営業: そういったところも\n顧客: なんかいただけると\n営業: なんか新しい発見になるかなっていうのは",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1095.9599609375,
+    "end_time": 1103.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 大事だっていうところですかね\n営業: ありがとうございます\n顧客: そうですね\n営業: まあ例えばキャストも\n顧客: あのちょっとオシャレな",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1103.9599609375,
+    "end_time": 1110.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 感じで\n顧客: 着てもらうとかもそうですし\n営業: はい\n顧客: あと\n営業: まあ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1110.9599609375,
+    "end_time": 1115.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: テストしていく上で\n営業: 例えばこの動画のテイストを\n顧客: 完全に再現して\n営業: うん\n顧客: って",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1115.9599609375,
+    "end_time": 1120.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 一個ありかなと思いますし\n顧客: はいはい\n営業: 分かりました\n顧客: でも工場のところとかは\n営業: あれですね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1120.9599609375,
+    "end_time": 1125.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あの\n営業: 例えば私たちが\n顧客: 撮影も行かしてもらってとか\n営業: あの\n顧客: 許可いただいたら",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1125.9599609375,
+    "end_time": 1131.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうなんだ\n顧客: そうです\n営業: でもそうですね\n顧客: あの\n営業: ショート動画屋さんの動画も",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1131.9599609375,
+    "end_time": 1136.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あの裏側で\n営業: 撮影した素材で\n顧客: 広告回したりしてるんですけど\n営業: 反響が良かったり\n顧客: っていうのは",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1136.9599609375,
+    "end_time": 1141.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: へー\n顧客: 良いよね\n営業: 逆になんかその\n顧客: 工場の動画の素材を\n営業: 我々から提供して",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1141.9599609375,
+    "end_time": 1146.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: それを使って欲しいです\n営業: みたいな\n顧客: オーダーも大丈夫ですか\n営業: もちろん大丈夫です\n顧客: あの",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1146.9599609375,
+    "end_time": 1151.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いろいろ冒頭とか\n顧客: スタジオとか\n営業: いろいろ\n顧客: いろいろ\n営業: いろいろ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1151.9599609375,
+    "end_time": 1156.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いろいろ\n営業: 冒頭とか\n顧客: スタジオとかに\n営業: 差し込んだりとか\n顧客: 全然できますので",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1156.9599609375,
+    "end_time": 1161.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: うん\n顧客: あとごめんなさい\n営業: もう一個確認で\n顧客: 先ほど赤ちゃんが\n営業: 多分写ってたもの",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1161.9599609375,
+    "end_time": 1166.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あったと思うんですけど\n営業: はいはいはい\n顧客: あれって\n営業: キャストの人数としては\n顧客: 二人として",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1166.9599609375,
+    "end_time": 1171.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: カウントされるんですか\n顧客: お母さんと赤ちゃん\n営業: これは\n顧客: あの\n営業: お子ちゃんは特別に",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1171.9599609375,
+    "end_time": 1176.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お子ちゃんだけの\n営業: お母さん\n顧客: お母さん\n営業: お母さん\n顧客: お母さん",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1176.9599609375,
+    "end_time": 1181.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: お母さん\n顧客: お母さん\n営業: お母さん\n顧客: お母さん\n営業: お母さん",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1181.9599609375,
+    "end_time": 1186.9599609375,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: なるほど\n営業: 結構ね\n顧客: あの\n営業: 我々もサービス\n顧客: 結構",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1187.06005859375,
+    "end_time": 1192.239990234375,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 東北東牧世帯で\n顧客: お子さんいらっしゃる子\n営業: 多くて\n顧客: 結構毎日\n営業: 忙しくて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1192.239990234375,
+    "end_time": 1198.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいな\n営業: 結構だから\n顧客: オイCXさんとか\n営業: そういった\n顧客: 公立あいサービスとかと",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1198.1199951171875,
+    "end_time": 1203.0799560546875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっと\n顧客: ターゲットに\n営業: 似てるかなと思うんですけど\n顧客: うん\n営業: うん",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1203.0799560546875,
+    "end_time": 1208.0799560546875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうなると\n営業: ママさんとか\n顧客: 東北東牧世帯みたいな\n営業: ところにリーチする\n顧客: ような",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1208.0799560546875,
+    "end_time": 1213.0799560546875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 動画みたいな\n顧客: 今まで作ったことないんで\n営業: そう\n顧客: そういうのが\n営業: あるんじゃないかなとか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1213.0799560546875,
+    "end_time": 1218.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: もう一回思いました\n営業: この辺で\n顧客: いらっしゃるんですかね\n営業: そうです\n顧客: ないと思うので",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1218.1199951171875,
+    "end_time": 1223.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 赤ちゃん\n顧客: へー\n営業: まあ\n顧客: この\n営業: お子さんは",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1223.1199951171875,
+    "end_time": 1228.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あの\n営業: ここに\n顧客: この中に\n営業: ママさん\n顧客: パパさんがいるみたいな",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1228.1199951171875,
+    "end_time": 1233.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あ\n顧客: そうなんだ\n営業: そうですね\n顧客: 最初大人の方が\n営業: エントリーされて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1233.1199951171875,
+    "end_time": 1238.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ついでに子どもも出してください\n営業: みたいな感じで\n顧客: へー\n営業: すごい\n顧客: 面白いですね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1238.1199951171875,
+    "end_time": 1244.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: え\n顧客: これ\n営業: もう\n顧客: 気合で\n営業: 気合で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1244.1199951171875,
+    "end_time": 1249.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: やば\n営業: やば\n顧客: でも\n営業: ペンタ君とか\n顧客: 見たことあるような",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1249.1199951171875,
+    "end_time": 1254.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 気がします\n顧客: 本当ですか\n営業: そうですね\n顧客: そうですね\n営業: へー",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1254.1199951171875,
+    "end_time": 1259.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 出たりしてますね\n営業: はい\n顧客: あ\n営業: 分かりました\n顧客: なんとなくイメージは",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1259.1199951171875,
+    "end_time": 1264.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: つきました\n顧客: ありがとうございます\n営業: ありがとうございます\n顧客: 一応出張の\n営業: 撮影であれば",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1264.1199951171875,
+    "end_time": 1269.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あの私も\n営業: 出れなくはないので\n顧客: うーん\n営業: なるべく私以外で\n顧客: とは思うんですけど",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1269.1199951171875,
+    "end_time": 1274.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どうしても池田さんに\n顧客: データが欲しかったら\n営業: あのちょっと依頼しません\n顧客: あ\n営業: 猫もいる",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1275.1199951171875,
+    "end_time": 1280.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 犬もいる\n営業: はい\n顧客: こんな感じで\n営業: すごいな\n顧客: 最近流行ってますよね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1280.1199951171875,
+    "end_time": 1285.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 猫とか動物で\n顧客: 最初\n営業: 促進するの\n顧客: そうです\n営業: そうです",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1285.1199951171875,
+    "end_time": 1290.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: やっぱりその方が\n営業: 報告弁をちょっと省けて\n顧客: うーん\n営業: へー\n顧客: なんでぜひ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1290.1199951171875,
+    "end_time": 1295.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いろいろ使って\n顧客: あげてください\n営業: ありがとうございます\n顧客: ありがとうございます\n営業: で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1295.1199951171875,
+    "end_time": 1300.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: えー\n営業: 動画の\n顧客: その本数のところで\n営業: えー\n顧客: いうと",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1300.1199951171875,
+    "end_time": 1305.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 最初その\n顧客: ショート動画屋さんに\n営業: ご依頼\n顧客: していくのは\n営業: 何本ぐらい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1305.1199951171875,
+    "end_time": 1310.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ってのは\n営業: ありますか\n顧客: その月15本ぐらい\n営業: 作るうち何本\n顧客: みたいな",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1310.1199951171875,
+    "end_time": 1315.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: もうそれ以下も\n顧客: 全部\n営業: あーみたいな\n顧客: 感じですね\n営業: 多分",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1315.1199951171875,
+    "end_time": 1320.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 5本とか\n営業: まずは\n顧客: あのー\n営業: まあおっしゃるとおもう\n顧客: 取引初めてなのに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1320.1199951171875,
+    "end_time": 1325.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どのくらい\n顧客: あのー\n営業: なのかなって\n顧客: 言ったら\n営業: あのー",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1325.1199951171875,
+    "end_time": 1330.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: なのかなって\n営業: 言うとこも\n顧客: 含めると\n営業: まず\n顧客: 4、5本",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1330.1199951171875,
+    "end_time": 1335.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ご入れさせてもらって\n顧客: で\n営業: あのー\n顧客: よければ\n営業: どんどん",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1335.1199951171875,
+    "end_time": 1340.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 発注してかけて\n営業: いくみたいなのが\n顧客: 一番\n営業: 理想的かな\n顧客: っていう風に",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1340.1199951171875,
+    "end_time": 1345.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 思ってます\n顧客: わかりました\n営業: どんどんいきましょう\n顧客: 頑張ります\n営業: そうですね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1345.1199951171875,
+    "end_time": 1350.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 料金間のところ\n営業: あのー\n顧客: 念のため\n営業: ご説明させていただきますと\n顧客: あの製作のみ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1350.1199951171875,
+    "end_time": 1355.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていうプランが\n顧客: えーございます\n営業: これが\n顧客: 一番左の\n営業: 編集セット",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1355.1199951171875,
+    "end_time": 1361.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こちらが\n営業: お客様から先に\n顧客: 素材をいただく\n営業: もしくは\n顧客: あのー",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1361.1199951171875,
+    "end_time": 1366.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 先ほどのキャストが\n顧客: 無難に使える\n営業: 動画広告の素材を\n顧客: 取りためている\n営業: 素材サイト",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1366.1199951171875,
+    "end_time": 1371.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていうものが\n営業: ありまして\n顧客: こちらに掲載している\n営業: 素材を引っ張ってきて\n顧客: 動画を作れますよ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1371.1199951171875,
+    "end_time": 1376.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていうものが\n顧客: 編集セットになっております\n営業: でこの真ん中の\n顧客: 撮影セット\n営業: こちらが",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1376.1199951171875,
+    "end_time": 1381.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: キャストが\n営業: 1本の中に1名出演して\n顧客: オリジナルで\n営業: お家で撮影を行います\n顧客: っていうもの",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1381.1199951171875,
+    "end_time": 1386.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: でこれで\n顧客: 一番右の\n営業: 出張セット\n顧客: こちらが\n営業: 出張で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1386.1199951171875,
+    "end_time": 1392.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 一眼レフで\n営業: 動画の撮影しまして\n顧客: で加えて\n営業: 出張のキャストも\n顧客: ついてきます",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1392.1199951171875,
+    "end_time": 1397.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていう内容が\n顧客: 出張セット\n営業: 1本7万円になっております\n顧客: ありがとうございます\n営業: このキャストが",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1397.1199951171875,
+    "end_time": 1402.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いらない\n営業: あのー\n顧客: 御社の\n営業: 例えばスタッフさんとか\n顧客: 顔出しとか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1402.1199951171875,
+    "end_time": 1407.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: なしで大丈夫\n顧客: っていう場合は\n営業: 1本5万円に\n顧客: 価格調整をしている\n営業: っていう内容になっております",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1407.1199951171875,
+    "end_time": 1412.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 最低の\n営業: 発注本数\n顧客: っていう取り決めを\n営業: あのー\n顧客: しておりまして",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1412.1199951171875,
+    "end_time": 1417.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 編集セット\n顧客: 撮影セットは\n営業: 合計3本からの\n顧客: 受付\n営業: 出張セットは",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1417.1199951171875,
+    "end_time": 1422.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 4本からの\n営業: 受付と\n顧客: させてもらっています\n営業: 先ほどの\n顧客: この素材サイトの",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1422.1199951171875,
+    "end_time": 1427.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あのものに\n顧客: 関しましては\n営業: 月額9800円から\n顧客: 使えますよ\n営業: っていう",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1427.1199951171875,
+    "end_time": 1432.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 月30素材ダウンロード\n営業: していただいて\n顧客: 大丈夫ですよ\n営業: っていうものが\n顧客: ございまして",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1432.1199951171875,
+    "end_time": 1437.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 先ほどの\n顧客: この編集セットの\n営業: 作り方は\n顧客: こちらに掲載している\n営業: あのー",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1437.1199951171875,
+    "end_time": 1442.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こんな右のような\n営業: この素材ですね\n顧客: 無難に使える\n営業: 作ることも\n顧客: できますよ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1442.1199951171875,
+    "end_time": 1447.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていうプラン\n顧客: になっております\n営業: で\n顧客: この1本あたりの\n営業: 価格からですね",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1447.1199951171875,
+    "end_time": 1452.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 5本以上\n営業: 同時に\n顧客: ご発注いただいたら\n営業: 5%オフ\n顧客: させていただいてます",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1452.1199951171875,
+    "end_time": 1457.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: で\n顧客: 最大50本以上\n営業: 30%オフ\n顧客: というところまで\n営業: 割引がありますので",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1457.1199951171875,
+    "end_time": 1462.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: まあ\n営業: あのー\n顧客: 追加で\n営業: あのー\n顧客: 発注いただく際は",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1462.1199951171875,
+    "end_time": 1467.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ぜひまとめて\n顧客: 発注いただけたら\n営業: お安くなるかな\n顧客: というところになっております\n営業: これはあれです",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1467.1199951171875,
+    "end_time": 1472.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 初回の注\n営業: ご注文だけじゃなくて\n顧客: 5本以上頼んだら\n営業: この\n顧客: えっと",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1472.1199951171875,
+    "end_time": 1477.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 10%オフ\n顧客: みたいな感じなんですよね\n営業: はい\n顧客: あのー\n営業: 累計ではなくて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1477.1199951171875,
+    "end_time": 1482.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: その時の発注の時に\n営業: 何本かっていう\n顧客: 換算にはなるんですけれども\n営業: はい\n顧客: あのー",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1482.1199951171875,
+    "end_time": 1487.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今日だけの\n顧客: 別に案内じゃなくて\n営業: ずっとしている\n顧客: ものになってます\n営業: ありがとうございました",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1487.1199951171875,
+    "end_time": 1492.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございました\n営業: 素人動画屋さんの\n顧客: ウェブサイトの\n営業: あのプラン見積もり\n顧客: っていうところを押して",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1492.1199951171875,
+    "end_time": 1497.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっと下に\n顧客: スクロールいってきましたら\n営業: あの先ほどの\n顧客: あの割引金額を含めた\n営業: シミュレーションが",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1497.1199951171875,
+    "end_time": 1502.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 出せるように\n営業: 例えば\n顧客: あの撮影セット\n営業: あの1本5万円\n顧客: お家で撮るものを",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1502.1199951171875,
+    "end_time": 1507.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 例えばミニマムで\n顧客: 3本作るだったら\n営業: この金額ですよ\n顧客: で\n営業: 10本作るだったら",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1507.1199951171875,
+    "end_time": 1512.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 10%オフ\n営業: 適用されて\n顧客: この金額ですよ\n営業: で\n顧客: 例えば50本作る",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1512.1199951171875,
+    "end_time": 1517.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていう風になったら\n顧客: 30%オフで\n営業: この金額ですよ\n顧客: っていうのが\n営業: あのすぐに",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1517.1199951171875,
+    "end_time": 1522.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 分かるようになっておりますので\n営業: あの何本作りたいか\n顧客: っていうのを\n営業: いただきましたら\n顧客: もうすぐに",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1522.1199951171875,
+    "end_time": 1527.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 計算をさせていただきます\n顧客: っていうものも\n営業: ご用意させてもらってます\n顧客: ありがとうございます\n営業: はい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1527.1199951171875,
+    "end_time": 1532.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 製作のところは\n営業: こんな感じですね\n顧客: あとアカウントの\n営業: 運用させてもらったり\n顧客: みたいなのが",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1533.1199951171875,
+    "end_time": 1538.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あのTikTokの方が\n顧客: 先ほど7本分の料金で\n営業: 月間8本作って\n顧客: 運用しますよ\n営業: っていうものが",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1538.1199951171875,
+    "end_time": 1543.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 編集セット\n営業: 撮影セット\n顧客: 出張セットで\n営業: あったりとか\n顧客: インスタグラムの方",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1543.1199951171875,
+    "end_time": 1548.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こちら広告とか\n顧客: ついてないんですけれども\n営業: 月間動画4本\n顧客: でフィード4回\n営業: ストーリー8回",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1548.1199951171875,
+    "end_time": 1553.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: プラス\n営業: 投稿レポート\n顧客: やりますよ\n営業: っていう金額が\n顧客: あったりとか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1553.1199951171875,
+    "end_time": 1558.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こちら広告も\n顧客: 込みなんですけれども\n営業: 月20万円で\n顧客: 動画を2本作るのと\n営業: TikTokもしくは",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1558.1199951171875,
+    "end_time": 1563.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: インスタグラムで\n営業: 広告をかけますよ\n顧客: っていうプランが\n営業: あったりいたします\n顧客: ただ今回は",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1563.1199951171875,
+    "end_time": 1568.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どっちかというと\n顧客: 製作のみで\n営業: 御社で運用いただくのが\n顧客: 近いのかなって\n営業: 思ってたりして",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1568.1199951171875,
+    "end_time": 1573.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いるんですけれども\n営業: イメージ的には\n顧客: お間違いなかったですか\n営業: そうですね\n顧客: かしこまりました",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1573.1199951171875,
+    "end_time": 1578.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: プランとしては\n顧客: 最初の発注のもので言うと\n営業: どれがいい\n顧客: みたいなの\n営業: ございますか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1578.1199951171875,
+    "end_time": 1583.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 撮影セットかな\n営業: 最初\n顧客: 撮影セット\n営業: 撮影セット\n顧客: 撮影セット",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1583.1199951171875,
+    "end_time": 1588.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: 撮影セット\n営業: そうですね\n顧客: 撮影セットがいいかな\n営業: と思ってます",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1588.1199951171875,
+    "end_time": 1594.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そのやりとりの中で\n営業: こういった素材あるんですけど\n顧客: みたいなのが\n営業: もしあった場合は\n顧客: ちょっと追加で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1594.1199951171875,
+    "end_time": 1599.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 例えば編集セットを\n顧客: やるとか\n営業: みたいなのも\n顧客: ありなのかなとか\n営業: ちょっと思いましたけど",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1599.1199951171875,
+    "end_time": 1604.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: 一旦\n顧客: 撮影セットでいいと思ってます\n営業: かしこまりました\n顧客: 撮影セットの",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1604.1199951171875,
+    "end_time": 1609.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 動画の中にも\n顧客: 素材を差し込んで\n営業: みたいなのは\n顧客: ずっと\n営業: やりとりの中で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1609.1199951171875,
+    "end_time": 1614.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: やりとりの中で\n営業: やりとりの中で\n顧客: やりとりの中で\n営業: やりとりの中で\n顧客: やりとりの中で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1614.1199951171875,
+    "end_time": 1619.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: みたいなのは\n顧客: 全然やっておりますので\n営業: そうですね\n顧客: そうです\n営業: このオリジナルの",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1619.1199951171875,
+    "end_time": 1624.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 撮影と含めて\n営業: 素材を入れ込んだものを\n顧客: 作ってほしい\n営業: っていうご要望は\n顧客: あの",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1624.1199951171875,
+    "end_time": 1629.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 製作の期間中にも\n顧客: 全然頂ければ\n営業: この金額で\n顧客: 対応します\n営業: っていうものになってます",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1629.1199951171875,
+    "end_time": 1634.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 例えばその\n営業: このキャストの\n顧客: 撮影なしで\n営業: 頂く素材のみで\n顧客: 動画を作ってほしい",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1634.1199951171875,
+    "end_time": 1639.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていう場合は\n顧客: 編集セットで\n営業: 別途で\n顧客: 受付できればと\n営業: 考えております",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1639.1199951171875,
+    "end_time": 1644.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: わかりました\n営業: はい\n顧客: はい\n営業: ちなみに キャストさん\n顧客: 頂いた中で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1644.1199951171875,
+    "end_time": 1649.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: えー\n顧客: 5本 例えば\n営業: 発注頂くとしたら\n顧客: 5名選べるみたいな\n営業: 感じで",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1649.1199951171875,
+    "end_time": 1654.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 撮影セットだと\n営業: なるんですけれども\n顧客: えー\n営業: 今見て頂いた感じ的には\n顧客: どれ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1654.1199951171875,
+    "end_time": 1659.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どの人\n顧客: とか\n営業: どの年代の人\n顧客: 使えたらいいなー\n営業: みたいな",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1659.1199951171875,
+    "end_time": 1664.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ざっくりあったり\n営業: されますか\n顧客: うーん\n営業: 女性の方\n顧客: 見せて頂いた方が",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1664.1199951171875,
+    "end_time": 1669.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: 女性が\n営業: 年代が上の方だと\n顧客: 思ってます\n営業: はい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1669.1199951171875,
+    "end_time": 1674.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 女性の方\n営業: 見せて頂いた方が\n顧客: はい\n営業: 女性が\n顧客: 年代が上の方だと",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1674.1199951171875,
+    "end_time": 1679.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 思った感じで\n顧客: うーん\n営業: 難しいですね\n顧客: わかりました\n営業: ちょっとあの",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1679.1199951171875,
+    "end_time": 1684.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: この\n営業: お送りさせて頂きますので\n顧客: その中から\n営業: ご希望のキャストを\n顧客: 選んで頂きましたら",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1684.1199951171875,
+    "end_time": 1689.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっと交渉を書きさせて\n顧客: 頂ければと思います\n営業: 承知しました\n顧客: これって\n営業: えーっと",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1689.1199951171875,
+    "end_time": 1694.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 進め方としては\n営業: 例えば\n顧客: ご発注させて頂いた後って\n営業: まず\n顧客: えーと",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1694.1199951171875,
+    "end_time": 1699.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 企画構成が上がってくる\n顧客: みたいな\n営業: 感じですね\n顧客: おっしゃる通りです\n営業: えー",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1699.1199951171875,
+    "end_time": 1704.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 流れと\n営業: いたし\n顧客: ましては\n営業: あのー\n顧客: 最初",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1704.1199951171875,
+    "end_time": 1709.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あの\n顧客: キックオフのミーティング\n営業: というものを\n顧客: やらせて頂いておりまして\n営業: 弊社の",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1709.1199951171875,
+    "end_time": 1714.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 制作のディレクターを\n営業: 含めて\n顧客: 30分ぐらい\n営業: あのー\n顧客: スケジュール感とか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1714.1199951171875,
+    "end_time": 1719.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 動画のテイストとかを\n顧客: あの\n営業: すり合わせする\n顧客: っていう時間を\n営業: 設けさせて",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1719.1199951171875,
+    "end_time": 1724.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: もらってます\n営業: でそこから\n顧客: 構成作って\n営業: 撮影を行って\n顧客: 編集っていう風に",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1724.1199951171875,
+    "end_time": 1729.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 進んでいくんですけれども\n顧客: あの実際どういう風に\n営業: 進んでいるのか\n顧客: ってところを\n営業: ぜひご覧頂ければな",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1729.1199951171875,
+    "end_time": 1734.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: と思うんですけれども\n営業: 制作管理シート\n顧客: っていうものを\n営業: ちょっと作っておりまして\n顧客: ですね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1734.1199951171875,
+    "end_time": 1739.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: もう一回ちょっと\n顧客: 画面共有頂きます\n営業: こんな感じで\n顧客: 能機能管理を\n営業: えー",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1739.1199951171875,
+    "end_time": 1746.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 行っているものが\n営業: ございまして\n顧客: えー\n営業: 原稿を\n顧客: ご共有させて頂いた",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1746.1199951171875,
+    "end_time": 1751.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 時点で\n顧客: えー\n営業: チェックを入れて頂いて\n顧客: で撮影の素材も\n営業: ご共有させてもらって",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1751.1199951171875,
+    "end_time": 1756.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: で編集していく\n営業: っていう流れで\n顧客: 進行してます\n営業: で原稿に関しましては\n顧客: えー",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1756.1199951171875,
+    "end_time": 1761.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: Googleドキュメントで\n顧客: こういう風にまとめさせて\n営業: もらってるんですけれども\n顧客: で\n営業: ペルソナを",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1761.1199951171875,
+    "end_time": 1766.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: えー\n営業: 作ったりとか\n顧客: あとまあ商品の\n営業: えー\n顧客: 内容をまとめさせてもらって",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1766.1199951171875,
+    "end_time": 1771.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: で下に行ったら\n顧客: えー\n営業: 参考の動画\n顧客: この動画を真似していきますよ\n営業: みたいなところとか",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1771.1199951171875,
+    "end_time": 1776.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あとナレーション\n営業: えー\n顧客: 吹き込みなのか\n営業: こういう風に\n顧客: 語りかけてしゃべるのか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1776.1199951171875,
+    "end_time": 1781.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: とか\n顧客: あとAIで音声入れるのか\n営業: みたいなところの指定を\n顧客: 行ったりして\n営業: 音楽",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1781.1199951171875,
+    "end_time": 1786.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: えー\n営業: フォント披露とかの\n顧客: ある程度\n営業: まず指定を行った上で\n顧客: 構成を1シーンずつ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1786.1199951171875,
+    "end_time": 1791.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こういう風に書いてる\n顧客: っていうのが\n営業: 良かったです\n顧客: ありがとうございます\n営業: で",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1791.1199951171875,
+    "end_time": 1797.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 例えばいつまでに動画が欲しい\n営業: みたいな\n顧客: 納期のところって\n営業: ございますか\n顧客: えー",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1797.1199951171875,
+    "end_time": 1802.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 10月\n顧客: 今\n営業: あれですよね\n顧客: 1ヶ月ぐらいだから\n営業: まあ本当はなる早く",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1802.1199951171875,
+    "end_time": 1807.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いいんですけど\n営業: はいはいはい\n顧客: そうですよね\n営業: ちょっとまあ\n顧客: あの社内でも",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1807.1199951171875,
+    "end_time": 1812.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 倫理とかもあるので\n顧客: はい\n営業: 10月\n顧客: 9月末までぐらいに\n営業: うん",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1812.1199951171875,
+    "end_time": 1817.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: とか\n営業: そうですね\n顧客: そうですね\n営業: 分かりました\n顧客: そうですね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1817.1199951171875,
+    "end_time": 1822.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今月中に\n顧客: あの\n営業: ご発注のところ\n顧客: 進められそうでしたら\n営業: 来月までに",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1822.1199951171875,
+    "end_time": 1827.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 納品できるかな\n営業: っていう感じで\n顧客: 思っていただければ\n営業: うん\n顧客: 分かりました",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1827.1199951171875,
+    "end_time": 1832.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: じゃあちょっと早急に\n顧客: はいあの検討させていただいて\n営業: またご連絡させて\n顧客: いただきます\n営業: お願いいたします",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1832.1199951171875,
+    "end_time": 1837.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: で\n営業: 次回そうですね\n顧客: あの\n営業: 進捗のところも\n顧客: お伺いした上で",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1837.1199951171875,
+    "end_time": 1842.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あの\n顧客: まあ動画の\n営業: ペーストとか\n顧客: あとキャストのところとか\n営業: ぜひすり合わせできればな",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1842.1199951171875,
+    "end_time": 1847.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: と思うんですけども\n営業: 例えば9月の1週目辺りで\n顧客: また30分ほど\n営業: お時間いただければ\n顧客: 可能でしょうか",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1847.1199951171875,
+    "end_time": 1852.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あはい\n顧客: あ1週目か\n営業: はい\n顧客: 私だけになっちゃうかもしれないですけど\n営業: 大丈夫ですよ",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1852.1199951171875,
+    "end_time": 1857.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: 分かりました\n顧客: すいません\n営業: ありがとうございます\n顧客: そうですね",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1857.1199951171875,
+    "end_time": 1862.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっと2週目になると\n顧客: あの\n営業: 制作の期間も\n顧客: ちょっと後ろになるかも\n営業: しれないので",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1862.1199951171875,
+    "end_time": 1867.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっとなるべく\n営業: 早めにお話しできればな\n顧客: と思って\n営業: はい\n顧客: しました",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1867.1199951171875,
+    "end_time": 1872.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: メール等で\n顧客: ちょっとまた日程調整と\n営業: させていただいて\n顧客: 分かりました\n営業: 日程の方",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1872.1199951171875,
+    "end_time": 1877.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あの\n営業: 弊社の制作のディレクターとかも\n顧客: 含めて\n営業: お話しできればな\n顧客: と思いますので",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1877.1199951171875,
+    "end_time": 1882.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その候補\n顧客: またお送りさせていただきます\n営業: はい\n顧客: あとあの\n営業: 契約書のひな形が",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1882.1199951171875,
+    "end_time": 1887.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あの\n営業: 私たちのものでありますので\n顧客: あのその\n営業: フォーマットも\n顧客: ご配慮させてもらって",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1887.1199951171875,
+    "end_time": 1892.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ぜひ連携\n顧客: いただければと思って\n営業: あとですね\n顧客: 先にいただければ\n営業: はい",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1892.1199951171875,
+    "end_time": 1897.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 通しておくので\n営業: はい\n顧客: ありがとうございます\n営業: その他はご質問大丈夫そうですか\n顧客: はい",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1897.1199951171875,
+    "end_time": 1902.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 大丈夫で\n顧客: またちょっとあの\n営業: 検討の中で\n顧客: 何かご質問させていただく\n営業: あのことあるかもしれないですが",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1902.1199951171875,
+    "end_time": 1907.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: ぜひぜひ\n顧客: お願いします\n営業: ありがとうございます\n顧客: はい",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1907.1199951171875,
+    "end_time": 1912.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: それでは引き続き\n顧客: どうぞよろしくお願いいたします\n営業: よろしくお願いします\n顧客: ありがとうございました\n営業: よろしくお願いします",
+    "speaker_type": "sales",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1912.1199951171875,
+    "end_time": 1917.1199951171875,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ",
+    "speaker_type": "customer",
+    "source": "meeting_1st_001_compressed.mp3",
+    "start_time": 1917.1199951171875,
+    "end_time": 1917.1199951171875,
+    "segment_count": 1
   }
 ]
