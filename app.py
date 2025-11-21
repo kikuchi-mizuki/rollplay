@@ -12,7 +12,7 @@ import tempfile
 from dotenv import load_dotenv
 from shutil import which
 from supabase import create_client, Client
-from d_id_client import get_did_client
+from d_id_client import get_did_client, generate_cache_key, get_cached_video, save_video_to_cache, download_video_to_storage
 
 # flask-corsのインポート（エラーハンドリング付き）
 try:
@@ -603,7 +603,7 @@ def text_to_speech():
 @app.route('/api/did-video', methods=['POST'])
 def generate_did_video():
     """
-    D-ID APIを使用してリップシンク動画を生成
+    D-ID APIを使用してリップシンク動画を生成（Week 7: キャッシング対応）
 
     Request:
         {
@@ -616,7 +616,8 @@ def generate_did_video():
         {
             "success": true,
             "video_url": "https://...",
-            "talk_id": "..."
+            "cached": true|false,  # キャッシュヒットかどうか
+            "talk_id": "..."  # 新規生成時のみ
         }
     """
     try:
@@ -628,7 +629,22 @@ def generate_did_video():
         if not text:
             return jsonify(success=False, error='テキストが必要です'), 400
 
-        # D-IDクライアントを取得
+        # Week 7: キャッシュキーを生成
+        cache_key = generate_cache_key(text, voice_id, avatar_url)
+
+        # Week 7: キャッシュをチェック
+        if supabase_client:
+            cached_video = get_cached_video(supabase_client, cache_key)
+            if cached_video:
+                # キャッシュヒット！即座に返却
+                return jsonify(
+                    success=True,
+                    video_url=cached_video['video_url'],
+                    cached=True,
+                    cache_hit_count=cached_video.get('hit_count', 0)
+                )
+
+        # キャッシュミス：D-IDで新規生成
         did_client = get_did_client()
         if not did_client:
             return jsonify(success=False, error='D-ID APIが設定されていません'), 500
@@ -645,13 +661,37 @@ def generate_did_video():
         print(f"📝 D-ID talk created: {talk_id}")
 
         # 完了を待機（最大120秒）
-        video_url = did_client.wait_for_completion(talk_id, timeout=120)
+        did_video_url = did_client.wait_for_completion(talk_id, timeout=120)
 
-        if video_url:
-            print(f"✅ D-ID video ready: {video_url}")
+        if did_video_url:
+            print(f"✅ D-ID video ready: {did_video_url}")
+
+            # Week 7: Supabase Storageに保存してキャッシュ
+            if supabase_client:
+                storage_url = download_video_to_storage(supabase_client, did_video_url, cache_key)
+                if storage_url:
+                    # キャッシュテーブルに保存
+                    save_video_to_cache(
+                        supabase_client,
+                        cache_key=cache_key,
+                        text=text,
+                        voice_id=voice_id,
+                        avatar_url=avatar_url,
+                        video_url=storage_url,
+                        storage_path=f"video_cache/{cache_key}.mp4"
+                    )
+                    # Supabase Storageの URL を返す
+                    final_video_url = storage_url
+                else:
+                    # Storage保存失敗時はD-IDのURLをそのまま使用
+                    final_video_url = did_video_url
+            else:
+                final_video_url = did_video_url
+
             return jsonify(
                 success=True,
-                video_url=video_url,
+                video_url=final_video_url,
+                cached=False,
                 talk_id=talk_id
             )
         else:

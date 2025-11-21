@@ -1,10 +1,12 @@
 """
 D-ID API クライアント
 テキストまたは音声からリップシンク動画を生成
+Week 7: キャッシング機能追加
 """
 import os
 import requests
 import time
+import hashlib
 from typing import Optional, Dict
 
 class DIDClient:
@@ -176,3 +178,153 @@ def get_did_client() -> Optional[DIDClient]:
         return None
 
     return DIDClient(api_key)
+
+
+# ===== Week 7: キャッシング機能 =====
+
+def generate_cache_key(text: str, voice_id: str, avatar_url: str) -> str:
+    """
+    キャッシュキーを生成
+
+    Args:
+        text: 発話テキスト
+        voice_id: 音声ID
+        avatar_url: アバター画像URL
+
+    Returns:
+        SHA256ハッシュ値（64文字）
+    """
+    # テキスト、音声ID、アバターURLを結合してハッシュ化
+    combined = f"{text}||{voice_id}||{avatar_url}"
+    return hashlib.sha256(combined.encode('utf-8')).hexdigest()
+
+
+def get_cached_video(supabase_client, cache_key: str) -> Optional[Dict]:
+    """
+    キャッシュから動画を取得
+
+    Args:
+        supabase_client: Supabaseクライアント
+        cache_key: キャッシュキー
+
+    Returns:
+        {
+            'video_url': 'https://...',
+            'hit_count': 10,
+            ...
+        } または None
+    """
+    try:
+        result = supabase_client.table('video_cache').select('*').eq('cache_key', cache_key).execute()
+
+        if result.data and len(result.data) > 0:
+            cached_video = result.data[0]
+
+            # ヒットカウントを増やす
+            new_hit_count = cached_video.get('hit_count', 0) + 1
+            supabase_client.table('video_cache').update({
+                'hit_count': new_hit_count
+            }).eq('cache_key', cache_key).execute()
+
+            print(f"✅ キャッシュヒット: {cache_key[:16]}... (ヒット数: {new_hit_count})")
+            return cached_video
+
+        print(f"❌ キャッシュミス: {cache_key[:16]}...")
+        return None
+
+    except Exception as e:
+        print(f"⚠️ キャッシュ取得エラー: {e}")
+        return None
+
+
+def save_video_to_cache(
+    supabase_client,
+    cache_key: str,
+    text: str,
+    voice_id: str,
+    avatar_url: str,
+    video_url: str,
+    storage_path: str,
+    file_size_bytes: int = 0,
+    duration_seconds: float = 0
+) -> bool:
+    """
+    生成した動画をキャッシュに保存
+
+    Args:
+        supabase_client: Supabaseクライアント
+        cache_key: キャッシュキー
+        text: 発話テキスト
+        voice_id: 音声ID
+        avatar_url: アバター画像URL
+        video_url: 動画URL（Supabase Storage）
+        storage_path: Storageパス
+        file_size_bytes: ファイルサイズ
+        duration_seconds: 動画の長さ
+
+    Returns:
+        成功: True, 失敗: False
+    """
+    try:
+        supabase_client.table('video_cache').insert({
+            'cache_key': cache_key,
+            'text_content': text,
+            'voice_id': voice_id,
+            'avatar_url': avatar_url,
+            'video_url': video_url,
+            'storage_path': storage_path,
+            'file_size_bytes': file_size_bytes,
+            'duration_seconds': duration_seconds,
+            'hit_count': 0
+        }).execute()
+
+        print(f"💾 キャッシュ保存完了: {cache_key[:16]}...")
+        return True
+
+    except Exception as e:
+        print(f"⚠️ キャッシュ保存エラー: {e}")
+        return False
+
+
+def download_video_to_storage(supabase_client, video_url: str, cache_key: str) -> Optional[str]:
+    """
+    D-IDから動画をダウンロードしてSupabase Storageに保存
+
+    Args:
+        supabase_client: Supabaseクライアント
+        video_url: D-IDの動画URL
+        cache_key: キャッシュキー
+
+    Returns:
+        Supabase StorageのパブリックURL または None
+    """
+    try:
+        # D-IDから動画をダウンロード
+        response = requests.get(video_url, timeout=30)
+        response.raise_for_status()
+        video_data = response.content
+
+        # Supabase Storageに保存
+        storage_path = f"video_cache/{cache_key}.mp4"
+        bucket_name = "videos"  # Supabaseバケット名（事前に作成が必要）
+
+        # アップロード
+        supabase_client.storage.from_(bucket_name).upload(
+            storage_path,
+            video_data,
+            {
+                "content-type": "video/mp4",
+                "cache-control": "3600",
+                "upsert": "true"
+            }
+        )
+
+        # パブリックURLを取得
+        public_url = supabase_client.storage.from_(bucket_name).get_public_url(storage_path)
+
+        print(f"📤 動画をStorageに保存: {storage_path}")
+        return public_url
+
+    except Exception as e:
+        print(f"⚠️ Storage保存エラー: {e}")
+        return None
