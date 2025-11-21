@@ -10,7 +10,7 @@ import { Message, Evaluation, RecordingState } from './types';
 import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
-import { selectRandomAvatar, getDefaultExpression } from './lib/expressionSelector';
+import { getDefaultExpression, getExpressionForResponse } from './lib/expressionSelector';
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -32,11 +32,11 @@ function RoleplayApp() {
   const [mediaSubtitle, setMediaSubtitle] = useState<string>('');
   const [showMedia, setShowMedia] = useState(false); // モバイル時のメディア表示状態（デフォルト: チャット表示）
   const [videoSrc, setVideoSrc] = useState<string | undefined>(); // 動画のURL
-  const [imageSrc, setImageSrc] = useState<string | undefined>(getDefaultExpression('avatar_01')); // アバター画像（デフォルト表情）
+  const [imageSrc, setImageSrc] = useState<string | undefined>(getDefaultExpression('avatar_03')); // アバター画像（デフォルト表情）
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [_conversationId, setConversationId] = useState<string | null>(null);
-  const [currentAvatarId, setCurrentAvatarId] = useState<string>('avatar_01'); // 現在のアバターID
+  const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
@@ -74,12 +74,8 @@ function RoleplayApp() {
       setConversationId(null);
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
 
-      // ランダムにアバターを選択
-      const randomAvatarId = selectRandomAvatar();
-      setCurrentAvatarId(randomAvatarId);
-
-      // デフォルト表情（listening）を表示
-      setImageSrc(getDefaultExpression(randomAvatarId));
+      // デフォルト表情（listening）を表示（avatar_03固定）
+      setImageSrc(getDefaultExpression(currentAvatarId));
 
       // 字幕をクリア（ユーザーが最初に話しかけるまで何も表示しない）
       setMediaSubtitle('');
@@ -92,16 +88,9 @@ function RoleplayApp() {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
 
-      // アバターに応じて音声を変更（可能な範囲で）
-      const voiceSettings: Record<string, { pitch: number; rate: number }> = {
-        'avatar_01': { pitch: 0.8, rate: 0.95 },  // 30代男性 - 低めの声、ゆっくり
-        'avatar_02': { pitch: 1.1, rate: 1.0 },   // 40代女性 - やや高め
-        'avatar_03': { pitch: 1.3, rate: 1.05 },  // 20代女性 - 高め、やや速め
-      };
-
-      const settings = voiceSettings[currentAvatarId] || { pitch: 1.0, rate: 1.0 };
-      utterance.pitch = settings.pitch;
-      utterance.rate = settings.rate;
+      // avatar_03（20代女性）の音声設定
+      utterance.pitch = 1.3;  // やや高め
+      utterance.rate = 1.05;  // やや速め
 
       speechSynthesis.speak(utterance);
     } else {
@@ -160,12 +149,10 @@ function RoleplayApp() {
       setMessages((prev) => [...prev, botMessage]);
       setMediaSubtitle(response);
 
-      // AIの返答から適切な表情を選択（即座に表示、タイムラグなし）
-      // 注意: 現在は人物が変わってしまうため、listening（デフォルト）画像のみ使用
-      // const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
-      const expressionImageUrl = getDefaultExpression(currentAvatarId); // 常にlistening画像
+      // AIの返答から適切な表情を選択（avatar_03固定で表情のみ変化）
+      const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
       setImageSrc(expressionImageUrl);
-      console.log('🎭 アバター表示:', expressionImageUrl);
+      console.log('🎭 アバター表情:', expressionImageUrl);
 
       // 音声出力（Web Speech API - 即座に再生）
       speakTextWithWebSpeech(response);
