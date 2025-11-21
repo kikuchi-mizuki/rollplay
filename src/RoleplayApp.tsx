@@ -161,9 +161,11 @@ function RoleplayApp() {
       setMediaSubtitle(response);
 
       // AIの返答から適切な表情を選択（即座に表示、タイムラグなし）
-      const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
+      // 注意: 現在は人物が変わってしまうため、listening（デフォルト）画像のみ使用
+      // const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
+      const expressionImageUrl = getDefaultExpression(currentAvatarId); // 常にlistening画像
       setImageSrc(expressionImageUrl);
-      console.log('🎭 表情切り替え:', expressionImageUrl);
+      console.log('🎭 アバター表示:', expressionImageUrl);
 
       // 音声出力（Web Speech API - 即座に再生）
       speakTextWithWebSpeech(response);
