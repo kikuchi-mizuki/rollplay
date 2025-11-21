@@ -157,13 +157,19 @@ export class AudioRecorder {
    */
   private startLevelMeasurement(): void {
     if (!this.analyser) return;
-    
+
     const bufferLength = this.analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
-    
+
     this.levelInterval = window.setInterval(() => {
-      this.analyser!.getByteFrequencyData(dataArray);
-      
+      // analyserがnullでないことを再確認（クリーンアップ後の実行を防ぐ）
+      if (!this.analyser) {
+        this.stopLevelMeasurement();
+        return;
+      }
+
+      this.analyser.getByteFrequencyData(dataArray);
+
       // 最大値を計算
       let max = 0;
       for (let i = 0; i < bufferLength; i++) {
@@ -171,7 +177,7 @@ export class AudioRecorder {
           max = dataArray[i];
         }
       }
-      
+
       // 0-100の範囲に正規化
       this.state.level = (max / 255) * 100;
       window.dispatchEvent(new CustomEvent('recording-update', { detail: this.state }));
