@@ -10,7 +10,7 @@ import { Message, Evaluation, RecordingState } from './types';
 import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
-import { getExpressionForResponse, selectRandomAvatar, getDefaultExpression, getVoiceForAvatar } from './lib/expressionSelector';
+import { getExpressionForResponse, selectRandomAvatar, getDefaultExpression } from './lib/expressionSelector';
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -108,9 +108,6 @@ function RoleplayApp() {
       console.error('Web Speech APIがサポートされていません');
     }
   };
-
-  // Web Speech APIのフォールバック（後方互換性のため残す）
-  const fallbackToWebSpeech = speakTextWithWebSpeech;
 
   // スクロール位置の保持（モバイル切替時）
   useEffect(() => {
