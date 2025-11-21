@@ -137,16 +137,31 @@ function RoleplayApp() {
     }
   };
 
-  // Web Speech APIのフォールバック
-  const fallbackToWebSpeech = (text: string) => {
+  // Web Speech APIで即座に音声出力（タイムラグなし）
+  const speakTextWithWebSpeech = (text: string) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
-      utterance.rate = 0.95;
-      utterance.pitch = 1.0;
+
+      // アバターに応じて音声を変更（可能な範囲で）
+      const voiceSettings: Record<string, { pitch: number; rate: number }> = {
+        'avatar_01': { pitch: 0.8, rate: 0.95 },  // 30代男性 - 低めの声、ゆっくり
+        'avatar_02': { pitch: 1.1, rate: 1.0 },   // 40代女性 - やや高め
+        'avatar_03': { pitch: 1.3, rate: 1.05 },  // 20代女性 - 高め、やや速め
+      };
+
+      const settings = voiceSettings[currentAvatarId] || { pitch: 1.0, rate: 1.0 };
+      utterance.pitch = settings.pitch;
+      utterance.rate = settings.rate;
+
       speechSynthesis.speak(utterance);
+    } else {
+      console.error('Web Speech APIがサポートされていません');
     }
   };
+
+  // Web Speech APIのフォールバック（後方互換性のため残す）
+  const fallbackToWebSpeech = speakTextWithWebSpeech;
 
   // スクロール位置の保持（モバイル切替時）
   useEffect(() => {
@@ -204,8 +219,8 @@ function RoleplayApp() {
       setImageSrc(expressionImageUrl);
       console.log('🎭 表情切り替え:', expressionImageUrl);
 
-      // 音声出力（OpenAI TTS）
-      speakText(response);
+      // 音声出力（Web Speech API - 即座に再生）
+      speakTextWithWebSpeech(response);
 
     } catch (error) {
       console.error('送信エラー:', error);
