@@ -47,7 +47,12 @@ database/03_create_conversations.sql
 database/04_create_evaluations.sql
 database/05_rls_policies.sql
 database/06_fix_rls_circular_reference.sql
+database/07_create_instructor_evaluations.sql  # Week 5追加
+database/08_create_video_cache.sql  # Week 7追加
+database/09_performance_indexes.sql  # Week 7追加
 ```
+
+**重要:** `06_fix_rls_circular_reference.sql`は必ず実行してください（RLS循環参照の修正）。
 
 または、`tools/setup_database.py`を使用：
 
