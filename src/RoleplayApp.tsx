@@ -87,7 +87,8 @@ function RoleplayApp() {
   }, [selectedScenarioId]);
 
 
-  // OpenAI TTSで音声出力（より自然な音声）
+  // OpenAI TTSで音声出力（現在は未使用 - 将来的に高品質音声が必要な場合に使用）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const speakText = async (text: string) => {
     try {
       // アバターに応じた音声IDを取得
