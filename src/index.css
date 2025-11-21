@@ -291,3 +291,17 @@ html {
   scroll-margin-top: calc(var(--header-h) + 8px);
 }
 
+/* アバター呼吸アニメーション（微妙な拡大縮小） */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+

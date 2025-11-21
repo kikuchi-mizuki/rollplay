@@ -10,7 +10,8 @@ import { Message, Evaluation, RecordingState } from './types';
 import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
-import { useDIDAvatar } from './components/DIDAvatar';
+import { getExpressionForResponse, selectRandomAvatar, getDefaultExpression } from './lib/expressionSelector';
+// import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
 
@@ -31,10 +32,11 @@ function RoleplayApp() {
   const [mediaSubtitle, setMediaSubtitle] = useState<string>('');
   const [showMedia, setShowMedia] = useState(false); // モバイル時のメディア表示状態（デフォルト: チャット表示）
   const [videoSrc, setVideoSrc] = useState<string | undefined>(); // 動画のURL
-  const [imageSrc, setImageSrc] = useState<string | undefined>('https://d-id-public-bucket.s3.amazonaws.com/alice.jpg'); // アバター画像（D-IDデフォルト）
+  const [imageSrc, setImageSrc] = useState<string | undefined>(getDefaultExpression('avatar_01')); // アバター画像（デフォルト表情）
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [_conversationId, setConversationId] = useState<string | null>(null);
+  const [currentAvatarId, setCurrentAvatarId] = useState<string>('avatar_01'); // 現在のアバターID
   const conversationStartTime = useRef<Date | null>(null);
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
@@ -43,8 +45,8 @@ function RoleplayApp() {
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
   // const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
 
-  // D-IDアバター統合
-  const { loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
+  // D-IDアバター統合（無効化 - タイムラグ対策）
+  // const { loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
 
   // シナリオ一覧を取得
   useEffect(() => {
@@ -71,6 +73,13 @@ function RoleplayApp() {
       setShowEvaluation(false);
       setConversationId(null);
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
+
+      // ランダムにアバターを選択
+      const randomAvatarId = selectRandomAvatar();
+      setCurrentAvatarId(randomAvatarId);
+
+      // デフォルト表情（listening）を表示
+      setImageSrc(getDefaultExpression(randomAvatarId));
 
       // 字幕をクリア（ユーザーが最初に話しかけるまで何も表示しない）
       setMediaSubtitle('');
@@ -187,24 +196,14 @@ function RoleplayApp() {
       setMessages((prev) => [...prev, botMessage]);
       setMediaSubtitle(response);
 
-      // D-ID動画を生成（リップシンク付き）
-      console.log('🎬 Generating D-ID video for:', response);
-      setMediaSubtitle(didLoading ? '動画を生成中...' : response);
+      // AIの返答から適切な表情を選択（即座に表示、タイムラグなし）
+      const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
+      setImageSrc(expressionImageUrl);
+      console.log('🎭 表情切り替え:', expressionImageUrl);
 
-      const didVideo = await generateAndPlayVideo(response);
+      // 音声出力（OpenAI TTS）
+      speakText(response);
 
-      if (didVideo) {
-        // D-ID動画が生成された場合
-        console.log('✅ D-ID video ready:', didVideo);
-        setVideoSrc(didVideo);
-        setImageSrc(undefined); // 画像を非表示
-        setMediaSubtitle(response); // 字幕を元に戻す
-      } else {
-        // D-ID動画生成失敗時はWeb Speech APIで音声出力
-        console.log('⚠️ D-ID failed, using Web Speech API');
-        speakText(response);
-        setMediaSubtitle(response);
-      }
     } catch (error) {
       console.error('送信エラー:', error);
       setToast({
