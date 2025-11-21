@@ -86,58 +86,6 @@ function RoleplayApp() {
     }
   }, [selectedScenarioId]);
 
-
-  // OpenAI TTSで音声出力（現在は未使用 - 将来的に高品質音声が必要な場合に使用）
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const speakText = async (text: string) => {
-    try {
-      // アバターに応じた音声IDを取得
-      const voiceId = getVoiceForAvatar(currentAvatarId);
-
-      // OpenAI TTSを使用
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text, voice: voiceId })
-      });
-
-      if (!response.ok) {
-        console.error('TTS APIエラー:', response.statusText);
-        // フォールバック: Web Speech API
-        fallbackToWebSpeech(text);
-        return;
-      }
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-      };
-
-      // ブラウザの自動再生ポリシー対策
-      try {
-        await audio.play();
-      } catch (playError: any) {
-        // NotAllowedError（自動再生ブロック）の場合はWeb Speech APIにフォールバック
-        if (playError.name === 'NotAllowedError') {
-          console.log('🔇 自動再生がブロックされました。Web Speech APIにフォールバックします');
-          URL.revokeObjectURL(audioUrl);
-          fallbackToWebSpeech(text);
-        } else {
-          throw playError;
-        }
-      }
-    } catch (error) {
-      console.error('音声再生エラー:', error);
-      // フォールバック: Web Speech API
-      fallbackToWebSpeech(text);
-    }
-  };
-
   // Web Speech APIで即座に音声出力（タイムラグなし）
   const speakTextWithWebSpeech = (text: string) => {
     if ('speechSynthesis' in window) {
