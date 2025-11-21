@@ -160,7 +160,19 @@ function RoleplayApp() {
         URL.revokeObjectURL(audioUrl);
       };
 
-      await audio.play();
+      // ブラウザの自動再生ポリシー対策
+      try {
+        await audio.play();
+      } catch (playError: any) {
+        // NotAllowedError（自動再生ブロック）の場合はWeb Speech APIにフォールバック
+        if (playError.name === 'NotAllowedError') {
+          console.log('🔇 自動再生がブロックされました。Web Speech APIにフォールバックします');
+          URL.revokeObjectURL(audioUrl);
+          fallbackToWebSpeech(text);
+        } else {
+          throw playError;
+        }
+      }
     } catch (error) {
       console.error('音声再生エラー:', error);
       // フォールバック: Web Speech API
