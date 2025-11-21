@@ -582,6 +582,7 @@ def text_to_speech():
     try:
         data = request.get_json()
         text = data.get('text', '')
+        voice = data.get('voice', 'alloy')  # アバターに応じた音声ID
 
         if not text:
             return jsonify(success=False, error='テキストが空です'), 400
@@ -589,10 +590,15 @@ def text_to_speech():
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
 
+        # 有効な音声IDのチェック
+        valid_voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+        if voice not in valid_voices:
+            voice = 'alloy'  # デフォルトにフォールバック
+
         # OpenAI TTSで音声生成
         response = openai_client.audio.speech.create(
             model="tts-1",  # tts-1-hd も選択可能（高品質だが遅い）
-            voice="nova",   # alloy, echo, fable, onyx, nova, shimmer
+            voice=voice,    # アバターに応じた音声（alloy, echo, fable, onyx, nova, shimmer）
             input=text
         )
 

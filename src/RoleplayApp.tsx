@@ -10,7 +10,7 @@ import { Message, Evaluation, RecordingState } from './types';
 import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
-import { getExpressionForResponse, selectRandomAvatar, getDefaultExpression } from './lib/expressionSelector';
+import { getExpressionForResponse, selectRandomAvatar, getDefaultExpression, getVoiceForAvatar } from './lib/expressionSelector';
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -90,13 +90,16 @@ function RoleplayApp() {
   // OpenAI TTSで音声出力（より自然な音声）
   const speakText = async (text: string) => {
     try {
+      // アバターに応じた音声IDを取得
+      const voiceId = getVoiceForAvatar(currentAvatarId);
+
       // OpenAI TTSを使用
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text, voice: voiceId })
       });
 
       if (!response.ok) {

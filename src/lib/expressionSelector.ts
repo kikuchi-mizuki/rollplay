@@ -116,3 +116,19 @@ export function getExpressionForResponse(text: string, avatarId?: string): strin
 export function getDefaultExpression(avatarId: string = 'avatar_01'): string {
   return getExpressionImageUrl(avatarId, 'listening');
 }
+
+/**
+ * アバターに応じた音声IDを取得（OpenAI TTS用）
+ *
+ * @param avatarId アバターID
+ * @returns OpenAI TTS音声ID
+ */
+export function getVoiceForAvatar(avatarId: string): string {
+  const voiceMap: Record<string, string> = {
+    'avatar_01': 'alloy',    // 30代男性 - 落ち着いた声
+    'avatar_02': 'nova',     // 40代女性 - 温かい女性の声
+    'avatar_03': 'shimmer',  // 20代女性 - 明るい女性の声
+  };
+
+  return voiceMap[avatarId] || 'alloy';
+}
