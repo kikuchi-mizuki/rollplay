@@ -1577,6 +1577,96 @@ def get_store_members(store_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/api/admin/regions/stats', methods=['GET'])
+def get_regions_stats():
+    """リージョン別集計を取得（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        # 全店舗取得
+        stores_result = supabase_client.table('stores').select('*').execute()
+        stores = stores_result.data if stores_result.data else []
+
+        # リージョン別にグループ化
+        regions = {}
+        for store in stores:
+            region = store.get('region', '未設定')
+            if region not in regions:
+                regions[region] = {
+                    'region': region,
+                    'store_count': 0,
+                    'total_users': 0,
+                    'total_conversations': 0,
+                    'total_evaluations': 0,
+                    'total_score': 0,
+                    'stores': []
+                }
+
+            store_id = store['id']
+
+            # 店舗のユーザー数
+            profiles_result = supabase_client.table('profiles').select('id').eq('store_id', store_id).execute()
+            user_count = len(profiles_result.data) if profiles_result.data else 0
+
+            # 店舗の会話数
+            conversations_result = supabase_client.table('conversations').select('id').eq('store_id', store_id).execute()
+            conversation_count = len(conversations_result.data) if conversations_result.data else 0
+
+            # 店舗の評価平均スコア
+            evaluations_result = supabase_client.table('evaluations').select('average_score').eq('store_id', store_id).execute()
+            evaluations = evaluations_result.data if evaluations_result.data else []
+            avg_score = sum(e['average_score'] for e in evaluations) / len(evaluations) if evaluations else 0
+
+            # リージョンの統計を更新
+            regions[region]['store_count'] += 1
+            regions[region]['total_users'] += user_count
+            regions[region]['total_conversations'] += conversation_count
+            regions[region]['total_evaluations'] += len(evaluations)
+            if evaluations:
+                regions[region]['total_score'] += avg_score
+
+            # 店舗情報を追加
+            regions[region]['stores'].append({
+                'store_id': store_id,
+                'store_code': store['store_code'],
+                'store_name': store['store_name'],
+                'user_count': user_count,
+                'conversation_count': conversation_count,
+                'evaluation_count': len(evaluations),
+                'average_score': round(avg_score, 2)
+            })
+
+        # リージョンごとの平均スコアを計算
+        region_stats = []
+        for region_name, region_data in regions.items():
+            store_count = region_data['store_count']
+            avg_score = region_data['total_score'] / store_count if store_count > 0 else 0
+
+            region_stats.append({
+                'region': region_name,
+                'store_count': store_count,
+                'total_users': region_data['total_users'],
+                'total_conversations': region_data['total_conversations'],
+                'total_evaluations': region_data['total_evaluations'],
+                'average_score': round(avg_score, 2),
+                'stores': region_data['stores']
+            })
+
+        # 平均スコアでソート（降順）
+        region_stats.sort(key=lambda x: x['average_score'], reverse=True)
+
+        return jsonify({
+            'success': True,
+            'regions': region_stats
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/stores/<store_id>/analytics', methods=['GET'])
 def get_store_analytics(store_id):
     """店舗分析データを取得（店舗管理者・本部管理者）"""
@@ -1668,6 +1758,190 @@ def catch_all(path):
 
     print(f"❌ index.html not found at: {dist_index}")
     return jsonify({'error': 'Frontend not built', 'path': path}), 404
+
+
+# ===== Week 6: CSV一括出力機能 =====
+
+@app.route('/api/admin/export/evaluations', methods=['GET'])
+def export_all_evaluations():
+    """全評価データをCSV形式で出力（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        # パラメータ取得
+        store_id = request.args.get('store_id')
+        region = request.args.get('region')
+        scenario_id = request.args.get('scenario_id')
+
+        # 評価データ取得
+        query = supabase_client.table('evaluations').select('*')
+
+        if store_id:
+            query = query.eq('store_id', store_id)
+
+        if scenario_id:
+            query = query.eq('scenario_id', scenario_id)
+
+        query = query.order('created_at', desc=True)
+        evaluations_result = query.execute()
+        evaluations = evaluations_result.data if evaluations_result.data else []
+
+        # 店舗情報とユーザー情報を取得
+        stores_result = supabase_client.table('stores').select('*').execute()
+        stores_dict = {s['id']: s for s in (stores_result.data or [])}
+
+        profiles_result = supabase_client.table('profiles').select('*').execute()
+        profiles_dict = {p['id']: p for p in (profiles_result.data or [])}
+
+        # リージョンフィルタリング
+        if region:
+            evaluations = [e for e in evaluations if stores_dict.get(e.get('store_id'), {}).get('region') == region]
+
+        # CSV データ生成
+        import io
+        import csv
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        # ヘッダー
+        writer.writerow([
+            '評価ID',
+            '店舗コード',
+            '店舗名',
+            'リージョン',
+            'ユーザー名',
+            'シナリオID',
+            '質問力',
+            '傾聴力',
+            '提案力',
+            'クロージング力',
+            '合計スコア',
+            '平均スコア',
+            '評価日時'
+        ])
+
+        # データ行
+        for evaluation in evaluations:
+            store = stores_dict.get(evaluation.get('store_id'), {})
+            user = profiles_dict.get(evaluation.get('user_id'), {})
+            scores = evaluation.get('scores', {})
+
+            writer.writerow([
+                evaluation.get('id', ''),
+                store.get('store_code', ''),
+                store.get('store_name', ''),
+                store.get('region', ''),
+                user.get('display_name', ''),
+                evaluation.get('scenario_id', ''),
+                scores.get('questioning_skill', 0),
+                scores.get('listening_skill', 0),
+                scores.get('proposal_skill', 0),
+                scores.get('closing_skill', 0),
+                evaluation.get('total_score', 0),
+                evaluation.get('average_score', 0),
+                evaluation.get('created_at', '')
+            ])
+
+        # BOM付きUTF-8で返却（Excel互換）
+        csv_data = '\ufeff' + output.getvalue()
+
+        return csv_data, 200, {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': f'attachment; filename=evaluations_export_{evaluation.get("created_at", "").split("T")[0] if evaluations else "all"}.csv'
+        }
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/admin/export/stores', methods=['GET'])
+def export_all_stores():
+    """全店舗データをCSV形式で出力（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        # パラメータ取得
+        region = request.args.get('region')
+
+        # 店舗データ取得
+        query = supabase_client.table('stores').select('*')
+
+        if region:
+            query = query.eq('region', region)
+
+        query = query.order('store_code')
+        stores_result = query.execute()
+        stores = stores_result.data if stores_result.data else []
+
+        # 各店舗の統計情報を取得
+        for store in stores:
+            store_id = store['id']
+
+            # ユーザー数
+            profiles_result = supabase_client.table('profiles').select('id').eq('store_id', store_id).execute()
+            store['user_count'] = len(profiles_result.data) if profiles_result.data else 0
+
+            # 会話数
+            conversations_result = supabase_client.table('conversations').select('id').eq('store_id', store_id).execute()
+            store['conversation_count'] = len(conversations_result.data) if conversations_result.data else 0
+
+            # 評価平均スコア
+            evaluations_result = supabase_client.table('evaluations').select('average_score').eq('store_id', store_id).execute()
+            evaluations = evaluations_result.data if evaluations_result.data else []
+            store['evaluation_count'] = len(evaluations)
+            store['average_score'] = round(sum(e['average_score'] for e in evaluations) / len(evaluations), 2) if evaluations else 0
+
+        # CSV データ生成
+        import io
+        import csv
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        # ヘッダー
+        writer.writerow([
+            '店舗コード',
+            '店舗名',
+            'リージョン',
+            'ステータス',
+            'ユーザー数',
+            '会話数',
+            '評価数',
+            '平均スコア',
+            '作成日'
+        ])
+
+        # データ行
+        for store in stores:
+            writer.writerow([
+                store.get('store_code', ''),
+                store.get('store_name', ''),
+                store.get('region', ''),
+                store.get('status', ''),
+                store.get('user_count', 0),
+                store.get('conversation_count', 0),
+                store.get('evaluation_count', 0),
+                store.get('average_score', 0),
+                store.get('created_at', '')
+            ])
+
+        # BOM付きUTF-8で返却（Excel互換）
+        csv_data = '\ufeff' + output.getvalue()
+
+        return csv_data, 200, {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': 'attachment; filename=stores_export.csv'
+        }
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ===== Week 5: 評価精度検証機能 =====
