@@ -39,11 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // プロフィール取得
   const fetchProfile = async (userId: string) => {
     try {
+      const startTime = Date.now()
       console.log('👤 プロフィール取得開始:', userId)
 
-      // タイムアウト付きでプロフィール取得
+      // タイムアウト付きでプロフィール取得（15秒に延長 - コールドスタート対策）
       const profileTimeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('プロフィール取得タイムアウト')), 5000)
+        setTimeout(() => reject(new Error('プロフィール取得タイムアウト')), 15000)
       )
 
       const profilePromise = supabase
@@ -52,7 +53,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', userId)
         .single()
         .then(result => {
+          const elapsed = Date.now() - startTime
           console.log('📦 プロフィールクエリ完了:', result)
+          console.log(`⏱️  クエリ実行時間: ${elapsed}ms`)
+          if (elapsed > 3000) {
+            console.warn(`⚠️  クエリが遅い (${elapsed}ms) - Supabaseのコールドスタートの可能性`)
+          }
           return result
         })
 
@@ -86,8 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       console.error('❌ Profile fetch error:', err.message || err)
       if (err.message === 'プロフィール取得タイムアウト') {
-        console.error('⚠️  プロフィールデータの取得に5秒以上かかっています')
-        console.error('⚠️  データベース接続またはRLSポリシーを確認してください')
+        console.error('⚠️  プロフィールデータの取得に15秒以上かかっています')
+        console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです')
+        console.error('⚠️  無料プランの場合、一定時間未使用だとDBがスリープします')
+        console.error('💡 対策: 有料プランへのアップグレード、またはページをリロードしてください')
       }
       setProfile(null)
     }
