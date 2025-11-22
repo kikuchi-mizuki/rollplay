@@ -33,6 +33,36 @@ def load_transcript(transcript_path: str) -> dict:
     with open(transcript_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
+def extract_scenario_id(filename: str) -> str:
+    """
+    ファイル名からシナリオIDを抽出
+
+    Args:
+        filename: ファイル名（例: meeting_1st_001_compressed.mp3）
+
+    Returns:
+        シナリオID（例: meeting_1st）
+    """
+    import re
+
+    # meeting_1st, meeting_1_5th, meeting_2nd, meeting_3rd, kickoff_meeting, upsell などを抽出
+    patterns = [
+        r'(meeting_1st)',
+        r'(meeting_1_5th)',
+        r'(meeting_2nd)',
+        r'(meeting_3rd)',
+        r'(kickoff_meeting)',
+        r'(upsell)',
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, filename)
+        if match:
+            return match.group(1)
+
+    # デフォルト: ファイル名の最初の部分を使用
+    return filename.split('_')[0]
+
 def create_chunks(transcript: dict, chunk_size: int = 5) -> list:
     """
     会話をチャンク化する
@@ -46,6 +76,9 @@ def create_chunks(transcript: dict, chunk_size: int = 5) -> list:
     """
     chunks = []
     segments = transcript['segments']
+
+    # ファイル名からシナリオIDを抽出
+    scenario_id = extract_scenario_id(transcript['source_file'])
 
     for i in range(0, len(segments), chunk_size):
         chunk_segments = segments[i:i + chunk_size]
@@ -62,7 +95,8 @@ def create_chunks(transcript: dict, chunk_size: int = 5) -> list:
         chunks.append({
             "text": chunk_text,
             "speaker_type": speaker_type,
-            "source": transcript['source_file'],
+            "scenario_id": scenario_id,  # シナリオIDを追加
+            "source_file": transcript['source_file'],
             "start_time": chunk_segments[0]['start'],
             "end_time": chunk_segments[-1]['end'],
             "segment_count": len(chunk_segments)
