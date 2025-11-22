@@ -4763,5 +4763,1022 @@
     "start_time": 695.0,
     "end_time": 707.0,
     "segment_count": 2
+  },
+  {
+    "text": "営業: フォアインサイトを誰かのに統一 しようか。フォアインサイトを\n顧客: 僕のに統一しちゃっていいですか。 あ、でもあれか、みあおんが見れた\n営業: 見たほうがいいのかな。みあおんがいいのか。じゃあ、みあおんね。お願いします。\n顧客: フォアインサイトを誰かのに統一 しようか。\n営業: フォアインサイトを誰かのに統一 しようか。じゃあ、みあおんね。お願いします。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 0.0,
+    "end_time": 56.439998626708984,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 参加されないね。確か前もTeamsちょっと あれか、ファイルの手間取られる\n営業: そうですね。結局5分ぐらいかかりました よね。\n顧客: Zoomなどに変更いただくことは可能 でしょうか。\n営業: Zoomが万能なんだよな。\n顧客: Zoomのルームスクリーンで。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 79.04000091552734,
+    "end_time": 157.0399932861328,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こっち抜けちゃって大丈夫ですか。\n顧客: 抜けていいです。ここのチャット にZoom作ったら用意しますね。\n営業: お願いします。\n顧客: みなさん抜けてもらって大丈夫 ですよ。\n営業: お願いします。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 157.0399932861328,
+    "end_time": 182.0399932861328,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: おはようございます。\n営業: すみません。失礼しました。申し訳 ございません。\n顧客: 大丈夫ですか。Zoom今作ってまして ちょうどできたところだったんですけど。\n営業: 入られたらここでやっちゃい ましょうか。\n顧客: こちらで大丈夫そうです。お手伝い 書きしました。ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 182.0399932861328,
+    "end_time": 235.0399932861328,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっとみんな呼びます。\n顧客: はい。すみません。ありがとうございます。\n営業: すみません。普段Teams使い慣れて なかったもので遅れてしまいまして\n顧客: 申し訳ございません。\n営業: お願いします。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 235.0399932861328,
+    "end_time": 272.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: すみません。ありがとうございます。\n営業: 今回のキックオフミーティング というところでスケジュールだったり\n顧客: とか動画のテイストだったりとか その辺りをちょっと詰め合わせて\n営業: いければなというふうに思って おります。\n顧客: ちょっと画面共有いただきまして 進行できればと思いますので。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 272.0400085449219,
+    "end_time": 291.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 一回ちょっと事前にいいですか。\n顧客: はい。大丈夫ですよ。\n営業: このプロジェクトを運営するにあたって まだ誰がどう進めていくかというのを\n顧客: こちらで決めきってないんですよ。\n営業: はい。はい。はい。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 291.0400085449219,
+    "end_time": 308.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 宮尾に関しては日本人採用の担当を していくっていうのは決まってるんですけど\n営業: ここにある松原田村はどちらかというと 営業担当で紹介の部分のやり取りを\n顧客: 宮尾のほうとやっていくので、明確に この仕事やっていくっていう形では\n営業: 話をしてないので。\n顧客: でも営業なんで興味持ってくれるかなと 参加してもらってるので。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 309.0400085449219,
+    "end_time": 334.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今日決めた日程とかの調整を 誰がやっていくかっていうのは\n顧客: ちょっとここにいるメンバーなのか また別のメンバーをアサインするのか\n営業: っていうのはこちらで話聞いてから 聞いていきたいと思うんで\n顧客: そこだけあらたじめお伝えしてきます。\n営業: かしこまりました。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 335.0400085449219,
+    "end_time": 351.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと宮尾に関しては自分がやるぐらいの イメージで聞いといてもらっていい?\n営業: 一応。\n顧客: 現業業務もあると思うんで考えながらやると。\n営業: はい。\n顧客: ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 351.0400085449219,
+    "end_time": 364.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 画面共有しながら進行できればと思います。\n顧客: こちら画面映っておりますでしょうか。\n営業: はい。\n顧客: よかったです。\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 364.0400085449219,
+    "end_time": 379.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: まずですね、商品の確認を 念のためできればなと思っておりまして\n営業: おそらくまだヒアリングシートは ご回答いただいてなかったかなと思いますので\n顧客: 念のためご確認できればと思うんですけれども\n営業: 今回の\n顧客: あ、いいです。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 379.0400085449219,
+    "end_time": 395.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 商品名って何て記載したらよろしいですか。\n顧客: 商品名。\n営業: 商品名というか人材募集の名前みたいなのがあれば。\n顧客: ドライバー採用?\n営業: ドライバー採用で。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 395.0400085449219,
+    "end_time": 415.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 大丈夫ですか。\n営業: 介護の事業とかだったら\n顧客: 例えばWill of Caigoさんみたいな感じで。\n営業: あー。\n顧客: そういうことか。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 415.0400085449219,
+    "end_time": 428.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ないんですよね今そういう求人サイトが。\n顧客: なるほどなるほど。\n営業: じゃあドライバー採用で仮名。\n顧客: ビルオブワークが運営するみたいな感じのスタンス。\n営業: にしますか。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 428.0400085449219,
+    "end_time": 451.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ビルオブ。\n営業: ビルオブドライバーみたいな感じ。\n顧客: ペンスいいのかなどうなんだわからない。\n営業: ビルオブドライバー。\n顧客: 動画の撮影する時には",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 451.0400085449219,
+    "end_time": 476.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 文言は決まっておいた方がいいかなって感じはあるので\n顧客: 進めていきながらでも決めていっていただきたいなと。\n営業: これ使われ方がそうなんですか。\n顧客: TikTok動画でビルオブドライバーって出るってことですか。\n営業: そうですね動画の中でビルオブドライバーおすすめだよみたいな",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 476.0400085449219,
+    "end_time": 497.0400085449219,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 仮にそう名前をしたら動画の中でその名前で紹介したりみたいな。\n営業: シンプルにビルオブ求人でいいですか。\n顧客: ビルオブ求人でわかりました。\n営業: サービス名出す際はこれで行く方向で進行します。\n顧客: 続いて繊維先のLPとかに関しまして",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 497.0400085449219,
+    "end_time": 531.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こちらTikTokのインスタントホームとかでやるみたいな\n顧客: テーマあったりはするんですけど\n営業: もしLPに飛ばすみたいな形がよろしければ\n顧客: それとももちろんLPいただいて\n営業: 繊維先の設置も対応可能なんですけれども",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 531.0399780273438,
+    "end_time": 547.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: どういった繊維先にしていきたいなというのはございますか。\n営業: あれ、見合わせたパワードット今作ってないの\n顧客: パワードットに直接ルールによってあるっけ。\n営業: 何かどっか返す応募ページ。\n顧客: あ、ミュート。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 547.0399780273438,
+    "end_time": 575.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: すいません。パワードットって何ですかっていうレベルです。\n顧客: パワードットに直接流入させるような機能ってある応募ページみたいな。\n営業: LCとか。何かどっかかましてる。\n顧客: パワードットどっかかましてると思います。\n営業: 直接ではないと思います。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 575.0399780273438,
+    "end_time": 597.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと今ランペがない状態なんですね。\n営業: ウィルオブキュージンっていうサイトがあるので\n顧客: そこの応募リンクを飛ばすって形にするか決めます。\n営業: わかりました。\n顧客: じゃあ後日いただく形で。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 597.0399780273438,
+    "end_time": 623.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: そうですね。\n営業: ヒアリングシートの中で聞いておきたいところが\n顧客: ターゲットは前回いただいた感じの\n営業: 20代から結構幅広くみたいな形で",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 623.0399780273438,
+    "end_time": 644.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 男女どちらもみたいな感じだと思うんですけれども\n営業: 地域としてはどこで広告配信したいっていうのは明確にあったりされますか。\n顧客: 今のところ関東ですかね。\n営業: 関東のみで。\n顧客: 確かに大阪であるとか京都とか関西圏。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 644.0399780273438,
+    "end_time": 667.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい。\n顧客: あり得ます。\n営業: だからいいのか。関東近畿圏か。\n顧客: 関東近畿。\n営業: かしこまりました。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 667.0399780273438,
+    "end_time": 679.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 直近は関東。\n営業: 直近は関東ですね。かしこまりました。\n顧客: 配信する前に一応地域の確認してやりますので\n営業: あとは配信中にもここ追加してみたいなのがもし出てきたら\n顧客: 言っていただければと思います。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 679.0399780273438,
+    "end_time": 697.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: かしこまりました。\n顧客: そうですね。ある程度強みとか競合優位性とかお伺いしてたとは思うんですけれども\n営業: 改めて動画で即興ここは絶対出したいみたいなところで言うと\n顧客: 年収がある程度取りながら働き方もよくできるみたいなところですよね。\n営業: ですね。はい。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 697.0399780273438,
+    "end_time": 726.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: かしこまりました。\n営業: 他は例えば今営業の方も来ていただいてると思うので\n顧客: こういうところが動画で言ってくれたら\n営業: 営業しやすいとかがもしあればいかがでしょうか。\n顧客: 海外の方が運転してる動画があると",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 726.0399780273438,
+    "end_time": 747.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっとイメージがお客さんがつきやすくて\n顧客: マイナスイメージが抜けるかなと思ったんですけど。\n営業: どっちかっていうと求人方面ですね。\n顧客: あ、なるほど。\n営業: 求人だといかがですか。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 747.0399780273438,
+    "end_time": 769.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 未経験でも高注入って感じですかね。\n営業: うん。\n顧客: だいたいトラックドライバーだと450万とか受けちゃうんで。\n営業: かしこまりました。\n顧客: あとは例えば英語ができるとか",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 769.0399780273438,
+    "end_time": 787.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 外国人の方と関わりたいとか\n顧客: そういうところとかありますか。\n営業: トラック運転なんで基本1人か2人なんで。\n顧客: はい。分かりました。\n営業: 先ほどの営業の方からご意見いただいたのが",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 787.0399780273438,
+    "end_time": 805.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 外国の方がみたいなところだったので。\n営業: もしそういう。\n顧客: 採用じゃなくて営業観点の方がいいって感じだったと思うんで。\n営業: 日本人求人の方で。\n顧客: ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 805.0399780273438,
+    "end_time": 824.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: じゃあ以前のごめんなのときにいただいたポイント\n顧客: そのままという感じでよろしいですかね。\n営業: そうですね。あとは若い方でも女性でも稼げますって感じ。\n顧客: ありがとうございます。\n営業: なかなか20代で400万超えて狙いないよね。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 824.0399780273438,
+    "end_time": 845.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: なかなか最近はないですね。\n営業: 意外と20代。女性でも400万超え狙えます。\n顧客: ありがとうございます。\n営業: そうですね。この辺りで。\n顧客: うん。大丈夫です。ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 845.0399780273438,
+    "end_time": 864.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 続きまして演者を今回選べるんですけれども\n顧客: 誰がいいみたいな。\n営業: 女性男性でいうとどっちに出てほしいとかありますか。\n顧客: あれって逆張りで女性関西弁。\n営業: 女性関西弁で。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 864.0399780273438,
+    "end_time": 887.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 女性で働いてるって言ったら男性はね。\n営業: 応募してくるんで。逆はないんで。\n顧客: そうですね。男性を集めるのであれば\n営業: 応募のところで言うと男性のところを集めやすいのはやっぱり女性の方が\n顧客: 応募が来やすいかなという感じですね。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 887.0399780273438,
+    "end_time": 912.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: なので女性で万人受けするような方。\n顧客: で、例えば他のドライバーのところで出演してたことがあるので言うと\n営業: この八重樫っていうものが\n顧客: ドライバーの採用動画で出たことがあって\n営業: こんな感じのものなんですけど。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 912.0399780273438,
+    "end_time": 937.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ドライバーですか。\n営業: ドライバーの採用で。\n顧客: その動画をちょっと出させてもらった方が分かるかなと思うので。\n営業: もう一回画面共有いただきます。\n顧客: こんな感じで。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 937.0399780273438,
+    "end_time": 973.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ドライバー出たり。\n顧客: この方は関西弁ですか。\n営業: 関西弁では残念ながらないんですよね。\n顧客: エッセイでも大丈夫であればできるかなっていうところと\n営業: 例えばナレーションだけ私が入れるとか関西人が入れるとかであれば可能です。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 973.0399780273438,
+    "end_time": 1011.0399780273438,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: この映像はこの人が出てるんですけど\n営業: ナレーションは違う関西人の人がやってる。\n顧客: でも問題ない。\n営業: 同じ人がいいと思うんで。\n顧客: 別にこの人にこだわる必要ないかなと思う。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1011.0399780273438,
+    "end_time": 1027.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: でもね関西弁喋れる女性がちょっと少ないんですよ。\n顧客: ねねっていうものかゆめっていうもの。\n営業: もしくはちょっと年代が上になりますけどゆいっていうもの。\n顧客: 関西弁喋れるのもあって関西に住んでおりまして\n営業: なので東京に来るのがちょっと交通費がこの方たちはかかってしまうっていうところ。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1029.0400390625,
+    "end_time": 1068.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 東京に住んでる関西人いないですね。\n営業: 東京に住んでる関西人は私ぐらいですね。\n顧客: 松原さん言いかけてませんでした?\n営業: すみません。\n顧客: これってA社だったらA社を限定してPRしてくださる感じですか?",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1068.0400390625,
+    "end_time": 1090.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: それともざっくりドライバー募集っていう感じで出す感じですか?\n顧客: 広く広く。\n営業: どこの特定の会社とかにドラッグドライバーで仕事探したいんだったら\n顧客: ウィルを使ってくださいっていうような。\n営業: そうなんだ。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1090.0400390625,
+    "end_time": 1107.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 結構求職者側ともやりとりするんですけれども\n営業: よく言われるのが会社の雰囲気見たいとか\n顧客: あとは実際に働いてる人を見たいみたいな\n営業: チラッとでもいいのでっていうの言われるんですけど\n顧客: 限定してないんだったらあんまり意味ないかなって思ったんで大丈夫です。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1107.0400390625,
+    "end_time": 1127.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: それを違うところかもしれない\n営業: ドライバーの働き方みたいな感じで動画作るのがアリなんじゃないかな。\n顧客: 1日のルーティンとか業務内容みたいなの見せてもらうといいかもしれないですね。\n営業: それを架空で実際に働いてるかのごとくやるって感じですね。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1127.0400390625,
+    "end_time": 1154.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね。架空でみたいな感じで。\n営業: ありがとうございます。\n顧客: でも関西からわざわざ来てもらうことじゃないと思うんで1回目で。\n営業: あいかんさん、私関西人なんで私が声だけやるって。\n顧客: めちゃくちゃいいですね。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1155.0400390625,
+    "end_time": 1180.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いいかもしれないですね。何だったら出ますね。\n顧客: いやいや、顔を松原さんにして喋りだけ私にしてください。\n営業: それよりもプロフィールGとキャバクラに来たような感じで今宮尾さんとめっちゃ笑ってたんですよ。\n顧客: 以上です。申し訳ない。\n営業: でも仲いい雰囲気が出てすごくいいかもしれないし。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1180.0400390625,
+    "end_time": 1206.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ナレーション入れていただけるとかめちゃくちゃありがたいですね。ぜひぜひと思います。\n営業: 松原さん、撮影日現場来るようにイメージした方がいいと思うので調整してもらっていいですか。念のため。\n顧客: でも普通に関西弁でいいんですよね。\n営業: うん。\n顧客: うん。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1207.0400390625,
+    "end_time": 1233.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: じゃあここで終わらず、東京在住で、\n顧客: こんな人がトラックで運転しちゃうの?みたいな見た目の人っています?\n営業: パトがいいです。\n顧客: 完全逆。完全逆がいい。\n営業: ペンタがいいです。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1238.0400390625,
+    "end_time": 1256.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ペンタですか。\n営業: ペンタがいいです。めっちゃインパクトないですか。\n顧客: すごいですよね。\n営業: ペンタはちょっと嘘すぎるからやめましょう。\n顧客: 女性NGなんでダメでした。すみません。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1257.0400390625,
+    "end_time": 1274.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 完全作ってるわけです。\n顧客: 女性がいいと思うんですよ。僕ファクトリー製造でやってたんですけど、圧倒的に男を出すより女性だったんで。\n営業: 松原さんダメなんですか。\n顧客: はい。\n営業: 松原さんので。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1274.0400390625,
+    "end_time": 1293.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 松原さんは多分嫌がります。\n営業: ババアなんで控えます。\n顧客: いや、色気推しでいけると思うんですけど。\n営業: 確かに色気推しと。\n顧客: コミュ障なんで控えます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1294.0400390625,
+    "end_time": 1310.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: プロに任せたほうがいいと思う。\n顧客: 演技上手い人っています?この中で。\n営業: 演技は結構皆さん上手ですけど、どういうスタイルの演技とか。\n顧客: コメディ系とか。\n営業: トラックを運転してますよ。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1315.0400390625,
+    "end_time": 1335.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あたかも働いている人に見せられるような演技ができる人。\n営業: そうですね。\n顧客: 皆さん上手なので。\n営業: こんな人がみたいな感じでいくのであれば、この佐紀さんとか。\n顧客: 顔立ち的にはトラックドライバーにあんまりいなさそうな感じですけど、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1338.0400390625,
+    "end_time": 1371.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: でも帽子かぶって運転したりしたらギャップがあっていいみたいなのがあるかもしれないですね。\n顧客: 似合うがときめいているのでこの人でいいです。\n営業: 来た。\n顧客: よろしくお願いいたします。\n営業: いろいろ出していければなと思いますし、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1372.0400390625,
+    "end_time": 1415.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 過去にトラックドライバーの募集のものでいろいろやっているものもあったりしますので、\n営業: この辺りも踏まえながらまたご提案もできればなと思います。\n顧客: こんな感じで当日もし来られるスタッフの方がいらっしゃったら、\n営業: スタッフの方からインタビューみたいなのもありかなと思いますし。\n顧客: いろいろご提案させていただきます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1416.0400390625,
+    "end_time": 1440.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: 今時点でこの動画の形式を例えば真似して作ってほしいみたいなものとかあったりされますか。\n営業: 特になければいろいろ出させていただきますが、いかがでしょうか。\n顧客: いろいろ出してみてください。\n営業: わかりました。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1444.0400390625,
+    "end_time": 1467.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 出させていただきまして、\n営業: もし構成でここを変えてほしい動画が出てきたら、\n顧客: ご指摘を随時いただければと思います。\n営業: 続きまして、\n顧客: スケジュールの投稿の確認をできればなと思うんですけれども、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1467.0400390625,
+    "end_time": 1482.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今ちょっと引かせていただいているスケジュールがこちらになっております。\n顧客: 20日から進行みたいな形で書かせていただいております。\n営業: もう進行していっております。\n顧客: 撮影がだいたいこれぐらいの日にちかなみたいなところで、\n営業: 構成の作成完了時点で考えるとこれぐらいかなと考えておりまして、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1484.0400390625,
+    "end_time": 1505.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そこから編集が1本目完了するのが9月内にはできるかなというところでなっています。\n営業: そこから10月の1日、\n顧客: もし編集のチェックとかでちょっと押しましたら、\n営業: 数日広告の開始が遅くなるかなみたいな感じで考えていただければと思います。\n顧客: そこから1ヶ月ごとにですね、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1507.0400390625,
+    "end_time": 1528.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: クリエイティブをどんどん追加していきまして、\n顧客: 1ヶ月ごとに2本ずつクリエイティブを追加していって、\n営業: 広告を回してまいります。\n顧客: それで最終的に、\n営業: クリエイティブをどんどん追加していきまして、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1529.0400390625,
+    "end_time": 1543.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: クリエイティブをどんどん追加していって、\n営業: 広告を回してまいります。\n顧客: それで最終的に広告を回し終わるのが、\n営業: 今回4ヶ月間ですので、\n顧客: 1月末まで広告を回していくという風な想定で進んでおります。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1543.0400390625,
+    "end_time": 1558.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: この広告の費用に関しましては、\n顧客: 月間7万円の20バーズのものですので、\n営業: 7万円で広告を回していきますよという風になっております。\n顧客: この撮影日のところですね、\n営業: 撮影日のところが、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1560.0400390625,
+    "end_time": 1573.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 撮影の場所は押さえていただいて、\n営業: なっていると思うんですけれども、\n顧客: 撮影の日程を、\n営業: いくつか候補を出させていただいて、\n顧客: もし可能であれば、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1574.0400390625,
+    "end_time": 1585.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その中から大体3、4時間ぐらい押さえていただけたら\n顧客: ありがたいなと思っているんですけれども、\n営業: そちらはご確認いただくことって大丈夫そうですか?\n顧客: はい、えーと、\n営業: 何個か候補出せばいいんですか?",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1586.0400390625,
+    "end_time": 1598.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 大体3つぐらい候補、\n営業: 私たちからもお送りさせていただきますので、\n顧客: その中からちょっと選んでいただきたいと思って、\n営業: お願いできると助かります。\n顧客: わかりました。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1599.0400390625,
+    "end_time": 1610.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 場所はちょっとメール送りしたんですけれど、\n顧客: はい、ありがとうございます。\n営業: すみません、\n顧客: 場所はちょっとメール送りしたんですけれど、\n営業: はい、ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1611.0400390625,
+    "end_time": 1623.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: えーと、そこに合わせていける日程を、\n営業: いくつかいただける感じ…\n顧客: おっしゃる通りです。\n営業: はい。\n顧客: わかりました。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1624.0400390625,
+    "end_time": 1636.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: じゃあ、それの中で選ぶって感じで大丈夫です。\n顧客: もし合わなかった場合は、\n営業: またそこからずらさせてください、\n顧客: みたいなのはあるってこと?\n営業: そうですね。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1637.0400390625,
+    "end_time": 1646.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね。\n営業: もしリスクになるときは、\n顧客: 前日とかだとちょっとあれなんで、\n営業: 1週間前ぐらいにいただけると助かります。\n顧客: はい。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1646.0400390625,
+    "end_time": 1656.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: あと、構成のチェックの方法とかを、\n営業: こちらに記載させていただいております。\n顧客: もし、修正希望点が出てきましたら、\n営業: ちょっとこれ見づらいですね。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1657.0400390625,
+    "end_time": 1674.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっとごめんなさい。\n営業: 失礼しました。\n顧客: 構成の作成が完了しましたら、\n営業: こんな感じで、\n顧客: ドキュメントを1つずつ、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1674.0400390625,
+    "end_time": 1696.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こちら添付させていただきます。\n顧客: で、\n営業: こちらの確認の方法なんですけど、\n顧客: 先ほどのリンクをクリックいただきましたら、\n営業: こんな感じで商品の情報とかが上にあって、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1697.0400390625,
+    "end_time": 1710.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あと参考の動画、\n営業: この動画をちょっとスタイルマネしていくよ、\n顧客: みたいなものだったりとか、\n営業: ナレーション、吹き込みなのか、\n顧客: 喋りながら撮るのか、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1711.0400390625,
+    "end_time": 1721.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: みたいなところとかを書いたりしております。\n顧客: で、音楽でフォント、色、\n営業: みたいな形である程度の指定を行いまして、\n顧客: そこから1シーンずつに構成を書いていってる、\n営業: っていう内容になっております。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1722.0400390625,
+    "end_time": 1733.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 特にこのセリフのところをですね、\n営業: ここで、\n顧客: この文言に変えてほしいとかが、\n営業: もし出てきましたら、\n顧客: コメントを入れていただくっていう形で、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1734.0400390625,
+    "end_time": 1745.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 修正していただきたい、\n顧客: 内容のところを記載いただきまして、\n営業: そしたら私で修正書けますと、\n顧客: いう内容で進めていければと思います。\n営業: この構成のチェックのところで、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1746.0400390625,
+    "end_time": 1757.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 何かご確認のところ、\n営業: 大丈夫そうですか。\n顧客: 内部的な話していいですか。\n営業: はい、大丈夫です。\n顧客: 松原さん、田村さん、宮尾で、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1758.0400390625,
+    "end_time": 1769.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: これ見てもらって、\n顧客: こっちのほうがいいんじゃないか、\n営業: みたいな感じでやっていく形で大丈夫です。\n顧客: それとももう宮尾に任せちゃって、\n営業: できます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1770.0400390625,
+    "end_time": 1783.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私は入らなくて大丈夫かなって思っています。\n営業: 田村姉さんは、\n顧客: 姉さんにお任せします。\n営業: はい。\n顧客: 松原さん。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1786.0400390625,
+    "end_time": 1798.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 宮尾さんに進めていきつつ、\n顧客: 途中経過だけ確認できればなって感じですか。\n営業: はい。\n顧客: それでは、\n営業: 一応、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1799.0400390625,
+    "end_time": 1809.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 職業人材で、\n営業: ヘルプつけるんで、\n顧客: まだ面接前ですけど、\n営業: 候補決めて、\n顧客: じゃあその人、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1810.0400390625,
+    "end_time": 1820.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 宮尾でやっていきながら、\n顧客: 途中途中見てもらうって形でしましょうか。\n営業: はい。\n顧客: 大丈夫です。\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1821.0400390625,
+    "end_time": 1831.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あと、\n営業: あとはそうですね。\n顧客: そうですね。\n営業: やりとりのところの、\n顧客: チャットのツールのところを、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1833.0400390625,
+    "end_time": 1841.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 組めたらなというのを思っておりまして、\n顧客: メールのままがよろしければ、\n営業: そのままでも大丈夫なんですけれども、\n顧客: 結構、\n営業: CC漏れとか、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1842.0400390625,
+    "end_time": 1853.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いろいろリスクもあるかなと思いまして、\n営業: もし可能であれば、\n顧客: 何かチャットツール、\n営業: 普段使ってらっしゃるものがあればと思ったら、\n顧客: いかがでしょう。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1854.0400390625,
+    "end_time": 1862.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: CMになっちゃうんですよね。\n顧客: なるほど。\n営業: 宮尾太村さん、\n顧客: LINEあります?\n営業: LINEワークまだちょっと、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1863.0400390625,
+    "end_time": 1876.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 登録できてないですけど。\n営業: LINEワークあります。\n顧客: 本当に。\n営業: これはLINEだけど、\n顧客: LINEで作りましょうか。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1877.0400390625,
+    "end_time": 1887.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい。\n顧客: ぜひお願いいたします。\n営業: ありがとうございます。\n顧客: Teamsが私、慣れてないもので、\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1888.0400390625,
+    "end_time": 1896.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: じゃあ、LINEの給付コードを、\n営業: 後ほどメールでお送りさせていただきますので、\n顧客: そちらで追加いただけると助かります。\n営業: 分かりました。\n顧客: ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1897.0400390625,
+    "end_time": 1906.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 3は、\n顧客: LINEワークです。\n営業: はい。\n顧客: 3は、\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1912.0400390625,
+    "end_time": 1921.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あと、\n営業: 割引制度みたいなのも、\n顧客: あったりしますので、\n営業: 他の会社さんご紹介いただいたら、\n顧客: 10%キャッシュバックとか、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1922.0400390625,
+    "end_time": 1931.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 10%オフしますよ、\n顧客: みたいなところとか、\n営業: 次継続でやっていくってなったら、\n顧客: 次1万円オフになりますよ、\n営業: みたいなところとかが、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1932.0400390625,
+    "end_time": 1941.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: またあったりしますので、\n営業: この辺りも、\n顧客: お送りさせていただきます。\n営業: で、\n顧客: TikTokの広告のアカウントとか、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1942.0400390625,
+    "end_time": 1950.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その辺りも、\n顧客: 作成しましたら、\n営業: ご共有させていただきまして、\n顧客: 広告の運用を開始する前あたりに、\n営業: ねのため、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1951.0400390625,
+    "end_time": 1960.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: その地域の設定のところとかを、\n営業: お打ち合わせできればな、\n顧客: というふうに思うんですけれども、\n営業: 次回9月の最終週あたりとか、\n顧客: 1週前とか、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1961.0400390625,
+    "end_time": 1970.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その辺りで30分ほどお時間いただくことって、\n顧客: 大丈夫そうですか?\n営業: ありがとうございます。\n顧客: 何時頃が、\n営業: いつ頃がよろしいというのがございましたら、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1971.0400390625,
+    "end_time": 1980.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いかがでしょうか。\n営業: 9月の、\n顧客: そうですね、22の週あたりで、\n営業: いかがでしょうか。\n顧客: 22の週だと、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1981.0400390625,
+    "end_time": 1996.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いつでも大丈夫ですが、\n顧客: 26日は駄目かな。\n営業: かしこまりました。\n顧客: 25の午前中とかは。\n営業: 大丈夫です。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 1998.0400390625,
+    "end_time": 2013.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 25の午前中何時頃がよろしいでしょうか。\n営業: ごめんなさい、駄目だ。\n顧客: 25駄目だ。\n営業: 24日の午後ですね。\n顧客: 1時から。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2014.0400390625,
+    "end_time": 2024.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: かしこまりました。\n顧客: かしこまりました。\n営業: 1時でお時間いかがでしょうか。\n顧客: 大丈夫です。\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2025.0400390625,
+    "end_time": 2034.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: チームズのリンクまた、\n営業: 音者にご発行いただく流れというか、\n顧客: Zoomでですかね。\n営業: Zoomにした方がおそらくいいですよね。\n顧客: 助かります。ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2035.0400390625,
+    "end_time": 2047.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 次回Zoomで、\n顧客: リンクはどうしますか。\n営業: 音者からご発行いただく流れが、\n顧客: よろしいですか。\n営業: 大丈夫です。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2048.0400390625,
+    "end_time": 2057.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: よろしくお願いました。ありがとうございます。\n営業: では後ほどLINEのところとかも、\n顧客: 組みまして、\n営業: 諸々進行してまいりますので、\n顧客: 今の時点で他にご質問など、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2058.0400390625,
+    "end_time": 2066.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 大丈夫そうですか。\n顧客: というか初めてなんで、\n営業: 多分都度聞いちゃうと思います。\n顧客: 大丈夫です。\n営業: 動画の内容とかも、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2067.0400390625,
+    "end_time": 2083.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: もし間で何かご希望が出てきましたら、\n営業: お気軽にご連絡いただければと思います。\n顧客: ありがとうございます。\n営業: あと撮影の準備物とかも、\n顧客: ちょっと間でまた、",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2084.0400390625,
+    "end_time": 2094.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こちらからもご相談させていただくかなと、\n顧客: 思いますので、\n営業: またその時はよろしくお願いいたします。\n顧客: ありがとうございます。\n営業: 本日貴重なお時間をいただきまして、",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2095.0400390625,
+    "end_time": 2104.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます。\n営業: 引き続きよろしくお願いいたします。\n顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2105.0400390625,
+    "end_time": 2122.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2151.0400390625,
+    "end_time": 2272.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2301.0400390625,
+    "end_time": 2422.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2451.0400390625,
+    "end_time": 2572.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。\n顧客: ありがとうございました。",
+    "speaker_type": "customer",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2601.0400390625,
+    "end_time": 2664.0400390625,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございました。\n顧客: ありがとうございました。\n営業: ありがとうございました。",
+    "speaker_type": "sales",
+    "scenario_id": "kickoff",
+    "source_file": "kickoff_001_compressed.mp3",
+    "start_time": 2691.0400390625,
+    "end_time": 2724.0400390625,
+    "segment_count": 3
   }
 ]
