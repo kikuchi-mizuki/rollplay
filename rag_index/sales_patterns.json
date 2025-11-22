@@ -3404,5 +3404,923 @@
     "end_time": 1917.1199951171875,
     "segment_count": 1,
     "scenario_id": "meeting_1st"
+  },
+  {
+    "text": "営業: 大丈夫?\n顧客: 大丈夫。\n営業: 大丈夫?\n顧客: 大丈夫だぞ。\n営業: こちらで皆さんいらっしゃいましたでしょうか?",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 0.0,
+    "end_time": 22.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今一人ちょっと接続がバタバタやってます。すみません。\n営業: はい、はいでーす。\n顧客: すみません、揃いました。\n営業: ありがとうございます。\n顧客: すみません、本日お時間いただきましてありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 25.0,
+    "end_time": 56.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: 私が株式会社メディアルの新田と申しまして、\n営業: 以前から島村さんとはお取引をさせていただいていた業者になるんですけれども、\n顧客: 今回動画作成のお話をいただきまして、\n営業: 私の方が動画の作成などでご相談をさせていただいている",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 57.0,
+    "end_time": 80.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 美手紙の池田様にちょっと同席をさせていただいて、\n営業: こちらの方からご提案をさせていただければと思います。\n顧客: はい、では池田さんよろしくお願いします。\n営業: はい、ありがとうございます。株式会社美手紙の池田と申します。\n顧客: よろしくお願いいたします。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 80.0,
+    "end_time": 97.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: よろしくお願いします。\n顧客: ありがとうございます。\n営業: 今回企画のところを重点的に見直していって、\n顧客: いいアカウントにしていきたいというお話だと思うんですが、\n営業: 今のこの島村様、安倍様の中で企画を今作られていらっしゃるご状況なんですかね。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 97.0,
+    "end_time": 114.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね、現時点で企画の部分は他の該中の方に任せています。\n営業: ああ、そうなんですね。\n顧客: その進めていっている今の流れというか、\n営業: ある程度御社の方からこういう動画にしたいというふうなのをお伝えして、\n顧客: それから該中の方が企画を作られているみたいな流れなんですかね。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 118.0,
+    "end_time": 139.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね、はい。\n顧客: ありがとうございます。\n営業: そのお伝えされている時には、\n顧客: どういうところを重点的に取り入れて企画を作ってほしいみたいな声を持って、\n営業: お伝えされていたりされるんですか。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 139.0,
+    "end_time": 152.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 一応、弊社は商品、家具をメインで扱っているので、\n営業: 新商品が出た時は、その新商品の動画を依頼している。\n顧客: 他は新商品以外ですと、\n営業: どっちかというと知識系コンテンツですかね。\n顧客: シェアのハリウッジだとか、リクライニングが何パターンあるかみたいなのを話すようなコンテンツを作ってほしいという依頼はしています。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 152.0,
+    "end_time": 181.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: 新商品、私も実はオフィスコムさん使わせてもらってまして。\n営業: ありがとうございます。\n顧客: 弊社のオフィスのデスクはオフィスコムさんなんですけど、\n営業: 新商品の宣伝というのは、リリースされて何週間ぐらいで動画になっているものなんですか。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 181.0,
+    "end_time": 201.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ただ、それがちょっと撮影ができるのがやっぱり、\n営業: 普段あんまりここで撮ってるんですけど、狭くてなかなかできなくてですね。\n顧客: 土日使ってやって、そこから編集に入るんで、\n営業: だいたい1ヶ月、2ヶ月後とかになります。\n顧客: あんまり新商品といえども、新鮮味があんまりないみたいな状態になってるんですかね。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 201.0,
+    "end_time": 227.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね。\n顧客: ありがとうございます。\n営業: このYouTubeのアカウントの目的とか、\n顧客: どこに向かってアカウントを伸ばしていきたい。\n営業: 道標的なところはどういうところを描いてらっしゃいますか。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 227.0,
+    "end_time": 245.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: もちろん最終的にはコンバージョンになるんですけど、\n営業: 商品買ってもらうことなんですけど、\n顧客: 一番はそれよりまず知識をつけてもらって、\n営業: うちが推し売りっていうよりは、\n顧客: いろんな選択肢の中から、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 245.0,
+    "end_time": 263.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: でもオフィスコムの商品っていいんじゃないと思って選んでもらえるみたいな、\n顧客: 絵を作りたくて。\n営業: だから、もちろん新商品の動画っていうのもすごく大事なんですけど、\n顧客: どちらかというと知識をつけていただいて、\n営業: 最終的にオフィスコムっていう会社、ブランディングの部分ですよね。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 263.0,
+    "end_time": 281.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 認知してもらうっていうことが一番目的ではいるのかなと。\n営業: あんまりチャンネル登録者数とか、もちろんあったほうがいいんですけど、\n顧客: そんなに多くてないというのが現状ですね。\n営業: ありがとうございます。\n顧客: 今の運用している感覚的に、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 281.0,
+    "end_time": 298.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: この認知、その商品を通して、\n顧客: オフィスコムさんの商品の認知みたいなところが広まっているという感覚はあるんですか。\n営業: そうですね。あれ結構最近ですと、\n顧客: 動画見てショールームに行きました。\n営業: 私が担当しているチェアの商品ですと、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 298.0,
+    "end_time": 319.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 売り上げがバーンってすごく跳ねたりとか、\n営業: SNSで話題になったりとかあったりとかして。\n顧客: ただ、やっぱりC向けのほうが、\n営業: 詳細がかなり難しいじゃないですか、オフィスカグって。\n顧客: だからBより一挙よりはC向けの商品を中心にやってきてはいたんで、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 319.0,
+    "end_time": 339.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 一定効果はあったかなというふうに思っています。\n顧客: ありがとうございます。今効果が出ていらっしゃる中で、\n営業: 今のガイチュウさんじゃなくて、\n顧客: 違う会社に企画を作ってほしいというふうに思ったきっかけというか。\n営業: 一言で言うと、企画が全然ダメなんですよね。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 339.0,
+    "end_time": 362.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 企画がありきじゃないですか、動画って。\n営業: 企画がほとんどいい感じぐらいの感じで。\n顧客: ただやっぱり中身開けてみると、\n営業: 例えばオフィスに重要な要素なんとかせんみたいなのがあって、\n顧客: 中身開けてみると自社の商品をただ、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 362.0,
+    "end_time": 384.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: LPの情報をただ並べてるだけで終わりみたいなのがあったりとか。\n顧客: あとは最近ですと、\n営業: あんまり内容がチャットGDPとかで返してきちゃったりとかして、\n顧客: 中身が全然スカスカだったりとか、内容が違かったりとかして、\n営業: 結構これが続いていたので、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 384.0,
+    "end_time": 412.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あんまり依頼をする意味がないだというような判断で、\n営業: ちょっと切り替え先を考えているというところですね。\n顧客: ありがとうございます。\n営業: 今ちなみにその構成企画とかって、\n顧客: 1回の撮影で何本ぐらい構成企画撮ってらっしゃるんですか?",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 412.0,
+    "end_time": 433.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 撮るときはめちゃくちゃ撮るんですよ。\n顧客: 5本のショート10本とか。\n営業: ただそれもどっちかっていうと企画があるわけではなくて、\n顧客: その場で弊社のスタッフが考えて撮ってね、みたいなのがかなり多くて。\n営業: アドリブで結構されてるんですか?",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 433.0,
+    "end_time": 457.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: アドリブでもその場で決めてね、みたいなのがかなり多いんですよ。\n営業: それはずっとこのままその方針で行かれたいという感じですか?\n顧客: やはりエンチャーは一応うちに1人いるんですけど、\n営業: そのエンチャーとしてもある程度あらかじめ決まった内容を話した方がやっぱりスムーズに進むんですよね。\n顧客: なので、依頼するのであれば全体の企画の構成っていうよりは、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 457.0,
+    "end_time": 487.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: セリフの台本というセリフ台本形式でいただけると非常に助かるなと。\n顧客: ありがとうございます。\n営業: 私の感覚では撮影前に絶対構成があるものだと思ってたんですけど、\n顧客: そうじゃなくて撮れてるっていうのが逆にすごいなと思いまして。\n営業: そうですね。台本の中でもほぼ3行ぐらいの台本とかが出されてくるんですよ。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 487.0,
+    "end_time": 517.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 10分の動画撮るのに、行数3行で、あとはもうそっちで考えてくださいみたいな。\n営業: 結構内容がひどくね。\n顧客: 内容がひどいんで別のところを探してるってことですね。\n営業: なかなかですね、それは。\n顧客: そうですね。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 517.0,
+    "end_time": 532.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: なるほど。先にショート動画屋さんで、弊社でどういう構成作ってるかってちょっとお聞きいただいた方が。\n顧客: 通常はこれぐらいで作ってますってところなんですけど、\n営業: 商品情報が最初上にあって、チェックリスト構成で、\n顧客: 例えば景品表示法とか焼き法とかそのあたり気をつけようねみたいなのがあって、\n営業: 撮影でここ気をつけてねとか、編集でここ気をつけてねみたいなのがあって、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 532.0,
+    "end_time": 562.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 参考の動画、ある程度型にしていくみたいな動画がやっぱりあった方がいい動画になりやすいので、\n営業: それを見つけてきて、ナレーション、音楽、フォント、色どうしていくかっていうのを決めた上で、\n顧客: 1シーンずつこういう風に構成を書いて撮影していってると。\n営業: これが、私も最近知ったんですけど、ここまで書くのってあんまりないんだなっていうのを知りましてですね。\n顧客: これぐらいあったらどうですか?音写的には十分そうですか?",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 562.0,
+    "end_time": 594.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね。めちゃくちゃ助かりますね。\n顧客: わかりました。もちろんこれは出させていただくっていうふうな前提でですね。\n営業: 今、演者さん、女性の方出られてらっしゃると思うんですけど、\n顧客: その方をこれからも出演していただいてっていう感じで行かれたりか、\n営業: それか企画に合わせて演者さんちょっと変えてみようかなみたいな方針としてあられるか。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 594.0,
+    "end_time": 622.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 実際正直なところ、演者といっても弊社のスタッフ、社員なんですよね。\n営業: できればあんまり社員は使いたくはないと。\n顧客: だけど、とはいえ他に出てくれる人を何回も探してたりとかするんですよ、社内で。\n営業: でもなかなか出てくれないかったりとか。\n顧客: 出ていただいても、辞めちゃった時に動画消してって言われた過去があったりするので。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 622.0,
+    "end_time": 650.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: できればそこもスポットでお願いできるのであればお願いしたいっていうところではありますね。\n顧客: ありがとうございます。\n営業: そうですよね、やっぱり皆さん辞められた時のリスクをすごく感じてらっしゃるので、\n顧客: そこは素晴らしい理由だなと思います。\n営業: この本数とかが今1回の撮影でロング動画5本、ショート10本みたいな感じで撮られてらっしゃると思うんですけど、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 650.0,
+    "end_time": 677.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: その本数はどうですか?もうちょっと増やせたりもできるんですか?\n営業: 増やすことは可能なんですけど、\n顧客: 結局うちの社員で取り切れるかって話になってくると思うんですよ。\n営業: それが可能であればもちろん増やした方がいいと思うんですが、\n顧客: 一応、しわむらの方から予算の話をメールで送らせていただいたと思うんですが、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 677.0,
+    "end_time": 703.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 大体30万から40万、上下してももちろんいいんですけど、\n顧客: そのぐらいで考えているので、できる範囲でお願いができればと考えています。\n営業: 私も言いました。\n顧客: 例えば、弊社の方で全部撮影とか編集とかもやるってなると、\n営業: その30万40万の中で何本みたいな感じになると思うんですけど、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 703.0,
+    "end_time": 732.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 例えば企画だけを考えさせていただいて、\n営業: こういう風に撮りますよ、みたいなところを、\n顧客: そのうちの1本だけ撮影を活かしていただくとか、\n営業: そういう座組みもあるかなと思いますので、\n顧客: どうしていくかっていうところですね。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 732.0,
+    "end_time": 753.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 全部を制作、ショート動画屋さんにするのか、一部だけにするのか、\n顧客: 企画だけにするのか、みたいな。\n営業: 多分3つぐらいパターンがあると思うので。\n顧客: パターン別でお見積もりをいただけると非常に助かるなと思います。\n営業: ちなみになんですけど、スポットって可能なんですかね。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 753.0,
+    "end_time": 780.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 例えば、1回ショート動画作ってもらうのが来ていただいて、\n営業: 多分ホームページをちょっと見させていただいたんですけど、\n顧客: キャストさんのキャストが来るようなこともできるってことですよね。\n営業: アオシャルトルです。\n顧客: そこちょっと新田さんとすれ合わせする必要があるかなと思うんですけど、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 780.0,
+    "end_time": 812.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 新田さんはそのあたりは大丈夫そうなんですかね。\n顧客: 新田さんミュートになってました。\n営業: 失礼しました。\n顧客: 今回のお話でいうと、定期的に月々の契約で何本企画、\n営業: もしくは撮影でやっていくっていうところがベースにあって、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 812.0,
+    "end_time": 833.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: それ以外に新商品であったりとか、\n営業: いつものようによりも多く撮影や企画が必要な場合は、\n顧客: 追加でショットへの対応っていうことは可能だと思っています。\n営業: そのあたりのお話も全てオンシャと池田様の間で\n顧客: 完結していただいて問題ありませんので。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 833.0,
+    "end_time": 859.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 企画の作成とかに関しては、\n顧客: やっぱりスポットでやるよりかは長期的にやっていって\n営業: BDCへ回していく方が改善はよりできるかなと思いますので。\n顧客: 企画を作る、それが月額なんぼで、\n営業: 例えば年間なのかみたいな形でやらせてもらうのと、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 859.0,
+    "end_time": 885.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あと制作のところ、制作のところは\n営業: ショート動画さんのページに記載している通り\n顧客: スポットでも大丈夫なので、\n営業: そこはスポットでみたいな感じでできればいいかなと。\n顧客: ちなみに何点かお伺いしたいんですが、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 885.0,
+    "end_time": 902.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: スポットを使っているソフトは何に使用されていますか。\n顧客: 編集でですよね。\n営業: 編集ですね。\n顧客: プレミアプロ、一部アフターエフェクトです。\n営業: チャットとかって連携取ってやっていくと思うんですけど、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 902.0,
+    "end_time": 920.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 窓口は担当がつくイメージでいいんですよね。\n営業: 一人担当がつきますみたいな。\n顧客: はい、ディレクターが一人ついて、\n営業: 制作するときは構成担当で、\n顧客: 出張撮影でカメラマン担当で、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 920.0,
+    "end_time": 935.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 編集担当という4人体制でやらせてもらっています。\n顧客: それは御社の中にすべていらっしゃるという認識で?\n営業: もちろんです。\n顧客: チャットアプリってチャットワークみたいなの使ってます?\n営業: チャットワークがメインで使ってますので、非常にありがたいです。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 935.0,
+    "end_time": 958.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いいですね。\n営業: すいません、とりあえず大丈夫です。ありがとうございます。\n顧客: かしこまりました。\n営業: そうですね、ショート動画屋さんの簡単な紹介させてもらって、\n顧客: プランの内容とかも目のため見ていただけたらいいのかなと思いますので、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 958.0,
+    "end_time": 980.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 画面共有いただければと思います。\n顧客: ちょっとお時間も限られてると思いますので、\n営業: サクサクいきたいと思います。\n顧客: ショート動画屋さんは早く安く綺麗というところを大事にして、\n営業: 作っていくサービスで、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 980.0,
+    "end_time": 994.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: SNSの広告動画、アカウントの運用動画、\n営業: 他にも通販のページに掲載するような動画、\n顧客: 例えばオフィスコムさんの商品ページのところに動画を埋め込めるのであれば、\n営業: そこに埋め込む動画作らせてもらって、\n顧客: そしたらCVRも期待できるかなと思いますので、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 994.0,
+    "end_time": 1009.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういったところの動画の制作も受け付けておりますよというサービスです。\n顧客: 目的もどこかに定めてというわけじゃなくて、\n営業: いろんな目的で今まで作らせてもらっておりまして、\n顧客: サービスリリースしてから2年半ほどやらせてもらってるんですけど、\n営業: 160社以上の動画を作らせてもらってます。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1009.0,
+    "end_time": 1026.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 世界的な企業さんだったり、日本を代表する企業さんだったり、\n営業: 一人社長とか、陽形状さんとか、\n顧客: いろんな動画の制作を今までやらせてもらってます。\n営業: ショート動画屋さんのサービス自体は、ウェブで検索、\n顧客: 例えばショート動画制作とかで検索していただいたら、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1026.0,
+    "end_time": 1042.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 比較サイトに漏れなく掲載をしていただいておりまして、\n顧客: 特に私たちから依頼をしているわけではないんですけれども、\n営業: 勝手に掲載をしていただいているというサービスです。\n顧客: これが何で起きているのかというところなんですけれども、\n営業: 私キャストが50名ほど今いるんですけれども、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1042.0,
+    "end_time": 1057.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そのキャストが使いまして、加えて出張の撮影も行っておりまして、\n営業: これがどっちもできて、かつリーズナブルにできる、\n顧客: というところがこのショート動画屋さんの強みとして、\n営業: いろんなサイトに載せていただいているサービスになっています。\n顧客: 作っている動画の一例ですけど、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1057.0,
+    "end_time": 1073.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: これちょっと私がたまたま出演させてもらったものなんですけど、\n顧客: こういう感じで、自転車運びたいとか、\n営業: これ運送アプリのものなんですけど、\n顧客: ちょっと御社ともシナジー合うところもあるかなと思うんですけど、\n営業: こういうアプリの動画も作らせてもらったりもありますし、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1073.0,
+    "end_time": 1088.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お菓子食べながら親近感を持って話すみたいな、\n営業: オフィスコムってぶっちゃけどう?みたいな感じの質問を\n顧客: お菓子食べながら答えていくみたいな、\n営業: そういうところで、普段見ているSNSとスタイルを合わせていく、\n顧客: という風なところの制作も行っていたりもしますし、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1088.0,
+    "end_time": 1103.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 縦だけじゃなくて横で動画を作って、\n顧客: オフィスのビジョンに包囲したみたいな、\n営業: そういうご要望もいただいたりしておりますので、\n顧客: 本当にいろんな動画の制作に対応しているというところが、\n営業: このショート動画屋さんの強みになっております。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1103.0,
+    "end_time": 1118.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: せっかく作らせていただきますので、\n営業: お客様のサービスを視聴者さんに見ていただいて、\n顧客: お客さんもそうだし視聴者さんもそうだし、\n営業: 皆さんのQA率を高めていくというところで、\n顧客: 丁寧に制作を心がけておりますというサービスになっております。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1118.0,
+    "end_time": 1133.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 個別でご提案考えさせてもらったのは、\n顧客: サクッといきたいと思います。\n営業: YouTube中心に、いろんなSNSでも使っていただいてもいいかなと思います。\n顧客: そこで御社の商品ページ、LPとか見ていただいて、\n営業: そこから購入していただいて、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1133.0,
+    "end_time": 1148.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 御社の商材がリピートみたいなところが、\n営業: すぐすぐじゃないかもしれないですけれども、\n顧客: ただ一回購入していただいたら、リスト取りとかできると思いますので、\n営業: そこから追っていただいて、それでリピートにつなげていくみたいなところの\n顧客: フックとして動画の制作できればというところで考えております。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1148.0,
+    "end_time": 1163.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 弊社がもし制作させていただく場合ですけれども、\n顧客: 著作権は御社に譲渡しますので、\n営業: いろんなところでお使いいただいて大丈夫ですよというサービスになっております。\n顧客: 今回の作らせていただく企画、考案させていただく軸としては、\n営業: 特にですね、この動画の保存数、シェア数、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1163.0,
+    "end_time": 1178.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ここのエンゲージメントが非常に大事になってきます。\n営業: これによってその有益性をYouTubeのアカウントが感じてくださって、\n顧客: アルゴリズムが良くなっていく。\n営業: なので、いいねとか、\n顧客: そうですね、主にいいですね。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1178.0,
+    "end_time": 1193.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いいねとか、マイクロソフトとか、\n顧客: いろいろと言っていただいて、\n営業: そうですね、主にいいですね。\n顧客: いいねとか、フォロー、そこも大事なんですけど、\n営業: 保存シェア、ここを狙っていくことで、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1193.0,
+    "end_time": 1208.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いろんな人に動画を見せていく。\n営業: その指標がYouTubeとしては非常に大事になってくるので、\n顧客: その上で、今先ほどお話ししちゃった豆知識のところとか、\n営業: そういったところをもっと面白く掘っていくみたいな形でやって、\n顧客: 御社のサービスならではの専門性、有益性みたいなところを出せればという風に考えております。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1208.0,
+    "end_time": 1223.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 例えばこういう感じ、\n顧客: ちょっとドラマチックにやってみたり、\n営業: みたいなところも1個ありかなと思います。\n顧客: 今、パート3ってあったと思うんですけど、\n営業: 3本立てみたいな感じで、もっと長く10本立てみたいな感じでもやっていいかもしれないですし、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1223.0,
+    "end_time": 1238.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 例えば100日後になんちゃらこうちゃらみたいな、\n営業: そういう企画もありかなという風に思います。\n顧客: ここにもちょっとオシャレに撮っていって、\n営業: 質問回答形式でやっていくみたいなところも、\n顧客: 良品に撮っていく場合は、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1238.0,
+    "end_time": 1253.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こういうのもありかなというところです。\n顧客: 他にもTikTokとかでよく見るフォーマットで、\n営業: 皆さん助けてくださいみたいな感じで、\n顧客: 先に頭を下げてるみたいな、そういう動画のフォーマットもあったりしますので、\n営業: 私も普段TikTok、YouTube、Instagramよく見るんですけど、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1253.0,
+    "end_time": 1268.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そこで流れてるようなフォーマットを使って、\n営業: すぐすぐのトレンドではなくて、\n顧客: 3ヶ月、6ヶ月ぐらいは続きそうだなみたいなトレンドを盛り込んで、\n営業: 構成を出していければという風に考えています。\n顧客: 他にもこういうインタビュー形式みたいなところで、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1268.0,
+    "end_time": 1284.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 結構リアリティあると思うんですけど、\n顧客: これ弊社のキャストで、本当にドライバーっぽい感じはするんですが、\n営業: ただ作られてる構成をもとにインタビューをしてるみたいな、\n顧客: ただこれがめちゃくちゃ効果が良かったり、\n営業: みたいなのがあったりして、やっぱり中の人が応えてるみたいな、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1284.0,
+    "end_time": 1299.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 本音を言ってくれてるリアリティが出てるみたいな、\n営業: そういうところで有益性を感じていただくっていう風なところも\n顧客: アルゴリズムとしてありますので、今のご覧いただいたような動画の\n営業: 内容をもとにですね、いろいろご提案できればという風に考えております。\n顧客: この演者がですね、私たち50名ほどおりまして、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1299.0,
+    "end_time": 1315.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっとここに載ってないキャストとかもいっぱいいるんですけど、\n顧客: こんな感じでですね、赤ちゃんもいますし、\n営業: 若い女性の方、男性のしっかりされてそうな方、\n顧客: 女性のちょっと年代上の方もいますし、あとペットもいます。\n営業: 猫ちゃんワンちゃん、ちょっと出張の撮影だと猫ちゃんワンちゃん難しいんですけど、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1315.0,
+    "end_time": 1336.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こういったキャストも出演して動画を作れるっていうところになりますので、\n営業: いろいろなキャストでABテストをしていって、\n顧客: それで勝ちパターンを見つけていく。\n営業: 例えば音者の商材がたまたま男性の方がいいみたいな、\n顧客: そういう場合もありますし、意外と赤ちゃんが出てる方が",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1336.0,
+    "end_time": 1354.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 広告感がなくてすごくいいみたいなのもあるかもしれないですし、\n顧客: いろいろなキャストで試せたら、よりアルゴリズムも\n営業: よくなっていくかなという風なところで思っております。\n顧客: 動画のスケジュール、実際に考えさせてもらったんですけど、\n営業: ロング動画5本とショート動画10本というところなんですが、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1354.0,
+    "end_time": 1372.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 最低でも週2ぐらいでショート動画出せたらいいなというところはありますので、\n営業: 今回企画考えさせていただくにあたって、\n顧客: 最低でも10本分ぐらいは企画考えさせてもらった方がいいのかな\n営業: という風には思っておりますので、その設定でできればと思っています。\n顧客: さらに先ほどご覧いただいたこの構成案とはちょっと別なんですけど、",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1372.0,
+    "end_time": 1395.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 構成案は100本ノックというものを行っておりまして、\n顧客: AIにつかながら出しているものではあるんですが、\n営業: ただ最初のタネみたいなところですね、01みたいなところで、\n顧客: こういう風な訴求、面白いよねみたいなところ、\n営業: 例えば問い合わせが止まらない、オフィスコムの購入が止まらないとか、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1395.0,
+    "end_time": 1414.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そういうのも1個ありかなと思いますし、\n営業: ドッキリみたいなところとか、絶賛されている理由とか、\n顧客: いろいろちょっと100本、これ月1でお送りさせてもらって、\n営業: それでこの中からどれ作っていくみたいなところも\n顧客: すれ合わせできたらいいかなという風に思っております。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1414.0,
+    "end_time": 1431.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 制作を弊社でやらせていただく場合の価格表のところなんですけれども、\n顧客: 制作のみの価格のところで3つ軸としてございます。\n営業: 一番左の編集セットというものが、\n顧客: 素材を御社からご共有いただきまして、\n営業: それで構成考えて編集してという風に動画を作っていく。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1431.0,
+    "end_time": 1451.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: もしくはショート動画屋さんのキャストが素材をいっぱい取りためている\n営業: 素材サイトというものがありまして、\n顧客: 無難に使えるような素材がいっぱいあるものなんですけど、\n営業: そこに掲載している動画を使って動画が作れるというものが\n顧客: 編集セットになっています。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1451.0,
+    "end_time": 1466.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 真ん中の撮影セット、これが私たちのキャストが\n顧客: 1本内1名出まして、オリジナルでおうちで撮影を行いますよ\n営業: というものが撮影セットになっています。\n顧客: 出張セット、これが御社のオフィスだったりとか\n営業: 店舗にお伺いさせてもらって、一眼レフで動画を撮らせてもらって、",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1466.0,
+    "end_time": 1481.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 加えて出張のキャストも続いてきますよという内容が\n営業: 出張セット1本7万円になっています。\n顧客: この出張キャストはすぐすぐはいらない。\n営業: 御社のスタッフさんの出演のみで大丈夫という場合は\n顧客: 1本当たり5万円で価格調整させてもらっているという風なものになっています。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1481.0,
+    "end_time": 1497.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 制作を弊社で行う場合の最低の発注本数なんですけど\n顧客: 編集セット、撮影セットは合計3本からの受付。\n営業: 出張セットは合計4本からの受付とさせてもらっています。\n顧客: 交通費は23区大阪市内、福岡市内であれば交通費無料というところなんですけど\n営業: 御社の事務所って今どちらにございますか?",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1497.0,
+    "end_time": 1515.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 市貝屋ですね。\n営業: 市貝屋。まあまあ無料でいらしてもらいます。\n顧客: 大丈夫です。\n営業: 先ほどの素材サイトの件ですけど\n顧客: 9800円から使えますよ。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1515.0,
+    "end_time": 1530.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: で、月30袖ダウンロードできますよ。\n顧客: 無難に使える素材で、動画の広告とかに使われることが多いんですけど\n営業: これを使って編集セット作れますよというものになっています。\n顧客: 先ほどの1本当たりの価格から\n営業: 5本以上同時にご発注いただいたら5%オフ。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1530.0,
+    "end_time": 1547.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: で、最大50本以上同時にご発注いただいたら\n営業: 30%オフというところまで割引をさせてもらっています。\n顧客: これがどれくらい割引かれるのかみたいなところが\n営業: ちょっとすぐにお分かりいただけるように\n顧客: 三森シミュレーションというのも作らせてもらってまして",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1547.0,
+    "end_time": 1562.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 例えば出張撮影、出張のキャストも込めてやっていく場合\n顧客: ミニマムの4本だったら1本当たりこの金額ですよ。\n営業: 10本作るってなったら10%オフ適用されて\n顧客: 1本当たりはこの金額になりますよ。\n営業: じゃあ50本作るっていう風になりましたら",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1562.0,
+    "end_time": 1579.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 30%オフ適用されまして1本当たりはこの金額になりますよ\n営業: っていうところが割引としてありますので\n顧客: なるべく月3、40万の予算に収まるように\n営業: まとめて発注いただいた方が\n顧客: 1本当たり多やすくなりますので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1579.0,
+    "end_time": 1594.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いろいろA、Bテストのパターンも作れるという風な\n顧客: 価格帯になっております。\n営業: 他にもSNSのアカウントの運用プランみたいなのがあるんですけど\n顧客: この辺りはTikTok、Instagramという風にやっておりますので\n営業: 一旦スルーさせて",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1594.0,
+    "end_time": 1609.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 広告を使ったプランみたいなのも\n営業: 一応あったりはしますというところです。\n顧客: 他にもライブコマースの代行\n営業: 今TikTokショップでやっている事業主さん\n顧客: 結構いらっしゃいますけれども",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1609.0,
+    "end_time": 1619.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういったところでライブコマースをやらせてもらったりもありますし\n顧客: 内製化のご支援というか\n営業: 御社の中で撮影担当とか編集担当とか\n顧客: 動画を作れる人材を育てますみたいなプログラムも\n営業: あったりしますと。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1619.0,
+    "end_time": 1631.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: という感じでいろんなプランがありますが\n営業: もし作るとしたら\n顧客: 編集セットか出張セットのどっちかみたいな感じですよね。\n営業: そうですね。\n顧客: ちなみにロングの場合って",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1631.0,
+    "end_time": 1646.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ロングの作るの大変じゃないですか。\n顧客: 価格変わってきますよね。\n営業: ロングの場合は\n顧客: これが1分以内の価格で出させてもらっているんですけど\n営業: 1分以上のものをロングという風に私たちで定義しているんですが",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1646.0,
+    "end_time": 1659.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 1分以上になると\n営業: 1分ごとにこれの金額の半額がかかってくるという風に\n顧客: お考えいただければと思います。\n営業: 例えば2分以内の動画であれば\n顧客: この出張セットの1分未満の7万円プラス",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1659.0,
+    "end_time": 1674.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 1分超えているので半額の3万5千円追加して\n顧客: 1本当たりは10万5千円。\n営業: 2分以内。\n顧客: という計算になってまいります。\n営業: わかりました。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1674.0,
+    "end_time": 1687.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます。\n営業: そうですね。ロング動画だともしかしたら\n顧客: ちょっと予算が難しいみたいなのがあるかもしれないですけど。\n営業: そうですね。\n顧客: 他気になるところいかがですか。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1687.0,
+    "end_time": 1701.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: もう一回いいですか。すみません。\n顧客: すみません。他気になるところもしあればと思いましたが\n営業: いかがでしょう。\n顧客: 今のところは大丈夫です。\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1701.0,
+    "end_time": 1712.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お願いします。\n営業: 島村さんすみません。もうお時間ですよね。\n顧客: 僕だけ先に失礼するんで\n営業: ちょっとすみません。阿部の方\n顧客: もうちょっと話があると思うので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1717.0,
+    "end_time": 1728.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そのまま続けていただければと思います。\n顧客: すみません。\n営業: わかりました。\n顧客: ありがとうございました。\n営業: 失礼します。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1728.0,
+    "end_time": 1736.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: すみません。ありがとうございます。\n営業: 今池田さんの方で話していただいたのが\n顧客: ショート動画屋さんの\n営業: 販売している中心のメニューになっているんですけれども\n顧客: 一回今回のものについては",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1738.0,
+    "end_time": 1751.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 島村さんからご予算の方もいただいているので\n顧客: そのご予算と作りたい内容っていうところを\n営業: 組み合わせて\n顧客: 私たちの方で招致配みたいな形で\n営業: 見積もりのプラを出しさせていただいて",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1751.0,
+    "end_time": 1764.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: それと別に単品で発注する場合は\n営業: こういうものですっていうのを\n顧客: 見積もりにつけさせていただくっていう形の方が\n営業: わかりやすいかなと思いますが\n顧客: そうですね。そっちのありがたいです。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1764.0,
+    "end_time": 1775.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: わかりました。\n顧客: じゃあちょっと一回そこで内容をまとめて\n営業: 池田さんの方から安倍さんの方にお送りするようにいたします。\n顧客: よろしくお願いします。\n営業: じゃあ私の方からは",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1775.0,
+    "end_time": 1792.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 一旦こんな感じの説明で\n営業: ありがとうございます。\n顧客: 安倍さんの方から他に気になる点などはありますか?\n営業: 今のでわかったので大丈夫です。\n顧客: ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1792.0,
+    "end_time": 1808.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そしたら島村さんからいただいている\n顧客: 要望の予算と作成したい動画の内容に\n営業: 見合うような形で\n顧客: お見積もりのプランを作成して\n営業: 安倍さん宛にお送りするようにいたしますので",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1808.0,
+    "end_time": 1822.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: どうしましょう?\n営業: 何かやりとりするとき\n顧客: チャットワークのグループか何か作らせていただいて\n営業: そこでお見積もりとか\n顧客: お話をやらせていただいた方がいいかなと思うんですが",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1822.0,
+    "end_time": 1833.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: それでもよろしいですか?\n顧客: 一旦島村にメールで送っていただけますか?\n営業: わかりました。\n顧客: 島村さんにメールでお送りするようにいたしますので\n営業: そこから安倍さんに共有していただければと思います。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1833.0,
+    "end_time": 1846.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい。お願いします。\n営業: はい。\n顧客: 終わりました。\n営業: では問題なければ\n顧客: 一旦こちらでミーティングの方を",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1846.0,
+    "end_time": 1853.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 終わらせていただきたいと思います。\n顧客: はい。大丈夫です。ありがとうございます。\n営業: ありがとうございます。\n顧客: すいません。では本日はお時間いただきまして\n営業: ありがとうございました。",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1853.0,
+    "end_time": 1862.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございました。\n営業: お願いします。\n顧客: お疲れ様です。ありがとうございます。",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_2nd",
+    "source_file": "meeting_2nd_001_compressed.mp3",
+    "start_time": 1862.0,
+    "end_time": 1875.0,
+    "segment_count": 3
   }
 ]
