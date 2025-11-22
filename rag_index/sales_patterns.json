@@ -4322,5 +4322,446 @@
     "start_time": 1862.0,
     "end_time": 1875.0,
     "segment_count": 3
+  },
+  {
+    "text": "営業: ご視聴ありがとうございました\n顧客: ご視聴ありがとうございました\n営業: お世話になっております\n顧客: 今、お声とかは大丈夫そうですかね?\n営業: はい、聞こえてます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 0.0,
+    "end_time": 71.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: よかったです、ありがとうございます\n営業: 続々と他の方も\n顧客: お世話になっております\n営業: お世話になります\n顧客: すいません、僕ちょっと別の方",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 71.0,
+    "end_time": 84.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: ちょっと川沿いと言った瞬間で入ってますんで\n営業: はい、かしこまりました\n顧客: ありがとうございます\n営業: 今回は今参加していただく方のみでやっておりますか?",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 84.0,
+    "end_time": 98.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いや\n営業: もう2つ目\n顧客: 弊社の先日\n営業: 入ってました\n顧客: 吉田の方も",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 98.0,
+    "end_time": 110.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい、かしこまりました\n顧客: それとあと\n営業: 福岡町の藤井\n顧客: の方が入ります\n営業: 皆さんもいらっしゃいました",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 110.0,
+    "end_time": 126.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お世話になっております\n営業: ごめんなさい\n顧客: ごめんなさい\n営業: 大丈夫ですよ\n顧客: ごめんなさい",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 126.0,
+    "end_time": 138.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい、聞こえました、ありがとうございます\n顧客: お願いします\n営業: この1名いらっしゃるとのことなので\n顧客: 少しお待ちしてたほうがよろしいですか?\n営業: そうですね、はい",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 138.0,
+    "end_time": 152.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お待ちいただけますか?\n営業: はい\n顧客: 今、藤井様もいらっしゃいました\n営業: はい、これで全員揃っております\n顧客: ありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 152.0,
+    "end_time": 167.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今日ですね、池田さん\n顧客: いろいろとアジェンダといったところで\n営業: お送りいただいたといったところもあるんですが\n顧客: 先般の話からするとですね\n営業: 立ち戻りますと",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 167.0,
+    "end_time": 181.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 池田様のところを含めて\n営業: 他で2社お声掛けをさせていただいているといったところを\n顧客: 伝えていたと思います\n営業: 本日のところは\n顧客: お盆前ですかね",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 181.0,
+    "end_time": 197.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 池田様にいろいろプレゼンテーションとか\n顧客: ご説明いただいて\n営業: 検討した結果を\n顧客: 今日、この日にお伝えするということになっていたと思います\n営業: はい、はい",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 197.0,
+    "end_time": 211.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 質問から申しますとですね\n営業: 3社さんのうち\n顧客: 池田様のところともう1社様といったところで\n営業: 非常に今、ここにいるメンバーで協議をして\n顧客: どちらかにお願いをしようかと検討を進めていました",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 211.0,
+    "end_time": 231.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます\n顧客: 結果ですね\n営業: もう1社さんのほうに今回はお願いをするという\n顧客: 形になったといったところが結果でございます\n営業: 池田様のところもやっぱり",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 231.0,
+    "end_time": 248.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いろいろ特徴があって\n営業: 例えば100本のシナリオとかですね\n顧客: やっぱり池田さんの行動力というか\n営業: やっぱりこう何でしょうね\n顧客: 前に前にみたいなところといったところは",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 248.0,
+    "end_time": 261.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 非常に上進さんにも刺さるかなといったところがある\n顧客: というのと\n営業: もう1社様のほうはやっぱりいろいろとですね\n顧客: 演者のところであったりとか\n営業: やっぱりなんとなく実績のカラーがですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 261.0,
+    "end_time": 279.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: なんとなく今の上進さんに\n営業: ちょっと近いのかなといったところが\n顧客: いろいろ過去の富士含め\n営業: やっぱり担当といったところもちょっと意見が出まして\n顧客: 今回はそちらのほうにお願いをするという方向で",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 279.0,
+    "end_time": 294.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 決まったといったところが結果でございます\n顧客: 久しぶりに会いました\n営業: 何かあります?\n顧客: 何かあれば\n営業: 藤井です",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 294.0,
+    "end_time": 312.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お世話になります\n営業: ありがとうございます\n顧客: お世話になります\n営業: 今柴田も申しましたけど\n顧客: 大変池田さんのところっていうのは",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 312.0,
+    "end_time": 323.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 体制とかスピード感であるとか\n顧客: みたいなところはすごいなっていうか\n営業: 分析のところも含めてですね\n顧客: すごいなと思ってるんですけども\n営業: やっぱり今の現状のトーンと考えるとですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 323.0,
+    "end_time": 341.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今柴田も申しました通り\n営業: ちょっと今回は大変申し訳ないんですけど\n顧客: もう一社さんのところで話を進めていこうかな\n営業: っていうことを考えてます\n顧客: ありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 341.0,
+    "end_time": 356.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちなみに他の会社さんから\n顧客: ショート動画屋さんに戻ってくるケースがたくさんあるんですけど\n営業: 他の会社さんからショート動画屋さんに戻ってくるケースがたくさんありまして\n顧客: そうなんですか\n営業: すいません",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 356.0,
+    "end_time": 370.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そういうケースもあるかなと思って\n営業: 僕ちょっと池田さんに聞きたかったのは\n顧客: そういった僕が逆に言うと\n営業: ちょっと他社さんにお願いすることになったじゃないですか\n顧客: 逆に言うとそこがですよ",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 370.0,
+    "end_time": 384.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: もしやっぱり合わなくて\n顧客: 池田さんのところにお願いするという形だったところは\n営業: それはウェルカムでしょうかっていう\n顧客: 全然ウェルカムです\n営業: 最近そういうお客さんめちゃくちゃ多いです",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 384.0,
+    "end_time": 397.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: なるほど\n営業: ちなみに何という会社さんかもし大丈夫であれば\n顧客: それはちょっと後日でいいですか\n営業: ありがとうございました\n顧客: 全然別に隠すつもりはないんですけど",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 397.0,
+    "end_time": 413.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その辺はその辺で\n顧客: ドコドコさんですみたいなところは\n営業: 本当に礼儀というか\n顧客: そういったところで\n営業: ちょっとやっぱり池田さんのところには",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 413.0,
+    "end_time": 424.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お伝えをしようと思ってますんで\n営業: そうですね\n顧客: すでに施策されてらしくて\n営業: それでまた別の会社にみたいな感じで\n顧客: 今なってらっしゃるところだと思うので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 424.0,
+    "end_time": 438.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ぜひいろいろ試していただく中で\n顧客: 私たちも1回ぜひ使ってみていただいて\n営業: どうなるかみたいなところも\n顧客: フィーリングチェックしていただけたら\n営業: 嬉しいなと思ってます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 438.0,
+    "end_time": 450.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 吉田副本部長なんかある?\n営業: すいません吉田です\n顧客: お世話になります\n営業: ありがとうございます\n顧客: 今回はですね",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 450.0,
+    "end_time": 459.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いろいろと検討した結果としてですね\n顧客: お世話になって残念かもしれないんですけど\n営業: 助け方にということで\n顧客: いろいろとご対応いただいたり\n営業: ご協力いただいたりしてありがとうございました",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 459.0,
+    "end_time": 472.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お世話になります\n営業: どういうふうにSNSってまだまだ続くんで\n顧客: 途中途中でストーリーとか\n営業: 何か変わる可能性もあると思ってるんですよね\n顧客: その際にいろいろな",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 472.0,
+    "end_time": 487.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ここでまた声掛けさせていただく機会があると思いますので\n顧客: その時はぜひ気持ちよくお受けいただきたいなと思います\n営業: 本当にすいません\n顧客: この度ちょっとこのような結果になってしまいまして\n営業: 申し訳ございませんでした",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 487.0,
+    "end_time": 502.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 全然全然\n営業: わざわざ時間とっていただいて本当にありがとうございます\n顧客: そうですね\n営業: 私たちは自信があるので\n顧客: 戻ってきていただくのを待っております",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 502.0,
+    "end_time": 517.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね\n顧客: あと本当にいろいろと動画とか\n営業: そういったところちょっと増えてきてますんで\n顧客: 他の県でも\n営業: 何かまたこういったとこも縁だと思ってますので",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 517.0,
+    "end_time": 529.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: いやいや全然ないです\n顧客: そうですね\n営業: テイストが例えば違う方とかいらっしゃれば\n顧客: どんなテイストでも合わせられる自信はもちろんあるんですけど",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 529.0,
+    "end_time": 539.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 合いそうな方いらっしゃれば\n顧客: ご紹介いただけたら嬉しいなって\n営業: それはね僕送ってもらった\n顧客: 100本ノックのシナリオとかいったところと\n営業: いろいろと",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 539.0,
+    "end_time": 549.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 本社のところのサイトとか見せてもらって\n営業: 実績とかいったところも\n顧客: 本当に申し分がないなっていったところは\n営業: もう重々理解が把握しておりますんで\n顧客: ありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 549.0,
+    "end_time": 561.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いやいや全然ないです\n顧客: 他の会社さんに依頼されて\n営業: また考え直すぐらいって\n顧客: 大体いつぐらいになるんですか\n営業: 半年後とか",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 561.0,
+    "end_time": 573.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: どうなんでしょうね\n営業: こればっかりはやっぱり\n顧客: 我々ではやっぱりちょっと決められる\n営業: 兼ねるところがあって\n顧客: どうしてもやっぱり得意先があってのことなんでですね",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 573.0,
+    "end_time": 583.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 継続的なのか\n顧客: いやいやっていったところで\n営業: 本当に年内みたいなところになるのか\n顧客: こればっかりはちょっと\n営業: 我々の方も",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 583.0,
+    "end_time": 594.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: かしこまりました\n営業: そういったところもありましても\n顧客: 当然そう\n営業: 危ういところになったらご相談というか\n顧客: そういう機会があったら",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 596.0,
+    "end_time": 605.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 多分出てくると思いますんで\n顧客: ぜひぜひ上司の先生よろしくお願いします\n営業: こちらこそよろしくお願いします\n顧客: ありがとうございます\n営業: そうですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 605.0,
+    "end_time": 617.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私たちは結構いろいろソリューションも\n営業: 今後も出しているので\n顧客: 例えばショート動画だけじゃなくて\n営業: ライブコマースの代行をやらせてもらいます\n顧客: ショップとかでやらせてもらったりとか",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 618.0,
+    "end_time": 629.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あと内製化をしたいお客さん\n顧客: 自社で動画を作るところで\n営業: 私たちのプログラムだと\n顧客: 助成金を使って\n営業: それで企業の内製化を支援する",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 629.0,
+    "end_time": 639.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていう風なプログラムがあったりもします\n営業: AIで動画作るとか\n顧客: そういうところも\n営業: どんどん出していっておりますので\n顧客: 細かいところでもぜひ",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 639.0,
+    "end_time": 649.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 相談ベースでも\n顧客: ぜひご連絡いただけたら嬉しいなと思います\n営業: そうですね\n顧客: 池田さんもいろいろ\n営業: 大学で講演したりとか",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 649.0,
+    "end_time": 657.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いろいろ見させてもらってますんで\n営業: ちゃんと\n顧客: 嬉しいです ありがとうございます\n営業: ぜひぜひ今後ともよろしくお願いします\n顧客: こちらこそよろしくお願いします",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 657.0,
+    "end_time": 671.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 結果的には本当にこれちょっと\n顧客: 申し訳ないところになったんですけど\n営業: 本社の結果が最大化されることが\n顧客: 一番大事ですので\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 671.0,
+    "end_time": 684.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ぜひぜひ今後ともよろしくお願いします\n営業: こちらこそ本当によろしくお願いします\n顧客: 本日短い間ですけど\n営業: お時間いただきましてありがとうございます\n顧客: こちらこそありがとうございました",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 684.0,
+    "end_time": 695.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 失礼いたします\n顧客: ご清聴ありがとうございました",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_001_compressed.mp3",
+    "start_time": 695.0,
+    "end_time": 707.0,
+    "segment_count": 2
   }
 ]
