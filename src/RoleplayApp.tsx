@@ -89,9 +89,9 @@ function RoleplayApp() {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
 
-      // avatar_03（20代女性）の音声設定
-      utterance.pitch = 1.3;  // やや高め
-      utterance.rate = 1.05;  // やや速め
+      // avatar_03（30代女性）の音声設定 - 落ち着いた自然な声
+      utterance.pitch = 1.0;   // 標準的な女性の声
+      utterance.rate = 0.95;   // ゆっくりめで落ち着いた話し方
 
       speechSynthesis.speak(utterance);
     } else {

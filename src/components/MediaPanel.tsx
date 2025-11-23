@@ -1,4 +1,4 @@
-import { Play, Volume2 } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { formatDuration } from '../lib/audio';
 
@@ -93,22 +93,6 @@ export function MediaPanel({
 
         {/* 録音中オーバーレイ */}
         {renderWaveform()}
-      </div>
-
-      {/* 下部のコントロール（将来拡張用） */}
-      <div className="hidden md:flex items-center justify-center gap-2 p-2 bg-black/50 border-t border-white/10">
-        <button
-          className="btn-icon text-white hover:bg-white/20"
-          aria-label="再生/一時停止"
-        >
-          <Play size={16} />
-        </button>
-        <button
-          className="btn-icon text-white hover:bg-white/20"
-          aria-label="音量調整"
-        >
-          <Volume2 size={16} />
-        </button>
       </div>
     </div>
   );
