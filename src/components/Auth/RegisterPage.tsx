@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 
@@ -12,6 +12,8 @@ export function RegisterPage() {
   const [displayName, setDisplayName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
+  const [verifying, setVerifying] = useState(false)
+  const verifyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // 現在のユーザー情報を取得
   useEffect(() => {
@@ -48,16 +50,18 @@ export function RegisterPage() {
       setStoreCodeValid(false)
       setStoreName('')
       setStoreId('')
+      setVerifying(false)
       return
     }
 
     try {
+      setVerifying(true)
       const { data, error } = await supabase
         .from('stores')
         .select('*')
         .eq('store_code', code)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
 
       if (data && !error) {
         setStoreCodeValid(true)
@@ -73,14 +77,45 @@ export function RegisterPage() {
       setStoreCodeValid(false)
       setStoreName('')
       setStoreId('')
+    } finally {
+      setVerifying(false)
     }
   }
 
-  // 店舗コード入力時の処理
+  // 店舗コード入力時の処理（デバウンス付き）
   const handleStoreCodeChange = (value: string) => {
-    setStoreCode(value.toUpperCase())
-    verifyStoreCode(value.toUpperCase())
+    const upperValue = value.toUpperCase()
+    setStoreCode(upperValue)
+
+    // 既存のタイマーをクリア
+    if (verifyTimeoutRef.current) {
+      clearTimeout(verifyTimeoutRef.current)
+    }
+
+    // 入力が空の場合は即座にリセット
+    if (!upperValue) {
+      setStoreCodeValid(false)
+      setStoreName('')
+      setStoreId('')
+      setVerifying(false)
+      return
+    }
+
+    // 500ms後に検証を実行（デバウンス）
+    setVerifying(true)
+    verifyTimeoutRef.current = setTimeout(() => {
+      verifyStoreCode(upperValue)
+    }, 500)
   }
+
+  // コンポーネントアンマウント時にタイマーをクリア
+  useEffect(() => {
+    return () => {
+      if (verifyTimeoutRef.current) {
+        clearTimeout(verifyTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // 登録処理
   const handleRegister = async () => {
@@ -174,7 +209,13 @@ export function RegisterPage() {
               onChange={(e) => handleStoreCodeChange(e.target.value)}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]/60 focus:border-transparent transition-all backdrop-blur-sm"
             />
-            {storeCode && storeCodeValid && (
+            {storeCode && verifying && (
+              <div className="mt-2 flex items-center gap-2 text-slate-400">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-400"></div>
+                <span className="text-sm">確認中...</span>
+              </div>
+            )}
+            {storeCode && !verifying && storeCodeValid && (
               <div className="mt-2 flex items-center gap-2 text-green-400">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -182,7 +223,7 @@ export function RegisterPage() {
                 <span className="text-sm font-medium">{storeName} として登録されます</span>
               </div>
             )}
-            {storeCode && !storeCodeValid && (
+            {storeCode && !verifying && !storeCodeValid && (
               <div className="mt-2 flex items-center gap-2 text-red-400">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
