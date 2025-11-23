@@ -179,6 +179,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return
         }
 
+        // トークン更新は無視（自動リロード防止）
+        if (event === 'TOKEN_REFRESHED') {
+          console.log('🔄 トークン更新を検知（再レンダリングをスキップ）')
+          return
+        }
+
         setUser(session?.user ?? null)
 
         if (session?.user) {
