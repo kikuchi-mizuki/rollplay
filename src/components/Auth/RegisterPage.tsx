@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 export function RegisterPage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [initializing, setInitializing] = useState(true)
   const [storeCode, setStoreCode] = useState('')
   const [storeCodeValid, setStoreCodeValid] = useState(false)
   const [storeName, setStoreName] = useState('')
@@ -36,6 +37,9 @@ export function RegisterPage() {
           navigate('/')
           return
         }
+
+        // プロフィールが存在しない場合は登録画面を表示
+        setInitializing(false)
       } else {
         // ログインしていない場合はログインページへ
         navigate('/login')
@@ -152,7 +156,7 @@ export function RegisterPage() {
     }
   }
 
-  if (!user) {
+  if (initializing || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0D0E20] via-[#16172B] to-[#272A46]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6C5CE7]"></div>
