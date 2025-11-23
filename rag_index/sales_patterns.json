@@ -5780,5 +5780,779 @@
     "start_time": 2691.0400390625,
     "end_time": 2724.0400390625,
     "segment_count": 3
+  },
+  {
+    "text": "営業: お世話になってます。よろしくお願いいたします。もうすぐ池田の方が参りますので少々お待ちください。\n顧客: よろしくお願いいたします。\n営業: すいません遅くなり失礼いたしました。先の面談が終わってしまいまして失礼しました。\n顧客: とんでもないです。お願いします。\n営業: はい、お願いいたします。まず念のため進捗の確認を大山田の方からもらいます。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 0.0,
+    "end_time": 36.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい、かしこまりました。画面共有いたします。今画面見えていらっしゃいますでしょうか。\n営業: はい、見えております。\n顧客: はい、ありがとうございます。制作の進捗の確認なんですけれども、\n営業: ナンバーワンのバナーとナンバースリーの撮影セットの動画が納品完了しております。認識は間違いないでしょうか。\n顧客: はい、あっております。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 36.0,
+    "end_time": 65.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい、ありがとうございます。今回ちょっとバナーの方と、あとナンバースリーがちょっとキャストを新しく\n顧客: あゆかの方で撮影させていただいたのと、ちょっと一人二役でまた新しい挑戦だったかなと思うんですけれども、\n営業: キャストでも編集でも何でも大丈夫ですね。ちょっとフィードバックをいただけたらと思います。いかがでしょうか。\n顧客: はい、ありがとうございます。\n営業: そしたら介護の大手訴求の方からちょっとフィードバックさせていただくと、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 65.0,
+    "end_time": 97.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 応募自体は8月で2名出ています。\n営業: 一人、エリアはどちらも東京、神奈川でメインエリアから獲得できていて、一人は正社員で3ヶ月以内に転職されたい方。\n顧客: もう一人は情報収集層のパートナー方でした。\n営業: まだリードタイムが短いこともあって、その後の面接の設定までは行っていないので、引き続き進捗を見たいなと思っています。\n顧客: 公告の指標、配信上の指標としては、まずCPMでいうと、だいたいモッパンやボーナスの動画と同じくらいのCPMで配信はできています。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 97.0,
+    "end_time": 153.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 既存の公告との違いで言うと、CPCが200円ほど安かったのと、CTRも他のモッパン、ボーナスが今0.6前後なんですけど、\n顧客: 大手訴求の方が0.7ぐらいで、今のところは大手訴求の方がCBC、CTRの方が良い状況です。\n営業: その後の応募の数で言うと、他の動画の方が若干応募数としては多いんですけれども、応募までのCPCとかCTRみたいな公告の反応率で言うと、\n顧客: 大手訴求の方が今のところ良いような状況かなというふうに見ております。\n営業: ここまでが一旦会合になります。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 153.0,
+    "end_time": 209.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 保育の方ですね。今、モッパンと大和さんの動画と動くバナーの3本回しています。\n営業: 結構的にはどの広告から\n顧客: すみません、失礼しました。\n営業: カルーセルの動画からまだ応募が来ていない状況で、\n顧客: カルーセルからの応募はまだ来ていない。他の動画2本から応募を今月発見いただいているような状況です。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 210.0,
+    "end_time": 269.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: カルーセルの方と動画の違いで言うと、\n顧客: 単純にカルーセルの方がCPMが高いような状況です。\n営業: 他の動画2本がCPM1600から700円くらいに出ているのに対して、\n顧客: カルーセルの動画が2500円前後で配信されているので、\n営業: 単純に表示コストが高いというのが所感です。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 270.0,
+    "end_time": 301.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そこの差はなぜ出ているのか見てみたんですけど、\n営業: 動画2本の方は主にインスタのリールでのインプレッションがほとんどなのに対して、\n顧客: カルーセルバナーの方がインスタのストーリーズフィードの2本に多く出ているというそこの違いがあって、\n営業: ストーリーズフィードがCPMが高いので、\n顧客: そこでまず配信面の違いで表示コストの差が出ているなという感じです。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 301.0,
+    "end_time": 338.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: とはいえ、CTRに関しては、\n顧客: もう一本のイメさんの動画が今CTR0.3くらいに対して、\n営業: カルーセルは0.52なので、\n顧客: クリック率自体はカルーセルバナーの方がいいような状況です。\n営業: なので、カルーセルの方は表示コストは高いんですけれども、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 339.0,
+    "end_time": 365.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: クリック反応率の方はいいような状況です。\n営業: 動画の配信の調整次第ではこれから応募も出てくるのではないかと思っているんですけど、\n顧客: 配置は気をつけないと応募が出づらい予算を消化してしまうかなというリスクはあるように思っています。\n営業: ちょっとつらつらと話してしまったんですけど、\n顧客: 一旦初動、そんな感じです。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 365.0,
+    "end_time": 393.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちなみにCPAはどうでしたか?\n顧客: CPAは、保育の方は今動画2本それぞれ13,000円くらい。\n営業: 介護の方が9,000円ほどになります。\n顧客: 保育は前よりちょっと安くなったんですかね?\n営業: そうですね、安くなりました。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 396.0,
+    "end_time": 427.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 配信設定変えたのもあるんですけど、前は類別配信でやっていたんですけど、\n営業: なかなか効果が出づらかったので、直近ブロードに変えたところCPAになりました。\n顧客: すごい。\n営業: 換算機なので、そもそもCTR低いのは引き続きかなって思うんですけど、\n顧客: ちょっと初級、いくつか変えていくみたいなことで、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 427.0,
+    "end_time": 453.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 換算機でもちょっとCTR自体上げていければなというふうには思っています。\n顧客: 介護は逆にちょっと高くなっちゃったみたいな感じですかね?\n営業: 介護はですね、直近ずっとエリアの調整とか、また広告セットの作り変えたりで、\n顧客: ちょっと学習期間が短いこともあって、\n営業: 少し参加がブレが生じている時期ですが、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 453.0,
+    "end_time": 480.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 大きな影響を受けたりとか、\n営業: 大幅に悪化したなという感じはないです。\n顧客: なるほど。\n営業: では、CTRですね。\n顧客: そこが上げれたら、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 480.0,
+    "end_time": 498.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: CPAをもっと安くなるしって感じですね。\n顧客: そうですね。特に保育はそうかなと。\n営業: ちょっとそれに対して、\n顧客: 今の状況で、\n営業: 1年の段階でCPAがあったり、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 498.0,
+    "end_time": 511.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 特に保育はそうかなと思っています。\n営業: 最後の方は全然、\n顧客: CPCもCTRも高い方なので、\n営業: あとは、\n顧客: 一緒に同じ広告セットで配信している広告の方、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 511.0,
+    "end_time": 528.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 別の広告、\n顧客: モッパンとか、\n営業: そっちの方にインプがやってしまっているのもあるので、\n顧客: 調整次第で応募で始めると思っています。\n営業: まだモッパンが生き残っているんですか?",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 528.0,
+    "end_time": 541.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: モッパンは、\n営業: モッパンと、\n顧客: ボーナス50万出ました。\n営業: どちらもやや貸しとかですけど、\n顧客: 多分、時期的に",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 541.0,
+    "end_time": 553.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ボーナスの方、今反応率いい。\n顧客: 時期的なことも加盟して、\n営業: 反応率いいのかなって思っています。\n顧客: すごいですね。\n営業: そうなんです。今、ボーナスが一番CTR高くて、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 553.0,
+    "end_time": 566.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 1.2パー。\n営業: うちで回している中では高い方なんですけど、\n顧客: ついでにモッパンが1.05パー。\n営業: ボーナスって1年前の方ですね。\n顧客: そうなんですよね。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 566.0,
+    "end_time": 585.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 年中配信していると、やっぱり時期によっては、\n顧客: CTR下がってきた時期もあって、\n営業: 途中で止めたりとかもしていたんですけど、\n顧客: 毎年使っていけそうだなっていう所感はあります。\n営業: すごいです。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 587.0,
+    "end_time": 602.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: モッパンは本当に息が長くて驚いています。\n営業: すごいです。\n顧客: あんまり作り直さなくてもいいってなると、\n営業: あんまり私たち儲からないみたいな感じ。\n顧客: 間違いがする。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 603.0,
+    "end_time": 620.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういうことは言わないですけど。\n顧客: いやいやいや、効果安定していただけるのが、\n営業: 私たちの思っているところですので、\n顧客: 素晴らしいなというところです。\n営業: ありがとうございます。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 620.0,
+    "end_time": 633.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます。\n営業: もう1個の派遣の方でもお話があったんですけど、\n顧客: 作ってPDCに回していきたいというところでは、\n営業: お話がありました。\n顧客: ただ介護の方とか、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 633.0,
+    "end_time": 650.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 調整しながら本数どうするかというのを、\n顧客: 決めていきたいというところで、\n営業: 今後のご予定みたいなところは、\n顧客: いかがですか。\n営業: 直近新しく作るみたいな話は、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 650.0,
+    "end_time": 664.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: まだ社内ではできていないんですけど、\n営業: 保育の方は、\n顧客: CTRが今低いっていうのが課題としてあるので、\n営業: 冒頭3秒間だけでも、\n顧客: 可能であれば効果検証していきたいなとは、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 664.0,
+    "end_time": 691.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 個人的には考えています。\n顧客: ちょっと直近別の運用者の、\n営業: メタをよく運用されている方から、\n顧客: 動画を見ていただいたアドバイスをしてもらった感じだと、\n営業: モッパンの、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 691.0,
+    "end_time": 713.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 相談者①の質問の内容が、\n営業: 健在層向け、今すぐ転職したくて、\n顧客: みたいな質問が、\n営業: 付き出されていると思うんですけど、\n顧客: これをもう少し具体的な、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 714.0,
+    "end_time": 735.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 残業何時間で辛くてとか、\n顧客: もう少しリアルで具体性のある、\n営業: 悩みに変えたほうが、\n顧客: フックとしてはいいんじゃないか、\n営業: みたいなアドバイスもいただいたりしたので、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 736.0,
+    "end_time": 756.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 最初の質問、相談者の悩みを、\n営業: いくつかレパートリーを作って試すのは、\n顧客: 良い方法としてあればいいかなと考えています。\n営業: 今のモッパンの話は、保育側の話ですね。\n顧客: 保育側の話。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 758.0,
+    "end_time": 780.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ラーメン食べているものって言うんですよね。\n顧客: 違うか、ごめんなさい。\n営業: お菓子。\n顧客: お菓子の方。\n営業: 5月に作ってる方ですね。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 780.0,
+    "end_time": 792.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ミルオブ保育士で。\n営業: はいはいはい。\n顧客: 確かにね、確かに確かに。\n営業: もう一つ、\n顧客: 第三者的にアドバイスをもらった感じだと、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 792.0,
+    "end_time": 814.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 最初のファーストビュー、\n顧客: ミルオブ保育士で解決って、\n営業: サービス名入れてるんですけど、\n顧客: サービス名が特にフックがあるわけではないので、\n営業: 保育士さんこんなお悩みある方とか、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 814.0,
+    "end_time": 844.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: サービス名ではない別の、\n営業: 保育士ってワードと、\n顧客: もう少し共感、\n営業: 共感性の、\n顧客: 悩みを打ち出した方が、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 845.0,
+    "end_time": 865.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 手を止めてくれるユーザー多いんじゃないかみたいな、\n顧客: アドバイスをもらったので。\n営業: おっしゃる通りですね。\n顧客: 変えるなら、最初の産業化の見せ方だけで、\n営業: もういくつかデパートで増やしたいなと、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 870.0,
+    "end_time": 884.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと直近考えてました。\n営業: そうですね。\n顧客: いきなりお菓子食べながら、\n営業: 相談聞いてるところから始めたら、\n顧客: だいぶ変わるかもしれないですね。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 884.0,
+    "end_time": 901.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 確かに。\n顧客: サービス名が変えてることで、\n営業: 広告動画ってすぐに分かるってことですよね。\n顧客: サービス名知名度とか、\n営業: 強いインパクトがあったらいい、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 903.0,
+    "end_time": 927.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あれの話は別かなと思うんですけど、\n営業: 最初カットして、いきなり相談から入るのも、\n顧客: あれでいいかもしれないです。\n営業: 解決のコーナーってところで、\n顧客: 医療保育士っていう風に言ってて、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 927.0,
+    "end_time": 950.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 尺的に3秒ぐらいですかね。\n顧客: あったりするので、\n営業: そこを変えたらどうなるんだろう。\n顧客: そうですね。\n営業: これはちょっと試してみたいなと思って。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 950.0,
+    "end_time": 963.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: これメタの管理画面で、\n営業: どこからスタートするかとか、\n顧客: 管理画面上できるんですけど、\n営業: できるんですか?\n顧客: そういった編集を、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 965.0,
+    "end_time": 982.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういった編集をこちらでやってしまうっていうのは、\n顧客: 音声的には問題ないですか?\n営業: 大丈夫です。\n顧客: 本当ですか。ありがとうございます。\n営業: 最初どこから始まるかだけを変えるとかだと思います。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 982.0,
+    "end_time": 1001.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 納品後のデータを特にいじるとか、\n営業: っていう感じではないですか。\n顧客: そうです。\n営業: 大丈夫です。\n顧客: できることとしては、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1001.0,
+    "end_time": 1007.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 尺を変えるのと、\n顧客: これはFacebook向けになるかもしれないんですけど、\n営業: ファーストビューの画像を指定できたりするので、\n顧客: ファーストビューと尺の2つでいじることができます。\n営業: そこの辺問題なければ、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1007.0,
+    "end_time": 1026.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 相談者の悩みいきなり打ち出すところからのスタートで、\n営業: 試しにやってみようかなと思います。\n顧客: ぜひぜひお願いします。\n営業: ちなみに保育は、\n顧客: 旬というかピークはいつぐらいに来そうやなって感じはありますか。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1026.0,
+    "end_time": 1046.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 10月以降ですね。\n顧客: 10月以降。\n営業: 10月以降から、\n顧客: 翌年4月入社の求人が出始める時期なんですよ。\n営業: 翌年4月にもう出るんですか。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1046.0,
+    "end_time": 1063.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね。\n営業: 東京神奈川が大体10月頃から、\n顧客: 4月入職の求人が出始めて、\n営業: 11月以降がそれ以外の県が出始めるっていうのが、\n顧客: 毎年のトレンドみたいです。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1063.0,
+    "end_time": 1083.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その少し手前ですと、\n顧客: 秋のイベントが終わったぐらいに、\n営業: 秋ポストが一部転職される方もいらっしゃるみたいなので、\n顧客: 8月、9月でぼちぼち。\n営業: ほぼ7、8割型保育士の方って4月に出会えたところなので、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1083.0,
+    "end_time": 1109.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 10月以降で4月入職の方が増える。\n営業: いいですね。\n顧客: じゃあ10月からに備えて、\n営業: クリエイティブ追加しておくとか。\n顧客: 4月入職だと今期の売り上げにヒットしないみたいな、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1109.0,
+    "end_time": 1127.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 社内的な事情もありまして。\n顧客: もちろん4月来年の売り上げ作る方も、\n営業: 注力していきたいんですけども、\n顧客: 3月中に、3月までに入職される方を増やす。\n営業: 増やしたいっていうのが営業部の要望でもあるので、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1127.0,
+    "end_time": 1146.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 生社員の方だと担任もたれてるので、\n営業: 基本的には変わり目が多いのは仕方ないかなってところではあります。\n顧客: 今期の売り上げがあってなると、\n営業: 3月に入職される方も増やしたいっていうのが、\n顧客: 営業部の要望でもあるので、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1146.0,
+    "end_time": 1168.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 変わり目が多いのは仕方ないかなってところではあります。\n顧客: 例えば今期の売り上げがあってなると、\n営業: コンスタントに、\n顧客: 転職に3ヶ月以内にされたい方をどうやって集めるかっていうのは、\n営業: ずっと課題ではあります。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1168.0,
+    "end_time": 1187.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 3月になるか4月になるかわかんないけど、\n営業: リストとして集めやすくなるのが10月以降かって感じですよね。\n顧客: そうですね。\n営業: 考えたら予算も増やされると思いますし。\n顧客: 大幅に全体予算が100万増えますっていう感じではないんですけれども、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1190.0,
+    "end_time": 1213.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 若干は増えるので、\n顧客: あとはどこのバイトにどれくらい予算を振っていくか、\n営業: 9月くらいまでに決める予定です。\n顧客: 分かりました。\n営業: 予算の割り振りが完了したら、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1213.0,
+    "end_time": 1231.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 動画追加で作るかが決まってくるみたいな感じ?\n営業: そうですね。\n顧客: それで言うと予算の割り振り、\n営業: 予算割り振る段階でも動画広告費を確保するか、\n顧客: もしくは月内で予算使い切るの難しいよねってなった場合に、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1231.0,
+    "end_time": 1252.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その予算、広告費、広告制作費として使うかみたいな、\n顧客: 2パターンくらい。\n営業: 分かりました。\n顧客: ということは8月中に1回作るかどうかの判断を1回行って、\n営業: 次は9月になるかなみたいな。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1252.0,
+    "end_time": 1271.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね。\n営業: イメージとしてはそうなんですけど、\n顧客: 8月中追加で作るかどうかの話がまだできていないので、\n営業: 残りの予算どうやって使うかのタクとしては考えています。\n顧客: 分かりました。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1273.0,
+    "end_time": 1293.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね。\n顧客: 暇の内容を踏まえて改善していくのと、\n営業: でも介護の方も考えるとやっぱり八重樫が合うんですかね。\n顧客: 伝わったかは分からないんですけど、\n営業: 介護は本当に八重樫さん大活躍でして。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1295.0,
+    "end_time": 1315.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 八重樫が合わない業界もあるんですよ。\n営業: そうなんですか。\n顧客: 私がキャストと今出演している大山田がキャストとか、\n営業: いろいろ出てる人がいるもので、\n顧客: 私が出てるものが一番効果がいいみたいなものとかあったりとか、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1317.0,
+    "end_time": 1336.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: その業界によって全然違うので、\n顧客: せっかく八重樫で効果がある程度出るというのが分かってらっしゃるので、\n営業: どんどん攻めていったらいいのかなと思っています。\n顧客: ありがとうございます。\n営業: 大丈夫ですよ、ごめんなさい。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1336.0,
+    "end_time": 1356.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今画面に映していただいている部分のセリフも、\n営業: 一部編集をご依頼した場合って、\n顧客: どれくらいの期間で編集可能なものですか。\n営業: 編集自体は一週間ぐらいでできます。\n顧客: 構成を大幅に変えるとか、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1358.0,
+    "end_time": 1385.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: テロップを変えるぐらいだったら全然大丈夫なんですけど、\n顧客: このシーンを例えば冒頭に持ってきてとか、\n営業: こういう感じで構成もいじるっていう風にしたら、\n顧客: もう一週間ぐらいになるかなって思っています。\n営業: イメージとしては相談者①の質問プラス回答のみを変えるみたいなのだと、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1385.0,
+    "end_time": 1412.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 大体一週間ぐらいでできそうって感じですか。\n営業: そうですね、相談者①のこのテロップの質問が記載している内容を変えるみたいなことですかね。\n顧客: 質問者の質問と回答、両方。\n営業: 回答を持ってなると多分再撮影というか、\n顧客: 追加で撮影が必要になりますかね。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1413.0,
+    "end_time": 1435.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: サポートしてくれるようでOKであれば、\n顧客: 質問だけの変更で大丈夫だと思うんですけど、\n営業: 質問によって回答を変えるのであれば、\n顧客: もう一回大橋さんにこの状態の感じをイメージして、\n営業: 再撮影になると思うので。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1436.0,
+    "end_time": 1450.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 2週間はかかるかな。\n営業: 分かりました。\n顧客: 実際変更由来するかどうかは知らないで相談をするんですけども、\n営業: 回答まで変えたいってなった場合はそれぐらいの期間を見ておきますが、\n顧客: だいぶ大掛かりになりそうですかね。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1451.0,
+    "end_time": 1474.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 再撮影するってなったら大掛かりになるかもしれないですね。\n顧客: テロップだけだったらっていう感じがあって、\n営業: 今この動画的には、\n顧客: 自分が視聴している時を考えると、\n営業: 最初の冒頭の質問をちゃんと見てるんですけど、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1478.0,
+    "end_time": 1493.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: それ以降は雰囲気で見てるなっていう感じが、\n営業: 見えるだろうなって自分だったら。\n顧客: ここからは面白いことがあったなとか、\n営業: 寄り添ってくれてるなぐらいの方も感じなくて、\n顧客: あんまりテロップの内容がグサグサ入ってきてる。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1494.0,
+    "end_time": 1510.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: グサグサというよりは、\n顧客: 質問箱のテロップを変えるだけで、\n営業: 結構A,Bテスト的にはなるんじゃないかなと。\n顧客: 確かにそれもそうですね。\n営業: 回答が反応性ある方ですし、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1511.0,
+    "end_time": 1530.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: テロップだけでもいいかなというふうに思いました。\n営業: 少しずつ進めたい。\n顧客: 検討してみます。\n営業: ありがとうございます。\n顧客: ごめんなさい。再編集とかになると、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1530.0,
+    "end_time": 1549.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 費用ってどれぐらいになるんでしたっけ?\n顧客: 編集だけですと5000円で。\n営業: 再撮影が入ってくると、\n顧客: 2万5000円か1万5000円か。\n営業: ちょっと待ってくださいね。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1550.0,
+    "end_time": 1567.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: テロップの編集だけでも、\n営業: 録音が必要になるので、\n顧客: 相談者の質問を読み上げる音声の再録音も、\n営業: 八枝さんにやっていただくという流れになります。\n顧客: そうですね。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1570.0,
+    "end_time": 1586.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 納品を1回5000円。\n顧客: そうですね。\n営業: 撮影と編集で合計で1万円という感じですね。\n顧客: ありがとうございます。\n営業: それも踏まえて持ち帰らせていただきます。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1586.0,
+    "end_time": 1604.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね。\n営業: でも構成の修正が、\n顧客: そうですね。\n営業: 文言を結構変えると発生するかもなので、\n顧客: そうなったら、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1605.0,
+    "end_time": 1613.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: プラス5000円。\n顧客: 1万5000円。\n営業: お願いします。\n顧客: ありがとうございます。\n営業: プロジェクトの方も文字の一部、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1613.0,
+    "end_time": 1621.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: テキストの変更ってなると、\n営業: 編集で5000円って同じ金額でしょうか?\n顧客: その認識で。\n営業: はい。\n顧客: 承知しました。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1621.0,
+    "end_time": 1630.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます。\n顧客: ありがとうございます。\n営業: そうですね。\n顧客: ちょっと、北さんにご質問になるんですけれども、\n営業: 先日、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1630.0,
+    "end_time": 1639.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お話しさせてもらった、\n営業: ドライバーの対応の方って、\n顧客: 今、ご進捗いかがですか?\n営業: こっちから何もご連絡してないですかね?\n顧客: そうです。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1639.0,
+    "end_time": 1650.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: まだ、\n顧客: 今のところなくてですね。\n営業: 私の方から連絡しても大丈夫であれば、\n顧客: 連絡させていただくんですけど。\n営業: 全然大丈夫だと思います。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1650.0,
+    "end_time": 1658.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私からもちょっと言っておきます。\n営業: すいません。\n顧客: 全然別の事業部でして、\n営業: 私の間にもちょっと、\n顧客: いえいえいえ。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1658.0,
+    "end_time": 1667.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 私の方からじゃあ。\n顧客: 池田さんからメールいただいてたところまでは、\n営業: 確認したんですけど。\n顧客: じゃあ、\n営業: 今こんなスケジュールで送ってしますとか、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1667.0,
+    "end_time": 1677.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私の方からお送りをさせていただきます。\n営業: 私もちょっとこの後、\n顧客: 別で会議した時に、\n営業: 気に入っていただいてました?\n顧客: みたいなところだけ、",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1677.0,
+    "end_time": 1685.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: お伝えしていただきます。\n顧客: ありがとうございます。\n営業: はい。\n顧客: はい。\n営業: はい。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1685.0,
+    "end_time": 1690.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい。\n営業: はい。\n顧客: はい。\n営業: はい。\n顧客: はい。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1690.0,
+    "end_time": 1696.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい。\n顧客: ありがとうございます。\n営業: はい。\n顧客: いやそうですね。\n営業: 今後のその製作、",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1697.0,
+    "end_time": 1705.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 新しくつくっていくかみたいなところは、\n営業: またまあ、\n顧客: どう volunteer――お待ちしておく形でよろしいですか?\n営業: はい。\n顧客: そののでお願いします。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1706.0,
+    "end_time": 1716.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい。\n顧客: かしこまりました。\n営業: 集成のところとかも、\n顧客: ご連絡いただきましたら、\n営業: よろしくお願いいたします。",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1716.0,
+    "end_time": 1724.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい。よろしくお願いします。\n営業: 本日はお時間いただきましてありがとうございます。\n顧客: はい。ありがとうございました。\n営業: よろしくお願いいたします。\n顧客: お願いします。",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_001_compressed.mp3",
+    "start_time": 1724.0,
+    "end_time": 1733.0,
+    "segment_count": 5
   }
 ]
