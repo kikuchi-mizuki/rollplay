@@ -20,33 +20,43 @@ export function RegisterPage() {
   useEffect(() => {
     const getUser = async () => {
       try {
+        console.log('📋 登録画面: ユーザー情報取得開始')
         const { data: { user } } = await supabase.auth.getUser()
+
         if (user) {
+          console.log('✅ 登録画面: ユーザー情報取得成功', user.id)
           setUser(user)
           // Googleアカウントから名前を取得
           setDisplayName(user.user_metadata?.full_name || '')
 
           // 既にプロフィールが存在するかチェック
-          const { data: existingProfile } = await supabase
+          console.log('🔍 登録画面: プロフィール確認中...')
+          const { data: existingProfile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
             .maybeSingle()
 
+          if (profileError) {
+            console.error('❌ 登録画面: プロフィール取得エラー', profileError)
+          }
+
           if (existingProfile) {
-            console.log('✅ プロフィール既存 - メイン画面へリダイレクト')
+            console.log('✅ 登録画面: プロフィール既存 → メイン画面へ')
             navigate('/')
             return
           }
 
           // プロフィールが存在しない場合は登録画面を表示
+          console.log('📝 登録画面: プロフィール未登録 → 登録フォーム表示')
           setInitializing(false)
         } else {
           // ログインしていない場合はログインページへ
+          console.log('❌ 登録画面: 未ログイン → ログインページへ')
           navigate('/login')
         }
       } catch (error) {
-        console.error('初期化エラー:', error)
+        console.error('❌ 登録画面: 初期化エラー', error)
         // エラーが発生しても登録画面を表示
         setInitializing(false)
       }

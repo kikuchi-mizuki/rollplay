@@ -8,35 +8,45 @@ export function AuthCallback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        console.log('🔐 認証コールバック開始')
         // URLのハッシュからセッション情報を取得
         const { data: { session }, error } = await supabase.auth.getSession()
 
         if (error) {
-          console.error('Auth callback error:', error)
+          console.error('❌ 認証エラー:', error)
           navigate('/login')
           return
         }
 
         if (session?.user) {
+          console.log('✅ ユーザーセッション取得成功:', session.user.id)
+
           // ユーザーのプロフィールが存在するか確認
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
-            .single()
+            .maybeSingle()
 
-          if (profileError || !profile) {
+          if (profileError) {
+            console.error('❌ プロフィール取得エラー:', profileError)
+          }
+
+          if (!profile) {
             // プロフィールが存在しない場合は登録ページへ
+            console.log('📝 プロフィール未登録 → 登録ページへ')
             navigate('/register')
           } else {
             // プロフィールが存在する場合はホームページへ
+            console.log('✅ プロフィール登録済み → ホームへ')
             navigate('/')
           }
         } else {
+          console.log('❌ セッションなし → ログインページへ')
           navigate('/login')
         }
       } catch (err) {
-        console.error('Callback handling error:', err)
+        console.error('❌ コールバック処理エラー:', err)
         navigate('/login')
       }
     }
