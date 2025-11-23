@@ -26,6 +26,7 @@ function RoleplayApp() {
   const [isSending, setIsSending] = useState(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+  const [isLoadingEvaluation, setIsLoadingEvaluation] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error' | 'info' } | null>(null);
   const [isConnected] = useState(true);
@@ -330,11 +331,12 @@ function RoleplayApp() {
       return;
     }
 
-    setShowEvaluation(true);
+    setIsLoadingEvaluation(true);
     try {
       // 講評を取得（Week 5: シナリオIDを渡す）
       const evalData = await getEvaluation(messages, selectedScenarioId);
       setEvaluation(evalData);
+      setShowEvaluation(true);
 
       // 会話履歴を保存（Supabase統合）
       if (user && profile?.store_id) {
@@ -391,6 +393,8 @@ function RoleplayApp() {
         message: '講評の取得に失敗しました。',
         type: 'error',
       });
+    } finally {
+      setIsLoadingEvaluation(false);
     }
   };
 
@@ -477,6 +481,7 @@ function RoleplayApp() {
             isSending={isSending}
             onClear={handleClear}
             onShowEvaluation={handleShowEvaluation}
+            isLoadingEvaluation={isLoadingEvaluation}
           />
         </div>
       </footer>

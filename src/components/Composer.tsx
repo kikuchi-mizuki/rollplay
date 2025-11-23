@@ -23,6 +23,7 @@ interface ComposerProps {
   isSending?: boolean;
   onClear: () => void;
   onShowEvaluation: () => void;
+  isLoadingEvaluation?: boolean;
 }
 
 export function Composer({
@@ -34,6 +35,7 @@ export function Composer({
   isSending = false,
   onClear,
   onShowEvaluation,
+  isLoadingEvaluation = false,
 }: ComposerProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -175,11 +177,21 @@ export function Composer({
       <div className="flex items-center gap-3 mt-3">
         <button
           onClick={onShowEvaluation}
-          className="btn btn-secondary text-xs md:text-sm"
+          disabled={isLoadingEvaluation}
+          className="btn btn-secondary text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="講評を表示"
         >
-          <MessageSquare size={14} className="mr-1.5" />
-          講評を見る
+          {isLoadingEvaluation ? (
+            <>
+              <Loader2 size={14} className="mr-1.5 animate-spin" />
+              考え中...
+            </>
+          ) : (
+            <>
+              <MessageSquare size={14} className="mr-1.5" />
+              講評を見る
+            </>
+          )}
         </button>
         <button
           onClick={onClear}
