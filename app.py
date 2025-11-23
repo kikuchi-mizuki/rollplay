@@ -591,7 +591,7 @@ def text_to_speech():
     try:
         data = request.get_json()
         text = data.get('text', '')
-        voice = data.get('voice', 'alloy')  # アバターに応じた音声ID
+        voice = data.get('voice', 'nova')  # アバターに応じた音声ID（日本語に適した女性声）
 
         if not text:
             return jsonify(success=False, error='テキストが空です'), 400
@@ -609,7 +609,7 @@ def text_to_speech():
             model="tts-1-hd",  # 高品質モデル（より自然な発音）
             voice=voice,       # アバターに応じた音声（alloy, echo, fable, onyx, nova, shimmer）
             input=text,
-            speed=0.95         # 自然な会話ペース（0.25-4.0、デフォルト1.0）
+            speed=0.90         # ゆっくりとした会話ペース（考えながら話す自然な速度）
         )
 
         # 音声データを返す

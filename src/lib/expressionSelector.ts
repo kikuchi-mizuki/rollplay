@@ -127,10 +127,10 @@ export function getVoiceForAvatar(avatarId: string): string {
   const voiceMap: Record<string, string> = {
     'avatar_01': 'alloy',    // 30代男性 - 落ち着いた声
     'avatar_02': 'nova',     // 40代女性 - 温かい女性の声
-    'avatar_03': 'shimmer',  // 20代女性 - 明るい女性の声
+    'avatar_03': 'nova',     // 20代女性 - 自然な女性の声（日本語に適している）
   };
 
-  return voiceMap[avatarId] || 'alloy';
+  return voiceMap[avatarId] || 'nova';
 }
 
 /**
