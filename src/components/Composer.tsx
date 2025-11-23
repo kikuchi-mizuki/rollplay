@@ -24,7 +24,6 @@ interface ComposerProps {
   onClear: () => void;
   onShowEvaluation: () => void;
   isLoadingEvaluation?: boolean;
-  onTestSpeech?: () => void; // 音声テスト用
 }
 
 export function Composer({
@@ -37,7 +36,6 @@ export function Composer({
   onClear,
   onShowEvaluation,
   isLoadingEvaluation = false,
-  onTestSpeech,
 }: ComposerProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -176,7 +174,7 @@ export function Composer({
       </div>
 
       {/* サブアクション */}
-      <div className="flex items-center gap-2 md:gap-3 mt-3 flex-wrap">
+      <div className="flex items-center gap-3 mt-3">
         <button
           onClick={onShowEvaluation}
           disabled={isLoadingEvaluation}
@@ -203,15 +201,6 @@ export function Composer({
           <Trash2 size={14} className="mr-1.5" />
           会話をクリア
         </button>
-        {onTestSpeech && (
-          <button
-            onClick={onTestSpeech}
-            className="btn btn-secondary text-xs md:text-sm bg-blue-600 hover:bg-blue-700"
-            aria-label="音声テスト"
-          >
-            🔊 音声テスト
-          </button>
-        )}
       </div>
     </div>
   );
