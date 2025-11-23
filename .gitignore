@@ -59,6 +59,9 @@ temp_chunks/
 *.mp4
 *.m4a
 
+# ただし、public/videos/内のmp4は追跡する（アバター動画）
+!public/videos/**/*.mp4
+
 # Logs
 *.log
 transcribe_log.txt
