@@ -1,495 +1,5 @@
 [
   {
-    "type": "customer_response",
-    "text": "大体約30分くらいお時間いただければと思っておりますので",
-    "scene": "greeting",
-    "topics": [
-      "timeline"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "はい お願いいたします",
-    "scene": "greeting",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "お名前 ショウ様ってお間違いないですかね すみません",
-    "scene": "greeting",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "ありがとうございます",
-    "scene": "greeting",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "今回動画を制作しようと思った背景だったり",
-    "scene": "greeting",
-    "topics": [
-      "video"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "こんな会社ですよ こんな動画作りたいんです",
-    "scene": "needs_analysis",
-    "topics": [
-      "video"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "はい ありがとうございます",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "はい お願いいたします",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "はい こちら見えていますでしょうか",
-    "scene": "proposal",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "ありがとうございます",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "キウイのつのりの株式会社の",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "よろしくお願いいたします",
-    "scene": "greeting",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "弊社はですね 主に人間関係の悩みを解決したいということを",
-    "scene": "needs_analysis",
-    "topics": [
-      "concerns"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "人間関係に悩んでいる方々に対して",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "考えているスタートアップでございます",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "こちらですね 今回動画の作成以来に関しては",
-    "scene": "proposal",
-    "topics": [
-      "video"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "ぜひお願いできればなと思っておりまして",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "先月の9月にローンチいたしました",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "主にこのメインキャラクターの占いがいまして",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "いろんな占い師場について",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "今までの占い師場と主な構造としては",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "言いっぱなしの構造でかなりアフターケアが少ないという",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "基本的に人が占い師を行っているので",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "人が開催している点で高額な時間書きモデルになっているという",
-    "scene": "needs_analysis",
-    "topics": [
-      "timeline"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "弊社が主に考えているペルソナに関しましては",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "主にターゲットにしたいなと思っておりまして",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "占いをしている方というよりかは",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "自分の判断基準を誰かにサポートしてほしいという",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "主にペルソナとして考えております",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "主にAIを用いて行っておりまして",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "どのようなことをしたらいいのかというネクストアクションを",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "悩みが発生した時に",
-    "scene": "needs_analysis",
-    "topics": [
-      "concerns"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "このウラッチが話していくと",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "AIが勝手に判断いたします",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "占い師が紹介されるようになっております",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "かなりジャンルがありまして",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "恋愛のジャンルが得意な占い師が",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "占いに移りますと",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "恋愛相談なんですが",
-    "scene": "needs_analysis",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "例えばLINEの履歴ですとか",
-    "scene": "proposal",
-    "topics": [
-      "examples"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "そちらのトーク履歴を出力してこのアプリに入れます",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "2人のことについて完全に理解した上で",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "悩みですとか不安とかについて",
-    "scene": "closing",
-    "topics": [
-      "concerns"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "占い終了後はですね",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "占いの内容を踏まえた上で",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "どういうアクションをこの後起こした方がいいのかっていうのを",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "ワークスフローになっております",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "マネタイズもそうですね",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
-    "type": "customer_response",
-    "text": "チケットがありまして",
-    "scene": "closing",
-    "topics": [
-      "general"
-    ],
-    "scenario_id": "unknown",
-    "source_file": "肖佳男_様_音声_sample.wav"
-  },
-  {
     "text": "営業: ちなみにコニス様はどちらでこのショート動画屋さんのことをご存知になられたんですか\n顧客: あ、多分TikTokとか\n営業: アカウントでありますよね\n顧客: 私結構TikTokユーザーでめっちゃ見てるんですけど\n営業: ショート動画屋さんのTikTokを",
     "speaker_type": "sales",
     "source": "meeting_1st_001_compressed.mp3",
@@ -7265,5 +6775,1310 @@
     "start_time": 2237.0,
     "end_time": 2247.0,
     "segment_count": 4
+  },
+  {
+    "text": "営業: あ、こんにちは\n顧客: こんにちは\n営業: おさようなりまーす\n顧客: 聞こえてます\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 0.0,
+    "end_time": 12.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 聞こえてます?普通の声で\n営業: はい、聞こえてます\n顧客: 聞こえております\n営業: 大丈夫?\n顧客: あれ?",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 12.0,
+    "end_time": 22.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: わかりました、ありがとうございます\n顧客: ちょっと電波が弱いことで\n営業: 大丈夫ですか?時差感じます?\n顧客: あ、なんかすごい\n営業: すごい時差が",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 22.0,
+    "end_time": 32.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ちょっと待ってください\n営業: はい、ありがとうございます\n顧客: ちょっと待ってくださいね\n営業: 今まだ時差感じますよね\n顧客: ちょっとそうですね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 36.0,
+    "end_time": 58.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: まだ感じるかも\n顧客: そうです\n営業: うんうん\n顧客: 今いろんなタブをしてってます\n営業: すいません",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 58.0,
+    "end_time": 70.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あ、でも徐々に\n営業: 今どうでしょう\n顧客: 良くなってきました?\n営業: はい、良くなってきました\n顧客: 今私の方がちゃんと聞こえてます",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 70.0,
+    "end_time": 84.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あ、良かったです\n顧客: なくなりました、ありがとうございます\n営業: はい、すいません\n顧客: ありがとうございます\n営業: 本日進捗の確認のところと",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 84.0,
+    "end_time": 96.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あと流れでですね\n営業: ユーザーインタビューのところ\n顧客: ぜひ収録できればと思いますので\n営業: 11時半ごろまで\n顧客: 目途に見ていただきまして",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 96.0,
+    "end_time": 106.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 進行できればと思っております\n顧客: よろしくお願いいたします\n営業: よろしくお願いします\n顧客: よろしくお願いします\n営業: 先に大坪の方から進捗の確認を行います",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 106.0,
+    "end_time": 116.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい、進捗の方なんですけれども\n営業: メッセージでもご連絡を\n顧客: いただいていたと思うんですが\n営業: 一応編集の方は全て\n顧客: お送りはさせていただいておりまして",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 116.0,
+    "end_time": 126.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ナンバー3と\n顧客: ナンバー8、ナンバー9ですね\n営業: 今\n顧客: 本社の方なので\n営業: ご確認いただいているという状況で",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 126.0,
+    "end_time": 142.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 間違いなさそうでしょうか\n営業: はい、そうですね\n顧客: ナンバー3と10を\n営業: 今日の朝\n顧客: 本社の方に共有しているので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 142.0,
+    "end_time": 152.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 早ければ今日中に\n顧客: フィードバックはあるかなと思います\n営業: ありがとうございます\n顧客: あと\n営業: 8、9も修正後のやつを",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 152.0,
+    "end_time": 162.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お送りいただいているという状況ですね\n営業: そうですね、はい\n顧客: そちらも今まだチェック中です\n営業: はい、ありがとうございます\n顧客: また追加で修正がありましたら",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 162.0,
+    "end_time": 172.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: お受け取りもありますというところ\n顧客: あと\n営業: 前回の東京の撮影の時に\n顧客: 結構\n営業: 関西のやつが一番効果が高かった",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 172.0,
+    "end_time": 182.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいなお話とかは聞いていたんですけれども\n営業: それ以外の\n顧客: 納品済みの動画に対する\n営業: フィードバックなどもしあれば\n顧客: お伺いしたいと思っております",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 182.0,
+    "end_time": 192.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: まだ関西の\n営業: やつ以外だと\n顧客: 自転車と中古品ゴルフ\n営業: この2つしか",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 192.0,
+    "end_time": 202.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 関東のやつは2本しか出していないんですけど\n営業: ゆめさんが出ていただいた\n顧客: 自転車のやつ\n営業: ノーマルのやつですね\n顧客: あれはちょっと今日の朝チェックしてみたら",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 202.0,
+    "end_time": 212.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 割と\n顧客: ぐんぐん伸びているような\n営業: イメージはありました\n顧客: はい\n営業: でも相変わらずやっぱり",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 212.0,
+    "end_time": 222.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 池田さんがやっていただいた中古品\n営業: のやつが本当に強くてですね\n顧客: すごい回ってます\n営業: やばいですね\n顧客: ちょっと私がどんどん有名になってしまう",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 222.0,
+    "end_time": 234.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね\n顧客: 関西の\n営業: すごい\n顧客: よかったです\n営業: あと私もちょっと一個今日朝見てうれしかったのが",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 234.0,
+    "end_time": 244.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 池田さんがこれまた出ていただいた\n営業: 家具のやつ\n顧客: 店舗に実際に許可取っていただいて\n営業: やったやつが\n顧客: これがオーダーまで",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 244.0,
+    "end_time": 254.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっとまだ一軒なんですけど\n顧客: オーダーまでちゃんとつながってて\n営業: おお\n顧客: だいぶ\n営業: 実はもう全部関東にも出しちゃってまして",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 254.0,
+    "end_time": 274.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 関東関西関係なく\n営業: 私が伸びているって感じ\n顧客: そうです\n営業: 面白いですね\n顧客: うれしいです",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 276.0,
+    "end_time": 288.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます\n顧客: そのあたりあれですかね\n営業: 今ちょっと深掘りすぎちゃうと\n顧客: ユーザーインタビューで話すことが\n営業: 確かに言うことがなくなってしまう",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 290.0,
+    "end_time": 300.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: この流れでぜひユーザーインタビューいければと思います\n営業: 最初と最後を\n顧客: 話しまして\n営業: 間で私にバトンタッチを\n顧客: 行いまして私から",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 302.0,
+    "end_time": 314.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: いろいろ質問をしていくという\n顧客: 流れでいければと思いますので\n営業: 事前にちょっと構成の\n顧客: ところにもいろいろ書いていただきまして\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 314.0,
+    "end_time": 324.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: この流れで進んでいきますので\n営業: ここからユーザーインタビューいければと\n顧客: 思いますので小澤さん一回\n営業: 画面切っていただいても大丈夫ですか\n顧客: これってなんか",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 324.0,
+    "end_time": 336.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 編集とかされるんですか\n顧客: ほぼノーカットでいく感じですか\n営業: もちろん編集します\n顧客: 今の進捗の確認とか\n営業: インタビューに入れちゃってもちろん",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 336.0,
+    "end_time": 348.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: サンプルのインタビュー動画\n営業: 見せてもらったらほぼノーカットに見えたので\n顧客: ちょっと緊張してました今日\n営業: あれ結構編集実はしてて\n顧客: あれぐらいの感じで",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 350.0,
+    "end_time": 364.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あれぐらいの感じで自然になるように\n顧客: 頑張りますので\n営業: いろいろぶっちゃけて\n顧客: しゃべっちゃってください\n営業: よかったです安心しましたありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 366.0,
+    "end_time": 376.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 小澤さんのタイミングで\n営業: 進行お願いします\n顧客: 皆さまショート動画屋さんの\n営業: 特別インタビューへようこそ\n顧客: 本日のファシリテーターを務めさせていただきます",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 378.0,
+    "end_time": 392.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ショート動画屋さんの運営をしております\n顧客: 株式会社美手紙の大坪と申します\n営業: よろしくお願いいたします\n顧客: 拍手をしておきます\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 392.0,
+    "end_time": 404.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 本日はですね\n営業: ショート動画でサービスの理解度を高め\n顧客: さらに動画広告で\n営業: 効率よくアプローチする方法について\n顧客: 実際にショート動画屋さんをご活用いただき",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 404.0,
+    "end_time": 414.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ご利用いただいている\n顧客: ララムーブジャパン株式会社の方に\n営業: ご登場いただき\n顧客: 弊社代表の池田が深く掘り下げていきたい\n営業: と思っております",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 414.0,
+    "end_time": 424.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ショート動画ってアプリ集客に\n営業: 効果あるのかなとか\n顧客: 日本ユーザーの気持ち\n営業: カットでお願いします\n顧客: ショート動画ってアプリ集客に",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 424.0,
+    "end_time": 434.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 効果あるのかなとか\n顧客: 日本ユーザーの気になるところってどんなところ\n営業: といった疑問や偏りが\n顧客: 出ていらっしゃる経営者の方\n営業: マーケターの方にぴったりの内容となっております",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 434.0,
+    "end_time": 444.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: それでは池田にバトンタッチして\n営業: 進めてまいります\n顧客: ありがとうございます\n営業: ご紹介預かりました\n顧客: ショート動画屋さんを運営しております",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 444.0,
+    "end_time": 452.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 株式会社ビデガミの池田と申します\n顧客: 今回ララムーブ様の動画戦略に\n営業: 非常に興味がありまして\n顧客: この回企画させていただきました\n営業: ララムーブジャパン様とともに具体的な事例を",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 452.0,
+    "end_time": 462.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 交えながらお話ししていきたいと思います\n営業: それでは小川様簡単に自己紹介を\n顧客: お願いいたします\n営業: ララムーブジャパン株式会社の小川と申します\n顧客: よろしくお願いいたします",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 462.0,
+    "end_time": 474.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 弊社少し簡単にご紹介させていただくと\n顧客: インスタント配達アプリの\n営業: ララムーブというものを運営しておりまして\n顧客: 配達を今すぐして欲しいユーザーさんと\n営業: 弊社ララムーブに登録している",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 474.0,
+    "end_time": 489.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 配達ドライバーさんを\n営業: クイックにマッチングさせるような\n顧客: サービスになっております\n営業: 昨今よく使われているタクシーアプリとか\n顧客: フードデリバリーアプリとかあると思うんですけど",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 489.0,
+    "end_time": 503.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あれの物流に特化したバージョンと思っていただければ\n顧客: 簡単にイメージできるんじゃないかと思います\n営業: そこでマーケティングを担当しております\n顧客: 今日はよろしくお願いいたします\n営業: よろしくお願いいたします",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 503.0,
+    "end_time": 516.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ララムーブさん私海外旅行とか行くときに\n営業: めちゃくちゃ見ましてですね\n顧客: 動画も担当させていただきまして\n営業: 今回ララムーブジャパン様が\n顧客: ショート動画の集約を取り組むようになった",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 516.0,
+    "end_time": 530.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: きっかけを教えていただけると嬉しいです\n顧客: はいありがとうございます\n営業: もともとそうですね\n顧客: 私たちは実は香港が本社にありまして\n営業: 日本に入ってきたタイミングは",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 530.0,
+    "end_time": 543.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 2024年の夏頃だったんですけれども\n営業: そこから自分たち日本の支社の中で\n顧客: 自社で画像をまずは作って\n営業: 回してたりしたんですけれども\n顧客: やはりこういうインスタント配達アプリっていうのが",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 543.0,
+    "end_time": 557.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今まで日本になかったっていうのがありまして\n顧客: 画像だけではやっぱり伝わる情報量とか\n営業: やっぱりサービスの特性とか\n顧客: あとどういったときに使えるのっていう\n営業: ユースケースみたいなのが",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 557.0,
+    "end_time": 569.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あまりちょっと分かりやすく伝えられてなかったかな\n営業: というふうに思うところがありましたので\n顧客: それがきっかけで動画をやろうというふうになりました\n営業: ありがとうございます\n顧客: 結構海外では色々されてらっしゃったところで",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 569.0,
+    "end_time": 584.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: っていうところだと思うんですけれども\n顧客: このショート動画作っていく前に\n営業: 抱えていらっしゃった課題とか問題点っていうのは\n顧客: どういうところでしたか\n営業: そうですね",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 584.0,
+    "end_time": 595.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 先ほどの動画で\n営業: すいません\n顧客: 画像でまずは色々スタートしてみたんですけれども\n営業: やっぱり情報が伝えきれないとか\n顧客: 効果があまり",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 595.0,
+    "end_time": 606.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 効果はありましたけど\n顧客: もうちょっとやっぱりどんどん改善していきたいよね\n営業: っていうところだとか\n顧客: あとちょっと画像だけだと\n営業: 広く感がどうしても出てしまったり",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 606.0,
+    "end_time": 616.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていうところは少しあったので\n営業: もうちょっとやっぱりSNSとかで\n顧客: これからどんどん広告を出していこう\n営業: というふうに考えたときに\n顧客: もうちょっとユーザーに対して親しみやすいものを",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 616.0,
+    "end_time": 627.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 作ってみたいなというふうに\n顧客: 社内でもありましたので\n営業: 動画を始めたというところです\n顧客: ただ動画を始めるにあたって\n営業: 自社の中でのノウハウがあまりなかったりだとか",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 627.0,
+    "end_time": 639.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あとはもうリソースが本当になかったりしたので\n営業: 一度まずはプロの方に頼みたいというところで\n顧客: 恩賞にお願いしたというところです\n営業: ありがとうございます\n顧客: 恩賞からそのご相談いただいた時期でいうと",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 639.0,
+    "end_time": 653.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 去年の秋頃かなというふうに\n顧客: 思い出してるんですけれども\n営業: 結構日本視点が設立されてから\n顧客: すごく早いタイミングで\n営業: ご相談いただいたかなと思っておりまして",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 653.0,
+    "end_time": 665.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: その中でこのショート動画屋さん\n営業: どういうふうに見つけて\n顧客: どういうふうなところで選ばれたか\n営業: というふうに覚えていらっしゃいますか\n顧客: そうですね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 665.0,
+    "end_time": 674.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 当時は多分\n顧客: 何社かやはり比較させていただかなきゃいけなかったので\n営業: 2、3社さんぐらいは選んでまして\n顧客: 全部多分ウェブ検索で\n営業: 全部調べてたんですけど",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 674.0,
+    "end_time": 686.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 実際にショート動画屋さんとお話しして\n営業: やっぱり価格が安いっていうところ\n顧客: すごくありがたいなと思ったというところと\n営業: あとキャストが自社で付いてるというか\n顧客: キャストも自社でご用意されてるというところは",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 686.0,
+    "end_time": 702.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: すごく安心材料\n顧客: キャストの方もやっぱり\n営業: どういう方ですかっていう質問がしやすかったり\n顧客: 決めやすかったり\n営業: あとキャスト込みでの料金っていうのが",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 702.0,
+    "end_time": 715.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: やっぱりここまで安いところって\n営業: あんまりなかったかなっていうふうに\n顧客: 記憶してますので\n営業: そういったところが原因で\n顧客: 決めさせていただきました",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 715.0,
+    "end_time": 724.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます\n顧客: 気持ちそのキャストが付いてたら\n営業: ショート動画屋さんの価格から\n顧客: 何倍ぐらいの感じでしたか\n営業: 何倍まで言わないといけないですけど",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 724.0,
+    "end_time": 734.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 何万円プラスぐらいの感じでしたか\n営業: キャストが付いて\n顧客: そうそうキャストが付いて\n営業: 自社のところですかね\n顧客: そうですそうです",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 734.0,
+    "end_time": 744.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: これ完全に記憶の中なんですけど\n顧客: 多分1本2万プラスとかになってた気がします\n営業: ごめんなさい\n顧客: ちょっと記憶が浅中じゃないですか\n営業: そんな感じでした",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 744.0,
+    "end_time": 760.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: だいたい3、40%ぐらい\n営業: ショート動画屋さんの価格に\n顧客: プラスされるぐらいの感じが\n営業: あったかもしれないですね\n顧客: そうですね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 760.0,
+    "end_time": 769.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あと自社でいらっしゃるっていうわけでは\n顧客: なかったので\n営業: これはもう私のイメージですけど\n顧客: 自社でいらっしゃらないってことは\n営業: ちょっとスケジュール組んだり",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 769.0,
+    "end_time": 781.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 制定するのに時間かかってしまうのかな\n営業: っていうイメージが少しあって\n顧客: ただ結構私たち動画作ると\n営業: 毎回急いでたりとかするので\n顧客: ちょっとスピード感を持ってやろう",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 781.0,
+    "end_time": 794.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: って思った時に\n顧客: ショート動画屋さんがいいなって\n営業: 思った部分もあったりしました\n顧客: ありがとうございます\n営業: 確かにキャストは他から持ってきますよ",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 794.0,
+    "end_time": 804.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいなところで\n営業: 他の会社さん営業されて\n顧客: 結局ショート動画屋さんに\n営業: 二次卸しで発注してるみたいな\n顧客: 可能性ももしかしたらあるので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 804.0,
+    "end_time": 813.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 時間で\n顧客: ありがたいなと思います\n営業: 今度このショート動画作っていく上で\n顧客: KPIみたいなところはどういう風に\n営業: 設定されましたか",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 813.0,
+    "end_time": 824.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: 私たちはショート動画だけではなくて\n顧客: 広告運用全体で\n営業: KPIっていうのは\n顧客: すでにグローバルで決まっているものがありまして",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 824.0,
+    "end_time": 834.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 獲得数だったりとか\n顧客: CPAの目標みたいなところがあるんですけど\n営業: 今回作っていただいている\n顧客: ショート動画も広告運用が\n営業: 一番の目的でやっているので",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 834.0,
+    "end_time": 846.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そういったグローバルのKPIに合わせて\n営業: 運用しています\n顧客: ありがとうございます\n営業: そのKPIの中で\n顧客: ショート動画屋さんとこの取り組む前後で",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 846.0,
+    "end_time": 855.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どういう風な変化がありましたか\n顧客: はい\n営業: そうですね\n顧客: まずちょっと前提として\n営業: 私たちユーザー向けと",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 855.0,
+    "end_time": 864.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ドライバー向け\n営業: どちらにも広告をやっていて\n顧客: 実際にショート動画屋さんにも何回\n営業: 何個かユーザー向け\n顧客: ドライバー向けって",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 864.0,
+    "end_time": 872.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 作っていただいたんですけど\n顧客: 結構ユーザーとドライバーで\n営業: 効果が違っています\n顧客: ユーザーの方は\n営業: 認知拡大にすごく貢献している",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 872.0,
+    "end_time": 884.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていう印象です\n営業: オーダー数っていうところまでは\n顧客: ちょっとまだいけてはないんですけど\n営業: 例えばコメントとかを見てみると\n顧客: こういうサービスが日本にもあったんだとか",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 884.0,
+    "end_time": 898.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あとはすごく便利そうっていう\n顧客: そういったポジティブなコメントが\n営業: すごく多く見られるので\n顧客: まずはその動画を通して\n営業: サービス",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 898.0,
+    "end_time": 906.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こういったサービスがあるよっていうのを\n営業: 伝えたかったっていうのは\n顧客: そこは達成できているのかなと思います\n営業: あとは数の分かりやすい数値のところでいくと\n顧客: インストール数と登録数が",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 906.0,
+    "end_time": 919.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 動画で圧倒的に伸びたので\n顧客: そこはすごく嬉しいです\n営業: 前に\n顧客: ショート動画屋さんに依頼する前から\n営業: どれくらい増えたかって",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 919.0,
+    "end_time": 931.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 何となくありますか?数時間というか\n営業: そうですね\n顧客: ちょっとごめんなさい\n営業: そこは出していなかったので\n顧客: はい 申し訳ないです",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 931.0,
+    "end_time": 942.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 大丈夫です ありがとうございます\n顧客: そうですね\n営業: あと\n顧客: なんだろうな\n営業: こういう数字に現れてないところでも",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 942.0,
+    "end_time": 952.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いろいろショート動画による効果で出てると思ってて\n営業: さっき言ったコメントもそうなんですけど\n顧客: 実は私たち数ヶ月前に\n営業: 登録者向けにアンケートを\n顧客: 自社で行ってみたときに",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 952.0,
+    "end_time": 964.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 知ってもらったきっかけのところで\n顧客: 結構動画見て入ってきたよとか\n営業: SNS広告見て入りましたみたいな人も結構いたので\n顧客: そういった数字で見れてないところも\n営業: しっかり見てくれてるんだなっていうところは感じました",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 964.0,
+    "end_time": 980.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: すごいですね\n営業: 広告を見てそこから検索されて知ったとかも\n顧客: いらっしゃるかもしれないし\n営業: 嬉しい\n顧客: そうですね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 980.0,
+    "end_time": 990.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっとこれ使うかどうかお任せするんですけど\n顧客: グローバルのマーケティングと比べて\n営業: 結構日本の傾向で\n顧客: 広告が直接入ってこないっていうのがあって\n営業: インストールとかはあるけれども",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 990.0,
+    "end_time": 1008.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私たちの予測だとおそらくそれを見て\n営業: 自分でキーワードを調べて\n顧客: オーガニックとして入ってきてるっていう\n営業: 結構海外と比べて\n顧客: 日本ってそういうパターンがすごく多いんじゃないかなと思うので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1008.0,
+    "end_time": 1020.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 多分そこで認知っていうところでは\n顧客: ローグがしっかり貢献してて\n営業: 最終的に検索して入ってくるみたいな\n顧客: 多分そういうのがすごく今\n営業: ショート動画屋さんもTikTokインスタで知った",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1020.0,
+    "end_time": 1034.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: みたいな人がウェブで検索してくる\n営業: 2ヶ月後3ヶ月後\n顧客: 結構いらっしゃる\n営業: 多いですね\n顧客: まずはやっぱり調べるんでしょうね皆さん",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1034.0,
+    "end_time": 1046.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます\n顧客: ドライバーの方はちなみにいかがでしたか\n営業: はい\n顧客: ドライバーの方はしっかり獲得っていうところまで\n営業: 貢献してます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1046.0,
+    "end_time": 1057.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こっちはちょっと数字があって\n営業: 私たちメタ広告を運用してるんですけれども\n顧客: メタ広告の中でもいくつかドライバー向けに\n営業: ちょっとキャンペーンを分けて走らせているんですけど\n顧客: ある広告キャンペーンの中で",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1057.0,
+    "end_time": 1074.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 動画と画像を一緒に回してたりするんですけど\n顧客: 8割ほどのコンバージョンが\n営業: ショート動画屋さんが作っていただいた動画から\n顧客: すごい\n営業: しっかりインプレッションも出てますし",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1074.0,
+    "end_time": 1089.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: インプレッションから獲得まで\n営業: すごく貢献してくれてると思います\n顧客: すごい\n営業: 運用がうまいからですよ\n顧客: どうですかね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1089.0,
+    "end_time": 1102.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: どこまで来てるかわからないですけど\n顧客: ショート動画屋さん作らしてもらった動画の\n営業: 社内の中での反応はいかがでしたか\n顧客: 結構わかりやすいというコメントがすごく多かったです\n営業: 私たち2種類トライさせていただいたかと思ってまして",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1102.0,
+    "end_time": 1121.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 1個目はバーチャル背景という形で\n営業: 簡単に作れるような感じでやっていただいたと思うんですけど\n顧客: あれはあれでSNSライクで\n営業: すごく親近感があるような雰囲気で良かったと思うんですけど\n顧客: 一方でララムーブのブランディングみたいなところは伝えにくいので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1121.0,
+    "end_time": 1140.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そういった目線で見ると少しチープな感じ\n顧客: というのもカジュアルな感じもあったと思うんですけど\n営業: その後出張撮影セットをやらせていただいてから\n顧客: そこからカメラもしっかり良いもので撮っていただいて\n営業: 編集もガッツリやっていただいて",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1140.0,
+    "end_time": 1162.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: すごいクオリティには満足しています\n営業: ありがとうございます\n顧客: やっぱりそれで動画の効果も変わったみたいな感じでした\n営業: そうですね\n顧客: やっぱり出張撮影セットでしたっけ",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1162.0,
+    "end_time": 1177.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 出張撮影セット\n顧客: 出張セットが\n営業: 出張セットで撮った方がやっぱり今もどんどん回っているので\n顧客: 動画がそっちの方がやっぱり良いんじゃないかなと思います\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1177.0,
+    "end_time": 1192.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 一番効果あったなという風に感じているショート動画は\n営業: どれを覚えていらっしゃいますか\n顧客: スプシにもちょっと貼らせていただいているんですけど\n営業: YouTubeの方が2つあって\n顧客: 1つはさっきお話ししてた中古品をテーマにした動画ですね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1192.0,
+    "end_time": 1215.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 池田さんが大阪で出ていただいたやつなんですけど\n顧客: これ私出した方がいいですか\n営業: 今リンクを押したところアクセス権限がないという風になっておりまして\n顧客: 本当ですか\n営業: ちょっとじゃあ出します",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1215.0,
+    "end_time": 1231.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: 止まらないかな大丈夫かな\n顧客: じゃあちょっと私の方で\n営業: 最近の\n顧客: そうです管理シートにあるやつで",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1231.0,
+    "end_time": 1247.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ナンバー1とナンバー2と\n顧客: あともう1個が\n営業: ナンバー1ですね\n顧客: ナンバー1が\n営業: 中古品のものがこちらですね",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1247.0,
+    "end_time": 1265.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はいそうです\n営業: あっそれですね\n顧客: これはちなみに何が良かったですか\n営業: これは\n顧客: この1個前にバーチャル背景で",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1265.0,
+    "end_time": 1281.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 1回中古品同じテーマで作ってもらってたんですけど\n顧客: あんまりそれが実は伸びなかったという背景があって\n営業: この動画をオーダーするときに\n顧客: 私たちの方から御社に\n営業: ちょっと今回フック率を上げれるように",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1281.0,
+    "end_time": 1301.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 最初の3秒めっちゃ工夫して作ってほしいですって言った覚えがすごくあるんですよ\n営業: はいはいはい\n顧客: で多分作っていただいたのが\n営業: 最初オープニングから池田さんがすごい\n顧客: 頑張ってこうねチャブ台を持ってる感じだとか",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1301.0,
+    "end_time": 1321.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: あとなんだろうな\n顧客: しっかりララムーブの安く早く配達できるみたいなポイントも\n営業: 最初の数秒で説明いただいてたりしたので\n顧客: ちゃんと車に入れるシーンとかすごい分かりやすいじゃないですか\n営業: 多分そういうちょっと重要なシーンを",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1321.0,
+    "end_time": 1341.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 最初に入れていただいたことによって結構そうですね\n営業: 今これすごい回ってるんですけどフック率多分すごい高いので\n顧客: そこが今回この動画をすごくヒットしてるのかなと思います\n営業: ありがとうございます\n顧客: やっぱりそこが最初が大事っていうところですよね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1341.0,
+    "end_time": 1361.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですね同じテーマでもやっぱり全然パフォーマンスが\n顧客: 違うので撮り方によって\n営業: とか訴求する内容によって\n顧客: 最初何秒にやるかによって全然変わるのかなっていう\n営業: 印象はあります",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1361.0,
+    "end_time": 1381.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます私も演技そんなにしないので\n営業: だいぶ教えられながら頑張ったんですけれども\n顧客: 演技指導がありましたね\n営業: なんか\n顧客: やっぱりペインポイントがユーザーのペインポイントが",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1381.0,
+    "end_time": 1401.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 抑えられてるかどうかがすごい重要かなと思ってて\n顧客: それこそさっきのチャブ台のやつって池田さんの演技で\n営業: 結構すごい重たいものを一人で持とうとしてる\n顧客: 誰がどう見てもこれ無理やろなみたいなのが伝わりやすいじゃないですか\n営業: ちょっと頑張って持とうとしてるところとか",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1401.0,
+    "end_time": 1421.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そういうところがやっぱり響いたのかなっていうのは\n営業: すごい感じてます\n顧客: 私の演技力がちょっとあれですね\n営業: 良かったです絶妙に浮いてる感じとか\n顧客: すごい頑張っていただいて",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1421.0,
+    "end_time": 1441.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 大坪さんも編集していただいて上手いこと編集していただいたのかな\n顧客: ありがとうございます\n営業: この動画の感じは\n顧客: こんな感じでありがとうございます\n営業: すみませんちょっと戻りまして",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1441.0,
+    "end_time": 1461.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 制作のプロセスとかで何か学べるようになったこととかって\n営業: 何かございましたか\n顧客: そうですねここで書いてましたね\n営業: じゃあここはちょっとごめんなさい飛ばさせてもらいます\n顧客: 今後のショート動画使っての",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1461.0,
+    "end_time": 1481.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 反則の狙いを教えていただけると嬉しいです\n顧客: 引き続き認知施策の強化を\n営業: するための材料としてショート動画をどんどん使っていきたいなという風に\n顧客: 思ってます冒頭にも紹介した通り\n営業: ララムーブが結構日本の中では新しいサービスなので",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1481.0,
+    "end_time": 1501.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そもそも当日配送っていうのができるんだよっていうところとか\n営業: ちょっと今まで日本になかった概念っていうところも\n顧客: 動画を通して啓蒙活動していきたいなという風に思ってます\n営業: あと私たちはローンチしてからずっと\n顧客: 軽貨物軽貨物車ですね軽バンとか",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1501.0,
+    "end_time": 1521.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっと小さめのトラックをメインで\n顧客: やってきたんですけど最近になって二輪バイク便というのも\n営業: 始まったりしたのでこれからも\n顧客: 動画をどんどん使っていってバイク便と言えばララムーブと言われるぐらいまで\n営業: 成長したいなという風に思います",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1521.0,
+    "end_time": 1541.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: 今後このショート動画に期待する効果とか目標とか\n顧客: 今おっしゃっていただいたところと被るところもあるかもしれないですけれども\n営業: 改めてどの辺りとかございますか\n顧客: ユーザーは先ほどから繰り返しになっちゃうんですけど",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1541.0,
+    "end_time": 1561.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: やっぱり認知度というところをどんどん上げていただきたいです\n顧客: 当日配送と言えばララムーブとかバイク便と言えばララムーブ\n営業: と言われるぐらい認知度を上げていきたいという風に思ってます\n顧客: あとさっき話にもあった\n営業: 日本の傾向として広告を見て検索するという",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1561.0,
+    "end_time": 1581.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 凄くあると思うので\n営業: 広告を見てくれた人がどんどんララムーブと調べてくれて\n顧客: 自然検索数が増えるというところも\n営業: 弊社としては結構重要視しているので\n顧客: そこも一つ目標として上げて",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1581.0,
+    "end_time": 1601.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ショート動画の効果を図っていきたいと思っています\n顧客: もうそのキャッチフレーズ浸透するようにしっかりやっていきたいなと思います\n営業: 最後にショート動画屋さんを検討されていらっしゃる\n顧客: 他の企業さんに向けてぜひメッセージをお願いいたします\n営業: 私たちがショート動画屋さんに最初決めた理由としては",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1601.0,
+    "end_time": 1621.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 安いというところがあったりはしたんですけど\n営業: 実際一緒にやらせていただくと\n顧客: スピード感が素晴らしいこともすごく体感しました\n営業: あと私たちは結構ベーシックな動画\n顧客: シンプルに私たちのブランドを伝える動画から",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1621.0,
+    "end_time": 1641.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 最近SNSで流行っているようなニームと言われるもの\n顧客: 伝えるまでいろんな動画のパターンをトライしたいという\n営業: ご要望もさせていただいたりしているんですけど\n顧客: いろんなパターンの動画に応えてくださってお提案もしていただいているので\n営業: 本当に助かっています",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1641.0,
+    "end_time": 1661.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 私たちもまだ若い会社なのでショート動画を一つの施策としてやる\n営業: というのは初めての取り組みだったんですけど\n顧客: ショート動画屋さんにお任せして安心して進めていくことができていますので\n営業: これからもお願いしたいなというふうに思っています\n顧客: 今後もいろんな動画を作っていきたいと思いますので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1661.0,
+    "end_time": 1681.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ぜひぜひ一緒に頑張っていきましょう\n顧客: よろしくお願いいたします\n営業: 平木のお時間になりましたが最後にララブーブーさんの方から\n顧客: 宣伝したいことがあればぜひお願いいたします\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1681.0,
+    "end_time": 1701.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: お時間になりますがインスタント配達アプリのララムーブというものを運営しています\n営業: 今関東と関西のエリアで\n顧客: ご利用が可能なので\n営業: もしそこのエリアにいらっしゃる方はぜひお使いいただければと思っています\n顧客: ちょっとだけ特徴を挙げさせていただくと",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1701.0,
+    "end_time": 1721.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 当日配送が当たり前にできるので\n顧客: スピード早いというところはもちろんなんですけど\n営業: 車だったりバイク便だったり\n顧客: 法人の方に関しては1トン版もお使いいただけるので\n営業: 本当に荷物の量とかサイズに合わせて車両を選んでいただけます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1721.0,
+    "end_time": 1741.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: アプリから簡単に\n営業: 見積もりから荷物の場所の追跡から\n顧客: 支払いというところまで\n営業: 全てアプリで完結するようになっているので\n顧客: 簡単に当日配送が利用できるサービスになっています",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1741.0,
+    "end_time": 1761.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 本当に個人の方から法人の方まで\n顧客: 誰でもお使いいただけるのと\n営業: 初回配送は実は誰でも30%オフで\n顧客: お試しいただけるので\n営業: 編集で付けていただいたら嬉しいんですけど",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1761.0,
+    "end_time": 1781.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ララハローというクーポンコードがあるので\n営業: ララハローと入れていただけたら\n顧客: 後でお送りしますね\n営業: ララハローと入れていただけると\n顧客: 誰でも30%オフで使っていただけるので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1781.0,
+    "end_time": 1801.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 初回ユーザーの方は使ってみてください\n顧客: アプリめちゃくちゃすごいんですよ\n営業: オフィスの時に出してもらったんですけど\n顧客: 安いんですよ\n営業: ドライバーがめっちゃいい人なんで",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1801.0,
+    "end_time": 1821.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 絶対ララムーブさん使ってください\n営業: 文句言い切ってください\n顧客: ありがとうございます\n営業: ご視聴いただいている皆さんもぜひ使っていただけたらと思います\n顧客: 本日は特別インタビューご視聴いただき",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1821.0,
+    "end_time": 1841.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 誠にありがとうございました\n顧客: 新卒・中途採用・制約率改善といった\n営業: 様々なニーズでご導入いただいております\n顧客: ウェブサイトのフォームや公式ラインからお気軽にご相談いただけますと幸いです\n営業: またララムーブ様のインスタント配達アプリ",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1841.0,
+    "end_time": 1861.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ララムーブにご興味をお持ちの方はぜひご活用いただけますと幸いです\n営業: 本日は貴重なお時間をいただきありがとうございました\n顧客: ララムーブ様もありがとうございます\n営業: さよなら\n顧客: お話でもあったバイク便のところとかまたぜひスラスできればなと思いますのでそのあたり次回ぜひお話できるとうれしいなと思うんですけれども",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1861.0,
+    "end_time": 1928.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: バイク便の今の進捗的にはいかがですかもう始めていってみたいな感じで\n顧客: 私たちの次のクォーターが10月からになるので\n営業: 9月までは今予算が取れてないので10月以降でお願いしたいと思います\n顧客: バイク便のサービスのリリース自体は進捗はもう始めていってるみたいな感じで\n営業: 先週の月曜日にもう始まっています",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1928.0,
+    "end_time": 1961.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 始まって今1週間経ったぐらいなんですけど\n営業: どうですか使い始めてらっしゃいますか皆さん\n顧客: でもありますね\n営業: 4人の時よりも若干スピードはいい感じに所属はいいかなと思ってます\n顧客: すごいこれからめちゃくちゃ楽しみですね",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1961.0,
+    "end_time": 1985.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そうですねそうですね\n顧客: ありがとうございます\n営業: じゃあそのあたりどうします10月に入ってからお話しするか\n顧客: 9月の末の方が良しですかね\n営業: そうです9月の末で大丈夫です",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 1985.0,
+    "end_time": 2003.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: その間にキックオフして撮影とか\n顧客: ちょっとどうしてもお支払いが10月以降になっちゃうので\n営業: 10月になっちゃうのでそこで支払いを合わせればと思います\n顧客: いつもスピーディーにお支払いいただいててめちゃくちゃ助かってます",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2003.0,
+    "end_time": 2025.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 経理が頑張ってくれてます私がちょっと1回遅れちゃって\n顧客: すいません\n営業: そうですねシルバーウィーク明けとか24,5,6あたりか\n顧客: それか撮影なるべく早めに進めていきたいだったら\n営業: 15の週とかでも大丈夫ですけれども",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2025.0,
+    "end_time": 2047.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いつ頃が良しですか\n営業: そうですね24,5,6の辺でおそらく大丈夫かなと思います\n顧客: ちょっと私の上司がその半ばいないかもしれないので\n営業: かしこまりました\n顧客: ちょっとずらしたいです24ぐらいで",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2047.0,
+    "end_time": 2065.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: かしこまりました\n顧客: もし今にてお分かりになりそうだったらと思ったんですけど\n営業: ちょっと待ってください\n顧客: ありがとうございます助かります\n営業: 一応データいつでも合わせられます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2065.0,
+    "end_time": 2083.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 分かりました\n営業: 松本さんは大丈夫ですか\n顧客: できれば25だと\n営業: 分かりました\n顧客: 25だと2時とか3時がいいそうです",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2083.0,
+    "end_time": 2107.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: じゃあ25の2時にいかがでしょうか\n顧客: 一旦ちょっと2時でお願いします\n営業: ありがとうございます\n顧客: こちらもまたGoogle Meetのリンクをお送りさせていただきまして\n営業: インタビューの動画も編集完了しましたら",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2107.0,
+    "end_time": 2124.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 公開前にもちろんお送りさせてもらって\n営業: 大体編集の時間的には\n顧客: 今日から2週間ぐらい見ていただけたらありがたいなと思います\n営業: なので9月中に公開進められるようにという感じでは\n顧客: 私たち進行していく予定ですので",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2124.0,
+    "end_time": 2139.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: またここはカットしてほしいとか\n顧客: 先ほどクーポンコードのところとか\n営業: ご要望があったらお気軽にいただければと思います\n顧客: 分かりましたありがとうございます\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2139.0,
+    "end_time": 2150.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: その他はご質問など大丈夫そうですか\n営業: 私のほうは大丈夫です\n顧客: ありがとうございます大粒さんも大丈夫そうですかね\n営業: はい大丈夫です\n顧客: ありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2150.0,
+    "end_time": 2160.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: それでは引き続きどうぞよろしくお願いします\n顧客: 本日はありがとうございます\n営業: ありがとうございました\n顧客: よろしくお願いします\n営業: よろしくお願いします",
+    "speaker_type": "sales",
+    "scenario_id": "upsell",
+    "source_file": "upsell_002.mp3",
+    "start_time": 2160.0,
+    "end_time": 2170.0,
+    "segment_count": 5
   }
 ]
