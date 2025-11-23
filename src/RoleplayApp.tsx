@@ -10,7 +10,7 @@ import { Message, Evaluation, RecordingState } from './types';
 import { sendMessage, getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
-import { getDefaultExpression, getExpressionForResponse } from './lib/expressionSelector';
+import { getDefaultExpression, getDefaultVideo, getVideoForResponse } from './lib/expressionSelector';
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -74,8 +74,9 @@ function RoleplayApp() {
       setConversationId(null);
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
 
-      // デフォルト表情（listening）を表示（avatar_03固定）
-      setImageSrc(getDefaultExpression(currentAvatarId));
+      // デフォルト表情（listening）の動画を表示（avatar_03固定）
+      setVideoSrc(getDefaultVideo(currentAvatarId));
+      setImageSrc(undefined); // 動画優先のため静止画はクリア
 
       // 字幕をクリア（ユーザーが最初に話しかけるまで何も表示しない）
       setMediaSubtitle('');
@@ -149,10 +150,11 @@ function RoleplayApp() {
       setMessages((prev) => [...prev, botMessage]);
       setMediaSubtitle(response);
 
-      // AIの返答から適切な表情を選択（avatar_03固定で表情のみ変化）
-      const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
-      setImageSrc(expressionImageUrl);
-      console.log('🎭 アバター表情:', expressionImageUrl);
+      // AIの返答から適切な表情動画を選択（avatar_03固定で表情のみ変化）
+      const expressionVideoUrl = getVideoForResponse(response, currentAvatarId);
+      setVideoSrc(expressionVideoUrl);
+      setImageSrc(undefined); // 動画優先のため静止画はクリア
+      console.log('🎭 アバター表情動画:', expressionVideoUrl);
 
       // 音声出力（Web Speech API - 即座に再生）
       speakTextWithWebSpeech(response);

@@ -132,3 +132,37 @@ export function getVoiceForAvatar(avatarId: string): string {
 
   return voiceMap[avatarId] || 'alloy';
 }
+
+/**
+ * アバター表情の動画URLを取得（D-ID生成動画）
+ *
+ * @param avatarId アバターID
+ * @param expressionType 表情タイプ
+ * @returns 動画URL
+ */
+export function getExpressionVideoUrl(avatarId: string, expressionType: ExpressionType): string {
+  return `/videos/${avatarId}/${expressionType}.mp4`;
+}
+
+/**
+ * AIの返答テキストから最適なアバター表情動画URLを取得
+ *
+ * @param text AIの返答テキスト
+ * @param avatarId アバターID（指定しない場合はランダム）
+ * @returns 動画URL
+ */
+export function getVideoForResponse(text: string, avatarId?: string): string {
+  const selectedAvatarId = avatarId || selectRandomAvatar();
+  const expressionType = selectExpressionType(text);
+  return getExpressionVideoUrl(selectedAvatarId, expressionType);
+}
+
+/**
+ * デフォルト表情（listening）の動画URLを取得
+ *
+ * @param avatarId アバターID（指定しない場合はavatar_01）
+ * @returns 動画URL
+ */
+export function getDefaultVideo(avatarId: string = 'avatar_01'): string {
+  return getExpressionVideoUrl(avatarId, 'listening');
+}
