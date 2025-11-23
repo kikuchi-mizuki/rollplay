@@ -73,10 +73,12 @@ export function MediaPanel({
           <img
             src={imageSrc}
             alt="AI相談者のアバター"
-            className="w-full h-full object-contain transition-all duration-500 ease-in-out animate-fadeIn hover:scale-105"
+            className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out animate-fadeIn hover:scale-105"
             style={{
               animation: 'fadeIn 0.5s ease-in-out, breathe 3s ease-in-out infinite',
-              objectPosition: 'center'
+              objectPosition: 'center',
+              margin: 'auto',
+              display: 'block'
             }}
           />
         ) : (
