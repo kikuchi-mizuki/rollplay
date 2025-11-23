@@ -41,6 +41,8 @@ function RoleplayApp() {
   const conversationStartTime = useRef<Date | null>(null);
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
+  const [_speechSupported, setSpeechSupported] = useState<boolean | null>(null);
+  const [_voiceCount, setVoiceCount] = useState(0);
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -48,6 +50,43 @@ function RoleplayApp() {
 
   // D-IDアバター統合（無効化 - タイムラグ対策）
   // const { loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
+
+  // Web Speech API サポートチェック
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      setSpeechSupported(true);
+
+      // 音声リストを読み込み
+      const loadVoices = () => {
+        const voices = speechSynthesis.getVoices();
+        setVoiceCount(voices.length);
+        console.log('🔊 Web Speech API サポート確認:');
+        console.log('  利用可能な音声数:', voices.length);
+        console.log('  日本語音声:', voices.filter(v => v.lang.startsWith('ja')).length, '個');
+
+        if (voices.length === 0) {
+          console.warn('⚠️ 音声リストが空です。音声が再生されない可能性があります。');
+        }
+      };
+
+      // 即座に確認
+      loadVoices();
+
+      // voiceschanged イベントでも確認（モバイル対応）
+      speechSynthesis.addEventListener('voiceschanged', loadVoices);
+
+      return () => {
+        speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+      };
+    } else {
+      setSpeechSupported(false);
+      console.error('❌ Web Speech API がサポートされていません');
+      setToast({
+        message: 'お使いのブラウザは音声再生に対応していません',
+        type: 'error',
+      });
+    }
+  }, []);
 
   // シナリオ一覧を取得
   useEffect(() => {
@@ -83,6 +122,33 @@ function RoleplayApp() {
       setMediaSubtitle('');
     }
   }, [selectedScenarioId]);
+
+  // 音声テスト関数
+  const testSpeech = () => {
+    console.log('🧪 音声テスト開始...');
+    const testText = 'こんにちは。音声テストです。';
+
+    if (!('speechSynthesis' in window)) {
+      console.error('❌ Web Speech API非対応');
+      alert('お使いのブラウザは音声再生に対応していません');
+      return;
+    }
+
+    const voices = speechSynthesis.getVoices();
+    console.log('🔊 音声数:', voices.length);
+    console.log('📋 音声一覧:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
+
+    if (voices.length === 0) {
+      alert('音声リストが空です。ページをリロードしてください。');
+      return;
+    }
+
+    speakTextWithWebSpeech(testText);
+    setToast({
+      message: '音声テスト: 「' + testText + '」',
+      type: 'info',
+    });
+  };
 
   // Web Speech APIで即座に音声出力（モバイル対応強化）
   const speakTextWithWebSpeech = (text: string) => {
@@ -560,6 +626,7 @@ function RoleplayApp() {
             onClear={handleClear}
             onShowEvaluation={handleShowEvaluation}
             isLoadingEvaluation={isLoadingEvaluation}
+            onTestSpeech={testSpeech}
           />
         </div>
       </footer>
