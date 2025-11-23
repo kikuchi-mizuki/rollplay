@@ -89,9 +89,25 @@ function RoleplayApp() {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
 
-      // avatar_03（30代女性）の音声設定 - 落ち着いた自然な声
+      // 利用可能な高品質な日本語音声を選択
+      const voices = speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice =>
+        voice.lang === 'ja-JP' && (
+          voice.name.includes('Google') ||
+          voice.name.includes('Microsoft') ||
+          voice.name.includes('Kyoko') ||
+          voice.name.includes('Otoya')
+        )
+      ) || voices.find(voice => voice.lang === 'ja-JP' || voice.lang.startsWith('ja'));
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+        console.log('使用する音声:', preferredVoice.name);
+      }
+
+      // avatar_03（30代女性）の音声設定 - より自然な話し方
       utterance.pitch = 1.0;   // 標準的な女性の声
-      utterance.rate = 0.95;   // ゆっくりめで落ち着いた話し方
+      utterance.rate = 0.9;    // 自然な会話ペース
 
       speechSynthesis.speak(utterance);
     } else {
