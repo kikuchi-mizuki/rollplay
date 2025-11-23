@@ -279,6 +279,16 @@ export function RegisterPage() {
               店舗コードがわからない場合は、管理者にお問い合わせください。
             </p>
           </div>
+
+          {/* ログインページへのリンク */}
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => navigate('/login')}
+              className="text-sm text-[#6C5CE7] hover:text-[#A29BFE] transition-colors"
+            >
+              既にアカウントをお持ちの方はこちら
+            </button>
+          </div>
         </div>
       </div>
     </div>

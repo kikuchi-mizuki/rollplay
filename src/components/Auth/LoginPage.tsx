@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 
 export function LoginPage() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -99,6 +101,16 @@ export function LoginPage() {
               <a href="#" className="text-[#A29BFE] hover:text-[#B9B0FF] hover:underline">プライバシーポリシー</a>
               に同意したものとみなされます。
             </p>
+          </div>
+
+          {/* 登録ページへのリンク */}
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => navigate('/register')}
+              className="text-sm text-[#6C5CE7] hover:text-[#A29BFE] transition-colors"
+            >
+              初めての方はこちら
+            </button>
           </div>
         </div>
 
