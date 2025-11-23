@@ -56,7 +56,7 @@ export function MediaPanel({
   return (
     <div className="h-full w-full flex flex-col overflow-hidden relative">
       {/* メディアコンテンツ */}
-      <div className="flex-1 relative aspect-[16/9] bg-black/80 rounded-t-2xl flex items-center justify-center md:aspect-video pb-2 md:pb-0">
+      <div className="flex-1 relative bg-black/80 rounded-t-2xl flex items-center justify-center pb-2 md:pb-0">
         {videoSrc ? (
           <video
             src={videoSrc}
