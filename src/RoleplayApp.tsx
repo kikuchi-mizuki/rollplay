@@ -607,10 +607,10 @@ function RoleplayApp() {
       {/* メインコンテンツ - モバイル: 縦並び、デスクトップ: 横並び */}
       <main className="flex-1 flex flex-col lg:grid lg:gap-8 lg:grid-cols-[minmax(520px,1fr)_minmax(420px,0.9fr)] items-stretch pb-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px)+1rem)] px-4 md:px-6 lg:px-10 xl:px-14 max-w-[1200px] mx-auto w-full relative transition-all">
 
-        {/* モバイル: メディアを上部に表示 */}
+        {/* モバイル: メディアを上部に固定表示 */}
         <section
           id="media-anchor"
-          className="card flex flex-col justify-center items-center w-full aspect-[16/9] max-h-[50vh] lg:max-h-none lg:min-h-[calc(100dvh-180px)] lg:aspect-auto overflow-hidden relative animate-floatIn mb-4 lg:mb-0 lg:order-2"
+          className="card flex flex-col justify-center items-center w-full h-[40vh] lg:max-h-none lg:min-h-[calc(100dvh-180px)] lg:aspect-auto overflow-hidden relative animate-floatIn mb-4 lg:mb-0 lg:order-2 flex-shrink-0"
         >
           <MediaPanel
             isRecording={isRecording}
@@ -621,10 +621,10 @@ function RoleplayApp() {
           />
         </section>
 
-        {/* モバイル: チャットを下部に表示 */}
+        {/* モバイル: チャットを下部に表示（スクロール可能） */}
         <section
           id="chat-anchor"
-          className="card flex flex-col justify-center items-center w-full h-auto min-h-[400px] lg:min-h-[calc(100dvh-180px)] overflow-hidden relative animate-floatIn lg:order-1"
+          className="card flex flex-col justify-center items-center w-full flex-1 lg:min-h-[calc(100dvh-180px)] overflow-hidden relative animate-floatIn lg:order-1"
         >
           <ChatPanel messages={messages} />
         </section>
