@@ -36,15 +36,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [isInitialized, setIsInitialized] = useState(false)
 
-  // プロフィール取得
-  const fetchProfile = async (userId: string) => {
+  // プロフィール取得（リトライ機能付き）
+  const fetchProfile = async (userId: string, retryCount = 0) => {
+    const maxRetries = 3
+    const timeout = 30000 // 30秒に延長
+
     try {
       const startTime = Date.now()
-      console.log('👤 プロフィール取得開始:', userId)
+      console.log(`👤 プロフィール取得開始 (試行 ${retryCount + 1}/${maxRetries}):`, userId)
 
-      // タイムアウト付きでプロフィール取得（15秒に延長 - コールドスタート対策）
+      // タイムアウト付きでプロフィール取得
       const profileTimeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('プロフィール取得タイムアウト')), 15000)
+        setTimeout(() => reject(new Error('プロフィール取得タイムアウト')), timeout)
       )
 
       const profilePromise = supabase
@@ -56,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const elapsed = Date.now() - startTime
           console.log('📦 プロフィールクエリ完了:', result)
           console.log(`⏱️  クエリ実行時間: ${elapsed}ms`)
-          if (elapsed > 3000) {
+          if (elapsed > 5000) {
             console.warn(`⚠️  クエリが遅い (${elapsed}ms) - Supabaseのコールドスタートの可能性`)
           }
           return result
@@ -91,12 +94,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
     } catch (err: any) {
       console.error('❌ Profile fetch error:', err.message || err)
+
       if (err.message === 'プロフィール取得タイムアウト') {
-        console.error('⚠️  プロフィールデータの取得に15秒以上かかっています')
+        console.error(`⚠️  プロフィールデータの取得に${timeout/1000}秒以上かかっています`)
         console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです')
-        console.error('⚠️  無料プランの場合、一定時間未使用だとDBがスリープします')
-        console.error('💡 対策: 有料プランへのアップグレード、またはページをリロードしてください')
+
+        // リトライ処理
+        if (retryCount < maxRetries - 1) {
+          const waitTime = 2000 * (retryCount + 1) // 2秒、4秒、6秒と徐々に延長
+          console.warn(`🔄 ${waitTime/1000}秒後に再試行します... (残り${maxRetries - retryCount - 1}回)`)
+
+          await new Promise(resolve => setTimeout(resolve, waitTime))
+          return fetchProfile(userId, retryCount + 1)
+        } else {
+          console.error('❌ リトライ上限に達しました')
+          console.error('💡 対策: ページをリロードするか、有料プランへのアップグレードをご検討ください')
+        }
       }
+
       setProfile(null)
     }
   }
@@ -115,9 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('🔐 認証初期化開始...')
         console.log('📡 supabase.auth.getSession() を呼び出します...')
 
-        // タイムアウト設定を10秒に延長
+        // タイムアウト設定を30秒に延長（コールドスタート対策）
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('認証タイムアウト')), 10000)
+          setTimeout(() => reject(new Error('認証タイムアウト')), 30000)
         )
 
         const sessionPromise = supabase.auth.getSession()
