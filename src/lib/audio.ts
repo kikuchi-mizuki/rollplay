@@ -21,49 +21,118 @@ export class AudioRecorder {
   private microphone: MediaStreamAudioSourceNode | null = null;
 
   /**
-   * 録音開始
+   * 録音開始（モバイル対応強化）
    */
   async start(): Promise<void> {
     try {
-      // マイクアクセス
-      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      // 録音レベル計測用のAudioContextを設定
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      this.analyser = this.audioContext.createAnalyser();
-      this.analyser.fftSize = 256;
-      this.microphone = this.audioContext.createMediaStreamSource(this.stream);
-      this.microphone.connect(this.analyser);
-      
-      // MediaRecorderの設定
+      console.log('🎙️ 録音開始リクエスト...');
+
+      // MediaRecorderのサポート確認
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('お使いのブラウザは音声録音に対応していません。最新のブラウザをご利用ください。');
+      }
+
+      if (typeof MediaRecorder === 'undefined') {
+        throw new Error('MediaRecorderがサポートされていません。最新のブラウザをご利用ください。');
+      }
+
+      // マイクアクセス（詳細なエラーハンドリング）
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          }
+        });
+        console.log('✅ マイクアクセス許可取得');
+      } catch (err: any) {
+        console.error('❌ マイクアクセスエラー:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          throw new Error('マイクへのアクセスが拒否されました。ブラウザの設定からマイクの使用を許可してください。');
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          throw new Error('マイクが見つかりません。デバイスにマイクが接続されているか確認してください。');
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+          throw new Error('マイクが使用中です。他のアプリを閉じてから再度お試しください。');
+        } else if (err.name === 'NotSupportedError') {
+          throw new Error('HTTPSでアクセスしてください。HTTPでは音声録音ができません。');
+        }
+        throw new Error(`マイクアクセスエラー: ${err.message || err.name}`);
+      }
+
+      // 録音レベル計測用のAudioContextを設定（モバイル対応）
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        this.audioContext = new AudioContextClass();
+
+        // iOSの場合、AudioContextを再開する必要がある
+        if (this.audioContext.state === 'suspended') {
+          await this.audioContext.resume();
+        }
+
+        this.analyser = this.audioContext.createAnalyser();
+        this.analyser.fftSize = 256;
+        this.microphone = this.audioContext.createMediaStreamSource(this.stream);
+        this.microphone.connect(this.analyser);
+        console.log('✅ AudioContext初期化完了');
+      } catch (err) {
+        console.warn('⚠️ AudioContext初期化失敗（レベル表示なしで続行）:', err);
+        // AudioContextの失敗は致命的ではないため続行
+      }
+
+      // MediaRecorderの設定（モバイル対応）
       const pickedMime = this.pickSupportedMime();
       if (pickedMime) {
         this.mimeType = pickedMime;
+      } else {
+        console.warn('⚠️ サポートされたMIMEタイプなし、デフォルトを使用');
+        this.mimeType = 'audio/webm'; // フォールバック
       }
-      
+
       const options: MediaRecorderOptions = {};
       if (pickedMime) {
         options.mimeType = pickedMime;
       }
-      
-      this.mediaRecorder = new MediaRecorder(this.stream, options);
+
+      try {
+        this.mediaRecorder = new MediaRecorder(this.stream, options);
+      } catch (err) {
+        console.error('❌ MediaRecorder作成エラー、オプションなしで再試行:', err);
+        // オプションなしで再試行
+        this.mediaRecorder = new MediaRecorder(this.stream);
+      }
+
       this.audioChunks = [];
-      
+
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data && event.data.size > 0) {
+          console.log('📦 録音データチャンク:', event.data.size, 'bytes');
           this.audioChunks.push(event.data);
         }
       };
-      
-      this.mediaRecorder.start();
+
+      this.mediaRecorder.onerror = (event: any) => {
+        console.error('❌ MediaRecorder エラー:', event.error);
+      };
+
+      // モバイルの場合は timeslice を指定して定期的にデータを取得
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const timeslice = isIOS ? 1000 : undefined; // iOSの場合1秒ごと
+
+      this.mediaRecorder.start(timeslice);
+      console.log('✅ MediaRecorder開始 (timeslice:', timeslice, ')');
+
       this.state.isRecording = true;
       this.state.duration = 0;
-      
+
       this.startTimer();
-      this.startLevelMeasurement();
-      
-    } catch (error) {
-      console.error('録音開始エラー:', error);
+      if (this.analyser) {
+        this.startLevelMeasurement();
+      }
+
+    } catch (error: any) {
+      console.error('❌ 録音開始エラー:', error);
+      this.cleanupMedia();
       throw error;
     }
   }
@@ -133,22 +202,47 @@ export class AudioRecorder {
   }
   
   /**
-   * ブラウザ対応MIMEを優先順で選択
+   * ブラウザ対応MIMEを優先順で選択（モバイル対応強化）
    */
   private pickSupportedMime(): string {
-    const candidates = [
+    // iOSやモバイル環境を検出
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    // iOSの場合は audio/mp4 を優先
+    const candidates = isIOS || isSafari ? [
+      'audio/mp4',
+      'audio/mp4;codecs=mp4a.40.2',
+      'audio/aac',
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/wav'
+    ] : isAndroid ? [
+      'audio/webm;codecs=opus',
+      'audio/ogg;codecs=opus',
+      'audio/webm',
+      'audio/mp4',
+      'audio/aac',
+      'audio/wav'
+    ] : [
       'audio/webm;codecs=opus',
       'audio/ogg;codecs=opus',
       'audio/webm',
       'audio/mp4',
       'audio/wav'
     ];
-    
+
+    console.log('🎙️ デバイス検出:', { isIOS, isSafari, isAndroid });
+
     for (const m of candidates) {
-      if (MediaRecorder.isTypeSupported(m)) {
+      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) {
+        console.log('✅ サポートされたMIME:', m);
         return m;
       }
     }
+
+    console.warn('⚠️ サポートされたMIMEタイプが見つかりませんでした');
     return '';
   }
   
