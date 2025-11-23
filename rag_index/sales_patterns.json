@@ -6554,5 +6554,716 @@
     "start_time": 1724.0,
     "end_time": 1733.0,
     "segment_count": 5
+  },
+  {
+    "text": "営業: おやすみー\n顧客: 一回退出してもう一回入ってみるとか\n営業: やってみたら楽しいね\n顧客: はい\n営業: はい",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 0.0,
+    "end_time": 111.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: いけそうでしょうか\n営業: 聞こえないですね\n顧客: いやー聞こえないです\n営業: 聞こえないですね\n顧客: マイクですか",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 111.0,
+    "end_time": 188.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっとお待ちください\n顧客: わかりました\n営業: おやすみー\n顧客: 聞こえますか\n営業: 聞こえました",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 215.0,
+    "end_time": 314.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: ありがとうございます\n顧客: すみませんお手数おかけしまして\n営業: 本日もお時間いただいてありがとうございます\n顧客: こちらこそありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 314.0,
+    "end_time": 324.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 前回の100本のノックいただき本当にありがとうございます\n顧客: いやいやいやそれもないです\n営業: どうでしたあれ見ていただいて\n顧客: 本当に素晴らしいと思います\n営業: 本当に嬉しいよかったですありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 324.0,
+    "end_time": 339.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あんな短い期間で100本出ました\n営業: AIとかも使いながら\n顧客: ちょっとお伺いしてる内容とかも反映させて\n営業: という感じでやっております\n顧客: すごいですねやっぱりお客さんが今悩んでるところから",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 339.0,
+    "end_time": 358.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 始まるのは当社が欲しいの\n顧客: ショート動画ですね\n営業: そうですよねそうですよね\n顧客: よかったですご満足いただけて\n営業: 前回お話しさせていただいて",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 358.0,
+    "end_time": 372.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ある程度見積もりもお送りしてという感じで\n営業: 一旦社内で検討していきます\n顧客: という感じになってたかなと思うんですけども\n営業: その後の進捗はどうかなと思って確認させていただいて\n顧客: そうですね当社の中にも検討しましたが",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 372.0,
+    "end_time": 390.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: やっぱり前に見せていただいたのは\n顧客: 作りたいものですが\n営業: 今回お問い合わせしたいのは\n顧客: 商品のショートだけではなく\n営業: ブランドの",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 390.0,
+    "end_time": 411.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: うちと言ったらオープンブランドの\n営業: ブランドに関してのショート動画も作っていただきたい\n顧客: なんですが\n営業: 共有したいの\n顧客: ショート動画も用意しておりますが",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 411.0,
+    "end_time": 437.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: これは中国で\n顧客: 中国のTikTokで\n営業: シングルブランドの今のところはナンバーワン\n顧客: が作ったのショート動画なんですが\n営業: 是非是非",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 437.0,
+    "end_time": 459.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: この間半年ぐらい前に上海に行った時に\n営業: 中国版のTikTokを見せてもらって\n顧客: なんかやっぱ日本のとは違うなと思いました\n営業: 違いますよね\n顧客: 中国じゃないと見れなかったのでめっちゃ新鮮でした",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 467.0,
+    "end_time": 486.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい、全然大丈夫ですよ\n顧客: 共有できないっていう\n営業: あ、ほんとですか?\n顧客: リンクとか送ってもらったら私の方で共有しますか?\n営業: あ、リンクあるんですか?",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 487.0,
+    "end_time": 520.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: パソコンの設定でできなくなっているのかもしれないっていう\n営業: ことがたまにあります\n顧客: 今のところ見えないですよね\n営業: 見えてないですね\n顧客: あ、来ました",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 520.0,
+    "end_time": 547.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 再生は今はされていないですが、画面自体は共有されていない\n顧客: 画面見えますか?\n営業: 見えてます、再生前の状態で\n顧客: じゃあ流しますね\n営業: いいですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 552.0,
+    "end_time": 578.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: あ、ごめん、これは違います、ごめんなさい\n顧客: ありがとうございます\n営業: さっきみたいな感じの動画も作りたいと思います\n顧客: 一人が商品を持ちながら画面でしゃべるだけではなく",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 604.0,
+    "end_time": 666.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: なんかすごい日常っぽいところに付け加えてみたいな感じですね\n顧客: あ、もちろん可能です、もちろん可能ではあるんですけど\n営業: こないだお送りしているお見積もりだと\n顧客: キャストがお家で撮影をするっていうのが\n営業: 多いんですよね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 666.0,
+    "end_time": 689.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あ、そうなんですね\n営業: あ、そうなんですね\n顧客: あ、もちろん可能です、もちろん可能ではあるんですけど\n営業: こないだお送りしているお見積もりだと\n顧客: キャストがお家で撮影をするっていう感じになってくるので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 689.0,
+    "end_time": 705.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 多分ブランディング系の動画なのであれば\n顧客: キャストのお家で撮らせてもらうんじゃなくて\n営業: 出張撮影という形で\n顧客: 1本7万円のものにして\n営業: スタジオとかもしっかり本社の方で気に入ったというか",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 705.0,
+    "end_time": 722.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: イメージに合っているようなスタジオというところを\n営業: 一緒に探させてもらって\n顧客: そこでお店の立ち会いのもと撮影をさせてもらってという方が\n営業: より良いブランディング動画というのはできると思います\n顧客: なので撮影セットでは恥ずかしいかもしれないけど",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 722.0,
+    "end_time": 738.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 出張セットであれば全然ああいうのもバッチリできると思います\n顧客: なるほど\n営業: これは出張セットになるんですよね\n顧客: そうです、そうです\n営業: 出張セット自体が4本以上からという感じにはなってくるので",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 738.0,
+    "end_time": 751.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今のは多分男性1人がやっているものという感じではあったんですけど\n営業: キャストが、うちのキャストを使ってもいいですし\n顧客: 本社の方で出られるキャストというかスタッフさんがいるのであれば\n営業: それは1本5万円で出張撮影することができるので\n顧客: ちょっと見え方が変わったブランディングの見せ方",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 751.0,
+    "end_time": 774.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: みたいな動画というのもできるし\n顧客: それこそちょっとVlogっぽい感じの動画を\n営業: 一眼レフのきれいな質もので作るということも可能です\n顧客: はい、ありがとうございます\n営業: お話、本社内で考えてとかいろいろ話し合っていただいて",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 774.0,
+    "end_time": 805.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: SNSとかで発信していくような動画も作っていきたいし\n営業: ブランディング用の動画も作っていきたいし\n顧客: というような結果になったという形ですかね\n営業: そうですね\n顧客: かしこまりました、ありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 805.0,
+    "end_time": 817.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 本数どのぐらいでやっていこうとかってありますか?\n顧客: 検討したところは、予算のところは\n営業: 前の予算の通りにはちょっと難しいと思いますね\n顧客: 月45以上ちょっと難しいかもしれないですが\n営業: ちなみに月あたりの予算って決まってるんですか?",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 817.0,
+    "end_time": 860.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 確に決まってないんですけど\n営業: そうですね、今の予算の話はそこまでしてないんですが\n顧客: やっぱり今のところは\n営業: どんなショート動画が作りたい\n顧客: いろいろ話しまして",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 860.0,
+    "end_time": 888.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: かしこまりました\n顧客: もうちょっと共有したい動画がありますが\n営業: もうちょっと共有したい動画がありますが\n顧客: はい、ありがとうございました\n営業: ありがとうございました",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 888.0,
+    "end_time": 992.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ごめんなさい、急に時間があるすぎて\n営業: 止まっちゃいましたね\n顧客: なんか音が小さくなっちゃいました\n営業: 急になんか知らないけど\n顧客: 急に電波が悪すぎて",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1020.0,
+    "end_time": 1059.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: でも問題なく聞こえてます\n顧客: 動画も中途半端になってしまいましたね\n営業: ぜひまたもう一回見てください\n顧客: すいません\n営業: いいえいいえ",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1059.0,
+    "end_time": 1073.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: わー\n顧客: うんうん\n営業: うちは多分\n顧客: 大掛かりなスタジオみたいなのが結構必要になってくるかなっていう感じです",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1079.0,
+    "end_time": 1308.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 布やったりとかっていう風になってくると\n顧客: 結構うちの一本分の予算みたいなところで対応ができるかどうかみたいなところは\n営業: 多分難しい\n顧客: だけどこういう動画が作れるかどうかみたいなのは\n営業: ぶっちゃけやったことはないです",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1308.0,
+    "end_time": 1325.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: こういう結構完全テレビCM風みたいな感じのものっていうのは\n営業: 多分CGとかもいろいろ入ってると思うので\n顧客: 微妙なところではあるんですけど\n営業: ちょっと確認してみますという感じです\n顧客: 多分予算はだいぶ上がっちゃうと思います",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1325.0,
+    "end_time": 1341.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: やれるにしても\n顧客: はい\n営業: じゃあもうちょっと\n顧客: はい\n営業: 次の動画は全然",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1341.0,
+    "end_time": 1354.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: さっきより簡単と思います\n営業: 一回目は全然できると思うんですけど\n顧客: はい\n営業: はい\n顧客: 今みたいなのも全然できはします",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1354.0,
+    "end_time": 1407.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 弊社で作るっていうことはできるし\n顧客: 自宅撮影っていうところが難しいから\n営業: やっぱりどうしても出張ブランディングの部分なのであれば\n顧客: 商品紹介みたいな感じの動画とか\n営業: あとVlogっぽい感じの動画とか",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1407.0,
+    "end_time": 1422.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: っていう感じでやるのであれば\n営業: お家で撮影\n顧客: キャストがお家で撮影をする\n営業: キャストがお家で撮影するっていうことは\n顧客: 一人で撮影をするっていう感じになるので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1422.0,
+    "end_time": 1431.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: カメラワークとかがなくなっちゃうんですよね\n顧客: なので\n営業: ブランディング的な動画なのであれば\n顧客: 出張セットであれば\n営業: 1本目と3本目は確実に打ち出てきます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1431.0,
+    "end_time": 1442.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: はい\n営業: ありがとうございます\n顧客: 僕今の想定は\n営業: 月\n顧客: 撮影セット",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1442.0,
+    "end_time": 1453.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: はい\n顧客: 月20本ぐらい\n営業: 撮影集長セットは\n顧客: 月3分から5分までの\n営業: 今のところは僕の想定なんですが",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1453.0,
+    "end_time": 1466.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: まだ社内で検討してないんですが\n営業: はい\n顧客: 作ることができますなら\n営業: そうですね\n顧客: 今回の",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1466.0,
+    "end_time": 1487.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ミッキングで\n顧客: 予算のところもちょっと検討させていただきたい\n営業: もちろんです\n顧客: ぜひぜひ\n営業: 月20本",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1487.0,
+    "end_time": 1495.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 撮影セット20本と\n営業: 出張セット3から5本っていうところは\n顧客: あれですか\n営業: 全部月で考えてるって感じですか\n顧客: そうですね",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1495.0,
+    "end_time": 1507.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 今回の商品は\n顧客: 月20本\n営業: この後まだ枕が2つ出るのは\n顧客: 多分\n営業: 僕の枕と同じ",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1507.0,
+    "end_time": 1528.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 同じタイミングで出ると思いますが\n営業: その時まだ\n顧客: 今考えたのは\n営業: 1つの商品は20本の感じです\n顧客: なるほどですね",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1528.0,
+    "end_time": 1543.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 月\n顧客: 少なくとも20本は必要だと思います\n営業: これ何ヶ月間スパンで考えてるとかってありますか\n顧客: 何ヶ月間\n営業: 今",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1543.0,
+    "end_time": 1563.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 見たのブランドの方は毎日5分\n営業: 5分から10本のショート動画流れています\n顧客: そうですね\n営業: 投稿してるってことですか\n顧客: 普通に出てくるわけじゃなくて",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1563.0,
+    "end_time": 1580.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 広告とかで出てくるってわけじゃなくて\n顧客: 5本から10本アカウントに投稿されてるって感じですか\n営業: そうですね\n顧客: 画面見えますか\n営業: はい見えます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1580.0,
+    "end_time": 1602.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: TikTokの画面になってます\n営業: そうですね\n顧客: 毎日少なくとも5本\n営業: いろいろな形のショート動画が\n顧客: 例えば今日は",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1602.0,
+    "end_time": 1629.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 9時間前\n顧客: 1日前\n営業: そうですね\n顧客: すごいですね\n営業: 量がかなり多いですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1635.0,
+    "end_time": 1653.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そうですね\n営業: であれば毎日1本ずつぐらいは載せていきたいですね\n顧客: いろんなパターンで\n営業: そうですね\n顧客: 毎日少なくとも1本が必要だと思います",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1653.0,
+    "end_time": 1669.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 日本のTikTokは今まだそこまでいかないけど\n顧客: やっぱりショート動画がこれから\n営業: 日本でこれからかなと思いました\n顧客: そうですね\n営業: 日本の企業は毎日毎日やるっていうのが",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1669.0,
+    "end_time": 1691.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: あまりにも大変すぎて\n営業: できてないっていう人が結構いて\n顧客: それがあるから広告でやっていくみたいな企業さんが結構多いです\n営業: 広告回していろんな人に出すっていう\n顧客: でも全然毎日1本ずつ出すみたいなところは",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1691.0,
+    "end_time": 1711.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 最初作りだめしておいて\n顧客: 投稿しながらどんどん作って並行していってっていう感じ\n営業: 大丈夫であればどんどん投稿できるような\n顧客: リソースっていうのは弊社にはあるので\n営業: そこは安心していただけたらと思います",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1711.0,
+    "end_time": 1728.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 聞こえていそうでしょうか\n営業: 大丈夫ですか\n顧客: はいありがとうございます\n営業: よかったです\n顧客: 聞こえてる",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1738.0,
+    "end_time": 1751.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ちょっと待って電波がいっちゃった\n顧客: 当社の今回の電波が悪いです\n営業: 画面を一回切ってみていただいたら\n顧客: 一回画面共有を切ってみていただけると\n営業: ちょっと変わるかもしれないです",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1751.0,
+    "end_time": 1788.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 大丈夫ですか\n営業: 大丈夫です\n顧客: 聞こえますか\n営業: 聞こえます\n顧客: OKです大丈夫そうです",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1812.0,
+    "end_time": 1849.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 聞こえますか\n顧客: 聞こえます聞こえます\n営業: 多分こちらの問題だと思います\n顧客: 本当に聞こえません\n営業: いやいやあるあるなので全然大丈夫です",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1849.0,
+    "end_time": 1861.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: さっきの多分お話された部分が聞こえてなかったので\n営業: 次のミーティングは来週の金曜日となります\n顧客: そこのタイミングで多分\n営業: 予算的な問題は社内で検討すると思いまして\n顧客: まだ結果が出ましたら",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1861.0,
+    "end_time": 1885.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: こちらメールの形でお知らせしたいと思いますが\n顧客: はい分かりました全然また同じように\n営業: 来週19日に予算が決まるという感じですよね\n顧客: 19日のミーティング\n営業: そうですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1886.0,
+    "end_time": 1914.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 困りました\n営業: また次の週とかで30分くらいお時間いただいて\n顧客: 新たに共有したい内容とか\n営業: 予算どんな感じでしたっていうのとか\n顧客: 伺えたらなと思うので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1914.0,
+    "end_time": 1929.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: もしよかったらまた来週木曜日月末27日とかで\n顧客: 30分くらいお時間いただくの可能ですか\n営業: 可能だと思います\n顧客: ありがとうございます\n営業: 27じゃない25ですね",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1929.0,
+    "end_time": 1942.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 25の今日と同じくらいのお時間とかでいかがでしょうか\n営業: 16時半からとか\n顧客: いけると思います\n営業: ありがとうございます\n顧客: そしたらまた私の方からお送りさせていただくので",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1942.0,
+    "end_time": 1963.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: メールのリンクをお送りします\n顧客: あとは1ヶ月間で撮影セット20本プラス出張セットという感じで\n営業: 一旦お見積もりももう一回出しておきますので\n顧客: それをもとにやってみていただけたらと思います\n営業: ありがとうございます",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1963.0,
+    "end_time": 1979.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: 一応出張セット自体が4本以上からという感じになるので\n顧客: 出張セット4本と5本\n営業: どっちがいいですか\n顧客: 月に24本になるか月に25本になるかという感じなんですけど",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1979.0,
+    "end_time": 1999.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 5本以上はちょっと難しいか\n顧客: 全然全然出張セット自体は何本でも大丈夫なんですけど\n営業: 撮影セット20本にプラスして出張セット何本作りたいっていうところで\n顧客: さっき3本から5本ぐらいっておっしゃってたので\n営業: 10本でも20本でも大丈夫ですよ",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 1999.0,
+    "end_time": 2021.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 今見たら出張セットの方が多いかもしれません\n営業: 全然いいです\n顧客: 分かりました\n営業: じゃあ出張セットでキャストがいいですか\n顧客: いいですね",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2021.0,
+    "end_time": 2041.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 分かりました\n顧客: じゃあキャストがうちがついているので\n営業: 出張セット20本分とかみたいな感じと\n顧客: 出張セット20本プラス撮影セット5本とかにしていくものと\n営業: 撮影セット20本出張セット",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2041.0,
+    "end_time": 2059.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 出張セット10本ぐらいは欲しいですよね\n営業: 出張セットそうですね\n顧客: 私の想定\n営業: 個人的な想定は\n顧客: 撮影セットそこまで必要じゃないと思って",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2059.0,
+    "end_time": 2090.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: じゃあ出張にしますか\n顧客: そうですね\n営業: 撮影セットならキャストが家で\n顧客: そうそうそうなんです\n営業: 商品紹介くらいのショート動画なら",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2090.0,
+    "end_time": 2105.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: そこまで必要ないと思って\n営業: 撮影セットの方がもっと必要だと思います\n顧客: これも出張で一概に振り返るやつですね\n営業: そうですね\n顧客: キャストも多分一人だけではなく",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2105.0,
+    "end_time": 2122.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 2人3人共演の可能性もありますね\n顧客: OKですOKです\n営業: かしこまりました\n顧客: じゃあ出張セット自体に\n営業: 一人キャストがすでに入っている状態になるので",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2122.0,
+    "end_time": 2140.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: それで20本25本30本っていう感じで\n営業: 作っておいて\n顧客: キャストが一人追加するっていう風になったら\n営業: その1本ごとに2万円分追加になってくるんですよ\n顧客: なので1本9万円でキャストが2名出れるっていう感じの",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2140.0,
+    "end_time": 2165.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 想定になります\n顧客: なのでちょっとそれあたりも\n営業: お見積もり作っておきますので\n顧客: それも見ていただいて\n営業: それのお見積もりが絶対っていう感じじゃないので",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2165.0,
+    "end_time": 2178.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ミーティングでお話ししていただいて\n営業: キャストを何人欲しいかとか\n顧客: あとは出張セットで何本欲しいかみたいな\n営業: あと予算のところを決めていただいた上で\n顧客: 私たちの方でどのぐらい",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2178.0,
+    "end_time": 2191.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: 予算であればどういうプランで\n顧客: キャストが一人しか出れないものが何本なのか\n営業: 2人出れるのが何本なのか\n顧客: みたいな感じでカスタマイズして\n営業: やっていければなと思うので",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2191.0,
+    "end_time": 2203.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: 次回のミーティングは予算だけ\n営業: 予算と最低本数だけは決めてもらえたら\n顧客: めちゃくちゃ嬉しいなと思います\n営業: わかりますか\n顧客: ありがとうございます助かります",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2203.0,
+    "end_time": 2215.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: そこだけわかれば私たちの方から\n顧客: こういう風にできますよっていう\n営業: 提案をさせていただきますので\n顧客: そこだけよろしくお願いいたします\n営業: よろしくお願いします",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2215.0,
+    "end_time": 2225.0,
+    "segment_count": 5
+  },
+  {
+    "text": "顧客: ありがとうございます\n営業: では次9月の25日でお時間いただけたらと思いますので\n顧客: よろしくお願いいたします\n営業: よろしくお願いいたします\n顧客: 本日もお時間ありがとうございます",
+    "speaker_type": "customer",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2225.0,
+    "end_time": 2237.0,
+    "segment_count": 5
+  },
+  {
+    "text": "営業: ありがとうございます\n顧客: 失礼いたします\n営業: 失礼いたします\n顧客: 失礼いたします",
+    "speaker_type": "sales",
+    "scenario_id": "meeting_3rd",
+    "source_file": "meeting_3rd_002_compressed.mp3",
+    "start_time": 2237.0,
+    "end_time": 2247.0,
+    "segment_count": 4
   }
 ]

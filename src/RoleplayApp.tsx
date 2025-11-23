@@ -31,7 +31,6 @@ function RoleplayApp() {
   const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error' | 'info' } | null>(null);
   const [isConnected] = useState(true);
   const [mediaSubtitle, setMediaSubtitle] = useState<string>('');
-  const [showMedia, setShowMedia] = useState(false); // モバイル時のメディア表示状態（デフォルト: チャット表示）
   const [videoSrc, setVideoSrc] = useState<string | undefined>(); // 動画のURL
   const [imageSrc, setImageSrc] = useState<string | undefined>(getDefaultExpression('avatar_03')); // アバター画像（デフォルト表情）
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
@@ -233,12 +232,6 @@ function RoleplayApp() {
     speak();
   };
 
-  // スクロール位置の保持（モバイル切替時）
-  useEffect(() => {
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-  }, []);
 
   // 録音状態の更新リスナー
   useEffect(() => {
@@ -524,57 +517,13 @@ function RoleplayApp() {
         onScenarioChange={setSelectedScenarioId}
       />
 
-      {/* モバイル: 切替トグル（ヘッダー下固定） */}
-      <div className="md:hidden sticky top-[64px] z-[40] flex justify-center bg-gradient-to-b from-[#0D0E20]/95 to-transparent py-2">
-        <button
-          onClick={() => {
-            const newShowMedia = !showMedia;
-            setShowMedia(newShowMedia);
-            // 切り替え時に表示されるパネル位置へスクロール
-            setTimeout(() => {
-              const targetId = newShowMedia ? 'media-anchor' : 'chat-anchor';
-              const el = document.getElementById(targetId);
-              if (el) {
-                const headerHeight = 64;
-                const toggleHeight = 40;
-                const offset = headerHeight + toggleHeight + 8;
-                const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
-                window.scrollTo({
-                  top: elementPosition - offset,
-                  behavior: 'smooth',
-                });
-              }
-            }, 100);
-          }}
-          className="text-sm text-slate-300 hover:text-white underline decoration-dotted transition"
-          aria-label={showMedia ? 'チャットを表示' : 'メディアを表示'}
-        >
-          {showMedia ? '💬 チャットを表示' : '🎥 メディアを表示'}
-        </button>
-      </div>
+      {/* メインコンテンツ - モバイル: 縦並び、デスクトップ: 横並び */}
+      <main className="flex-1 flex flex-col lg:grid lg:gap-8 lg:grid-cols-[minmax(520px,1fr)_minmax(420px,0.9fr)] items-stretch pb-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px)+1rem)] px-4 md:px-6 lg:px-10 xl:px-14 max-w-[1200px] mx-auto w-full relative transition-all">
 
-      {/* メインコンテンツ */}
-      <main className="flex-1 grid gap-8 lg:grid-cols-[minmax(520px,1fr)_minmax(420px,0.9fr)] md:grid-cols-1 items-stretch min-h-[calc(100dvh-var(--header-h))] pb-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px))] px-6 lg:px-10 xl:px-14 max-w-[1200px] mx-auto w-full relative transition-all">
-        {/* チャットパネル */}
-        <section
-          id="chat-anchor"
-          className={`card flex flex-col justify-center items-center w-full h-full min-h-[480px] md:min-h-[calc(100dvh-180px)] overflow-hidden relative animate-floatIn ${
-            showMedia
-              ? 'md:block hidden'
-              : 'block'
-          }`}
-        >
-          <ChatPanel messages={messages} />
-        </section>
-
-        {/* メディアパネル */}
+        {/* モバイル: メディアを上部に表示 */}
         <section
           id="media-anchor"
-          className={`card flex flex-col justify-center items-center w-full aspect-[16/9] max-h-[calc(100dvh-var(--header-h)-var(--footer-safe)-16px)] md:min-h-[calc(100dvh-180px)] md:max-h-none md:aspect-auto overflow-hidden relative animate-floatIn ${
-            showMedia
-              ? 'block'
-              : 'md:block hidden'
-          }`}
+          className="card flex flex-col justify-center items-center w-full aspect-[16/9] max-h-[50vh] lg:max-h-none lg:min-h-[calc(100dvh-180px)] lg:aspect-auto overflow-hidden relative animate-floatIn mb-4 lg:mb-0 lg:order-2"
         >
           <MediaPanel
             isRecording={isRecording}
@@ -583,6 +532,14 @@ function RoleplayApp() {
             videoSrc={videoSrc}
             imageSrc={imageSrc}
           />
+        </section>
+
+        {/* モバイル: チャットを下部に表示 */}
+        <section
+          id="chat-anchor"
+          className="card flex flex-col justify-center items-center w-full h-auto min-h-[400px] lg:min-h-[calc(100dvh-180px)] overflow-hidden relative animate-floatIn lg:order-1"
+        >
+          <ChatPanel messages={messages} />
         </section>
       </main>
 
