@@ -73,12 +73,12 @@ export function MessageList({ messages }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 自動スクロール（フッター余白を考慮）
+  // 自動スクロール（新しいメッセージが上に表示されるため、上にスクロール）
   useEffect(() => {
     if (containerRef.current) {
-      containerRef.current.scrollTo({ 
-        top: containerRef.current.scrollHeight, 
-        behavior: 'smooth' 
+      containerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
       });
     }
   }, [messages]);
@@ -92,11 +92,11 @@ export function MessageList({ messages }: MessageListProps) {
   return (
     <div
       ref={containerRef}
-      className="h-full overflow-y-auto p-4 md:p-6 scrollbar-thin"
+      className="h-full overflow-y-auto p-4 md:p-6 scrollbar-thin flex flex-col-reverse"
       role="log"
       aria-label="会話履歴"
     >
-      <div className="space-y-1">
+      <div className="space-y-1 flex flex-col-reverse">
         {groupedMessages.map((message) => (
           <MessageBubble
             key={message.id}
@@ -106,9 +106,9 @@ export function MessageList({ messages }: MessageListProps) {
             isGrouped={message.group}
           />
         ))}
-        {/* フッター分のスペーサー */}
-        <div ref={messagesEndRef} aria-hidden="true" className="pb-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px))]" />
       </div>
+      {/* フッター分のスペーサー */}
+      <div ref={messagesEndRef} aria-hidden="true" className="pt-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px))]" />
     </div>
   );
 }
