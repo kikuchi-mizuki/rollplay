@@ -42,6 +42,7 @@ function RoleplayApp() {
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
   const [_speechSupported, setSpeechSupported] = useState<boolean | null>(null);
   const [_voiceCount, setVoiceCount] = useState(0);
+  const [speechInitialized, setSpeechInitialized] = useState(false);
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -232,6 +233,92 @@ function RoleplayApp() {
     speak();
   };
 
+  // 音声を有効化（モバイル対応）
+  const initializeSpeech = () => {
+    if (!('speechSynthesis' in window)) {
+      setToast({
+        message: 'お使いのブラウザは音声再生に対応していません',
+        type: 'error',
+      });
+      return;
+    }
+
+    // 既存の音声をキャンセル
+    speechSynthesis.cancel();
+
+    // 短いテストメッセージで音声を初期化
+    const utterance = new SpeechSynthesisUtterance('音声を有効化しました');
+    utterance.lang = 'ja-JP';
+
+    // 利用可能な音声を取得
+    let voices = speechSynthesis.getVoices();
+
+    const speakTest = () => {
+      // 優先度順に音声を検索
+      const preferredVoice = voices.find(voice =>
+        voice.lang === 'ja-JP' && (
+          voice.name.includes('Google') ||
+          voice.name.includes('Microsoft') ||
+          voice.name.includes('Kyoko') ||
+          voice.name.includes('Otoya')
+        )
+      ) || voices.find(voice => voice.lang === 'ja-JP' || voice.lang.startsWith('ja'));
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.pitch = 1.0;
+      utterance.rate = 0.9;
+      utterance.volume = 1.0;
+
+      utterance.onend = () => {
+        setSpeechInitialized(true);
+        setToast({
+          message: '音声が有効化されました',
+          type: 'success',
+        });
+      };
+
+      utterance.onerror = (event) => {
+        console.error('音声初期化エラー:', event.error);
+        setToast({
+          message: '音声の有効化に失敗しました',
+          type: 'error',
+        });
+      };
+
+      try {
+        speechSynthesis.speak(utterance);
+      } catch (error) {
+        console.error('speechSynthesis.speak() エラー:', error);
+        setToast({
+          message: '音声再生に失敗しました',
+          type: 'error',
+        });
+      }
+    };
+
+    // モバイルの場合、音声リストが空の可能性がある
+    if (voices.length === 0) {
+      const loadVoices = () => {
+        voices = speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+          speakTest();
+        }
+      };
+      speechSynthesis.addEventListener('voiceschanged', loadVoices);
+      setTimeout(() => {
+        voices = speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          speakTest();
+        }
+      }, 100);
+    } else {
+      speakTest();
+    }
+  };
 
   // 録音状態の更新リスナー
   useEffect(() => {
@@ -556,6 +643,8 @@ function RoleplayApp() {
             onClear={handleClear}
             onShowEvaluation={handleShowEvaluation}
             isLoadingEvaluation={isLoadingEvaluation}
+            onInitializeSpeech={initializeSpeech}
+            speechInitialized={speechInitialized}
           />
         </div>
       </footer>
