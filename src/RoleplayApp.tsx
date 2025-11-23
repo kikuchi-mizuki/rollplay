@@ -84,14 +84,56 @@ function RoleplayApp() {
     }
   }, [selectedScenarioId]);
 
-  // Web Speech APIで即座に音声出力（タイムラグなし）
+  // Web Speech APIで即座に音声出力（モバイル対応強化）
   const speakTextWithWebSpeech = (text: string) => {
-    if ('speechSynthesis' in window) {
+    if (!('speechSynthesis' in window)) {
+      console.error('❌ Web Speech APIがサポートされていません');
+      setToast({
+        message: 'お使いのブラウザは音声再生に対応していません',
+        type: 'error',
+      });
+      return;
+    }
+
+    // 既存の音声をキャンセル
+    speechSynthesis.cancel();
+
+    const speak = () => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
 
-      // 利用可能な高品質な日本語音声を選択
-      const voices = speechSynthesis.getVoices();
+      // 利用可能な音声を取得
+      let voices = speechSynthesis.getVoices();
+      console.log('🔊 利用可能な音声数:', voices.length);
+
+      // モバイルの場合、音声リストが空の可能性がある（非同期読み込み）
+      if (voices.length === 0) {
+        console.warn('⚠️ 音声リストが空です。voiceschangedイベントを待機...');
+        // 音声リストの読み込みを待つ
+        const loadVoices = () => {
+          voices = speechSynthesis.getVoices();
+          console.log('🔊 音声リスト読み込み完了:', voices.length, '個');
+          if (voices.length > 0) {
+            speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+            selectVoiceAndSpeak(utterance, voices, text);
+          }
+        };
+        speechSynthesis.addEventListener('voiceschanged', loadVoices);
+        // 既に読み込まれている可能性もあるので、すぐに確認
+        setTimeout(() => {
+          voices = speechSynthesis.getVoices();
+          if (voices.length > 0) {
+            selectVoiceAndSpeak(utterance, voices, text);
+          }
+        }, 100);
+        return;
+      }
+
+      selectVoiceAndSpeak(utterance, voices, text);
+    };
+
+    const selectVoiceAndSpeak = (utterance: SpeechSynthesisUtterance, voices: SpeechSynthesisVoice[], text: string) => {
+      // 優先度順に音声を検索
       const preferredVoice = voices.find(voice =>
         voice.lang === 'ja-JP' && (
           voice.name.includes('Google') ||
@@ -103,17 +145,53 @@ function RoleplayApp() {
 
       if (preferredVoice) {
         utterance.voice = preferredVoice;
-        console.log('使用する音声:', preferredVoice.name);
+        console.log('✅ 使用する音声:', preferredVoice.name, '(', preferredVoice.lang, ')');
+      } else {
+        console.warn('⚠️ 日本語音声が見つかりませんでした。デフォルト音声を使用します');
+        // デバッグ用に全音声を表示
+        console.log('📋 利用可能な音声一覧:');
+        voices.forEach((v, i) => console.log(`  ${i + 1}. ${v.name} (${v.lang})`));
       }
 
       // avatar_03（30代女性）の音声設定 - より自然な話し方
       utterance.pitch = 1.0;   // 標準的な女性の声
       utterance.rate = 0.9;    // 自然な会話ペース
+      utterance.volume = 1.0;  // 最大音量
 
-      speechSynthesis.speak(utterance);
-    } else {
-      console.error('Web Speech APIがサポートされていません');
-    }
+      // エラーハンドリング
+      utterance.onerror = (event) => {
+        console.error('❌ 音声再生エラー:', event.error);
+        if (event.error === 'not-allowed') {
+          console.error('⚠️ 音声再生が許可されていません。ユーザーインタラクションが必要です');
+        }
+      };
+
+      utterance.onstart = () => {
+        console.log('🔊 音声再生開始:', text.substring(0, 30) + '...');
+      };
+
+      utterance.onend = () => {
+        console.log('✅ 音声再生完了');
+      };
+
+      // iOS対策: resume()を呼ぶ
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+      }
+
+      try {
+        speechSynthesis.speak(utterance);
+        console.log('🎤 speechSynthesis.speak() 実行完了');
+      } catch (error) {
+        console.error('❌ speechSynthesis.speak() エラー:', error);
+        setToast({
+          message: '音声再生に失敗しました',
+          type: 'error',
+        });
+      }
+    };
+
+    speak();
   };
 
   // スクロール位置の保持（モバイル切替時）
