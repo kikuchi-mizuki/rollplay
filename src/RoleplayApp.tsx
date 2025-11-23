@@ -123,7 +123,7 @@ function RoleplayApp() {
     }
   }, [selectedScenarioId]);
 
-  // 音声テスト関数
+  // 音声テスト関数（モバイル対応強化）
   const testSpeech = () => {
     console.log('🧪 音声テスト開始...');
     const testText = 'こんにちは。音声テストです。';
@@ -134,15 +134,45 @@ function RoleplayApp() {
       return;
     }
 
-    const voices = speechSynthesis.getVoices();
-    console.log('🔊 音声数:', voices.length);
-    console.log('📋 音声一覧:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
+    // iOS対策: まずキャンセルして初期化
+    speechSynthesis.cancel();
 
+    // 音声リストを取得（即座に）
+    let voices = speechSynthesis.getVoices();
+    console.log('🔊 音声数:', voices.length);
+
+    // 音声リストが空の場合（モバイルでよくある）
     if (voices.length === 0) {
-      alert('音声リストが空です。ページをリロードしてください。');
+      console.warn('⚠️ 音声リストが空です。読み込みを待機します...');
+
+      // 少し待ってから再取得
+      setTimeout(() => {
+        voices = speechSynthesis.getVoices();
+        console.log('🔊 再取得後の音声数:', voices.length);
+
+        if (voices.length === 0) {
+          alert('音声リストの読み込みに失敗しました。\n\n対策:\n1. ページをリロード\n2. ブラウザを再起動\n3. 最新版のブラウザを使用');
+          console.error('❌ 音声リストが依然として空です');
+          console.log('📱 デバイス情報:', {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language
+          });
+          return;
+        }
+
+        console.log('📋 音声一覧:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
+        speakTextWithWebSpeech(testText);
+        setToast({
+          message: '音声テスト: 「' + testText + '」',
+          type: 'info',
+        });
+      }, 100);
+
       return;
     }
 
+    console.log('📋 音声一覧:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
     speakTextWithWebSpeech(testText);
     setToast({
       message: '音声テスト: 「' + testText + '」',
