@@ -19,30 +19,36 @@ export function RegisterPage() {
   // 現在のユーザー情報を取得
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setUser(user)
-        // Googleアカウントから名前を取得
-        setDisplayName(user.user_metadata?.full_name || '')
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          setUser(user)
+          // Googleアカウントから名前を取得
+          setDisplayName(user.user_metadata?.full_name || '')
 
-        // 既にプロフィールが存在するかチェック
-        const { data: existingProfile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
+          // 既にプロフィールが存在するかチェック
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle()
 
-        if (existingProfile) {
-          console.log('✅ プロフィール既存 - メイン画面へリダイレクト')
-          navigate('/')
-          return
+          if (existingProfile) {
+            console.log('✅ プロフィール既存 - メイン画面へリダイレクト')
+            navigate('/')
+            return
+          }
+
+          // プロフィールが存在しない場合は登録画面を表示
+          setInitializing(false)
+        } else {
+          // ログインしていない場合はログインページへ
+          navigate('/login')
         }
-
-        // プロフィールが存在しない場合は登録画面を表示
+      } catch (error) {
+        console.error('初期化エラー:', error)
+        // エラーが発生しても登録画面を表示
         setInitializing(false)
-      } else {
-        // ログインしていない場合はログインページへ
-        navigate('/login')
       }
     }
     getUser()
