@@ -233,6 +233,159 @@ function RoleplayApp() {
     speak();
   };
 
+  /**
+   * ストリーミング対応の音声再生
+   * SSEで音声チャンクを受信して即座に再生
+   */
+  const handleSendStream = async (text: string) => {
+    if (!text.trim() || isSending) return;
+
+    setIsSending(true);
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      text: text.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      // 音声チャンクキュー
+      const audioQueue: ArrayBuffer[] = [];
+      let isPlaying = false;
+      let fullText = '';
+
+      // 音声チャンクを順次再生
+      const playNextChunk = async () => {
+        if (audioQueue.length > 0 && !isPlaying) {
+          isPlaying = true;
+          const audioData = audioQueue.shift()!;
+
+          try {
+            // Blobから音声を再生
+            const blob = new Blob([audioData], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+
+            audio.onended = () => {
+              URL.revokeObjectURL(audioUrl);
+              isPlaying = false;
+              playNextChunk(); // 次のチャンクを再生
+            };
+
+            audio.onerror = (e) => {
+              console.error('音声再生エラー:', e);
+              isPlaying = false;
+              playNextChunk(); // エラーでも次へ
+            };
+
+            await audio.play();
+          } catch (error) {
+            console.error('音声再生失敗:', error);
+            isPlaying = false;
+            playNextChunk();
+          }
+        }
+      };
+
+      // SSEでストリーミング受信
+      const response = await fetch('/api/chat-stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: text,
+          history: messages.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text })),
+          scenario_id: selectedScenarioId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('ストリーミング接続失敗');
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('ReadableStream not supported');
+      }
+
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6);
+            try {
+              const data = JSON.parse(jsonStr);
+
+              if (data.error) {
+                console.error('ストリーミングエラー:', data.error);
+                setToast({ message: 'エラーが発生しました', type: 'error' });
+                continue;
+              }
+
+              if (data.audio) {
+                // Base64デコード
+                const binaryString = atob(data.audio);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                  bytes[i] = binaryString.charCodeAt(i);
+                }
+
+                // 音声キューに追加
+                audioQueue.push(bytes.buffer);
+                fullText += data.text || '';
+
+                // 再生開始
+                if (!isPlaying) {
+                  playNextChunk();
+                }
+
+                console.log(`[チャンク${data.chunk}] 受信・再生: ${data.text}`);
+              }
+            } catch (e) {
+              console.error('JSON parse error:', e);
+            }
+          }
+        }
+      }
+
+      // 全テキストでbotメッセージを追加
+      const botMessage: Message = {
+        id: `bot-${Date.now()}`,
+        role: 'bot',
+        text: fullText || '応答を受信できませんでした',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+      setMediaSubtitle(fullText);
+
+      // AIの返答から適切な表情画像を選択
+      const expressionImageUrl = getExpressionForResponse(fullText, currentAvatarId);
+      setImageSrc(expressionImageUrl);
+      setVideoSrc(undefined);
+
+    } catch (error) {
+      console.error('ストリーミング送信エラー:', error);
+      setToast({
+        message: 'メッセージの送信に失敗しました。もう一度お試しください。',
+        type: 'error',
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // 音声を有効化（モバイル対応）
   const initializeSpeech = () => {
     if (!('speechSynthesis' in window)) {
@@ -341,47 +494,8 @@ function RoleplayApp() {
   }, [audioRecorderRef]);
 
   const handleSend = async (text: string) => {
-    if (!text.trim() || isSending) return;
-
-    setIsSending(true);
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      text: text.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-
-    try {
-      const response = await sendMessage(text, messages, selectedScenarioId);
-      const botMessage: Message = {
-        id: `bot-${Date.now()}`,
-        role: 'bot',
-        text: response,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
-      setMediaSubtitle(response);
-
-      // AIの返答から適切な表情画像を選択（avatar_03固定で表情のみ変化）
-      const expressionImageUrl = getExpressionForResponse(response, currentAvatarId);
-      setImageSrc(expressionImageUrl);
-      setVideoSrc(undefined); // 静止画を使用するため動画はクリア
-      console.log('🎭 アバター表情画像:', expressionImageUrl);
-
-      // 音声出力（Web Speech API - 即座に再生）
-      speakTextWithWebSpeech(response);
-
-    } catch (error) {
-      console.error('送信エラー:', error);
-      setToast({
-        message: 'メッセージの送信に失敗しました。もう一度お試しください。',
-        type: 'error',
-      });
-    } finally {
-      setIsSending(false);
-    }
+    // ストリーミング対応版を使用
+    await handleSendStream(text);
   };
 
   const handleStartRecording = async () => {
