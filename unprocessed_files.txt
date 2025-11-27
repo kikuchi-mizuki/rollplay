@@ -1,0 +1,63 @@
+# 未処理の音声ファイルリスト
+
+# meeting_1st (22本)
+1次面談/meeting_1st_002.mp3
+1次面談/meeting_1st_003.mp3
+1次面談/meeting_1st_004.mp3
+1次面談/meeting_1st_005.mp3
+1次面談/meeting_1st_006.mp3
+1次面談/meeting_1st_007.mp3
+1次面談/meeting_1st_008.mp3
+1次面談/meeting_1st_009.mp3
+1次面談/meeting_1st_010.mp3
+1次面談/meeting_1st_011.mp3
+1次面談/meeting_1st_012.mp3
+1次面談/meeting_1st_013.mp3
+1次面談/meeting_1st_014.mp3
+1次面談/meeting_1st_015.mp3
+1次面談/meeting_1st_016.mp3
+1次面談/meeting_1st_017.mp3
+1次面談/meeting_1st_018.mp3
+1次面談/meeting_1st_019.mp3
+1次面談/meeting_1st_020.mp3
+1次面談/meeting_1st_021.mp3
+1次面談/meeting_1st_022.mp3
+1次面談/meeting_1st_023.mp3
+1次面談/meeting_1st_024.mp3
+1次面談/meeting_1st_025.mp3
+1次面談/meeting_1st_026.mp3
+
+# meeting_2nd (4本)
+2次面談/meeting_2nd_002.mp3
+2次面談/meeting_2nd_003.mp3
+2次面談/meeting_2nd_004.mp3
+2次面談/meeting_2nd_005.mp3
+
+# meeting_3rd (4本)
+3次面談/meeting_3rd_003.mp3
+3次面談/meeting_3rd_004.mp3
+3次面談/meeting_3rd_005.mp3
+3次面談/meeting_3rd_006.mp3
+
+# kickoff (11本)
+キックオフMTG/kickoff_002.mp3
+キックオフMTG/kickoff_003.mp3
+キックオフMTG/kickoff_004.mp3
+キックオフMTG/kickoff_005.mp3
+キックオフMTG/kickoff_006.mp3
+キックオフMTG/kickoff_007.mp3
+キックオフMTG/kickoff_008.mp3
+キックオフMTG/kickoff_009.mp3
+キックオフMTG/kickoff_010.mp3
+キックオフMTG/kickoff_011.mp3
+キックオフMTG/kickoff_012.mp3
+
+# upsell (8本)
+追加営業/upsell_003.mp3
+追加営業/upsell_004.mp3
+追加営業/upsell_005.mp3
+追加営業/upsell_006.mp3
+追加営業/upsell_007.mp3
+追加営業/upsell_008.mp3
+追加営業/upsell_009.mp3
+追加営業/upsell_010.mp3
