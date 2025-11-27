@@ -603,6 +603,163 @@ def chat():
             'error': str(e)
         }), 500
 
+
+@app.route('/api/chat-stream', methods=['POST'])
+def chat_stream():
+    """
+    ストリーミング対応のチャットエンドポイント
+    GPT応答を即座に生成・TTS・送信してリアルタイム性を向上
+    """
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        conversation_history = data.get('history', [])
+        scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
+        scenario_obj = load_scenario_object(scenario_id)
+
+        def generate():
+            """SSE (Server-Sent Events) でストリーミング送信"""
+            try:
+                if not openai_api_key or not openai_client:
+                    yield f"data: {json.dumps({'error': 'OpenAI API未設定'})}\n\n"
+                    return
+
+                # システムプロンプト構築（既存ロジックと同じ）
+                system_prompt = SALES_ROLEPLAY_PROMPT
+                if scenario_obj:
+                    persona = scenario_obj.get('persona') or {}
+                    # persona_variationsがある場合はランダムに選択
+                    if 'persona_variations' in scenario_obj and scenario_obj['persona_variations']:
+                        import random
+                        persona = random.choice(scenario_obj['persona_variations'])
+                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を選択しました")
+
+                    guidelines = scenario_obj.get('guidelines') or []
+                    persona_txt = []
+
+                    # ペルソナ情報をシステムプロンプトに追加
+                    if 'customer_role' in persona:
+                        persona_txt.append(f"顧客役: {persona['customer_role']}")
+                    if 'business_detail' in persona:
+                        persona_txt.append(f"事業詳細: {persona['business_detail']}")
+                    if 'tone' in persona:
+                        persona_txt.append(f"トーン・態度: {persona['tone']}")
+                    if 'knowledge_level' in persona:
+                        persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
+                    if 'current_sns_status' in persona:
+                        sns_status = persona['current_sns_status']
+                        if isinstance(sns_status, dict):
+                            persona_txt.append("現在のSNS運用状況:")
+                            if 'instagram' in sns_status:
+                                persona_txt.append(f"  - Instagram: {sns_status['instagram']}")
+                            if 'tiktok' in sns_status:
+                                persona_txt.append(f"  - TikTok: {sns_status['tiktok']}")
+                            if 'challenges' in sns_status:
+                                challenges = sns_status['challenges']
+                                if challenges:
+                                    persona_txt.append("  - 具体的な課題: " + "、".join(challenges[:3]))
+                    if 'budget_sense' in persona:
+                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+
+                    if persona_txt:
+                        system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
+                    if guidelines:
+                        system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
+
+                # メッセージ履歴構築
+                messages = [{"role": "system", "content": system_prompt}]
+                for msg in conversation_history[-10:]:
+                    if msg['speaker'] == '営業':
+                        messages.append({"role": "user", "content": msg['text']})
+                    elif msg['speaker'] == '顧客':
+                        messages.append({"role": "assistant", "content": msg['text']})
+
+                messages.append({"role": "user", "content": user_message})
+
+                # GPT-4oストリーミング応答
+                print("[ストリーミング] GPT-4o応答生成開始")
+                response = openai_client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=messages,
+                    max_tokens=200,
+                    temperature=1.0,
+                    stream=True  # ストリーミング有効化
+                )
+
+                # チャンクバッファ
+                text_buffer = ""
+                chunk_count = 0
+
+                # ストリーミングレスポンスを処理
+                for chunk in response:
+                    if chunk.choices[0].delta.content:
+                        content = chunk.choices[0].delta.content
+                        text_buffer += content
+
+                        # 句点「。」で文を分割してTTS生成
+                        if '。' in text_buffer:
+                            sentences = text_buffer.split('。')
+                            # 最後の要素（未完成の文）を除いて処理
+                            for sentence in sentences[:-1]:
+                                if sentence.strip():
+                                    full_sentence = sentence.strip() + '。'
+                                    chunk_count += 1
+                                    print(f"[チャンク{chunk_count}] {full_sentence}")
+
+                                    # TTS生成
+                                    try:
+                                        tts_response = openai_client.audio.speech.create(
+                                            model="tts-1-hd",
+                                            voice="nova",
+                                            input=full_sentence,
+                                            speed=1.3
+                                        )
+                                        audio_data = tts_response.content
+                                        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+
+                                        # SSEで音声データを送信
+                                        yield f"data: {json.dumps({'audio': audio_base64, 'text': full_sentence, 'chunk': chunk_count})}\n\n"
+                                    except Exception as tts_error:
+                                        print(f"[TTS エラー] {tts_error}")
+
+                            # 未完成の文をバッファに残す
+                            text_buffer = sentences[-1]
+
+                # 残りのテキストを処理
+                if text_buffer.strip():
+                    chunk_count += 1
+                    print(f"[最終チャンク{chunk_count}] {text_buffer}")
+                    try:
+                        tts_response = openai_client.audio.speech.create(
+                            model="tts-1-hd",
+                            voice="nova",
+                            input=text_buffer.strip(),
+                            speed=1.3
+                        )
+                        audio_data = tts_response.content
+                        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+                        yield f"data: {json.dumps({'audio': audio_base64, 'text': text_buffer.strip(), 'chunk': chunk_count, 'final': True})}\n\n"
+                    except Exception as tts_error:
+                        print(f"[最終TTS エラー] {tts_error}")
+
+                print(f"[ストリーミング完了] 合計{chunk_count}チャンク送信")
+
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+        return Response(generate(), mimetype='text/event-stream', headers={
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no'
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 def get_mock_response(user_message):
     """モック応答を生成"""
     mock_responses = [
