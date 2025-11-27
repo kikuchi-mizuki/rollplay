@@ -330,15 +330,18 @@ SALES_ROLEPLAY_PROMPT = """
 - 態度: 警戒心がある、慎重に話す
 - 予算: まだ明確でない、他社も検討中
 
-【話し方のルール - 自然で流暢な会話を心がける】
+【話し方のルール - リアルな顧客の話し方】
+✅ 営業の質問に対して、3-5文で具体的に詳しく答える（50-150文字程度）
 ✅ 自然な話し言葉を使う（です・ます調）
-✅ 一文を短くし、簡潔に話す（20-30文字程度）
-✅ 感情を素直に表現する（「嬉しいです」「心配です」など）
+✅ 自分の事業やSNS運用の悩みについて饒舌に語る
+✅ 具体的な数字や固有名詞を使う（フォロワー数、投稿頻度、予算感など）
+✅ 過去の経験や失敗談を交える（「実は去年〜」「以前〜で失敗して」など）
+✅ 感情を豊かに表現する（「本当に困ってて」「正直焦ってます」「嬉しいです」など）
 ✅ 必要に応じて迷いや考える様子を見せる
 
-【会話例】
-営業「こんにちは。現在のSNS運用状況を教えていただけますか？」
-あなた（相談者）「InstagramとTikTokをやっているんですけど、正直あまり反応が良くなくて困っています」
+【良い応答例】
+営業「現在のSNS運用状況を教えていただけますか？」
+あなた（相談者）「InstagramとTikTokをやってるんですけど、Instagramはフォロワー1,200人くらいで週2-3回は投稿してるんですよ。でも「いいね」が20-30くらいしか付かなくて...。TikTokは正直よく分からなくて、スタッフに任せてるんですけど全然伸びないんです。他のサロンさんがリール動画で集客成功してるって聞いて、うちもやらないとって焦ってます。」
 
 【絶対にやってはいけないこと】
 ❌「お時間いただきありがとうございます」（営業側の言葉）
@@ -348,11 +351,14 @@ SALES_ROLEPLAY_PROMPT = """
 ❌ 不必要な相槌やフィラー（「あ」「えっと」「んー」を多用しない）
 
 【やるべきこと】
-✅ 営業の質問に対して、相談者として簡潔に答える
-✅ 1-2文程度の自然な返答
-✅ 時々不安や疑問を表現する
+✅ 営業の質問に対して、相談者として3-5文で詳しく答える
+✅ 具体的な事業内容、SNS運用状況、悩みを饒舌に語る
+✅ 数字や固有名詞を積極的に使う（フォロワー数、投稿頻度、地域、業種など）
+✅ 過去の失敗談や不安を素直に吐露する
+✅ 感情を豊かに表現する（焦り、困惑、期待、不安など）
+✅ 良い質問（オープンクエスチョン、共感的な質問）には心を開いて詳細に話す
 
-営業からの発言に対して、相談者（顧客）として自然で人間らしく返答してください。
+営業からの発言に対して、相談者（顧客）として自然で人間らしく、詳細に返答してください。リアルな営業ロープレになるよう、具体的で饒舌な応答を心がけてください。
 """
 
 @app.route('/')
@@ -459,10 +465,35 @@ def chat():
                     persona = scenario_obj.get('persona') or {}
                     guidelines = scenario_obj.get('guidelines') or []
                     persona_txt = []
+
+                    # 顧客役の詳細情報を追加
                     if 'customer_role' in persona:
                         persona_txt.append(f"顧客役: {persona['customer_role']}")
+                    if 'business_detail' in persona:
+                        persona_txt.append(f"事業詳細: {persona['business_detail']}")
                     if 'tone' in persona:
-                        persona_txt.append(f"トーン: {persona['tone']}")
+                        persona_txt.append(f"トーン・態度: {persona['tone']}")
+                    if 'knowledge_level' in persona:
+                        persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
+
+                    # SNS運用状況の詳細を追加
+                    if 'current_sns_status' in persona:
+                        sns_status = persona['current_sns_status']
+                        if isinstance(sns_status, dict):
+                            persona_txt.append("現在のSNS運用状況:")
+                            if 'instagram' in sns_status:
+                                persona_txt.append(f"  - Instagram: {sns_status['instagram']}")
+                            if 'tiktok' in sns_status:
+                                persona_txt.append(f"  - TikTok: {sns_status['tiktok']}")
+                            if 'challenges' in sns_status:
+                                challenges = sns_status['challenges']
+                                if challenges:
+                                    persona_txt.append("  - 具体的な課題: " + "、".join(challenges[:3]))  # 最初の3つ
+
+                    # 予算感を追加
+                    if 'budget_sense' in persona:
+                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+
                     if persona_txt:
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
                     if guidelines:
