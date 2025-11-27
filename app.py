@@ -462,7 +462,13 @@ def chat():
                 system_prompt = SALES_ROLEPLAY_PROMPT
                 # シナリオのpersona/guidelinesをsystem補強
                 if scenario_obj:
-                    persona = scenario_obj.get('persona') or {}
+                    # persona_variationsがある場合はランダムに選択
+                    if 'persona_variations' in scenario_obj and scenario_obj['persona_variations']:
+                        import random
+                        persona = random.choice(scenario_obj['persona_variations'])
+                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を選択しました")
+                    else:
+                        persona = scenario_obj.get('persona') or {}
                     guidelines = scenario_obj.get('guidelines') or []
                     persona_txt = []
 
@@ -634,12 +640,12 @@ def text_to_speech():
         if voice not in valid_voices:
             voice = 'alloy'  # デフォルトにフォールバック
 
-        # OpenAI TTSで音声生成（高品質モデル + 自然な速度）
+        # OpenAI TTSで音声生成（高品質モデル + テンポの良い速度）
         response = openai_client.audio.speech.create(
             model="tts-1-hd",  # 高品質モデル（より自然な発音）
             voice=voice,       # アバターに応じた音声（alloy, echo, fable, onyx, nova, shimmer）
             input=text,
-            speed=0.90         # ゆっくりとした会話ペース（考えながら話す自然な速度）
+            speed=1.1          # テンポの良い会話ペース（現場の臨場感を重視）
         )
 
         # 音声データを返す
