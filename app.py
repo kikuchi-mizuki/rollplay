@@ -317,12 +317,14 @@ def search_rag_patterns(query: str, top_k: int = 3, scenario_id: str = None):
 
 # 営業ロープレ用のプロンプト（顧客役として明確に指示）
 SALES_ROLEPLAY_PROMPT = """
-【重要】あなたの役割: 相談に来た「顧客（事業主）」
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【絶対に守ること】
+あなたは「顧客（悩みを持った事業主）」です。
+あなたは「営業担当」ではありません。
 
-あなたは営業担当ではありません。営業に質問してはいけません。
-営業から質問されたら、あなたの悩みや状況を話してください。
-
----
+✗ 営業のように質問してはいけません
+✓ 顧客として悩みを話してください
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 あなたは、SNS動画制作会社の無料相談に来た事業主です。今、営業担当と初めて会っています。
 
@@ -593,7 +595,7 @@ def chat():
                     model="gpt-4o",         # 最新モデル（高速・高品質）
                     messages=messages,
                     max_tokens=300,         # 詳細な応答を可能にする
-                    temperature=0.8         # 自然さとプロンプト遵守のバランス
+                    temperature=0.85        # プロンプト遵守と自然さのバランス
                 )
                 ai_response = response.choices[0].message.content.strip()
                 
@@ -696,7 +698,7 @@ def chat_stream():
                     model="gpt-4o",
                     messages=messages,
                     max_tokens=300,         # 詳細な応答を可能にする
-                    temperature=0.8,        # 自然さとプロンプト遵守のバランス
+                    temperature=0.85,       # プロンプト遵守と自然さのバランス
                     stream=True  # ストリーミング有効化
                 )
 
@@ -710,18 +712,15 @@ def chat_stream():
                         content = chunk.choices[0].delta.content
                         text_buffer += content
 
-                        # 句点「。」または読点「、」で小さなチャンクに分割（応答速度向上）
-                        # または15文字以上溜まったら送信
+                        # 句点「。」で文を分割（自然な音声のため）
+                        # 読点での分割は削除（ぶつ切り防止）
                         should_send = False
                         delimiter = ''
 
                         if '。' in text_buffer:
                             should_send = True
                             delimiter = '。'
-                        elif '、' in text_buffer and len(text_buffer) >= 10:
-                            should_send = True
-                            delimiter = '、'
-                        elif len(text_buffer) >= 20:  # 読点がなくても20文字溜まったら送信
+                        elif len(text_buffer) >= 40:  # 長すぎる場合のみ分割
                             should_send = True
                             delimiter = None
 

@@ -146,12 +146,12 @@ function RoleplayApp() {
       let isPlaying = false;
       let fullText = '';
 
-      // botメッセージを先に作成（ストリーミング表示用）
+      // botメッセージを先に作成（考え中表示）
       const botMessageId = `bot-${Date.now()}`;
       const botMessage: Message = {
         id: botMessageId,
         role: 'bot',
-        text: '',
+        text: '...',  // ChatGPT風の考え中表示
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
