@@ -710,34 +710,69 @@ def chat_stream():
                         content = chunk.choices[0].delta.content
                         text_buffer += content
 
-                        # 句点「。」で文を分割してTTS生成
+                        # 句点「。」または読点「、」で小さなチャンクに分割（応答速度向上）
+                        # または15文字以上溜まったら送信
+                        should_send = False
+                        delimiter = ''
+
                         if '。' in text_buffer:
-                            sentences = text_buffer.split('。')
-                            # 最後の要素（未完成の文）を除いて処理
-                            for sentence in sentences[:-1]:
-                                if sentence.strip():
-                                    full_sentence = sentence.strip() + '。'
-                                    chunk_count += 1
-                                    print(f"[チャンク{chunk_count}] {full_sentence}")
+                            should_send = True
+                            delimiter = '。'
+                        elif '、' in text_buffer and len(text_buffer) >= 10:
+                            should_send = True
+                            delimiter = '、'
+                        elif len(text_buffer) >= 20:  # 読点がなくても20文字溜まったら送信
+                            should_send = True
+                            delimiter = None
 
-                                    # TTS生成
-                                    try:
-                                        tts_response = openai_client.audio.speech.create(
-                                            model="tts-1-hd",
-                                            voice="nova",
-                                            input=full_sentence,
-                                            speed=1.3
-                                        )
-                                        audio_data = tts_response.content
-                                        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+                        if should_send:
+                            if delimiter:
+                                chunks = text_buffer.split(delimiter)
+                                # 最後の要素（未完成の文）を除いて処理
+                                for part in chunks[:-1]:
+                                    if part.strip():
+                                        chunk_text = part.strip() + delimiter
+                                        chunk_count += 1
+                                        print(f"[チャンク{chunk_count}] {chunk_text}")
 
-                                        # SSEで音声データを送信
-                                        yield f"data: {json.dumps({'audio': audio_base64, 'text': full_sentence, 'chunk': chunk_count})}\n\n"
-                                    except Exception as tts_error:
-                                        print(f"[TTS エラー] {tts_error}")
+                                        # TTS生成
+                                        try:
+                                            tts_response = openai_client.audio.speech.create(
+                                                model="tts-1-hd",
+                                                voice="nova",
+                                                input=chunk_text,
+                                                speed=1.3
+                                            )
+                                            audio_data = tts_response.content
+                                            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
 
-                            # 未完成の文をバッファに残す
-                            text_buffer = sentences[-1]
+                                            # SSEで音声データを送信
+                                            yield f"data: {json.dumps({'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_count})}\n\n"
+                                        except Exception as tts_error:
+                                            print(f"[TTS エラー] {tts_error}")
+
+                                # 未完成の文をバッファに残す
+                                text_buffer = chunks[-1]
+                            else:
+                                # 読点がない場合、20文字で強制送信
+                                chunk_text = text_buffer.strip()
+                                chunk_count += 1
+                                print(f"[チャンク{chunk_count}] {chunk_text}")
+
+                                try:
+                                    tts_response = openai_client.audio.speech.create(
+                                        model="tts-1-hd",
+                                        voice="nova",
+                                        input=chunk_text,
+                                        speed=1.3
+                                    )
+                                    audio_data = tts_response.content
+                                    audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+                                    yield f"data: {json.dumps({'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_count})}\n\n"
+                                except Exception as tts_error:
+                                    print(f"[TTS エラー] {tts_error}")
+
+                                text_buffer = ""
 
                 # 残りのテキストを処理
                 if text_buffer.strip():

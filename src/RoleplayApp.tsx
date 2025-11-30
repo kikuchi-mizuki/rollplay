@@ -236,6 +236,9 @@ function RoleplayApp() {
                 audioQueue.push(bytes.buffer);
                 fullText += data.text || '';
 
+                // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
+                setMediaSubtitle(fullText);
+
                 // 再生開始
                 if (!isPlaying) {
                   playNextChunk();
