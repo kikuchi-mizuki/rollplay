@@ -741,7 +741,7 @@ def chat_stream():
                                                 model="tts-1-hd",
                                                 voice="nova",
                                                 input=chunk_text,
-                                                speed=1.3
+                                                speed=1.15  # 自然な会話速度（1.3は早すぎ）
                                             )
                                             audio_data = tts_response.content
                                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -764,7 +764,7 @@ def chat_stream():
                                         model="tts-1-hd",
                                         voice="nova",
                                         input=chunk_text,
-                                        speed=1.3
+                                        speed=1.15  # 自然な会話速度（1.3は早すぎ）
                                     )
                                     audio_data = tts_response.content
                                     audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -783,7 +783,7 @@ def chat_stream():
                             model="tts-1-hd",
                             voice="nova",
                             input=text_buffer.strip(),
-                            speed=1.3
+                            speed=1.15  # 自然な会話速度（1.3は早すぎ）
                         )
                         audio_data = tts_response.content
                         audio_base64 = base64.b64encode(audio_data).decode('utf-8')

@@ -146,6 +146,16 @@ function RoleplayApp() {
       let isPlaying = false;
       let fullText = '';
 
+      // botメッセージを先に作成（ストリーミング表示用）
+      const botMessageId = `bot-${Date.now()}`;
+      const botMessage: Message = {
+        id: botMessageId,
+        role: 'bot',
+        text: '',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+
       // 音声チャンクを順次再生
       const playNextChunk = async () => {
         if (audioQueue.length > 0 && !isPlaying) {
@@ -239,6 +249,15 @@ function RoleplayApp() {
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
                 setMediaSubtitle(fullText);
 
+                // チャットもリアルタイム更新（ストリーミング表示）
+                setMessages((prev) =>
+                  prev.map(msg =>
+                    msg.id === botMessageId
+                      ? { ...msg, text: fullText }
+                      : msg
+                  )
+                );
+
                 // 再生開始
                 if (!isPlaying) {
                   playNextChunk();
@@ -253,15 +272,19 @@ function RoleplayApp() {
         }
       }
 
-      // 全テキストでbotメッセージを追加
-      const botMessage: Message = {
-        id: `bot-${Date.now()}`,
-        role: 'bot',
-        text: fullText || '応答を受信できませんでした',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
+      // 最終的な字幕更新（念のため）
       setMediaSubtitle(fullText);
+
+      // もしテキストが空の場合はエラーメッセージを表示
+      if (!fullText) {
+        setMessages((prev) =>
+          prev.map(msg =>
+            msg.id === botMessageId
+              ? { ...msg, text: '応答を受信できませんでした' }
+              : msg
+          )
+        );
+      }
 
       // AIの返答から適切な表情画像を選択
       const expressionImageUrl = getExpressionForResponse(fullText, currentAvatarId);
