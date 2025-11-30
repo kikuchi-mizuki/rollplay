@@ -43,6 +43,7 @@ function RoleplayApp() {
   const [_speechSupported, setSpeechSupported] = useState<boolean | null>(null);
   const [_voiceCount, setVoiceCount] = useState(0);
   const [speechInitialized, setSpeechInitialized] = useState(false);
+  const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -531,6 +532,89 @@ function RoleplayApp() {
     }
   };
 
+  // VAD（会話モード）のトグル
+  const handleToggleVAD = async () => {
+    if (isVADMode) {
+      // VADモード停止
+      audioRecorderRef.stopVAD();
+      setIsVADMode(false);
+      setToast({
+        message: '会話モードを停止しました',
+        type: 'info',
+      });
+    } else {
+      // VADモード開始
+      try {
+        await audioRecorderRef.startVAD(
+          // 音声検出時のコールバック
+          () => {
+            console.log('🎤 話し始めました');
+            setIsRecording(true);
+          },
+          // 音声停止時のコールバック（音声認識＆送信）
+          async (audioBlob: Blob) => {
+            console.log('🔇 話し終わりました');
+            setIsRecording(false);
+
+            // Whisper APIで音声認識
+            const formData = new FormData();
+            const mimeType = audioBlob.type || 'audio/webm';
+            let ext = mimeType.includes('webm') ? 'webm'
+                   : mimeType.includes('mp4') ? 'mp4'
+                   : mimeType.includes('ogg') ? 'ogg'
+                   : mimeType.includes('wav') ? 'wav'
+                   : 'bin';
+            formData.append('audio', audioBlob, `recording.${ext}`);
+
+            setIsSending(true);
+            try {
+              const response = await fetch('/api/transcribe', {
+                method: 'POST',
+                body: formData
+              });
+
+              const rawText = await response.text();
+              setIsSending(false);
+
+              if (!response.ok) {
+                throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
+              }
+
+              const result = JSON.parse(rawText);
+
+              if (result.success && result.text) {
+                await handleSend(result.text);
+              } else {
+                setToast({
+                  message: result.error || '音声認識に失敗しました。',
+                  type: 'error',
+                });
+              }
+            } catch (error) {
+              console.error('音声認識エラー:', error);
+              setIsSending(false);
+              setToast({
+                message: '音声認識に失敗しました。',
+                type: 'error',
+              });
+            }
+          }
+        );
+        setIsVADMode(true);
+        setToast({
+          message: '会話モード開始（話すと自動的に録音開始）',
+          type: 'success',
+        });
+      } catch (error) {
+        console.error('VADモード開始エラー:', error);
+        setToast({
+          message: 'マイクへのアクセスが許可されていません。',
+          type: 'error',
+        });
+      }
+    }
+  };
+
   const handleClear = () => {
     setShowClearConfirm(true);
   };
@@ -675,6 +759,8 @@ function RoleplayApp() {
             isLoadingEvaluation={isLoadingEvaluation}
             onInitializeSpeech={initializeSpeech}
             speechInitialized={speechInitialized}
+            onToggleVAD={handleToggleVAD}
+            isVADMode={isVADMode}
           />
         </div>
       </footer>

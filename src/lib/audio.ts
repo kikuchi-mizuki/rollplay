@@ -1,7 +1,7 @@
 import { RecordingState } from '../types';
 
 /**
- * 実録音機能付きAudioRecorder
+ * 実録音機能付きAudioRecorder（音声自動検出VAD対応）
  */
 export class AudioRecorder {
   private state: RecordingState = {
@@ -19,6 +19,15 @@ export class AudioRecorder {
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private microphone: MediaStreamAudioSourceNode | null = null;
+
+  // VAD（音声自動検出）用
+  private vadEnabled: boolean = false;
+  private vadThreshold: number = 15; // 音声検出閾値（0-100）
+  private silenceTimeout: number | null = null;
+  private silenceDuration: number = 1500; // 無音1.5秒で録音停止
+  private isVadRecording: boolean = false;
+  private onVadStartCallback?: () => void;
+  private onVadStopCallback?: (blob: Blob) => void;
 
   /**
    * 録音開始（モバイル対応強化）
@@ -336,11 +345,217 @@ export class AudioRecorder {
   }
 
   /**
+   * VAD（音声自動検出）モード開始
+   */
+  async startVAD(onStart: () => void, onStop: (blob: Blob) => void): Promise<void> {
+    this.vadEnabled = true;
+    this.onVadStartCallback = onStart;
+    this.onVadStopCallback = onStop;
+
+    // マイク監視を開始（録音はまだ開始しない）
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        }
+      });
+
+      // AudioContext設定
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      this.audioContext = new AudioContextClass();
+
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      this.analyser = this.audioContext.createAnalyser();
+      this.analyser.fftSize = 256;
+      this.microphone = this.audioContext.createMediaStreamSource(this.stream);
+      this.microphone.connect(this.analyser);
+
+      // VAD音量監視を開始
+      this.startVADMonitoring();
+
+      console.log('✅ VADモード開始（話すと自動的に録音開始）');
+    } catch (error) {
+      console.error('❌ VADモード開始エラー:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * VAD（音声自動検出）モード停止
+   */
+  stopVAD(): void {
+    this.vadEnabled = false;
+
+    // 録音中なら停止
+    if (this.isVadRecording) {
+      this.stop();
+    }
+
+    this.stopVADMonitoring();
+    this.cleanupMedia();
+
+    console.log('✅ VADモード停止');
+  }
+
+  /**
+   * VAD音量監視
+   */
+  private startVADMonitoring(): void {
+    if (!this.analyser) return;
+
+    const bufferLength = this.analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    this.levelInterval = window.setInterval(() => {
+      if (!this.analyser || !this.vadEnabled) {
+        this.stopVADMonitoring();
+        return;
+      }
+
+      this.analyser.getByteFrequencyData(dataArray);
+
+      // 音量計算
+      let max = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        if (dataArray[i] > max) {
+          max = dataArray[i];
+        }
+      }
+
+      const level = (max / 255) * 100;
+      this.state.level = level;
+
+      // 音声検出ロジック
+      if (level > this.vadThreshold) {
+        // 音声検出 → 録音開始
+        if (!this.isVadRecording) {
+          console.log('🎤 音声検出 → 録音開始');
+          this.isVadRecording = true;
+          this.startVADRecording();
+          if (this.onVadStartCallback) {
+            this.onVadStartCallback();
+          }
+        }
+
+        // 無音タイマーをクリア
+        if (this.silenceTimeout) {
+          clearTimeout(this.silenceTimeout);
+          this.silenceTimeout = null;
+        }
+      } else {
+        // 無音検出 → タイマー開始
+        if (this.isVadRecording && !this.silenceTimeout) {
+          this.silenceTimeout = window.setTimeout(() => {
+            console.log('🔇 無音検出 → 録音停止');
+            this.stopVADRecording();
+          }, this.silenceDuration);
+        }
+      }
+
+      window.dispatchEvent(new CustomEvent('recording-update', { detail: this.state }));
+    }, 100);
+  }
+
+  /**
+   * VAD録音開始
+   */
+  private async startVADRecording(): Promise<void> {
+    if (!this.stream) return;
+
+    const pickedMime = this.pickSupportedMime();
+    if (pickedMime) {
+      this.mimeType = pickedMime;
+    }
+
+    const options: MediaRecorderOptions = pickedMime ? { mimeType: pickedMime } : {};
+
+    try {
+      this.mediaRecorder = new MediaRecorder(this.stream, options);
+    } catch (err) {
+      this.mediaRecorder = new MediaRecorder(this.stream);
+    }
+
+    this.audioChunks = [];
+
+    this.mediaRecorder.ondataavailable = (event) => {
+      if (event.data && event.data.size > 0) {
+        this.audioChunks.push(event.data);
+      }
+    };
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const timeslice = isIOS ? 1000 : undefined;
+
+    this.mediaRecorder.start(timeslice);
+    this.state.isRecording = true;
+    this.state.duration = 0;
+    this.startTimer();
+  }
+
+  /**
+   * VAD録音停止
+   */
+  private async stopVADRecording(): Promise<void> {
+    if (!this.mediaRecorder || !this.isVadRecording) return;
+
+    this.isVadRecording = false;
+
+    return new Promise((resolve) => {
+      this.mediaRecorder!.onstop = () => {
+        this.state.isRecording = false;
+        this.stopTimer();
+
+        const audioBlob = new Blob(this.audioChunks, { type: this.mimeType });
+        this.audioChunks = [];
+
+        // コールバック実行
+        if (this.onVadStopCallback && audioBlob.size > 0) {
+          this.onVadStopCallback(audioBlob);
+        }
+
+        resolve();
+      };
+
+      try {
+        this.mediaRecorder!.requestData();
+      } catch (e) {
+        // ignore
+      }
+
+      this.mediaRecorder!.stop();
+      this.mediaRecorder = null;
+    });
+  }
+
+  /**
+   * VAD監視停止
+   */
+  private stopVADMonitoring(): void {
+    if (this.levelInterval !== null) {
+      clearInterval(this.levelInterval);
+      this.levelInterval = null;
+    }
+
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
+    }
+
+    this.state.level = 0;
+  }
+
+  /**
    * クリーンアップ
    */
   cleanup(): void {
     this.stopTimer();
     this.stopLevelMeasurement();
+    this.stopVAD();
     this.cleanupMedia();
   }
 }

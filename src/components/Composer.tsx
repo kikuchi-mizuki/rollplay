@@ -28,6 +28,8 @@ interface ComposerProps {
   isLoadingEvaluation?: boolean;
   onInitializeSpeech: () => void;
   speechInitialized: boolean;
+  onToggleVAD: () => void;
+  isVADMode: boolean;
 }
 
 export function Composer({
@@ -42,6 +44,8 @@ export function Composer({
   isLoadingEvaluation = false,
   onInitializeSpeech,
   speechInitialized,
+  onToggleVAD,
+  isVADMode,
 }: ComposerProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -181,11 +185,25 @@ export function Composer({
 
       {/* サブアクション */}
       <div className="flex items-center gap-3 mt-3">
+        {/* VAD会話モードボタン（ChatGPT風） */}
+        <button
+          onClick={onToggleVAD}
+          className={`btn text-xs md:text-sm ${
+            isVADMode
+              ? 'btn-danger animate-pulse'
+              : 'btn-primary'
+          }`}
+          aria-label={isVADMode ? '会話モード停止' : '会話モード開始'}
+        >
+          <Mic size={14} className="mr-1.5" />
+          {isVADMode ? '会話モード停止' : '会話モード'}
+        </button>
+
         {/* 音声有効化ボタン（初期化されていない場合のみ表示） */}
         {!speechInitialized && (
           <button
             onClick={onInitializeSpeech}
-            className="btn btn-primary text-xs md:text-sm"
+            className="btn btn-secondary text-xs md:text-sm"
             aria-label="音声を有効化"
           >
             <Volume2 size={14} className="mr-1.5" />
