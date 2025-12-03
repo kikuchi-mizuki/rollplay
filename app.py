@@ -500,11 +500,10 @@ def chat():
                 system_prompt = SALES_ROLEPLAY_PROMPT
                 # シナリオのpersona/guidelinesをsystem補強
                 if scenario_obj:
-                    # persona_variationsがある場合はランダムに選択
+                    # persona_variationsがある場合は最初のペルソナを使用（一貫性を保つため）
                     if 'persona_variations' in scenario_obj and scenario_obj['persona_variations']:
-                        import random
-                        persona = random.choice(scenario_obj['persona_variations'])
-                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を選択しました")
+                        persona = scenario_obj['persona_variations'][0]
+                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を使用します（一貫性のため固定）")
                     else:
                         persona = scenario_obj.get('persona') or {}
                     guidelines = scenario_obj.get('guidelines') or []
@@ -665,11 +664,10 @@ def chat_stream():
                 system_prompt = SALES_ROLEPLAY_PROMPT
                 if scenario_obj:
                     persona = scenario_obj.get('persona') or {}
-                    # persona_variationsがある場合はランダムに選択
+                    # persona_variationsがある場合は最初のペルソナを使用（一貫性を保つため）
                     if 'persona_variations' in scenario_obj and scenario_obj['persona_variations']:
-                        import random
-                        persona = random.choice(scenario_obj['persona_variations'])
-                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を選択しました")
+                        persona = scenario_obj['persona_variations'][0]
+                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を使用します（一貫性のため固定）")
 
                     guidelines = scenario_obj.get('guidelines') or []
                     persona_txt = []
