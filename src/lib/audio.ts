@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 15; // 音声検出閾値（0-100）※より敏感に検出
+  private vadThreshold: number = 55; // 音声検出閾値（0-100）※iOS環境ノイズ対策で大幅に引き上げ
   private silenceTimeout: number | null = null;
   private silenceDuration: number = 1000; // 無音1秒で録音停止（iOS対応で短縮）
   private isVadRecording: boolean = false;
