@@ -142,6 +142,7 @@ export function Composer({
       <div className="flex items-center gap-3">
         {/* 音声録音ボタン */}
         <button
+          type="button"
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
@@ -170,6 +171,7 @@ export function Composer({
 
         {/* 送信ボタン */}
         <button
+          type="button"
           onClick={handleSend}
           disabled={!canSend}
           className="btn-primary flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -187,6 +189,7 @@ export function Composer({
       <div className="flex items-center gap-3 mt-3">
         {/* VAD会話モードボタン（ChatGPT風） */}
         <button
+          type="button"
           onClick={onToggleVAD}
           className={`btn text-xs md:text-sm ${
             isVADMode
@@ -202,6 +205,7 @@ export function Composer({
         {/* 音声有効化ボタン（初期化されていない場合のみ表示） */}
         {!speechInitialized && (
           <button
+            type="button"
             onClick={onInitializeSpeech}
             className="btn btn-secondary text-xs md:text-sm"
             aria-label="音声を有効化"
@@ -211,6 +215,7 @@ export function Composer({
           </button>
         )}
         <button
+          type="button"
           onClick={onShowEvaluation}
           disabled={isLoadingEvaluation}
           className="btn btn-secondary text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -229,6 +234,7 @@ export function Composer({
           )}
         </button>
         <button
+          type="button"
           onClick={onClear}
           className="btn btn-secondary text-xs md:text-sm"
           aria-label="会話をクリア"

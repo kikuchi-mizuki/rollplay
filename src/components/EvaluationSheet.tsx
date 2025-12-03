@@ -96,6 +96,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
           </h2>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleDownloadCSV}
               className="btn-icon text-text-muted hover:text-primary"
               aria-label="CSV出力"
@@ -104,6 +105,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               <Download size={20} />
             </button>
             <button
+              type="button"
               onClick={handleCopy}
               className="btn-icon text-text-muted hover:text-primary"
               aria-label="講評をコピー"
@@ -111,6 +113,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               {copied ? <Check size={20} /> : <Copy size={20} />}
             </button>
             <button
+              type="button"
               onClick={onClose}
               className="btn-icon text-text-muted hover:text-text"
               aria-label="シートを閉じる"
@@ -125,6 +128,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === tab.id

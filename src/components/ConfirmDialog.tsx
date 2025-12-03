@@ -52,6 +52,7 @@ export function ConfirmDialog({
             {title}
           </h2>
           <button
+            type="button"
             onClick={onCancel}
             className="btn-icon text-text-muted hover:text-text"
             aria-label="ダイアログを閉じる"
@@ -63,10 +64,10 @@ export function ConfirmDialog({
           {message}
         </p>
         <div className="flex gap-3 justify-end">
-          <button onClick={onCancel} className="btn btn-outline">
+          <button type="button" onClick={onCancel} className="btn btn-outline">
             {cancelLabel}
           </button>
-          <button onClick={onConfirm} className="btn btn-primary">
+          <button type="button" onClick={onConfirm} className="btn btn-primary">
             {confirmLabel}
           </button>
         </div>
