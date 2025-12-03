@@ -413,6 +413,19 @@ export class AudioRecorder {
   pauseVAD(): void {
     this.vadPaused = true;
     console.log('⏸️ VAD一時停止（AI音声再生中）');
+
+    // 無音タイマーをクリア（録音が自動停止しないようにする）
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
+      console.log('⏹️ 無音タイマークリア');
+    }
+
+    // 既に録音中の場合は即座に停止
+    if (this.isVadRecording) {
+      console.log('🛑 録音中のため強制停止（AI音声開始）');
+      this.stopVADRecording();
+    }
   }
 
   /**
