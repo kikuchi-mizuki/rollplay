@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 30; // 音声検出閾値（0-100）※環境ノイズ対策で15→30に変更
+  private vadThreshold: number = 20; // 音声検出閾値（0-100）※30→20に下げて感度向上
   private silenceTimeout: number | null = null;
   private silenceDuration: number = 1500; // 無音1.5秒で録音停止
   private isVadRecording: boolean = false;
