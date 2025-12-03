@@ -353,7 +353,6 @@ function RoleplayApp() {
 
       // エラー時は割り込みモードを無効化してVADを再開
       if (isVADMode) {
-        interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
         audioRecorderRef.resumeVAD();
         console.log('🔓 VAD再開（エラー時）');
