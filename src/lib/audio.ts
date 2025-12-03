@@ -31,6 +31,7 @@ export class AudioRecorder {
   private onVadStopCallback?: (blob: Blob) => void;
   private minRecordingDuration: number = 500; // 最低録音時間（ミリ秒）
   private recordingStartTime: number = 0;
+  private _lastLogTime: number = 0; // ログ出力の間隔制御用
 
   /**
    * 録音開始（モバイル対応強化）
@@ -450,8 +451,15 @@ export class AudioRecorder {
       const level = (max / 255) * 100;
       this.state.level = level;
 
+      // 音声レベルを定期的にログ出力（5秒ごと）
+      if (!this._lastLogTime || Date.now() - this._lastLogTime > 5000) {
+        console.log(`📊 現在の音声レベル: ${level.toFixed(1)} (閾値: ${this.vadThreshold}, 録音中: ${this.isVadRecording})`);
+        this._lastLogTime = Date.now();
+      }
+
       // 音声検出ロジック（VADが一時停止中は何もしない）
       if (this.vadPaused) {
+        console.log(`⏸️ VAD一時停止中 (レベル: ${level.toFixed(1)})`);
         return; // AI音声再生中などは検出しない
       }
 
@@ -469,12 +477,14 @@ export class AudioRecorder {
 
         // 無音タイマーをクリア
         if (this.silenceTimeout) {
+          console.log(`🔄 無音タイマーをクリア (レベル: ${level.toFixed(1)})`);
           clearTimeout(this.silenceTimeout);
           this.silenceTimeout = null;
         }
       } else {
         // 無音検出 → タイマー開始
         if (this.isVadRecording && !this.silenceTimeout) {
+          console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, ${this.silenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
             // 最低録音時間チェック
             const recordingDuration = Date.now() - this.recordingStartTime;
