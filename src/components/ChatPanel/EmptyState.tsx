@@ -12,7 +12,7 @@ export function EmptyState() {
           顧客役のAIが「30分無料相談」に来ました。
         </p>
         <p className="text-sm text-slate-400 mt-2">
-          顧客からの最初のメッセージが表示されます...
+          マイクボタン🎤またはテキスト入力で話しかけてください
         </p>
       </div>
     </div>
