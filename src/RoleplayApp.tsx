@@ -293,10 +293,13 @@ function RoleplayApp() {
                 fullText += data.text || '';
 
                 // 最初の音声チャンク受信時に割り込みモードを有効化（一度だけ）
+                console.log(`🔍 デバッグ: isVADMode=${isVADMode}, interruptModeEnabled=${interruptModeEnabled}`);
                 if (isVADMode && !interruptModeEnabled) {
                   interruptModeEnabled = true;
                   audioRecorderRef.enableInterruptMode(stopAllAudio);
                   console.log('🎯 割り込みモード有効化');
+                } else {
+                  console.log(`⚠️ 割り込みモード有効化スキップ: isVADMode=${isVADMode}, interruptModeEnabled=${interruptModeEnabled}`);
                 }
 
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
