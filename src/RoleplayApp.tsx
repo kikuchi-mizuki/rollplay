@@ -132,6 +132,13 @@ function RoleplayApp() {
     if (!text.trim() || isSending) return;
 
     setIsSending(true);
+
+    // VADモード中は、メッセージ送信開始時点でVADを一時停止（重複リクエスト防止）
+    if (isVADMode) {
+      audioRecorderRef.pauseVAD();
+      console.log('🔒 VAD一時停止（メッセージ送信開始）');
+    }
+
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -146,7 +153,6 @@ function RoleplayApp() {
       const audioQueue: ArrayBuffer[] = [];
       let isPlaying = false;
       let fullText = '';
-      let vadPausedForAI = false; // AI音声のためにVADを一時停止したかどうか
 
       // botメッセージを先に作成（考え中表示）
       const botMessageId = `bot-${Date.now()}`;
@@ -275,13 +281,6 @@ function RoleplayApp() {
                 audioQueue.push(bytes.buffer);
                 fullText += data.text || '';
 
-                // 最初の音声チャンクを受信した時点でVADを一時停止
-                if (isVADMode && !vadPausedForAI) {
-                  audioRecorderRef.pauseVAD();
-                  vadPausedForAI = true;
-                  console.log('🔇 AI音声開始 - VAD一時停止');
-                }
-
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
                 setMediaSubtitle(fullText);
 
@@ -333,6 +332,12 @@ function RoleplayApp() {
         message: 'メッセージの送信に失敗しました。もう一度お試しください。',
         type: 'error',
       });
+
+      // エラー時はVADを再開（正常時は音声再生完了時に再開される）
+      if (isVADMode) {
+        audioRecorderRef.resumeVAD();
+        console.log('🔓 VAD再開（エラー時）');
+      }
     } finally {
       setIsSending(false);
     }
@@ -601,6 +606,7 @@ function RoleplayApp() {
                    : 'bin';
             formData.append('audio', audioBlob, `recording.${ext}`);
 
+            // 音声認識中のフラグを立てる（VAD重複防止のため、handleSend完了までtrueを維持）
             setIsSending(true);
             try {
               const response = await fetch('/api/transcribe', {
@@ -609,7 +615,6 @@ function RoleplayApp() {
               });
 
               const rawText = await response.text();
-              setIsSending(false);
 
               if (!response.ok) {
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
@@ -618,8 +623,10 @@ function RoleplayApp() {
               const result = JSON.parse(rawText);
 
               if (result.success && result.text) {
+                // handleSendがisSendingをfalseにするまで待つ
                 await handleSend(result.text);
               } else {
+                setIsSending(false);
                 setToast({
                   message: result.error || '音声認識に失敗しました。',
                   type: 'error',
@@ -628,6 +635,11 @@ function RoleplayApp() {
             } catch (error) {
               console.error('音声認識エラー:', error);
               setIsSending(false);
+              // エラー時はVADを再開
+              if (isVADMode) {
+                audioRecorderRef.resumeVAD();
+                console.log('🔓 VAD再開（音声認識エラー時）');
+              }
               setToast({
                 message: '音声認識に失敗しました。',
                 type: 'error',
