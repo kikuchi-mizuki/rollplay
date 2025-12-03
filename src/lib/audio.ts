@@ -25,7 +25,7 @@ export class AudioRecorder {
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
   private vadThreshold: number = 15; // 音声検出閾値（0-100）※より敏感に検出
   private silenceTimeout: number | null = null;
-  private silenceDuration: number = 1500; // 無音1.5秒で録音停止
+  private silenceDuration: number = 1000; // 無音1秒で録音停止（iOS対応で短縮）
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
