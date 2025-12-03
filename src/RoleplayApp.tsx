@@ -148,6 +148,7 @@ function RoleplayApp() {
       let isPlaying = false;
       let fullText = '';
       let currentAudio: HTMLAudioElement | null = null; // 現在再生中の音声
+      let interruptModeEnabled = false; // 割り込みモード有効化フラグ
 
       // 割り込み時に全ての音声を停止
       const stopAllAudio = () => {
@@ -159,6 +160,7 @@ function RoleplayApp() {
         }
         audioQueue.length = 0; // キューをクリア
         isPlaying = false;
+        interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
       };
 
@@ -290,9 +292,11 @@ function RoleplayApp() {
                 audioQueue.push(bytes.buffer);
                 fullText += data.text || '';
 
-                // 最初の音声チャンク受信時に割り込みモードを有効化
-                if (isVADMode && audioQueue.length === 1) {
+                // 最初の音声チャンク受信時に割り込みモードを有効化（一度だけ）
+                if (isVADMode && !interruptModeEnabled) {
+                  interruptModeEnabled = true;
                   audioRecorderRef.enableInterruptMode(stopAllAudio);
+                  console.log('🎯 割り込みモード有効化');
                 }
 
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
@@ -349,6 +353,7 @@ function RoleplayApp() {
 
       // エラー時は割り込みモードを無効化してVADを再開
       if (isVADMode) {
+        interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
         audioRecorderRef.resumeVAD();
         console.log('🔓 VAD再開（エラー時）');
