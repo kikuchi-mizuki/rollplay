@@ -459,7 +459,6 @@ export class AudioRecorder {
 
       // 音声検出ロジック（VADが一時停止中は何もしない）
       if (this.vadPaused) {
-        console.log(`⏸️ VAD一時停止中 (レベル: ${level.toFixed(1)})`);
         return; // AI音声再生中などは検出しない
       }
 

@@ -146,6 +146,7 @@ function RoleplayApp() {
       const audioQueue: ArrayBuffer[] = [];
       let isPlaying = false;
       let fullText = '';
+      let vadPausedForAI = false; // AI音声のためにVADを一時停止したかどうか
 
       // botメッセージを先に作成（考え中表示）
       const botMessageId = `bot-${Date.now()}`;
@@ -162,11 +163,6 @@ function RoleplayApp() {
         if (audioQueue.length > 0 && !isPlaying) {
           isPlaying = true;
           const audioData = audioQueue.shift()!;
-
-          // VADモード中は音声再生中のVADを一時停止
-          if (isVADMode) {
-            audioRecorderRef.pauseVAD();
-          }
 
           try {
             // Blobから音声を再生
@@ -278,6 +274,13 @@ function RoleplayApp() {
                 // 音声キューに追加
                 audioQueue.push(bytes.buffer);
                 fullText += data.text || '';
+
+                // 最初の音声チャンクを受信した時点でVADを一時停止
+                if (isVADMode && !vadPausedForAI) {
+                  audioRecorderRef.pauseVAD();
+                  vadPausedForAI = true;
+                  console.log('🔇 AI音声開始 - VAD一時停止');
+                }
 
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
                 setMediaSubtitle(fullText);
