@@ -24,6 +24,9 @@ export class AudioRecorder {
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
   private vadThreshold: number = 65; // 音声検出閾値（0-100）※雑音誤検出対策でさらに引き上げ
+  private vadInterruptThreshold: number = 80; // 割り込み検出閾値（AI話し中の割り込みを検出）
+  private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
+  private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
   private silenceTimeout: number | null = null;
   private silenceDuration: number = 1000; // 無音1秒で録音停止（iOS対応で短縮）
   private isVadRecording: boolean = false;
@@ -433,7 +436,27 @@ export class AudioRecorder {
    */
   resumeVAD(): void {
     this.vadPaused = false;
+    this.isInterruptMode = false;
     console.log('▶️ VAD再開');
+  }
+
+  /**
+   * 割り込みモードに切り替え（AI話し中に割り込みを検出可能にする）
+   */
+  enableInterruptMode(onInterrupt: () => void): void {
+    this.isInterruptMode = true;
+    this.onInterruptCallback = onInterrupt;
+    this.vadPaused = false; // 割り込み検出のためVADは動かす
+    console.log(`🎯 割り込みモード有効化（閾値: ${this.vadInterruptThreshold}）`);
+  }
+
+  /**
+   * 割り込みモード解除
+   */
+  disableInterruptMode(): void {
+    this.isInterruptMode = false;
+    this.onInterruptCallback = undefined;
+    console.log('🔕 割り込みモード無効化');
   }
 
   /**
@@ -470,12 +493,31 @@ export class AudioRecorder {
         this._lastLogTime = Date.now();
       }
 
-      // 音声検出ロジック（VADが一時停止中は何もしない）
-      if (this.vadPaused) {
-        return; // AI音声再生中などは検出しない
+      // 音声検出ロジック
+      // 1. VAD一時停止中は何もしない
+      if (this.vadPaused && !this.isInterruptMode) {
+        return;
       }
 
-      if (level > this.vadThreshold) {
+      // 2. 割り込みモード：高い閾値で割り込みを検出
+      if (this.isInterruptMode && level > this.vadInterruptThreshold) {
+        console.log(`🚨 割り込み検出！ (レベル: ${level.toFixed(1)}) → AI音声停止`);
+        if (this.onInterruptCallback) {
+          this.onInterruptCallback();
+        }
+        // 割り込みモード解除→通常の録音開始
+        this.isInterruptMode = false;
+        this.isVadRecording = true;
+        this.recordingStartTime = Date.now();
+        this.startVADRecording();
+        if (this.onVadStartCallback) {
+          this.onVadStartCallback();
+        }
+        return;
+      }
+
+      // 3. 通常モード：通常の閾値で録音開始
+      if (!this.isInterruptMode && level > this.vadThreshold) {
         // 音声検出 → 録音開始
         if (!this.isVadRecording) {
           console.log(`🎤 音声検出 (レベル: ${level.toFixed(1)}) → 録音開始`);

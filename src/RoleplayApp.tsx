@@ -133,12 +133,6 @@ function RoleplayApp() {
 
     setIsSending(true);
 
-    // VADモード中は、メッセージ送信開始時点でVADを一時停止（重複リクエスト防止）
-    if (isVADMode) {
-      audioRecorderRef.pauseVAD();
-      console.log('🔒 VAD一時停止（メッセージ送信開始）');
-    }
-
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -153,6 +147,20 @@ function RoleplayApp() {
       const audioQueue: ArrayBuffer[] = [];
       let isPlaying = false;
       let fullText = '';
+      let currentAudio: HTMLAudioElement | null = null; // 現在再生中の音声
+
+      // 割り込み時に全ての音声を停止
+      const stopAllAudio = () => {
+        console.log('🛑 全音声停止（割り込み）');
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentAudio = null;
+        }
+        audioQueue.length = 0; // キューをクリア
+        isPlaying = false;
+        audioRecorderRef.disableInterruptMode();
+      };
 
       // botメッセージを先に作成（考え中表示）
       const botMessageId = `bot-${Date.now()}`;
@@ -175,6 +183,7 @@ function RoleplayApp() {
             const blob = new Blob([audioData], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(blob);
             const audio = new Audio(audioUrl);
+            currentAudio = audio; // 現在の音声を保持
 
             audio.onended = () => {
               URL.revokeObjectURL(audioUrl);
@@ -281,6 +290,11 @@ function RoleplayApp() {
                 audioQueue.push(bytes.buffer);
                 fullText += data.text || '';
 
+                // 最初の音声チャンク受信時に割り込みモードを有効化
+                if (isVADMode && audioQueue.length === 1) {
+                  audioRecorderRef.enableInterruptMode(stopAllAudio);
+                }
+
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
                 setMediaSubtitle(fullText);
 
@@ -333,8 +347,9 @@ function RoleplayApp() {
         type: 'error',
       });
 
-      // エラー時はVADを再開（正常時は音声再生完了時に再開される）
+      // エラー時は割り込みモードを無効化してVADを再開
       if (isVADMode) {
+        audioRecorderRef.disableInterruptMode();
         audioRecorderRef.resumeVAD();
         console.log('🔓 VAD再開（エラー時）');
       }
