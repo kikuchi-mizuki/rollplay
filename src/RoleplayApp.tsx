@@ -163,6 +163,11 @@ function RoleplayApp() {
           isPlaying = true;
           const audioData = audioQueue.shift()!;
 
+          // VADモード中は音声再生中のVADを一時停止
+          if (isVADMode) {
+            audioRecorderRef.pauseVAD();
+          }
+
           try {
             // Blobから音声を再生
             const blob = new Blob([audioData], { type: 'audio/mpeg' });
@@ -172,20 +177,47 @@ function RoleplayApp() {
             audio.onended = () => {
               URL.revokeObjectURL(audioUrl);
               isPlaying = false;
-              playNextChunk(); // 次のチャンクを再生
+
+              // 次のチャンクがある場合は再生を続ける
+              if (audioQueue.length > 0) {
+                playNextChunk();
+              } else {
+                // 全ての音声再生が完了したらVADを再開
+                if (isVADMode) {
+                  audioRecorderRef.resumeVAD();
+                }
+              }
             };
 
             audio.onerror = (e) => {
               console.error('音声再生エラー:', e);
               isPlaying = false;
-              playNextChunk(); // エラーでも次へ
+
+              // エラーでも次のチャンクを試す
+              if (audioQueue.length > 0) {
+                playNextChunk();
+              } else {
+                // 全て終了したらVADを再開
+                if (isVADMode) {
+                  audioRecorderRef.resumeVAD();
+                }
+              }
             };
 
             await audio.play();
           } catch (error) {
             console.error('音声再生失敗:', error);
             isPlaying = false;
-            playNextChunk();
+
+            // エラーでも次のチャンクを試す
+            if (audioQueue.length > 0) {
+              playNextChunk();
+            } else {
+              // 全て終了したらVADを再開
+              if (isVADMode) {
+                audioRecorderRef.resumeVAD();
+              }
+            }
           }
         }
       };

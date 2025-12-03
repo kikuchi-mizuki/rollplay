@@ -22,12 +22,15 @@ export class AudioRecorder {
 
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
-  private vadThreshold: number = 15; // 音声検出閾値（0-100）
+  private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
+  private vadThreshold: number = 30; // 音声検出閾値（0-100）※環境ノイズ対策で15→30に変更
   private silenceTimeout: number | null = null;
   private silenceDuration: number = 1500; // 無音1.5秒で録音停止
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
+  private minRecordingDuration: number = 500; // 最低録音時間（ミリ秒）
+  private recordingStartTime: number = 0;
 
   /**
    * 録音開始（モバイル対応強化）
@@ -390,6 +393,7 @@ export class AudioRecorder {
    */
   stopVAD(): void {
     this.vadEnabled = false;
+    this.vadPaused = false;
 
     // 録音中なら停止
     if (this.isVadRecording) {
@@ -400,6 +404,22 @@ export class AudioRecorder {
     this.cleanupMedia();
 
     console.log('✅ VADモード停止');
+  }
+
+  /**
+   * VAD一時停止（AI音声再生中など）
+   */
+  pauseVAD(): void {
+    this.vadPaused = true;
+    console.log('⏸️ VAD一時停止（AI音声再生中）');
+  }
+
+  /**
+   * VAD再開
+   */
+  resumeVAD(): void {
+    this.vadPaused = false;
+    console.log('▶️ VAD再開');
   }
 
   /**
@@ -430,12 +450,17 @@ export class AudioRecorder {
       const level = (max / 255) * 100;
       this.state.level = level;
 
-      // 音声検出ロジック
+      // 音声検出ロジック（VADが一時停止中は何もしない）
+      if (this.vadPaused) {
+        return; // AI音声再生中などは検出しない
+      }
+
       if (level > this.vadThreshold) {
         // 音声検出 → 録音開始
         if (!this.isVadRecording) {
-          console.log('🎤 音声検出 → 録音開始');
+          console.log(`🎤 音声検出 (レベル: ${level.toFixed(1)}) → 録音開始`);
           this.isVadRecording = true;
+          this.recordingStartTime = Date.now();
           this.startVADRecording();
           if (this.onVadStartCallback) {
             this.onVadStartCallback();
@@ -451,8 +476,23 @@ export class AudioRecorder {
         // 無音検出 → タイマー開始
         if (this.isVadRecording && !this.silenceTimeout) {
           this.silenceTimeout = window.setTimeout(() => {
-            console.log('🔇 無音検出 → 録音停止');
-            this.stopVADRecording();
+            // 最低録音時間チェック
+            const recordingDuration = Date.now() - this.recordingStartTime;
+            if (recordingDuration < this.minRecordingDuration) {
+              console.log(`⏭️ 録音時間が短すぎるためスキップ (${recordingDuration}ms)`);
+              // 録音をキャンセル
+              if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                this.mediaRecorder.stop();
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+              }
+              this.isVadRecording = false;
+              this.state.isRecording = false;
+              this.stopTimer();
+            } else {
+              console.log('🔇 無音検出 → 録音停止');
+              this.stopVADRecording();
+            }
           }, this.silenceDuration);
         }
       }
