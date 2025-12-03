@@ -505,18 +505,26 @@ export class AudioRecorder {
    * VAD録音開始
    */
   private async startVADRecording(): Promise<void> {
-    if (!this.stream) return;
+    console.log('📝 startVADRecording 開始');
+
+    if (!this.stream) {
+      console.error('❌ streamがありません');
+      return;
+    }
 
     const pickedMime = this.pickSupportedMime();
     if (pickedMime) {
       this.mimeType = pickedMime;
     }
+    console.log('📝 MIME type:', this.mimeType);
 
     const options: MediaRecorderOptions = pickedMime ? { mimeType: pickedMime } : {};
 
     try {
       this.mediaRecorder = new MediaRecorder(this.stream, options);
+      console.log('✅ MediaRecorder作成成功');
     } catch (err) {
+      console.warn('⚠️ MediaRecorder作成失敗、オプションなしで再試行');
       this.mediaRecorder = new MediaRecorder(this.stream);
     }
 
@@ -524,8 +532,13 @@ export class AudioRecorder {
 
     this.mediaRecorder.ondataavailable = (event) => {
       if (event.data && event.data.size > 0) {
+        console.log(`📦 データチャンク受信: ${event.data.size} bytes`);
         this.audioChunks.push(event.data);
       }
+    };
+
+    this.mediaRecorder.onerror = (event: any) => {
+      console.error('❌ MediaRecorder エラー:', event.error);
     };
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -535,6 +548,8 @@ export class AudioRecorder {
     this.state.isRecording = true;
     this.state.duration = 0;
     this.startTimer();
+
+    console.log('✅ VAD録音開始完了 (timeslice:', timeslice, ')');
   }
 
   /**
