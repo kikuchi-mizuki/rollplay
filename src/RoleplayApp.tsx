@@ -46,6 +46,7 @@ function RoleplayApp() {
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -204,7 +205,8 @@ function RoleplayApp() {
             const blob = new Blob([audioData], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(blob);
             const audio = new Audio(audioUrl);
-            currentAudio = audio; // 現在の音声を保持
+            currentAudio = audio; // ローカル変数（割り込み検出用）
+            currentAudioRef.current = audio; // Ref（会話モード停止用）
 
             audio.onended = () => {
               URL.revokeObjectURL(audioUrl);
@@ -623,6 +625,15 @@ function RoleplayApp() {
       audioRecorderRef.stopVAD();
       setIsVADMode(false);
       isVADModeRef.current = false;
+
+      // 現在再生中の音声を停止
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+        currentAudioRef.current = null;
+        console.log('🔇 AI音声停止（会話モード停止）');
+      }
+
       setToast({
         message: '会話モードを停止しました',
         type: 'info',
