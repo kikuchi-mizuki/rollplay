@@ -90,7 +90,7 @@ export function MediaPanel({
 
         {/* 字幕 */}
         {subtitle && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white px-4 py-3 text-sm text-center">
+          <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white px-4 py-3 text-sm text-center line-clamp-2">
             {subtitle}
           </div>
         )}

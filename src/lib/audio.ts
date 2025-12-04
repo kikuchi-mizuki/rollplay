@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 65; // 音声検出閾値（0-100）※雑音誤検出対策でさらに引き上げ
+  private vadThreshold: number = 70; // 音声検出閾値（0-100）※誤検出対策で70に引き上げ
   private vadInterruptThreshold: number = 80; // 割り込み検出閾値（AI話し中の割り込みを検出）
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
@@ -32,9 +32,11 @@ export class AudioRecorder {
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 500; // 最低録音時間（ミリ秒）
+  private minRecordingDuration: number = 800; // 最低録音時間（ミリ秒）※誤検出防止のため800msに延長
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
+  private voiceStartTime: number = 0; // 音声検出開始時刻
+  private voiceContinueDuration: number = 200; // 音声が継続する必要がある時間（ミリ秒）
 
   /**
    * 録音開始（モバイル対応強化）
@@ -398,6 +400,7 @@ export class AudioRecorder {
   stopVAD(): void {
     this.vadEnabled = false;
     this.vadPaused = false;
+    this.voiceStartTime = 0; // 継続時間タイマーをリセット
 
     // 録音中なら停止
     if (this.isVadRecording) {
@@ -415,6 +418,7 @@ export class AudioRecorder {
    */
   pauseVAD(): void {
     this.vadPaused = true;
+    this.voiceStartTime = 0; // 継続時間タイマーをリセット
     console.log('⏸️ VAD一時停止（AI音声再生中）');
 
     // 無音タイマーをクリア（録音が自動停止しないようにする）
@@ -518,15 +522,29 @@ export class AudioRecorder {
 
       // 3. 通常モード：通常の閾値で録音開始
       if (!this.isInterruptMode && level > this.vadThreshold) {
-        // 音声検出 → 録音開始
+        // 音声検出 → 継続時間チェック後に録音開始
         if (!this.isVadRecording) {
-          console.log(`🎤 音声検出 (レベル: ${level.toFixed(1)}) → 録音開始`);
-          this.isVadRecording = true;
-          this.recordingStartTime = Date.now();
-          this.startVADRecording();
-          if (this.onVadStartCallback) {
-            this.onVadStartCallback();
+          // 音声検出開始時刻を記録
+          if (this.voiceStartTime === 0) {
+            this.voiceStartTime = Date.now();
+            console.log(`👂 音声検出開始 (レベル: ${level.toFixed(1)}) → ${this.voiceContinueDuration}ms継続を確認中...`);
           }
+
+          // 音声が一定時間継続したら録音開始
+          const voiceDuration = Date.now() - this.voiceStartTime;
+          if (voiceDuration >= this.voiceContinueDuration) {
+            console.log(`🎤 音声継続確認 (${voiceDuration}ms) → 録音開始`);
+            this.isVadRecording = true;
+            this.recordingStartTime = Date.now();
+            this.voiceStartTime = 0; // リセット
+            this.startVADRecording();
+            if (this.onVadStartCallback) {
+              this.onVadStartCallback();
+            }
+          }
+        } else {
+          // 録音中は継続時間タイマーをリセット
+          this.voiceStartTime = 0;
         }
 
         // 無音タイマーをクリア
@@ -536,6 +554,12 @@ export class AudioRecorder {
           this.silenceTimeout = null;
         }
       } else {
+        // 音声レベルが閾値以下に戻った → 継続時間タイマーをリセット
+        if (this.voiceStartTime !== 0) {
+          console.log(`⏹️ 音声検出キャンセル (レベル低下: ${level.toFixed(1)})`);
+          this.voiceStartTime = 0;
+        }
+
         // 無音検出 → タイマー開始
         if (this.isVadRecording && !this.silenceTimeout) {
           console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, ${this.silenceDuration}ms後に停止)`);
