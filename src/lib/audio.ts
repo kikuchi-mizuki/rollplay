@@ -28,7 +28,7 @@ export class AudioRecorder {
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
   private silenceTimeout: number | null = null;
-  private silenceDuration: number = 1000; // 無音1秒で録音停止（iOS対応で短縮）
+  private silenceDuration: number = 700; // 無音0.7秒で録音停止（レスポンス高速化）
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;

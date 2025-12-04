@@ -760,7 +760,7 @@ def chat_stream():
                                         # TTS生成
                                         try:
                                             tts_response = openai_client.audio.speech.create(
-                                                model="tts-1-hd",
+                                                model="tts-1",  # 高速モデル（レスポンス重視）
                                                 voice="nova",
                                                 input=chunk_text,
                                                 speed=1.15  # 自然な会話速度（1.3は早すぎ）
@@ -783,7 +783,7 @@ def chat_stream():
 
                                 try:
                                     tts_response = openai_client.audio.speech.create(
-                                        model="tts-1-hd",
+                                        model="tts-1",  # 高速モデル（レスポンス重視）
                                         voice="nova",
                                         input=chunk_text,
                                         speed=1.15  # 自然な会話速度（1.3は早すぎ）
@@ -802,7 +802,7 @@ def chat_stream():
                     print(f"[最終チャンク{chunk_count}] {text_buffer}")
                     try:
                         tts_response = openai_client.audio.speech.create(
-                            model="tts-1-hd",
+                            model="tts-1",  # 高速モデル（レスポンス重視）
                             voice="nova",
                             input=text_buffer.strip(),
                             speed=1.15  # 自然な会話速度（1.3は早すぎ）
@@ -871,7 +871,7 @@ def text_to_speech():
 
         # OpenAI TTSで音声生成（高品質モデル + リアルな会話スピード）
         response = openai_client.audio.speech.create(
-            model="tts-1-hd",  # 高品質モデル（より自然な発音）
+            model="tts-1",  # 高速モデル（レスポンス重視）  # 高品質モデル（より自然な発音）
             voice=voice,       # アバターに応じた音声（alloy, echo, fable, onyx, nova, shimmer）
             input=text,
             speed=1.3          # リアルな営業ロープレのペース（1-2秒で返答開始）
