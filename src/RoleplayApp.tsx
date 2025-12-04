@@ -150,19 +150,35 @@ function RoleplayApp() {
       let fullText = '';
       let currentAudio: HTMLAudioElement | null = null; // 現在再生中の音声
       let interruptModeEnabled = false; // 割り込みモード有効化フラグ
+      let streamReader: ReadableStreamDefaultReader<Uint8Array> | null = null; // SSEストリームのreader
 
       // 割り込み時に全ての音声を停止
       const stopAllAudio = () => {
         console.log('🛑 全音声停止（割り込み）');
+
+        // SSEストリームを中断
+        if (streamReader) {
+          streamReader.cancel();
+          streamReader = null;
+          console.log('📡 SSEストリーム中断');
+        }
+
+        // 現在の音声を停止
         if (currentAudio) {
+          console.log(`🔇 音声停止: currentTime=${currentAudio.currentTime}, paused=${currentAudio.paused}`);
           currentAudio.pause();
           currentAudio.currentTime = 0;
+          // イベントリスナーを無効化
+          currentAudio.onended = null;
+          currentAudio.onerror = null;
           currentAudio = null;
         }
+
         audioQueue.length = 0; // キューをクリア
         isPlaying = false;
         interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
+        console.log('✅ 音声停止完了（キュークリア、再生停止）');
       };
 
       // botメッセージを先に作成（考え中表示）
@@ -259,6 +275,8 @@ function RoleplayApp() {
       if (!reader) {
         throw new Error('ReadableStream not supported');
       }
+
+      streamReader = reader; // readerを保存（割り込み時に中断するため）
 
       let buffer = '';
       while (true) {
