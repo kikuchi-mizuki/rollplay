@@ -148,7 +148,7 @@ function RoleplayApp() {
 
     try {
       // 音声チャンクキュー
-      const audioQueue: ArrayBuffer[] = [];
+      const audioQueue: { audio: ArrayBuffer; text: string }[] = [];
       let isPlaying = false;
       let fullText = '';
       let currentAudio: HTMLAudioElement | null = null; // 現在再生中の音声
@@ -198,7 +198,11 @@ function RoleplayApp() {
       const playNextChunk = async () => {
         if (audioQueue.length > 0 && !isPlaying) {
           isPlaying = true;
-          const audioData = audioQueue.shift()!;
+          const item = audioQueue.shift()!;
+          const { audio: audioData, text: chunkText } = item;
+
+          // 再生中の音声に対応する字幕を表示
+          setMediaSubtitle(chunkText);
 
           try {
             // Blobから音声を再生
@@ -216,7 +220,8 @@ function RoleplayApp() {
               if (audioQueue.length > 0) {
                 playNextChunk();
               } else {
-                // 全ての音声再生が完了したらVADを再開
+                // 全ての音声再生が完了したら字幕をクリアしてVADを再開
+                setMediaSubtitle('');
                 if (isVADMode) {
                   audioRecorderRef.resumeVAD();
                 }
@@ -311,8 +316,8 @@ function RoleplayApp() {
                   bytes[i] = binaryString.charCodeAt(i);
                 }
 
-                // 音声キューに追加
-                audioQueue.push(bytes.buffer);
+                // 音声キューに追加（音声とテキストをペアで管理）
+                audioQueue.push({ audio: bytes.buffer, text: data.text || '' });
                 fullText += data.text || '';
 
                 // 最初の音声チャンク受信時に割り込みモードを有効化（一度だけ）
@@ -321,9 +326,6 @@ function RoleplayApp() {
                   audioRecorderRef.enableInterruptMode(stopAllAudio);
                   console.log('🎯 割り込みモード有効化');
                 }
-
-                // 字幕は最新の1センテンスのみ表示（スマホで被らないように）
-                setMediaSubtitle(data.text || '');
 
                 // チャットもリアルタイム更新（ストリーミング表示）
                 setMessages((prev) =>
@@ -347,9 +349,6 @@ function RoleplayApp() {
           }
         }
       }
-
-      // 最終的な字幕更新（念のため）
-      setMediaSubtitle(fullText);
 
       // もしテキストが空の場合はエラーメッセージを表示
       if (!fullText) {
@@ -399,8 +398,8 @@ function RoleplayApp() {
     // 既存の音声をキャンセル
     speechSynthesis.cancel();
 
-    // 短いテストメッセージで音声を初期化
-    const utterance = new SpeechSynthesisUtterance('音声を有効化しました');
+    // 短いテストメッセージで音声を初期化（無音）
+    const utterance = new SpeechSynthesisUtterance('');
     utterance.lang = 'ja-JP';
 
     // 利用可能な音声を取得
