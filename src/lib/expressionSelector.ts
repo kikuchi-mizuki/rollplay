@@ -24,13 +24,24 @@ export interface AvatarExpression {
 export function selectExpressionType(text: string): ExpressionType {
   const lowerText = text.toLowerCase();
 
-  // うなずく（同意・共感）
-  const noddingKeywords = [
-    'そうですね', 'なるほど', 'わかります', '確かに', '同感です',
-    'おっしゃる通り', 'その通り', 'ですよね', 'そう思います'
+  // 困惑（不安・疑問）- 優先的にチェック
+  const confusedKeywords = [
+    'どうしよう', '不安', '心配', '難しい', 'わからない',
+    'どうすれば', '迷って', '悩んで', 'うまくいかない',
+    '焦って', '焦り', '困って', '伸びない', '増えない',
+    '全然', 'なかなか', '苦労', '問題', 'トラブル'
   ];
-  if (noddingKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'nodding';
+  if (confusedKeywords.some(keyword => lowerText.includes(keyword))) {
+    return 'confused';
+  }
+
+  // 考える（質問に対して検討中）
+  const thinkingKeywords = [
+    'そうですか', '検討', '考えて', 'うーん',
+    'どうかな', 'どうなんでしょう', 'どうでしょう', 'うーん'
+  ];
+  if (thinkingKeywords.some(keyword => lowerText.includes(keyword))) {
+    return 'thinking';
   }
 
   // 笑顔（ポジティブな反応）
@@ -42,22 +53,13 @@ export function selectExpressionType(text: string): ExpressionType {
     return 'smile';
   }
 
-  // 困惑（不安・疑問）
-  const confusedKeywords = [
-    'どうしよう', '不安', '心配', '難しい', 'わからない',
-    'どうすれば', '迷って', '悩んで', 'うまくいかない'
+  // うなずく（同意・共感）
+  const noddingKeywords = [
+    'そうですね', 'なるほど', 'わかります', '確かに', '同感です',
+    'おっしゃる通り', 'その通り', 'ですよね', 'そう思います'
   ];
-  if (confusedKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'confused';
-  }
-
-  // 考える（質問に対して検討中）
-  const thinkingKeywords = [
-    'そうですか', 'なるほど', '検討', '考えて', 'うーん',
-    'どうかな', 'どうなんでしょう', 'どうでしょう'
-  ];
-  if (thinkingKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'thinking';
+  if (noddingKeywords.some(keyword => lowerText.includes(keyword))) {
+    return 'nodding';
   }
 
   // 興味を示す（提案に興味）

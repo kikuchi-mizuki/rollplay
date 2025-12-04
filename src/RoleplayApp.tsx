@@ -322,8 +322,8 @@ function RoleplayApp() {
                   console.log('🎯 割り込みモード有効化');
                 }
 
-                // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
-                setMediaSubtitle(fullText);
+                // 字幕は最新の1センテンスのみ表示（スマホで被らないように）
+                setMediaSubtitle(data.text || '');
 
                 // チャットもリアルタイム更新（ストリーミング表示）
                 setMessages((prev) =>
@@ -640,6 +640,11 @@ function RoleplayApp() {
       });
     } else {
       // VADモード開始
+      // 音声を自動的に有効化（まだ有効化されていない場合）
+      if (!speechInitialized) {
+        initializeSpeech();
+      }
+
       try {
         await audioRecorderRef.startVAD(
           // 音声検出時のコールバック
@@ -870,8 +875,6 @@ function RoleplayApp() {
             onClear={handleClear}
             onShowEvaluation={handleShowEvaluation}
             isLoadingEvaluation={isLoadingEvaluation}
-            onInitializeSpeech={initializeSpeech}
-            speechInitialized={speechInitialized}
             onToggleVAD={handleToggleVAD}
             isVADMode={isVADMode}
           />

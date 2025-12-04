@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Mic, Send, MessageSquare, Trash2, Loader2, Volume2 } from 'lucide-react';
+import { Mic, Send, MessageSquare, Trash2, Loader2 } from 'lucide-react';
 import { RecordingState } from '../types';
 import { formatDuration } from '../lib/audio';
 
@@ -13,8 +13,6 @@ import { formatDuration } from '../lib/audio';
  * @param isSending - 送信中かどうか
  * @param onClear - 会話をクリアするコールバック
  * @param onShowEvaluation - 講評を表示するコールバック
- * @param onInitializeSpeech - 音声を有効化するコールバック
- * @param speechInitialized - 音声が有効化されているかどうか
  */
 interface ComposerProps {
   onSend: (text: string) => void;
@@ -26,8 +24,6 @@ interface ComposerProps {
   onClear: () => void;
   onShowEvaluation: () => void;
   isLoadingEvaluation?: boolean;
-  onInitializeSpeech: () => void;
-  speechInitialized: boolean;
   onToggleVAD: () => void;
   isVADMode: boolean;
 }
@@ -42,8 +38,6 @@ export function Composer({
   onClear,
   onShowEvaluation,
   isLoadingEvaluation = false,
-  onInitializeSpeech,
-  speechInitialized,
   onToggleVAD,
   isVADMode,
 }: ComposerProps) {
@@ -187,7 +181,7 @@ export function Composer({
 
       {/* サブアクション */}
       <div className="flex items-center gap-3 mt-3">
-        {/* VAD会話モードボタン（ChatGPT風） */}
+        {/* VAD会話モードボタン（ChatGPT風・音声自動有効化） */}
         <button
           type="button"
           onClick={onToggleVAD}
@@ -202,18 +196,6 @@ export function Composer({
           {isVADMode ? '会話モード停止' : '会話モード'}
         </button>
 
-        {/* 音声有効化ボタン（初期化されていない場合のみ表示） */}
-        {!speechInitialized && (
-          <button
-            type="button"
-            onClick={onInitializeSpeech}
-            className="btn btn-secondary text-xs md:text-sm"
-            aria-label="音声を有効化"
-          >
-            <Volume2 size={14} className="mr-1.5" />
-            音声を有効化
-          </button>
-        )}
         <button
           type="button"
           onClick={onShowEvaluation}
