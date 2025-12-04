@@ -44,6 +44,7 @@ function RoleplayApp() {
   const [_voiceCount, setVoiceCount] = useState(0);
   const [speechInitialized, setSpeechInitialized] = useState(false);
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
+  const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -470,8 +471,8 @@ function RoleplayApp() {
   }, [audioRecorderRef]);
 
   const handleSend = async (text: string) => {
-    // ストリーミング対応版を使用（現在のVADモード状態を渡す）
-    await handleSendStream(text, isVADMode);
+    // ストリーミング対応版を使用（現在のVADモード状態を渡す - Refから取得）
+    await handleSendStream(text, isVADModeRef.current);
   };
 
   const handleStartRecording = async () => {
@@ -597,6 +598,7 @@ function RoleplayApp() {
       // VADモード停止
       audioRecorderRef.stopVAD();
       setIsVADMode(false);
+      isVADModeRef.current = false;
       setToast({
         message: '会話モードを停止しました',
         type: 'info',
@@ -667,6 +669,7 @@ function RoleplayApp() {
           }
         );
         setIsVADMode(true);
+        isVADModeRef.current = true;
         setToast({
           message: '会話モード開始（話すと自動的に録音開始）',
           type: 'success',
