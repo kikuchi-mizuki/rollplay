@@ -45,6 +45,7 @@ function RoleplayApp() {
   const [speechInitialized, setSpeechInitialized] = useState(false);
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
+  const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -133,6 +134,7 @@ function RoleplayApp() {
     if (!text.trim() || isSending) return;
 
     setIsSending(true);
+    isSendingRef.current = true;
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -378,6 +380,7 @@ function RoleplayApp() {
       }
     } finally {
       setIsSending(false);
+      isSendingRef.current = false;
     }
   };
 
@@ -569,6 +572,7 @@ function RoleplayApp() {
       console.log('FormData作成:', { ext, mimeType });
 
       setIsSending(true);
+      isSendingRef.current = true;
       const response = await fetch('/api/transcribe', {
         method: 'POST',
         body: formData
@@ -576,6 +580,7 @@ function RoleplayApp() {
 
       const rawText = await response.text();
       setIsSending(false);
+      isSendingRef.current = false;
 
       if (!response.ok) {
         throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
@@ -603,6 +608,7 @@ function RoleplayApp() {
     } catch (error) {
       console.error('録音停止エラー:', error);
       setIsSending(false);
+      isSendingRef.current = false;
       setToast({
         message: '録音の処理に失敗しました。',
         type: 'error',
@@ -635,6 +641,12 @@ function RoleplayApp() {
             console.log('🔇 話し終わりました');
             setIsRecording(false);
 
+            // 既に送信中の場合はスキップ（重複防止）
+            if (isSendingRef.current) {
+              console.log('⚠️ 既に送信中のため、この音声をスキップします');
+              return;
+            }
+
             // Whisper APIで音声認識
             const formData = new FormData();
             const mimeType = audioBlob.type || 'audio/webm';
@@ -647,6 +659,7 @@ function RoleplayApp() {
 
             // 音声認識中のフラグを立てる（VAD重複防止のため、handleSend完了までtrueを維持）
             setIsSending(true);
+            isSendingRef.current = true;
             try {
               const response = await fetch('/api/transcribe', {
                 method: 'POST',
@@ -666,6 +679,7 @@ function RoleplayApp() {
                 await handleSend(result.text);
               } else {
                 setIsSending(false);
+                isSendingRef.current = false;
                 setToast({
                   message: result.error || '音声認識に失敗しました。',
                   type: 'error',
@@ -674,6 +688,7 @@ function RoleplayApp() {
             } catch (error) {
               console.error('音声認識エラー:', error);
               setIsSending(false);
+              isSendingRef.current = false;
               // エラー時はVADを再開
               if (isVADMode) {
                 audioRecorderRef.resumeVAD();
