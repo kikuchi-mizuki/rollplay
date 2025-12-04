@@ -128,7 +128,7 @@ function RoleplayApp() {
    * ストリーミング対応の音声再生
    * SSEで音声チャンクを受信して即座に再生
    */
-  const handleSendStream = async (text: string) => {
+  const handleSendStream = async (text: string, vadMode: boolean) => {
     if (!text.trim() || isSending) return;
 
     setIsSending(true);
@@ -293,13 +293,10 @@ function RoleplayApp() {
                 fullText += data.text || '';
 
                 // 最初の音声チャンク受信時に割り込みモードを有効化（一度だけ）
-                console.log(`🔍 デバッグ: isVADMode=${isVADMode}, interruptModeEnabled=${interruptModeEnabled}`);
-                if (isVADMode && !interruptModeEnabled) {
+                if (vadMode && !interruptModeEnabled) {
                   interruptModeEnabled = true;
                   audioRecorderRef.enableInterruptMode(stopAllAudio);
                   console.log('🎯 割り込みモード有効化');
-                } else {
-                  console.log(`⚠️ 割り込みモード有効化スキップ: isVADMode=${isVADMode}, interruptModeEnabled=${interruptModeEnabled}`);
                 }
 
                 // 字幕をリアルタイム更新（ChatGPTのようにストリーミング表示）
@@ -473,8 +470,8 @@ function RoleplayApp() {
   }, [audioRecorderRef]);
 
   const handleSend = async (text: string) => {
-    // ストリーミング対応版を使用
-    await handleSendStream(text);
+    // ストリーミング対応版を使用（現在のVADモード状態を渡す）
+    await handleSendStream(text, isVADMode);
   };
 
   const handleStartRecording = async () => {
