@@ -498,126 +498,6 @@ function RoleplayApp() {
     await handleSendStream(text, isVADModeRef.current);
   };
 
-  const handleStartRecording = async () => {
-    try {
-      await audioRecorderRef.start();
-      setIsRecording(true);
-      setRecordingState(audioRecorderRef.getState());
-    } catch (error) {
-      console.error('録音開始エラー:', error);
-      setToast({
-        message: 'マイクへのアクセスが許可されていません。ブラウザの設定をご確認ください。',
-        type: 'error',
-      });
-    }
-  };
-
-  const handleStopRecording = async () => {
-    try {
-      // 録音時間を確認
-      const recordingDuration = audioRecorderRef.getState().duration;
-      console.log('録音時間:', recordingDuration, '秒');
-
-      // 最小録音時間チェック（2秒未満はエラー）
-      if (recordingDuration < 2) {
-        setIsRecording(false);
-        setRecordingState(undefined);
-        // 録音を停止してクリーンアップ
-        await audioRecorderRef.stop();
-        setToast({
-          message: `録音時間が短すぎます（${recordingDuration}秒）。最低2秒以上録音してください。`,
-          type: 'error',
-        });
-        return;
-      }
-
-      const audioBlob = await audioRecorderRef.stop();
-      setIsRecording(false);
-      setRecordingState(undefined);
-
-      if (!audioBlob || audioBlob.size === 0) {
-        console.error('録音データが空:', { audioBlob, size: audioBlob?.size });
-        setToast({
-          message: '録音データが空でした。もう一度お試しください。',
-          type: 'error',
-        });
-        return;
-      }
-
-      // 録音データのサイズチェック
-      console.log('録音データ:', {
-        size: audioBlob.size,
-        type: audioBlob.type,
-        sizeKB: (audioBlob.size / 1024).toFixed(2) + ' KB',
-        duration: recordingDuration + '秒'
-      });
-
-      // 最小サイズチェック（2KB未満はエラー）
-      if (audioBlob.size < 2048) {
-        console.error('録音データが小さすぎます:', audioBlob.size, 'bytes');
-        setToast({
-          message: `録音データが小さすぎます（${(audioBlob.size / 1024).toFixed(2)} KB）。2秒以上録音してください。`,
-          type: 'error',
-        });
-        return;
-      }
-
-      // Whisper APIで音声認識
-      const formData = new FormData();
-      const mimeType = audioBlob.type || 'audio/webm';
-      let ext = mimeType.includes('webm') ? 'webm'
-             : mimeType.includes('mp4') ? 'mp4'
-             : mimeType.includes('ogg') ? 'ogg'
-             : mimeType.includes('wav') ? 'wav'
-             : 'bin';
-      formData.append('audio', audioBlob, `recording.${ext}`);
-      console.log('FormData作成:', { ext, mimeType });
-
-      setIsSending(true);
-      isSendingRef.current = true;
-      const response = await fetch('/api/transcribe', {
-        method: 'POST',
-        body: formData
-      });
-
-      const rawText = await response.text();
-      setIsSending(false);
-      isSendingRef.current = false;
-
-      if (!response.ok) {
-        throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
-      }
-
-      if (!rawText) {
-        throw new Error('サーバーからの応答が空でした。');
-      }
-
-      let result: { success?: boolean; text?: string; error?: string };
-      try {
-        result = JSON.parse(rawText);
-      } catch (err) {
-        throw new Error(`JSON解析に失敗しました: ${rawText.substring(0, 200)}`);
-      }
-
-      if (result.success && result.text) {
-        await handleSend(result.text);
-      } else {
-        setToast({
-          message: result.error || '音声認識に失敗しました。もう一度お試しください。',
-          type: 'error',
-        });
-      }
-    } catch (error) {
-      console.error('録音停止エラー:', error);
-      setIsSending(false);
-      isSendingRef.current = false;
-      setToast({
-        message: '録音の処理に失敗しました。',
-        type: 'error',
-      });
-    }
-  };
-
   // VAD（会話モード）のトグル
   const handleToggleVAD = async () => {
     if (isVADMode) {
@@ -867,8 +747,6 @@ function RoleplayApp() {
         <div className="bg-white/10 backdrop-blur-2xl border border-white/10 shadow-xl rounded-2xl px-5 py-3 transition-all duration-300 animate-floatIn">
           <Composer
             onSend={handleSend}
-            onStartRecording={handleStartRecording}
-            onStopRecording={handleStopRecording}
             isRecording={isRecording}
             recordingState={recordingState}
             isSending={isSending}

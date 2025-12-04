@@ -6,18 +6,16 @@ import { formatDuration } from '../lib/audio';
 /**
  * コンポーザー（入力エリア）コンポーネント
  * @param onSend - 送信時のコールバック（テキストを渡す）
- * @param onStartRecording - 録音開始時のコールバック
- * @param onStopRecording - 録音停止時のコールバック
- * @param isRecording - 録音中かどうか
+ * @param isRecording - VADモード中の録音中かどうか
  * @param recordingState - 録音状態
  * @param isSending - 送信中かどうか
  * @param onClear - 会話をクリアするコールバック
  * @param onShowEvaluation - 講評を表示するコールバック
+ * @param onToggleVAD - 会話モードのトグル
+ * @param isVADMode - 会話モード中かどうか
  */
 interface ComposerProps {
   onSend: (text: string) => void;
-  onStartRecording: () => void;
-  onStopRecording: () => void;
   isRecording: boolean;
   recordingState?: RecordingState;
   isSending?: boolean;
@@ -30,8 +28,6 @@ interface ComposerProps {
 
 export function Composer({
   onSend,
-  onStartRecording,
-  onStopRecording,
   isRecording,
   recordingState,
   isSending = false,
@@ -43,8 +39,6 @@ export function Composer({
 }: ComposerProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isPressed, setIsPressed] = useState(false);
-  const pressTimerRef = useRef<number | null>(null);
 
   // テキストエリアの自動リサイズ（max-h-32 = 128px）
   useEffect(() => {
@@ -74,39 +68,12 @@ export function Composer({
     }
   };
 
-  // 録音ボタンの長押し処理
-  const handleMouseDown = () => {
-    setIsPressed(true);
-    pressTimerRef.current = window.setTimeout(() => {
-      onStartRecording();
-    }, 200); // 200ms長押しで録音開始
-  };
-
-  const handleMouseUp = () => {
-    if (pressTimerRef.current) {
-      clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
-    }
-    setIsPressed(false);
-    if (isRecording) {
-      onStopRecording();
-    }
-  };
-
-  const handleToggleRecording = () => {
-    if (isRecording) {
-      onStopRecording();
-    } else {
-      onStartRecording();
-    }
-  };
-
   const canSend = text.trim().length > 0 && !isSending;
 
   return (
     <div className="w-full">
-      {/* 録音レベル表示（録音中のみ） */}
-      {isRecording && recordingState && (
+      {/* VADモード中の音声検出表示 */}
+      {isVADMode && isRecording && recordingState && (
         <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-xl mb-3">
           <div className="flex items-center gap-1 flex-1">
             {[...Array(10)].map((_, i) => (
@@ -125,27 +92,21 @@ export function Composer({
             <span className="text-sm font-medium text-primary">
               {formatDuration(recordingState.duration)}
             </span>
-            {recordingState.duration < 2 && (
-              <span className="text-xs text-yellow-400">(最低2秒)</span>
-            )}
           </div>
         </div>
       )}
 
       {/* 入力エリア */}
       <div className="flex items-center gap-3">
-        {/* 音声録音ボタン */}
+        {/* 会話モードボタン（VAD） */}
         <button
           type="button"
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onClick={handleToggleRecording}
+          onClick={onToggleVAD}
           className={`btn-icon flex-shrink-0 ${
-            isRecording ? 'bg-danger hover:bg-danger/90' : ''
-          } ${isPressed ? 'scale-95' : ''}`}
-          aria-pressed={isRecording}
-          aria-label={isRecording ? '録音を停止' : '音声録音'}
+            isVADMode ? 'bg-danger hover:bg-danger/90 animate-pulse' : ''
+          }`}
+          aria-pressed={isVADMode}
+          aria-label={isVADMode ? '会話モード停止' : '会話モード開始'}
         >
           <Mic size={20} />
         </button>
@@ -181,21 +142,6 @@ export function Composer({
 
       {/* サブアクション */}
       <div className="flex items-center gap-3 mt-3">
-        {/* VAD会話モードボタン（ChatGPT風・音声自動有効化） */}
-        <button
-          type="button"
-          onClick={onToggleVAD}
-          className={`btn text-xs md:text-sm ${
-            isVADMode
-              ? 'btn-danger animate-pulse'
-              : 'btn-primary'
-          }`}
-          aria-label={isVADMode ? '会話モード停止' : '会話モード開始'}
-        >
-          <Mic size={14} className="mr-1.5" />
-          {isVADMode ? '会話モード停止' : '会話モード'}
-        </button>
-
         <button
           type="button"
           onClick={onShowEvaluation}
