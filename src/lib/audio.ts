@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 75; // 音声検出閾値（0-100）※環境音誤検出対策で75に引き上げ
+  private vadThreshold: number = 60; // 音声検出閾値（0-100）※認識感度を改善
   private vadInterruptThreshold: number = 85; // 割り込み検出閾値（AI話し中の割り込みを検出）
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
