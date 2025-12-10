@@ -712,3 +712,160 @@ export function formatDuration(seconds: number): string {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
+/**
+ * マイク診断結果
+ */
+export interface MicrophoneDiagnostics {
+  success: boolean;
+  deviceCount: number;
+  devices: string[];
+  permission: string;
+  audioLevelWorking: boolean;
+  maxAudioLevel: number;
+  error?: string;
+  errorType?: string;
+  solution?: string;
+}
+
+/**
+ * マイク自動診断機能
+ */
+export async function diagnoseMicrophone(): Promise<MicrophoneDiagnostics> {
+  console.log('🔍 === マイク自動診断開始 ===');
+
+  const result: MicrophoneDiagnostics = {
+    success: false,
+    deviceCount: 0,
+    devices: [],
+    permission: 'unknown',
+    audioLevelWorking: false,
+    maxAudioLevel: 0,
+  };
+
+  try {
+    // 1. デバイス一覧取得
+    console.log('📱 ステップ1: デバイス一覧取得');
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const microphones = devices.filter(d => d.kind === 'audioinput');
+    result.deviceCount = microphones.length;
+    result.devices = microphones.map(m => m.label || '(名前なし)');
+    console.log(`✅ 検出されたマイク数: ${result.deviceCount}`);
+    result.devices.forEach((name, i) => console.log(`  ${i+1}. ${name}`));
+
+    // 2. マイク権限チェック
+    console.log('🔐 ステップ2: マイク権限チェック');
+    try {
+      const permission = await navigator.permissions.query({ name: 'microphone' } as any);
+      result.permission = permission.state;
+      console.log(`✅ マイク権限: ${permission.state}`);
+    } catch (err) {
+      console.warn('⚠️ 権限チェック非対応（Safariなど）');
+      result.permission = 'unavailable';
+    }
+
+    // 3. 実際にマイクアクセス
+    console.log('🎤 ステップ3: マイクアクセステスト');
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      }
+    });
+
+    console.log('✅ マイクアクセス成功');
+    const tracks = stream.getAudioTracks();
+    tracks.forEach((track, i) => {
+      console.log(`  トラック${i+1}: ${track.label}`);
+      console.log(`    enabled: ${track.enabled}, muted: ${track.muted}, state: ${track.readyState}`);
+    });
+
+    // 4. AudioContextテスト
+    console.log('🔊 ステップ4: AudioContextテスト');
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const audioContext = new AudioContextClass();
+    console.log(`✅ AudioContext作成: ${audioContext.state}`);
+
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
+      console.log('✅ AudioContext再開');
+    }
+
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    const microphone = audioContext.createMediaStreamSource(stream);
+    microphone.connect(analyser);
+    console.log('✅ AudioContext接続成功');
+
+    // 5. 音声レベルテスト（2秒間）
+    console.log('📊 ステップ5: 音声レベルテスト（2秒間）');
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    let maxLevel = 0;
+
+    await new Promise<void>((resolve) => {
+      let count = 0;
+      const interval = setInterval(() => {
+        analyser.getByteFrequencyData(dataArray);
+        const max = Math.max(...Array.from(dataArray));
+        const level = (max / 255) * 100;
+
+        if (level > maxLevel) {
+          maxLevel = level;
+        }
+
+        console.log(`📊 音声レベル: ${level.toFixed(1)} (最大: ${maxLevel.toFixed(1)})`);
+
+        count++;
+        if (count >= 4) {  // 2秒間（500ms × 4）
+          clearInterval(interval);
+          resolve();
+        }
+      }, 500);
+    });
+
+    result.maxAudioLevel = maxLevel;
+    result.audioLevelWorking = maxLevel > 0;
+
+    // クリーンアップ
+    stream.getTracks().forEach(track => track.stop());
+    audioContext.close();
+
+    // 診断結果判定
+    if (result.deviceCount === 0) {
+      result.error = 'マイクデバイスが検出されません';
+      result.errorType = 'NO_DEVICE';
+      result.solution = 'マイクが接続されているか確認してください。システム設定でマイクデバイスを確認してください。';
+    } else if (result.permission === 'denied') {
+      result.error = 'マイク権限が拒否されています';
+      result.errorType = 'PERMISSION_DENIED';
+      result.solution = 'ブラウザのアドレスバー左の🔒をクリックして、マイクを「許可」に設定してください。';
+    } else if (!result.audioLevelWorking) {
+      result.error = '音声レベルが検出されません';
+      result.errorType = 'NO_AUDIO_LEVEL';
+      result.solution = '話しかけてみてください。音声レベルが0のままの場合、マイクが別のアプリで使用中の可能性があります（Zoom、Skypeなどを閉じてください）。';
+    } else {
+      result.success = true;
+      console.log(`✅ === 診断成功！最大音声レベル: ${maxLevel.toFixed(1)} ===`);
+    }
+
+  } catch (err: any) {
+    console.error('❌ マイク診断エラー:', err);
+    result.error = err.message || 'マイクアクセスエラー';
+    result.errorType = err.name || 'UNKNOWN_ERROR';
+
+    // エラータイプ別の解決策
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      result.solution = 'ブラウザのマイク権限を「許可」に設定してください。';
+    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+      result.solution = 'マイクが接続されていません。デバイスにマイクが接続されているか確認してください。';
+    } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+      result.solution = 'マイクが別のアプリで使用中です。Zoom、Skype、Discordなどを閉じてください。';
+    } else {
+      result.solution = 'ブラウザを再起動してから再度お試しください。';
+    }
+  }
+
+  console.log('🔍 === マイク診断完了 ===');
+  return result;
+}
+

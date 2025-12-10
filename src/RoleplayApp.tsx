@@ -8,7 +8,7 @@ import { ConfirmDialog } from './components/ConfirmDialog';
 import { Toast } from './components/Toast';
 import { Message, Evaluation, RecordingState } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
-import { AudioRecorder } from './lib/audio';
+import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
 import { getDefaultExpression, getExpressionForResponse } from './lib/expressionSelector';
 // import { useDIDAvatar } from './components/DIDAvatar';
@@ -626,6 +626,32 @@ function RoleplayApp() {
       if (!audioInitialized) {
         await initializeAudio();
       }
+
+      // マイク自動診断を実行
+      console.log('🔍 マイク診断を実行します...');
+      setToast({
+        message: 'マイクをチェック中... 少々お待ちください',
+        type: 'info',
+      });
+
+      const diagnostics: MicrophoneDiagnostics = await diagnoseMicrophone();
+
+      if (!diagnostics.success) {
+        // 診断失敗 - エラーメッセージを表示
+        console.error('❌ マイク診断失敗:', diagnostics);
+        setToast({
+          message: `マイクエラー: ${diagnostics.error}\n\n解決策: ${diagnostics.solution}`,
+          type: 'error',
+        });
+        return; // VAD開始をキャンセル
+      }
+
+      // 診断成功
+      console.log('✅ マイク診断成功:', diagnostics);
+      setToast({
+        message: `マイクOK！(最大音声レベル: ${diagnostics.maxAudioLevel.toFixed(0)}) 話しかけてください`,
+        type: 'success',
+      });
 
       try {
         await audioRecorderRef.startVAD(
