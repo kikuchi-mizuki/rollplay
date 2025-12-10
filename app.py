@@ -757,7 +757,7 @@ def chat_stream():
                         content = chunk.choices[0].delta.content
                         text_buffer += content
 
-                        # 1文ごとに即座に送信（超高速応答）
+                        # 1文ごとに即座に送信（間を減らす細かい送信）
                         should_send = False
                         delimiter = ''
 
@@ -765,11 +765,11 @@ def chat_stream():
                             # 句点があったら即座に送信
                             should_send = True
                             delimiter = '。'
-                        elif '、' in text_buffer and len(text_buffer) >= 20:
-                            # 読点でも20文字以上溜まったら送信（早めに送信）
+                        elif '、' in text_buffer and len(text_buffer) >= 15:
+                            # 読点でも15文字以上溜まったら送信（間を減らす）
                             should_send = True
                             delimiter = '、'
-                        elif len(text_buffer) >= 40:  # 句読点がなくても40文字で送信
+                        elif len(text_buffer) >= 30:  # 句読点がなくても30文字で送信（早めに送信）
                             should_send = True
                             delimiter = None
 
@@ -789,7 +789,7 @@ def chat_stream():
                                                 model="tts-1",  # 高速モデル（レスポンス重視）
                                                 voice="nova",
                                                 input=chunk_text,
-                                                speed=1.2  # 自然な会話速度
+                                                speed=1.1  # 落ち着いた自然な速度
                                             )
                                             audio_data = tts_response.content
                                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -812,7 +812,7 @@ def chat_stream():
                                         model="tts-1",  # 高速モデル（レスポンス重視）
                                         voice="nova",
                                         input=chunk_text,
-                                        speed=1.2  # 自然な会話速度
+                                        speed=1.1  # 落ち着いた自然な速度
                                     )
                                     audio_data = tts_response.content
                                     audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -831,7 +831,7 @@ def chat_stream():
                             model="tts-1",  # 高速モデル（レスポンス重視）
                             voice="nova",
                             input=text_buffer.strip(),
-                            speed=1.2  # 自然な会話速度
+                            speed=1.1  # 落ち着いた自然な速度
                         )
                         audio_data = tts_response.content
                         audio_base64 = base64.b64encode(audio_data).decode('utf-8')
