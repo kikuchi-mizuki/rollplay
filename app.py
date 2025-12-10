@@ -1038,10 +1038,11 @@ def transcribe():
             os.replace(temp_path, new_path)
         size = os.path.getsize(new_path)
         print(f"[upload] mime={up.mimetype} saved={new_path} size={size}")
-        if size < 2048:
+        if size < 1024:  # 1KB未満は明らかに短すぎる
             try: os.remove(new_path)
             except Exception: pass
-            return jsonify(success=False, error='録音データが小さすぎます(2KB未満)'), 400
+            print(f"[エラー] 録音データが小さすぎます: {size} bytes")
+            return jsonify(success=False, error=f'録音データが小さすぎます({size} bytes)。もう少し長く話してください。'), 400
         # Whisperへ（まず直送）
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
@@ -1053,9 +1054,10 @@ def transcribe():
                     language='ja'
                 )
             text = (getattr(r, 'text', '') or '').strip()
+            print(f"[Whisper成功] 認識結果: {text}")
             return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
         except Exception as e:
-            print(f"[direct whisper failed] {e}")
+            print(f"[Whisper失敗] エラー: {e}, ファイルサイズ: {size} bytes")
             if not (PYDUB_AVAILABLE and FFMPEG_AVAILABLE):
                 raise
             wav_path = new_path + '.wav'
