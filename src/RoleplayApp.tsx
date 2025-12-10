@@ -47,7 +47,9 @@ function RoleplayApp() {
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
-  const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
+  const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
+  const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -167,12 +169,24 @@ function RoleplayApp() {
           console.log('📡 SSEストリーム中断');
         }
 
-        // 現在の音声を停止
+        // Web Audio APIのソースを停止
+        if (currentAudioSourceRef.current) {
+          try {
+            currentAudioSourceRef.current.stop();
+            currentAudioSourceRef.current.onended = null;
+            currentAudioSourceRef.current = null;
+            console.log('🔇 Web Audio API音声停止');
+          } catch (e) {
+            // 既に停止している場合はエラーを無視
+            console.log('⚠️ 音声は既に停止済み');
+          }
+        }
+
+        // 後方互換性のため、HTMLAudioElementも停止
         if (currentAudio) {
-          console.log(`🔇 音声停止: currentTime=${currentAudio.currentTime}, paused=${currentAudio.paused}`);
+          console.log(`🔇 HTMLAudioElement停止`);
           currentAudio.pause();
           currentAudio.currentTime = 0;
-          // イベントリスナーを無効化
           currentAudio.onended = null;
           currentAudio.onerror = null;
           currentAudio = null;
@@ -206,68 +220,21 @@ function RoleplayApp() {
           setMediaSubtitle(chunkText);
 
           try {
-            // Blobから音声を再生
-            const blob = new Blob([audioData], { type: 'audio/mpeg' });
-            const audioUrl = URL.createObjectURL(blob);
-            const audio = new Audio(audioUrl);
-            currentAudio = audio; // ローカル変数（割り込み検出用）
-            currentAudioRef.current = audio; // Ref（会話モード停止用）
+            // Web Audio APIで音声を再生（モバイル対応）
+            await playAudioWithWebAudio(audioData);
 
-            audio.onended = () => {
-              URL.revokeObjectURL(audioUrl);
-              isPlaying = false;
+            // 再生完了後の処理
+            isPlaying = false;
 
-              // 次のチャンクがある場合は再生を続ける
-              if (audioQueue.length > 0) {
-                playNextChunk();
-              } else {
-                // 全ての音声再生が完了したら字幕をクリアしてVADを再開
-                setMediaSubtitle('');
-                if (isVADMode) {
-                  audioRecorderRef.resumeVAD();
-                }
+            // 次のチャンクがある場合は再生を続ける
+            if (audioQueue.length > 0) {
+              playNextChunk();
+            } else {
+              // 全ての音声再生が完了したら字幕をクリアしてVADを再開
+              setMediaSubtitle('');
+              if (isVADMode) {
+                audioRecorderRef.resumeVAD();
               }
-            };
-
-            audio.onerror = (e) => {
-              console.error('音声再生エラー:', e);
-              isPlaying = false;
-
-              // エラーでも次のチャンクを試す
-              if (audioQueue.length > 0) {
-                playNextChunk();
-              } else {
-                // 全て終了したらVADを再開
-                if (isVADMode) {
-                  audioRecorderRef.resumeVAD();
-                }
-              }
-            };
-
-            // 音声再生（モバイル対応のエラーハンドリング）
-            try {
-              await audio.play();
-              console.log('🔊 音声再生開始');
-            } catch (playError: any) {
-              console.error('❌ 音声再生失敗:', playError);
-
-              // NotAllowedError: 自動再生ポリシーでブロックされた
-              if (playError.name === 'NotAllowedError') {
-                console.warn('⚠️ 自動再生がブロックされました。ユーザー操作が必要です。');
-
-                // ユーザーに通知
-                setToast({
-                  message: '音声再生には画面タップが必要です。もう一度お試しください。',
-                  type: 'info',
-                });
-
-                // 音声初期化を試みる（次回のために）
-                if (!audioInitialized) {
-                  initializeAudio();
-                }
-              }
-
-              throw playError; // エラーを再スロー
             }
           } catch (error) {
             console.error('音声再生失敗:', error);
@@ -421,30 +388,84 @@ function RoleplayApp() {
     }
   };
 
-  // HTMLAudioElement初期化（モバイル自動再生ポリシー対応）
+  // Web Audio API初期化（モバイル自動再生ポリシー対応）
   const initializeAudio = async () => {
-    if (audioInitialized) {
+    if (audioInitialized && audioContextRef.current) {
       console.log('✅ 音声は既に初期化済み');
-      return;
+      return audioContextRef.current;
     }
 
     try {
-      console.log('🔊 HTMLAudioElement初期化開始...');
+      console.log('🔊 Web Audio API初期化開始...');
 
-      // ダミーの無音音声を再生して許可を得る
-      // data:audio/mpeg;base64 の無音MP3（約0.1秒）
-      const silentAudio = new Audio('data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
-      silentAudio.volume = 0.01; // ほぼ無音
+      // AudioContextを作成（Safari対応）
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass();
+      audioContextRef.current = audioContext;
 
-      await silentAudio.play();
-      silentAudio.pause();
+      // AudioContextをresumeして有効化（モバイル対応）
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+
+      // ダミーの無音バッファを再生して許可を得る
+      const buffer = audioContext.createBuffer(1, 1, 22050);
+      const source = audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioContext.destination);
+      source.start(0);
 
       setAudioInitialized(true);
-      console.log('✅ HTMLAudioElement初期化成功');
+      console.log('✅ Web Audio API初期化成功');
+      return audioContext;
     } catch (error) {
-      console.warn('⚠️ HTMLAudioElement初期化失敗（自動再生がブロックされている可能性）:', error);
-      // エラーでも続行（初回の実際の音声再生時に再試行）
+      console.warn('⚠️ Web Audio API初期化失敗:', error);
+      return null;
     }
+  };
+
+  // Web Audio APIで音声を再生
+  const playAudioWithWebAudio = async (audioData: ArrayBuffer): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // AudioContextを取得または初期化
+        let audioContext = audioContextRef.current;
+        if (!audioContext) {
+          audioContext = await initializeAudio();
+          if (!audioContext) {
+            throw new Error('AudioContext初期化失敗');
+          }
+        }
+
+        // AudioContextをresumeして有効化
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+
+        // ArrayBufferをAudioBufferにデコード
+        const audioBuffer = await audioContext.decodeAudioData(audioData.slice(0));
+
+        // AudioBufferSourceを作成
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
+        currentAudioSourceRef.current = source; // 停止用に保存
+
+        // 再生終了時のコールバック
+        source.onended = () => {
+          currentAudioSourceRef.current = null;
+          resolve();
+        };
+
+        // 再生開始
+        source.start(0);
+        console.log('🔊 Web Audio APIで音声再生開始');
+      } catch (error) {
+        console.error('❌ Web Audio API音声再生失敗:', error);
+        currentAudioSourceRef.current = null;
+        reject(error);
+      }
+    });
   };
 
   // 音声を有効化（モバイル対応）
@@ -572,12 +593,24 @@ function RoleplayApp() {
       setIsVADMode(false);
       isVADModeRef.current = false;
 
-      // 現在再生中の音声を停止
+      // 現在再生中の音声を停止（Web Audio API）
+      if (currentAudioSourceRef.current) {
+        try {
+          currentAudioSourceRef.current.stop();
+          currentAudioSourceRef.current.onended = null;
+          currentAudioSourceRef.current = null;
+          console.log('🔇 Web Audio API音声停止（会話モード停止）');
+        } catch (e) {
+          console.log('⚠️ 音声は既に停止済み');
+        }
+      }
+
+      // HTMLAudioElement（後方互換性）
       if (currentAudioRef.current) {
         currentAudioRef.current.pause();
         currentAudioRef.current.currentTime = 0;
         currentAudioRef.current = null;
-        console.log('🔇 AI音声停止（会話モード停止）');
+        console.log('🔇 HTMLAudioElement停止（会話モード停止）');
       }
 
       setToast({
