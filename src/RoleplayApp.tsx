@@ -150,8 +150,8 @@ function RoleplayApp() {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      // 音声チャンクキュー（累積テキストも保存）
-      const audioQueue: { audio: ArrayBuffer; text: string; fullTextSoFar: string }[] = [];
+      // 音声チャンクキュー
+      const audioQueue: { audio: ArrayBuffer; text: string }[] = [];
       let isPlaying = false;
       let fullText = '';
       let currentAudio: HTMLAudioElement | null = null; // 現在再生中の音声
@@ -214,10 +214,10 @@ function RoleplayApp() {
         if (audioQueue.length > 0 && !isPlaying) {
           isPlaying = true;
           const item = audioQueue.shift()!;
-          const { audio: audioData, fullTextSoFar } = item;
+          const { audio: audioData, text: chunkText } = item;
 
-          // 累積されたテキスト全体を字幕として表示（セリフが切れないように）
-          setMediaSubtitle(fullTextSoFar);
+          // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
+          setMediaSubtitle(chunkText);
 
           try {
             // Web Audio APIで音声を再生（モバイル対応）
@@ -308,15 +308,9 @@ function RoleplayApp() {
                   bytes[i] = binaryString.charCodeAt(i);
                 }
 
-                // テキストを累積
+                // 音声キューに追加（音声とテキストをペアで管理）
+                audioQueue.push({ audio: bytes.buffer, text: data.text || '' });
                 fullText += data.text || '';
-
-                // 音声キューに追加（音声、チャンクテキスト、累積テキストを保存）
-                audioQueue.push({
-                  audio: bytes.buffer,
-                  text: data.text || '',
-                  fullTextSoFar: fullText  // このチャンクまでの累積テキスト
-                });
 
                 // 最初の音声チャンク受信時に割り込みモードを有効化（一度だけ）
                 if (vadMode && !interruptModeEnabled) {
