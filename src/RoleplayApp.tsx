@@ -43,6 +43,7 @@ function RoleplayApp() {
   const [_speechSupported, setSpeechSupported] = useState<boolean | null>(null);
   const [_voiceCount, setVoiceCount] = useState(0);
   const [speechInitialized, setSpeechInitialized] = useState(false);
+  const [audioInitialized, setAudioInitialized] = useState(false); // HTMLAudioElement初期化フラグ
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
@@ -243,7 +244,31 @@ function RoleplayApp() {
               }
             };
 
-            await audio.play();
+            // 音声再生（モバイル対応のエラーハンドリング）
+            try {
+              await audio.play();
+              console.log('🔊 音声再生開始');
+            } catch (playError: any) {
+              console.error('❌ 音声再生失敗:', playError);
+
+              // NotAllowedError: 自動再生ポリシーでブロックされた
+              if (playError.name === 'NotAllowedError') {
+                console.warn('⚠️ 自動再生がブロックされました。ユーザー操作が必要です。');
+
+                // ユーザーに通知
+                setToast({
+                  message: '音声再生には画面タップが必要です。もう一度お試しください。',
+                  type: 'info',
+                });
+
+                // 音声初期化を試みる（次回のために）
+                if (!audioInitialized) {
+                  initializeAudio();
+                }
+              }
+
+              throw playError; // エラーを再スロー
+            }
           } catch (error) {
             console.error('音声再生失敗:', error);
             isPlaying = false;
@@ -396,6 +421,32 @@ function RoleplayApp() {
     }
   };
 
+  // HTMLAudioElement初期化（モバイル自動再生ポリシー対応）
+  const initializeAudio = async () => {
+    if (audioInitialized) {
+      console.log('✅ 音声は既に初期化済み');
+      return;
+    }
+
+    try {
+      console.log('🔊 HTMLAudioElement初期化開始...');
+
+      // ダミーの無音音声を再生して許可を得る
+      // data:audio/mpeg;base64 の無音MP3（約0.1秒）
+      const silentAudio = new Audio('data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
+      silentAudio.volume = 0.01; // ほぼ無音
+
+      await silentAudio.play();
+      silentAudio.pause();
+
+      setAudioInitialized(true);
+      console.log('✅ HTMLAudioElement初期化成功');
+    } catch (error) {
+      console.warn('⚠️ HTMLAudioElement初期化失敗（自動再生がブロックされている可能性）:', error);
+      // エラーでも続行（初回の実際の音声再生時に再試行）
+    }
+  };
+
   // 音声を有効化（モバイル対応）
   const initializeSpeech = () => {
     if (!('speechSynthesis' in window)) {
@@ -504,6 +555,11 @@ function RoleplayApp() {
   }, [audioRecorderRef]);
 
   const handleSend = async (text: string) => {
+    // 音声を初期化（初回のみ・モバイル対応）
+    if (!audioInitialized) {
+      await initializeAudio();
+    }
+
     // ストリーミング対応版を使用（現在のVADモード状態を渡す - Refから取得）
     await handleSendStream(text, isVADModeRef.current);
   };
@@ -530,9 +586,12 @@ function RoleplayApp() {
       });
     } else {
       // VADモード開始
-      // 音声を自動的に有効化（まだ有効化されていない場合）
+      // 音声を自動的に有効化（まだ有効化されていない場合・モバイル対応）
       if (!speechInitialized) {
         initializeSpeech();
+      }
+      if (!audioInitialized) {
+        await initializeAudio();
       }
 
       try {
