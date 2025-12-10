@@ -16,63 +16,137 @@ export interface AvatarExpression {
 }
 
 /**
- * AIの返答テキストから表情タイプを判定
+ * 会話の文脈からシーンタイプを判定
+ */
+type ConversationContext = 'initial_greeting' | 'sharing_concerns' | 'asking_questions' | 'positive_interest' | 'hesitation' | 'agreement' | 'neutral';
+
+/**
+ * 表情判定用のメッセージ型
+ */
+export interface ExpressionMessage {
+  role: 'user' | 'assistant';
+  text: string;
+}
+
+/**
+ * 会話履歴から文脈を分析
+ */
+function analyzeConversationContext(
+  currentResponse: string,
+  recentMessages: ExpressionMessage[] = [],
+  userMessage: string = ''
+): ConversationContext {
+  const lowerResponse = currentResponse.toLowerCase();
+  const lowerUserMsg = userMessage.toLowerCase();
+
+  // 1. 営業の質問内容を分析（ユーザーメッセージ）
+  const userIsAskingAbout = {
+    concerns: ['困って', '悩み', '課題', '問題', '不安', '心配'].some(k => lowerUserMsg.includes(k)),
+    interest: ['興味', '詳しく', '教えて', 'どんな', 'どういう'].some(k => lowerUserMsg.includes(k)),
+    price: ['料金', '費用', '価格', '予算', 'いくら'].some(k => lowerUserMsg.includes(k)),
+    examples: ['事例', '実績', '他の', '例えば'].some(k => lowerUserMsg.includes(k)),
+    proposal: ['提案', 'おすすめ', 'プラン', 'サービス'].some(k => lowerUserMsg.includes(k)),
+  };
+
+  // 2. 会話の流れを分析（直近3ターン）
+  const recentContext = recentMessages.slice(-3);
+  const isEarlyConversation = recentMessages.length < 4; // 最初の2-3ターン
+  const hasPositiveFlow = recentContext.some(m =>
+    m.text.includes('いいですね') || m.text.includes('ありがとう') || m.text.includes('素晴らしい')
+  );
+
+  // 3. AI返答の内容から感情・態度を判定
+  const responseContains = {
+    // 困惑・悩み（強い感情）
+    strongConcern: ['どうしよう', 'うまくいかない', '困って', '焦って', '全然ダメ', 'なかなか伸びない'].some(k => lowerResponse.includes(k)),
+    // 軽い懸念・疑問
+    mildConcern: ['わからない', 'どうなんでしょう', '不安', '心配', '難しい'].some(k => lowerResponse.includes(k)),
+    // 前向き・ポジティブ
+    positive: ['いいですね', '楽しみ', '嬉しい', '素晴らしい', '期待'].some(k => lowerResponse.includes(k)),
+    // 同意・共感
+    agreement: ['そうですね', 'なるほど', 'わかります', '確かに', 'おっしゃる通り'].some(k => lowerResponse.includes(k)),
+    // 検討中
+    thinking: ['考えて', '検討', 'うーん', 'どうかな'].some(k => lowerResponse.includes(k)),
+    // 質問・興味
+    asking: ['どんな', 'どういう', '詳しく', '教えて', 'もっと'].some(k => lowerResponse.includes(k)),
+  };
+
+  // 4. 文脈に基づいて判定
+  // 優先度が高い順にチェック
+
+  // 強い困惑・悩みの表現 → confused
+  if (responseContains.strongConcern || (userIsAskingAbout.concerns && responseContains.mildConcern)) {
+    return 'sharing_concerns';
+  }
+
+  // 前向きな反応 → positive_interest
+  if (responseContains.positive || (hasPositiveFlow && responseContains.agreement)) {
+    return 'positive_interest';
+  }
+
+  // 同意・共感の表現 → agreement
+  if (responseContains.agreement && !responseContains.mildConcern) {
+    return 'agreement';
+  }
+
+  // 検討・思考中 → hesitation
+  if (responseContains.thinking || (userIsAskingAbout.price && responseContains.mildConcern)) {
+    return 'hesitation';
+  }
+
+  // 質問・興味を示す → asking_questions
+  if (responseContains.asking || userIsAskingAbout.interest || userIsAskingAbout.examples) {
+    return 'asking_questions';
+  }
+
+  // 会話の初期段階 → initial_greeting
+  if (isEarlyConversation && !responseContains.strongConcern) {
+    return 'initial_greeting';
+  }
+
+  // それ以外 → neutral
+  return 'neutral';
+}
+
+/**
+ * 文脈から適切な表情を選択
+ */
+function contextToExpression(context: ConversationContext): ExpressionType {
+  const contextMap: Record<ConversationContext, ExpressionType> = {
+    'initial_greeting': 'listening',      // 最初は真剣に聞く姿勢
+    'sharing_concerns': 'confused',       // 悩み・困惑を共有
+    'asking_questions': 'interested',     // 質問・興味
+    'positive_interest': 'smile',         // 前向き・ポジティブ
+    'hesitation': 'thinking',             // 検討中・迷い
+    'agreement': 'nodding',               // 同意・共感
+    'neutral': 'listening',               // ニュートラル
+  };
+
+  return contextMap[context];
+}
+
+/**
+ * AIの返答テキストから表情タイプを判定（文脈ベース）
  *
  * @param text AIの返答テキスト
+ * @param recentMessages 直近の会話履歴（オプション）
+ * @param userMessage 営業の質問内容（オプション）
  * @returns 表情タイプ
  */
-export function selectExpressionType(text: string): ExpressionType {
-  const lowerText = text.toLowerCase();
+export function selectExpressionType(
+  text: string,
+  recentMessages?: ExpressionMessage[],
+  userMessage?: string
+): ExpressionType {
+  // 文脈を分析
+  const context = analyzeConversationContext(text, recentMessages || [], userMessage || '');
 
-  // 困惑（不安・疑問）- 優先的にチェック
-  const confusedKeywords = [
-    'どうしよう', '不安', '心配', '難しい', 'わからない',
-    'どうすれば', '迷って', '悩んで', 'うまくいかない',
-    '焦って', '焦り', '困って', '伸びない', '増えない',
-    '全然', 'なかなか', '苦労', '問題', 'トラブル'
-  ];
-  if (confusedKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'confused';
-  }
+  // 文脈から表情を選択
+  const expression = contextToExpression(context);
 
-  // 考える（質問に対して検討中）
-  const thinkingKeywords = [
-    'そうですか', '検討', '考えて', 'うーん',
-    'どうかな', 'どうなんでしょう', 'どうでしょう', 'うーん'
-  ];
-  if (thinkingKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'thinking';
-  }
+  console.log(`[表情判定] 文脈: ${context} → 表情: ${expression}`);
 
-  // 笑顔（ポジティブな反応）
-  const smileKeywords = [
-    'いいですね', '素晴らしい', '楽しみ', '嬉しい', 'ありがとう',
-    '期待', 'ワクワク', 'よかった', '良さそう', '素敵'
-  ];
-  if (smileKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'smile';
-  }
-
-  // うなずく（同意・共感）
-  const noddingKeywords = [
-    'そうですね', 'なるほど', 'わかります', '確かに', '同感です',
-    'おっしゃる通り', 'その通り', 'ですよね', 'そう思います'
-  ];
-  if (noddingKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'nodding';
-  }
-
-  // 興味を示す（提案に興味）
-  const interestedKeywords = [
-    'もっと聞きたい', '詳しく', '教えて', 'どんな', 'どういう',
-    'もっと知りたい', '興味', 'どのように'
-  ];
-  if (interestedKeywords.some(keyword => lowerText.includes(keyword))) {
-    return 'interested';
-  }
-
-  // デフォルト: 真剣に聞く
-  return 'listening';
+  return expression;
 }
 
 /**
@@ -97,15 +171,22 @@ export function getExpressionImageUrl(avatarId: string, expressionType: Expressi
 }
 
 /**
- * AIの返答テキストから最適なアバター表情画像URLを取得
+ * AIの返答テキストから最適なアバター表情画像URLを取得（文脈ベース）
  *
  * @param text AIの返答テキスト
  * @param avatarId アバターID（指定しない場合はランダム）
+ * @param recentMessages 直近の会話履歴（オプション）
+ * @param userMessage 営業の質問内容（オプション）
  * @returns 画像URL
  */
-export function getExpressionForResponse(text: string, avatarId?: string): string {
+export function getExpressionForResponse(
+  text: string,
+  avatarId?: string,
+  recentMessages?: ExpressionMessage[],
+  userMessage?: string
+): string {
   const selectedAvatarId = avatarId || selectRandomAvatar();
-  const expressionType = selectExpressionType(text);
+  const expressionType = selectExpressionType(text, recentMessages, userMessage);
   return getExpressionImageUrl(selectedAvatarId, expressionType);
 }
 

@@ -361,8 +361,19 @@ function RoleplayApp() {
         );
       }
 
-      // AIの返答から適切な表情画像を選択
-      const expressionImageUrl = getExpressionForResponse(fullText, currentAvatarId);
+      // AIの返答から適切な表情画像を選択（文脈ベース）
+      // 直近の会話履歴を変換（expressionSelector用の形式に）
+      const recentMessagesForExpression = messages.slice(-5).map(msg => ({
+        role: (msg.role === 'bot' ? 'assistant' : 'user') as 'user' | 'assistant',
+        text: msg.text
+      }));
+
+      const expressionImageUrl = getExpressionForResponse(
+        fullText,
+        currentAvatarId,
+        recentMessagesForExpression,
+        text // 営業の質問内容
+      );
       setImageSrc(expressionImageUrl);
       setVideoSrc(undefined);
 
