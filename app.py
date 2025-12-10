@@ -736,13 +736,13 @@ def chat_stream():
 
                 messages.append({"role": "user", "content": user_message})
 
-                # GPT-4o-miniストリーミング応答（超高速パラメータ）
-                print("[ストリーミング] GPT-4o-mini応答生成開始（超高速モード）")
+                # GPT-4o-miniストリーミング応答（超高速＋自然な会話）
+                print("[ストリーミング] GPT-4o-mini応答生成開始（超高速＋自然モード）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 超高速モデル（2-3倍速い）
                     messages=messages,
                     max_tokens=150,         # 簡潔な応答で高速化
-                    temperature=0.7,        # バランスの取れた応答速度
+                    temperature=0.85,       # より自然で人間らしい応答
                     stream=True  # ストリーミング有効化
                 )
 
@@ -757,7 +757,7 @@ def chat_stream():
                         content = chunk.choices[0].delta.content
                         text_buffer += content
 
-                        # 1文ごとに即座に送信（ChatGPT風の高速応答）
+                        # 1文ごとに即座に送信（超高速応答）
                         should_send = False
                         delimiter = ''
 
@@ -765,11 +765,11 @@ def chat_stream():
                             # 句点があったら即座に送信
                             should_send = True
                             delimiter = '。'
-                        elif '、' in text_buffer and len(text_buffer) >= 30:
-                            # 読点でも30文字以上溜まったら送信
+                        elif '、' in text_buffer and len(text_buffer) >= 20:
+                            # 読点でも20文字以上溜まったら送信（早めに送信）
                             should_send = True
                             delimiter = '、'
-                        elif len(text_buffer) >= 50:  # 句読点がなくても50文字で送信
+                        elif len(text_buffer) >= 40:  # 句読点がなくても40文字で送信
                             should_send = True
                             delimiter = None
 
@@ -783,13 +783,13 @@ def chat_stream():
                                         chunk_count += 1
                                         print(f"[チャンク{chunk_count}] {chunk_text}")
 
-                                        # TTS生成（高速化）
+                                        # TTS生成（自然な速度）
                                         try:
                                             tts_response = openai_client.audio.speech.create(
                                                 model="tts-1",  # 高速モデル（レスポンス重視）
                                                 voice="nova",
                                                 input=chunk_text,
-                                                speed=1.25  # ChatGPTレベルのテンポ感
+                                                speed=1.2  # 自然な会話速度
                                             )
                                             audio_data = tts_response.content
                                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -812,7 +812,7 @@ def chat_stream():
                                         model="tts-1",  # 高速モデル（レスポンス重視）
                                         voice="nova",
                                         input=chunk_text,
-                                        speed=1.25  # ChatGPTレベルのテンポ感
+                                        speed=1.2  # 自然な会話速度
                                     )
                                     audio_data = tts_response.content
                                     audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -831,7 +831,7 @@ def chat_stream():
                             model="tts-1",  # 高速モデル（レスポンス重視）
                             voice="nova",
                             input=text_buffer.strip(),
-                            speed=1.25  # ChatGPTレベルのテンポ感
+                            speed=1.2  # 自然な会話速度
                         )
                         audio_data = tts_response.content
                         audio_base64 = base64.b64encode(audio_data).decode('utf-8')
