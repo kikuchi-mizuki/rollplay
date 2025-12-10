@@ -38,6 +38,7 @@ function RoleplayApp() {
   const [_conversationId, setConversationId] = useState<string | null>(null);
   const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
+  const lastExpressionRef = useRef<string>(getDefaultExpression('avatar_03')); // 前回の表情を記憶（不要な切り替え防止）
 
   const audioRecorderRef = useState(() => new AudioRecorder())[0];
   const [_speechSupported, setSpeechSupported] = useState<boolean | null>(null);
@@ -122,8 +123,10 @@ function RoleplayApp() {
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
 
       // デフォルト表情（listening）の静止画を表示（avatar_03固定）
-      setImageSrc(getDefaultExpression(currentAvatarId));
+      const defaultExpression = getDefaultExpression(currentAvatarId);
+      setImageSrc(defaultExpression);
       setVideoSrc(undefined); // 静止画を使用するため動画はクリア
+      lastExpressionRef.current = defaultExpression; // 前回の表情を記憶
 
       // 字幕をクリア（ユーザーが最初に話しかけるまで何も表示しない）
       setMediaSubtitle('');
@@ -353,9 +356,9 @@ function RoleplayApp() {
         );
       }
 
-      // AIの返答から適切な表情画像を選択（文脈ベース）
-      // 直近の会話履歴を変換（expressionSelector用の形式に）
-      const recentMessagesForExpression = messages.slice(-5).map(msg => ({
+      // AIの返答から適切な表情画像を選択（文脈ベース・自然な切り替え）
+      // 直近の会話履歴を変換（expressionSelector用の形式に）※より長い文脈を見る
+      const recentMessagesForExpression = messages.slice(-10).map(msg => ({
         role: (msg.role === 'bot' ? 'assistant' : 'user') as 'user' | 'assistant',
         text: msg.text
       }));
@@ -366,8 +369,16 @@ function RoleplayApp() {
         recentMessagesForExpression,
         text // 営業の質問内容
       );
-      setImageSrc(expressionImageUrl);
-      setVideoSrc(undefined);
+
+      // 前回と同じ表情の場合は切り替えない（自然な会話を維持）
+      if (expressionImageUrl !== lastExpressionRef.current) {
+        console.log(`[アバター] 表情を切り替え: ${lastExpressionRef.current} → ${expressionImageUrl}`);
+        setImageSrc(expressionImageUrl);
+        setVideoSrc(undefined);
+        lastExpressionRef.current = expressionImageUrl;
+      } else {
+        console.log(`[アバター] 表情は同じなので切り替えなし: ${expressionImageUrl}`);
+      }
 
     } catch (error) {
       console.error('ストリーミング送信エラー:', error);

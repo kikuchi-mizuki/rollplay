@@ -28,15 +28,15 @@ export class AudioRecorder {
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
   private silenceTimeout: number | null = null;
-  private silenceDuration: number = 200; // 無音0.2秒で録音停止（最速レベル）
+  private silenceDuration: number = 150; // 無音0.15秒で録音停止（極限の速度）
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 400; // 最低録音時間（ミリ秒）※最速認識
+  private minRecordingDuration: number = 350; // 最低録音時間（ミリ秒）※極限の速度
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
-  private voiceContinueDuration: number = 150; // 音声が継続する必要がある時間（ミリ秒）※瞬時に録音開始
+  private voiceContinueDuration: number = 100; // 音声が継続する必要がある時間（ミリ秒）※瞬時に録音開始
 
   /**
    * 録音開始（モバイル対応強化）
