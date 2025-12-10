@@ -88,9 +88,9 @@ export function MediaPanel({
           </div>
         )}
 
-        {/* 字幕 */}
+        {/* 字幕（セリフ全体を表示） */}
         {subtitle && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white px-4 py-3 text-sm text-center line-clamp-2">
+          <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center max-h-40 overflow-y-auto backdrop-blur-sm">
             {subtitle}
           </div>
         )}
