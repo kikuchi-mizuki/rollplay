@@ -736,10 +736,10 @@ def chat_stream():
 
                 messages.append({"role": "user", "content": user_message})
 
-                # GPT-4oストリーミング応答（高速化パラメータ）
-                print("[ストリーミング] GPT-4o応答生成開始")
+                # GPT-4o-miniストリーミング応答（超高速パラメータ）
+                print("[ストリーミング] GPT-4o-mini応答生成開始（超高速モード）")
                 response = openai_client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-4o-mini",    # 超高速モデル（2-3倍速い）
                     messages=messages,
                     max_tokens=150,         # 簡潔な応答で高速化
                     temperature=0.7,        # バランスの取れた応答速度
@@ -789,7 +789,7 @@ def chat_stream():
                                                 model="tts-1",  # 高速モデル（レスポンス重視）
                                                 voice="nova",
                                                 input=chunk_text,
-                                                speed=1.2  # やや速めの会話速度でテンポアップ
+                                                speed=1.25  # ChatGPTレベルのテンポ感
                                             )
                                             audio_data = tts_response.content
                                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -812,7 +812,7 @@ def chat_stream():
                                         model="tts-1",  # 高速モデル（レスポンス重視）
                                         voice="nova",
                                         input=chunk_text,
-                                        speed=1.15  # 自然な会話速度（1.3は早すぎ）
+                                        speed=1.25  # ChatGPTレベルのテンポ感
                                     )
                                     audio_data = tts_response.content
                                     audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -831,7 +831,7 @@ def chat_stream():
                             model="tts-1",  # 高速モデル（レスポンス重視）
                             voice="nova",
                             input=text_buffer.strip(),
-                            speed=1.15  # 自然な会話速度（1.3は早すぎ）
+                            speed=1.25  # ChatGPTレベルのテンポ感
                         )
                         audio_data = tts_response.content
                         audio_base64 = base64.b64encode(audio_data).decode('utf-8')
