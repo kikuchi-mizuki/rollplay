@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const { refreshProfile } = useAuth()
   const [loading, setLoading] = useState(false)
   const [initializing, setInitializing] = useState(true)
   const [storeCode, setStoreCode] = useState('')
@@ -15,6 +17,7 @@ export function RegisterPage() {
   const [user, setUser] = useState<any>(null)
   const [verifying, setVerifying] = useState(false)
   const verifyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const hasNavigatedRef = useRef(false)
 
   // 現在のユーザー情報を取得（初回マウント時のみ実行）
   useEffect(() => {
@@ -43,6 +46,19 @@ export function RegisterPage() {
 
           if (existingProfile) {
             console.log('✅ 登録画面: プロフィール既存 → メイン画面へ')
+
+            // 無限ループ防止：既にナビゲート済みの場合はスキップ
+            if (hasNavigatedRef.current) {
+              console.log('⏭️  既にナビゲート済みのためスキップ')
+              return
+            }
+            hasNavigatedRef.current = true
+
+            // AuthContextのプロフィールを同期してからリダイレクト
+            console.log('🔄 AuthContextのプロフィールを更新中...')
+            await refreshProfile()
+            console.log('✅ AuthContextのプロフィール更新完了')
+
             navigate('/')
             return
           }
