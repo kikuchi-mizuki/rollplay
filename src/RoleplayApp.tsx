@@ -432,7 +432,14 @@ function RoleplayApp() {
         }
       }
 
-      // SSEストリーム完了後、再生ループを停止
+      // SSEストリーム完了後、キューが空になるまで待つ
+      console.log(`⏳ [デバッグ] ストリーム完了。残りチャンク数: ${audioQueue.length}`);
+      while (audioQueue.length > 0 || isPlaying) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      console.log(`✅ [デバッグ] 全チャンク再生完了。再生ループを停止します。`);
+
+      // 全てのチャンク再生完了後、再生ループを停止
       playbackLoopRunning = false;
 
       // もしテキストが空の場合はエラーメッセージを表示
