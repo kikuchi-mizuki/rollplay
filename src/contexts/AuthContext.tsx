@@ -38,8 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // プロフィール取得（リトライ機能付き）
   const fetchProfile = async (userId: string, retryCount = 0) => {
-    const maxRetries = 5 // 5回に増やす
-    const timeout = 60000 // 60秒に延長（コールドスタート対応）
+    const maxRetries = 3 // 3回に短縮（高速化）
+    const timeout = 15000 // 15秒に短縮（無限ループ防止）
 
     try {
       const startTime = Date.now()
@@ -97,11 +97,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (err.message === 'プロフィール取得タイムアウト') {
         console.error(`⚠️  プロフィールデータの取得に${timeout/1000}秒以上かかっています`)
-        console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです')
+        console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです`)
 
-        // リトライ処理
+        // リトライ処理（間隔を短縮）
         if (retryCount < maxRetries - 1) {
-          const waitTime = 5000 * (retryCount + 1) // 5秒、10秒、15秒、20秒と徐々に延長
+          const waitTime = 2000 * (retryCount + 1) // 2秒、4秒、6秒と短縮
           console.warn(`🔄 ${waitTime/1000}秒後に再試行します... (残り${maxRetries - retryCount - 1}回)`)
           console.warn(`💡 Supabaseが起動中です。しばらくお待ちください...`)
 
@@ -133,9 +133,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('🔐 認証初期化開始...')
         console.log('📡 supabase.auth.getSession() を呼び出します...')
 
-        // タイムアウト設定を60秒に延長（コールドスタート対策）
+        // タイムアウト設定を30秒に短縮（無限ループ防止）
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('認証タイムアウト')), 60000)
+          setTimeout(() => reject(new Error('認証タイムアウト')), 30000)
         )
 
         const sessionPromise = supabase.auth.getSession()
