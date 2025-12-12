@@ -820,8 +820,17 @@ def chat_stream():
                         delimiter = ''
 
                         if not first_chunk_sent:
-                            # 最初のチャンクは5-7文字で即送信（ChatGPT感の要）
-                            if len(text_buffer) >= 5:
+                            # 最初のチャンクは10文字以上または句点で送信（自然な区切り）
+                            if '。' in text_buffer or '、' in text_buffer:
+                                # 句読点があれば優先的に分割
+                                if '。' in text_buffer:
+                                    should_send = True
+                                    delimiter = '。'
+                                elif len(text_buffer) >= 10:
+                                    should_send = True
+                                    delimiter = '、'
+                            elif len(text_buffer) >= 15:
+                                # 句読点なしでも15文字で送信
                                 should_send = True
                                 delimiter = None
                         else:
@@ -830,11 +839,11 @@ def chat_stream():
                                 # 句点があったら即座に送信
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 7:
-                                # 読点でも7文字以上溜まったら送信
+                            elif '、' in text_buffer and len(text_buffer) >= 12:
+                                # 読点でも12文字以上溜まったら送信（より長く）
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 15:  # 句読点なくても15文字で送信
+                            elif len(text_buffer) >= 25:  # 句読点なくても25文字で送信（より長く）
                                 should_send = True
                                 delimiter = None
 
