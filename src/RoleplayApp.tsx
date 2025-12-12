@@ -164,6 +164,7 @@ function RoleplayApp() {
       let currentAudio: HTMLAudioElement | null = null; // 現在再生中の音声
       let interruptModeEnabled = false; // 割り込みモード有効化フラグ
       let streamReader: ReadableStreamDefaultReader<Uint8Array> | null = null; // SSEストリームのreader
+      let playbackLoopRunning = false; // 再生ループ実行中フラグ
 
       // 割り込み時に全ての音声を停止
       const stopAllAudio = () => {
@@ -216,57 +217,57 @@ function RoleplayApp() {
       };
       setMessages((prev) => [...prev, botMessage]);
 
-      // 音声チャンクを順次再生
-      const playNextChunk = async () => {
-        if (audioQueue.length > 0 && !isPlaying) {
-          isPlaying = true;
-          const item = audioQueue.shift()!;
-          const { audio: audioData, text: chunkText } = item;
+      // 再生専用ループ（常駐・オーバーラップ対応）
+      const playbackLoop = async () => {
+        playbackLoopRunning = true;
+        console.log('🔄 再生ループ開始（オーバーラップ対応）');
 
-          // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
-          setMediaSubtitle(chunkText);
+        while (playbackLoopRunning) {
+          // キューにチャンクがあり、再生中でなければ即座に再生
+          if (audioQueue.length > 0 && !isPlaying) {
+            isPlaying = true;
+            const item = audioQueue.shift()!;
+            const { audio: audioData, text: chunkText } = item;
 
-          try {
-            // ⏱️ 最初のTTS再生開始
-            if (!firstAudioPlayed && t0) {
-              const t3 = performance.now();
-              console.log(`[latency] t3: TTS再生開始 (${t3.toFixed(0)}ms)`);
-              console.log(`[latency] total (speech_end→tts_play): ${(t3 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
-              firstAudioPlayed = true;
-            }
+            // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
+            setMediaSubtitle(chunkText);
 
-            // Web Audio APIで音声を再生（モバイル対応）
-            await playAudioWithWebAudio(audioData);
-
-            // 再生完了後の処理
-            isPlaying = false;
-
-            // 次のチャンクがある場合は再生を続ける
-            if (audioQueue.length > 0) {
-              playNextChunk();
-            } else {
-              // 全ての音声再生が完了したら字幕をクリアしてVADを再開
-              setMediaSubtitle('');
-              if (isVADMode) {
-                audioRecorderRef.resumeVAD();
+            try {
+              // ⏱️ 最初のTTS再生開始
+              if (!firstAudioPlayed && t0) {
+                const t3 = performance.now();
+                console.log(`[latency] t3: TTS再生開始 (${t3.toFixed(0)}ms)`);
+                console.log(`[latency] total (speech_end→tts_play): ${(t3 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
+                console.log(`[latency] gpt_first_token→tts_play: ${(t3 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
+                firstAudioPlayed = true;
               }
-            }
-          } catch (error) {
-            console.error('音声再生失敗:', error);
-            isPlaying = false;
 
-            // エラーでも次のチャンクを試す
-            if (audioQueue.length > 0) {
-              playNextChunk();
-            } else {
-              // 全て終了したらVADを再開
-              if (isVADMode) {
-                audioRecorderRef.resumeVAD();
-              }
+              // Web Audio APIで音声を再生（モバイル対応）
+              // 再生中にサーバー側では次のTTSが生成されている（オーバーラップ）
+              await playAudioWithWebAudio(audioData);
+
+              // 再生完了
+              isPlaying = false;
+            } catch (error) {
+              console.error('音声再生失敗:', error);
+              isPlaying = false;
             }
+          } else {
+            // キューが空か再生中の場合は少し待つ
+            await new Promise(resolve => setTimeout(resolve, 50));
           }
         }
+
+        // ループ終了時の処理
+        console.log('🛑 再生ループ終了');
+        setMediaSubtitle('');
+        if (isVADMode) {
+          audioRecorderRef.resumeVAD();
+        }
       };
+
+      // 再生ループを起動（常駐・バックグラウンド実行）
+      playbackLoop();
 
       // SSEでストリーミング受信
       const response = await fetch('/api/chat-stream', {
@@ -332,6 +333,7 @@ function RoleplayApp() {
                 }
 
                 // 音声キューに追加（音声とテキストをペアで管理）
+                // 再生ループが自動的に取り出して再生する（オーバーラップ）
                 audioQueue.push({ audio: bytes.buffer, text: data.text || '' });
                 fullText += data.text || '';
 
@@ -351,12 +353,7 @@ function RoleplayApp() {
                   )
                 );
 
-                // 再生開始
-                if (!isPlaying) {
-                  playNextChunk();
-                }
-
-                console.log(`[チャンク${data.chunk}] 受信・再生: ${data.text}`);
+                console.log(`[チャンク${data.chunk}] 受信・キューに追加: ${data.text}（再生ループが自動処理）`);
               }
             } catch (e) {
               console.error('JSON parse error:', e);
@@ -364,6 +361,9 @@ function RoleplayApp() {
           }
         }
       }
+
+      // SSEストリーム完了後、再生ループを停止
+      playbackLoopRunning = false;
 
       // もしテキストが空の場合はエラーメッセージを表示
       if (!fullText) {
