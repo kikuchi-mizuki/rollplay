@@ -10,7 +10,7 @@ import { Message, Evaluation, RecordingState } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
-import { getDefaultExpression, getExpressionForResponse } from './lib/expressionSelector';
+import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl } from './lib/expressionSelector';
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -165,6 +165,17 @@ function RoleplayApp() {
       let interruptModeEnabled = false; // 割り込みモード有効化フラグ
       let streamReader: ReadableStreamDefaultReader<Uint8Array> | null = null; // SSEストリームのreader
       let playbackLoopRunning = false; // 再生ループ実行中フラグ
+      let resolveWaiter: (() => void) | null = null; // イベント駆動型キュー用の通知関数
+
+      // キューに何か来るまで待つ（イベント駆動型）
+      const waitForQueue = () =>
+        new Promise<void>((resolve) => {
+          if (audioQueue.length > 0 || !playbackLoopRunning) {
+            resolve();
+          } else {
+            resolveWaiter = resolve;
+          }
+        });
 
       // 割り込み時に全ての音声を停止
       const stopAllAudio = () => {
@@ -204,6 +215,13 @@ function RoleplayApp() {
         isPlaying = false;
         interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
+
+        // イベント駆動型キューの待機をキャンセル
+        if (resolveWaiter) {
+          (resolveWaiter as () => void)();
+          resolveWaiter = null;
+        }
+
         console.log('✅ 音声停止完了（キュークリア、再生停止）');
       };
 
@@ -217,22 +235,30 @@ function RoleplayApp() {
       };
       setMessages((prev) => [...prev, botMessage]);
 
-      // 再生専用ループ（常駐・オーバーラップ対応）
+      // 🎭 t1: ユーザー発話終了 → thinking表情に先行変化（心理トリック）
+      setImageSrc(getExpressionImageUrl(currentAvatarId, 'thinking'));
+      console.log('[t1] アバター表情を"thinking"に先行変化');
+
+      // 再生専用ループ（イベント駆動型・オーバーラップ対応）
       const playbackLoop = async () => {
         playbackLoopRunning = true;
-        console.log('🔄 再生ループ開始（オーバーラップ対応）');
+        console.log('🔄 再生ループ開始（イベント駆動型・オーバーラップ対応）');
 
         while (playbackLoopRunning) {
+          // キューに何か来るまで待つ（イベント駆動型、50ms遅延なし）
+          await waitForQueue();
+          if (!playbackLoopRunning) break;
+
           // キューにチャンクがあり、再生中でなければ即座に再生
           if (audioQueue.length > 0 && !isPlaying) {
-            isPlaying = true;
             const item = audioQueue.shift()!;
             const { audio: audioData, text: chunkText } = item;
-
-            // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
-            setMediaSubtitle(chunkText);
+            isPlaying = true;
 
             try {
+              // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
+              setMediaSubtitle(chunkText);
+
               // ⏱️ 最初のTTS再生開始
               if (!firstAudioPlayed && t0) {
                 const t3 = performance.now();
@@ -245,16 +271,12 @@ function RoleplayApp() {
               // Web Audio APIで音声を再生（モバイル対応）
               // 再生中にサーバー側では次のTTSが生成されている（オーバーラップ）
               await playAudioWithWebAudio(audioData);
-
-              // 再生完了
-              isPlaying = false;
             } catch (error) {
               console.error('音声再生失敗:', error);
+            } finally {
+              // 必ず再生フラグをfalseに戻す（例外時も保証）
               isPlaying = false;
             }
-          } else {
-            // キューが空か再生中の場合は少し待つ
-            await new Promise(resolve => setTimeout(resolve, 50));
           }
         }
 
@@ -323,6 +345,23 @@ function RoleplayApp() {
                   console.log(`[latency] t2: GPT最初のトークン受信 (${t2.toFixed(0)}ms)`);
                   console.log(`[latency] whisper→gpt_first_token: ${(t2 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
                   firstTokenReceived = true;
+
+                  // 🎭 t2: GPT最初のトークン受信 → 表情を先行変化（心理トリック）
+                  // 最初のチャンクのテキストから適切な表情を選択
+                  if (data.text) {
+                    const expressionUrl = getExpressionForResponse(
+                      data.text,
+                      currentAvatarId,
+                      messages.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', text: m.text })),
+                      text
+                    );
+                    setImageSrc(expressionUrl);
+                    console.log(`[t2] アバター表情を先行変化: ${expressionUrl}`);
+
+                    // 💬 字幕の先出し表示（心理トリック：音声より0.2-0.3秒早く表示）
+                    setMediaSubtitle(data.text);
+                    console.log(`[t2] 字幕を先出し表示: "${data.text}"`);
+                  }
                 }
 
                 // Base64デコード
@@ -336,6 +375,12 @@ function RoleplayApp() {
                 // 再生ループが自動的に取り出して再生する（オーバーラップ）
                 audioQueue.push({ audio: bytes.buffer, text: data.text || '' });
                 fullText += data.text || '';
+
+                // イベント駆動型キュー：待機中のループを即座に起こす
+                if (resolveWaiter) {
+                  (resolveWaiter as () => void)();
+                  resolveWaiter = null;
+                }
 
                 // 最初の音声チャンク受信時に割り込みモードを有効化（一度だけ）
                 if (vadMode && !interruptModeEnabled) {
