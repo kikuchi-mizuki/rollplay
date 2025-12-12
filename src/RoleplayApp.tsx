@@ -268,6 +268,9 @@ function RoleplayApp() {
             const { audio: audioData, text: chunkText } = item;
             isPlaying = true;
 
+            // デバッグ: 音声データのサイズを確認
+            console.log(`📦 [デバッグ] チャンク取り出し: "${chunkText}" (データサイズ: ${audioData.byteLength} bytes)`);
+
             try {
               // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
               setMediaSubtitle(chunkText);
@@ -283,9 +286,11 @@ function RoleplayApp() {
 
               // Web Audio APIで音声を再生（モバイル対応）
               // 再生中にサーバー側では次のTTSが生成されている（オーバーラップ）
+              console.log(`▶️ [デバッグ] 音声再生開始: "${chunkText}"`);
               await playAudioWithWebAudio(audioData);
+              console.log(`✅ [デバッグ] 音声再生完了: "${chunkText}"`);
             } catch (error) {
-              console.error('音声再生失敗:', error);
+              console.error(`❌ 音声再生失敗: "${chunkText}"`, error);
             } finally {
               // 必ず再生フラグをfalseに戻す（例外時も保証）
               isPlaying = false;
