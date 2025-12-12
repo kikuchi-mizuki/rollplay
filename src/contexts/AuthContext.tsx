@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (err.message === 'プロフィール取得タイムアウト') {
         console.error(`⚠️  プロフィールデータの取得に${timeout/1000}秒以上かかっています`)
-        console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです`)
+        console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです')
 
         // リトライ処理（間隔を短縮）
         if (retryCount < maxRetries - 1) {
