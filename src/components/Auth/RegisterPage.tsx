@@ -16,7 +16,7 @@ export function RegisterPage() {
   const [verifying, setVerifying] = useState(false)
   const verifyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // 現在のユーザー情報を取得
+  // 現在のユーザー情報を取得（初回マウント時のみ実行）
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -62,7 +62,8 @@ export function RegisterPage() {
       }
     }
     getUser()
-  }, [navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 店舗コード検証
   const verifyStoreCode = async (code: string) => {
