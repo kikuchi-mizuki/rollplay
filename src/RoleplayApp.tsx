@@ -137,7 +137,7 @@ function RoleplayApp() {
    * ストリーミング対応の音声再生
    * SSEで音声チャンクを受信して即座に再生
    */
-  const handleSendStream = async (text: string, vadMode: boolean) => {
+  const handleSendStream = async (text: string, vadMode: boolean, t0?: number) => {
     if (!text.trim() || isSending) return;
 
     setIsSending(true);
@@ -151,6 +151,10 @@ function RoleplayApp() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+
+    // ⏱️ レイテンシー計測用（t0から引き継ぎ）
+    let firstTokenReceived = false;
+    let firstAudioPlayed = false;
 
     try {
       // 音声チャンクキュー
@@ -223,6 +227,14 @@ function RoleplayApp() {
           setMediaSubtitle(chunkText);
 
           try {
+            // ⏱️ 最初のTTS再生開始
+            if (!firstAudioPlayed && t0) {
+              const t3 = performance.now();
+              console.log(`[latency] t3: TTS再生開始 (${t3.toFixed(0)}ms)`);
+              console.log(`[latency] total (speech_end→tts_play): ${(t3 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
+              firstAudioPlayed = true;
+            }
+
             // Web Audio APIで音声を再生（モバイル対応）
             await playAudioWithWebAudio(audioData);
 
@@ -304,6 +316,14 @@ function RoleplayApp() {
               }
 
               if (data.audio) {
+                // ⏱️ GPT最初のトークン受信
+                if (!firstTokenReceived && t0) {
+                  const t2 = performance.now();
+                  console.log(`[latency] t2: GPT最初のトークン受信 (${t2.toFixed(0)}ms)`);
+                  console.log(`[latency] whisper→gpt_first_token: ${(t2 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
+                  firstTokenReceived = true;
+                }
+
                 // Base64デコード
                 const binaryString = atob(data.audio);
                 const bytes = new Uint8Array(binaryString.length);
@@ -586,14 +606,14 @@ function RoleplayApp() {
     };
   }, [audioRecorderRef]);
 
-  const handleSend = async (text: string) => {
+  const handleSend = async (text: string, t0?: number) => {
     // 音声を初期化（初回のみ・モバイル対応）
     if (!audioInitialized) {
       await initializeAudio();
     }
 
     // ストリーミング対応版を使用（現在のVADモード状態を渡す - Refから取得）
-    await handleSendStream(text, isVADModeRef.current);
+    await handleSendStream(text, isVADModeRef.current, t0);
   };
 
   // VAD（会話モード）のトグル
@@ -682,6 +702,10 @@ function RoleplayApp() {
               return;
             }
 
+            // ⏱️ レイテンシー計測開始
+            const t0 = performance.now();
+            console.log(`[latency] t0: 録音停止 (${t0.toFixed(0)}ms)`);
+
             // Whisper APIで音声認識
             const formData = new FormData();
             const mimeType = audioBlob.type || 'audio/webm';
@@ -703,6 +727,11 @@ function RoleplayApp() {
 
               const rawText = await response.text();
 
+              // ⏱️ Whisper完了
+              const t1 = performance.now();
+              console.log(`[latency] t1: Whisper完了 (${t1.toFixed(0)}ms)`);
+              console.log(`[latency] speech_end→whisper: ${(t1 - t0).toFixed(0)}ms`);
+
               if (!response.ok) {
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
               }
@@ -710,8 +739,8 @@ function RoleplayApp() {
               const result = JSON.parse(rawText);
 
               if (result.success && result.text) {
-                // handleSendがisSendingをfalseにするまで待つ
-                await handleSend(result.text);
+                // handleSendがisSendingをfalseにするまで待つ（t0を渡す）
+                await handleSend(result.text, t0);
               } else {
                 setIsSending(false);
                 isSendingRef.current = false;

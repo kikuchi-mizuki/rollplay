@@ -28,7 +28,8 @@ export class AudioRecorder {
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
   private silenceTimeout: number | null = null;
-  private silenceDuration: number = 400; // 無音0.4秒で録音停止（自然な会話の間を許容）
+  // 動的VADに変更したため、silenceDurationは未使用（発話時間に応じて200ms/400msを動的に決定）
+  // private silenceDuration: number = 400;
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
@@ -560,9 +561,14 @@ export class AudioRecorder {
           this.voiceStartTime = 0;
         }
 
-        // 無音検出 → タイマー開始
+        // 無音検出 → タイマー開始（動的VAD：発話時間に応じて調整）
         if (this.isVadRecording && !this.silenceTimeout) {
-          console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, ${this.silenceDuration}ms後に停止)`);
+          // 現在の発話時間を計算
+          const currentSpeechDuration = Date.now() - this.recordingStartTime;
+          // 1秒未満の短い発話なら200ms、それ以上なら400msで無音検出
+          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 200 : 400;
+
+          console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, 発話時間: ${currentSpeechDuration}ms, 無音検出: ${dynamicSilenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
             // 最低録音時間チェック
             const recordingDuration = Date.now() - this.recordingStartTime;
@@ -581,7 +587,7 @@ export class AudioRecorder {
               console.log('🔇 無音検出 → 録音停止');
               this.stopVADRecording();
             }
-          }, this.silenceDuration);
+          }, dynamicSilenceDuration); // 動的に計算された無音検出時間を使用
         }
       }
 
