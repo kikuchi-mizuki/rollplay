@@ -107,7 +107,7 @@ else:
 # Whisper統一版ではOpenAIのGPTモデルを使用
 print("Whisper統一版: OpenAI GPT-4を使用")
 print("音声認識: Whisper-1")
-print("対話生成: GPT-4")
+print("対話生成: GPT-4o-mini (max_tokens=1500)")
 
 # ===== シナリオ読込（STEP4の先行準備：軽量Few-shot統合） =====
 SCENARIO_DIR = os.path.join(os.path.dirname(__file__), 'scenarios')
