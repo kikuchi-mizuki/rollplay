@@ -347,7 +347,9 @@ SNS運用で本当に悩んでいます。毎日投稿してもフォロワー�
 - 挨拶や定型文だけで終わらない
 - 具体的な数字（フォロワー数、いいね数など）を含める
 - 感情を表現する（「困ってて」「焦ってます」など）
-- 3-5文で詳しく答える（50-150文字程度）
+- **1-2文で簡潔に答える（30-60文字程度、最大80文字まで）**
+- **会話のテンポを優先し、ダラダラ長く話さない**
+- 返答は「結論＋1つの質問」や「状況＋気持ち」のように構成する
 
 ## 自然な話し方（人間らしいイントネーション）
 
@@ -749,6 +751,7 @@ def chat_stream():
                 # チャンクバッファ
                 text_buffer = ""
                 chunk_count = 0
+                first_chunk_sent = False  # 最初のチャンクを送信したかフラグ
 
                 # ストリーミングレスポンスを処理
                 sentence_count = 0  # 文数カウント
@@ -757,21 +760,28 @@ def chat_stream():
                         content = chunk.choices[0].delta.content
                         text_buffer += content
 
-                        # 1文ごとに即座に送信（間を減らす細かい送信）
+                        # ChatGPT風：最初のチャンクは即座に送信、2チャンク目以降は通常ルール
                         should_send = False
                         delimiter = ''
 
-                        if '。' in text_buffer:
-                            # 句点があったら即座に送信
-                            should_send = True
-                            delimiter = '。'
-                        elif '、' in text_buffer and len(text_buffer) >= 10:
-                            # 読点でも10文字以上溜まったら送信（超高速送信）
-                            should_send = True
-                            delimiter = '、'
-                        elif len(text_buffer) >= 20:  # 句読点がなくても20文字で送信（超早送信）
-                            should_send = True
-                            delimiter = None
+                        if not first_chunk_sent:
+                            # 最初のチャンクは5-7文字で即送信（ChatGPT感の要）
+                            if len(text_buffer) >= 5:
+                                should_send = True
+                                delimiter = None
+                        else:
+                            # 2チャンク目以降は通常ルール
+                            if '。' in text_buffer:
+                                # 句点があったら即座に送信
+                                should_send = True
+                                delimiter = '。'
+                            elif '、' in text_buffer and len(text_buffer) >= 7:
+                                # 読点でも7文字以上溜まったら送信
+                                should_send = True
+                                delimiter = '、'
+                            elif len(text_buffer) >= 15:  # 句読点がなくても15文字で送信
+                                should_send = True
+                                delimiter = None
 
                         if should_send:
                             if delimiter:
@@ -796,13 +806,14 @@ def chat_stream():
 
                                             # SSEで音声データを送信
                                             yield f"data: {json.dumps({'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_count})}\n\n"
+                                            first_chunk_sent = True  # 最初のチャンク送信完了
                                         except Exception as tts_error:
                                             print(f"[TTS エラー] {tts_error}")
 
                                 # 未完成の文をバッファに残す
                                 text_buffer = chunks[-1]
                             else:
-                                # 読点がない場合、20文字で強制送信
+                                # 最初のチャンク or 句読点なしで強制送信
                                 chunk_text = text_buffer.strip()
                                 chunk_count += 1
                                 print(f"[チャンク{chunk_count}] {chunk_text}")
@@ -817,6 +828,7 @@ def chat_stream():
                                     audio_data = tts_response.content
                                     audio_base64 = base64.b64encode(audio_data).decode('utf-8')
                                     yield f"data: {json.dumps({'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_count})}\n\n"
+                                    first_chunk_sent = True  # 最初のチャンク送信完了
                                 except Exception as tts_error:
                                     print(f"[TTS エラー] {tts_error}")
 
