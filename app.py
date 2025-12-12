@@ -796,8 +796,8 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 超高速モデル（2-3倍速い）
                     messages=messages,
-                    max_tokens=150,         # 簡潔な応答で高速化
-                    temperature=0.85,       # より自然で人間らしい応答
+                    max_tokens=200,         # 自然な会話長に調整（150→200）
+                    temperature=0.9,        # より自然で人間らしい応答（0.85→0.9）
                     stream=True  # ストリーミング有効化
                 )
 
