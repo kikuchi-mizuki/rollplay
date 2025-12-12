@@ -765,11 +765,11 @@ def chat_stream():
                             # 句点があったら即座に送信
                             should_send = True
                             delimiter = '。'
-                        elif '、' in text_buffer and len(text_buffer) >= 15:
-                            # 読点でも15文字以上溜まったら送信（間を減らす）
+                        elif '、' in text_buffer and len(text_buffer) >= 10:
+                            # 読点でも10文字以上溜まったら送信（超高速送信）
                             should_send = True
                             delimiter = '、'
-                        elif len(text_buffer) >= 30:  # 句読点がなくても30文字で送信（早めに送信）
+                        elif len(text_buffer) >= 20:  # 句読点がなくても20文字で送信（超早送信）
                             should_send = True
                             delimiter = None
 
