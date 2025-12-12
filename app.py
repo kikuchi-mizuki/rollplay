@@ -820,30 +820,30 @@ def chat_stream():
                         delimiter = ''
 
                         if not first_chunk_sent:
-                            # 最初のチャンクは10文字以上または句点で送信（自然な区切り）
-                            if '。' in text_buffer or '、' in text_buffer:
-                                # 句読点があれば優先的に分割
-                                if '。' in text_buffer:
-                                    should_send = True
-                                    delimiter = '。'
-                                elif len(text_buffer) >= 10:
-                                    should_send = True
-                                    delimiter = '、'
-                            elif len(text_buffer) >= 15:
-                                # 句読点なしでも15文字で送信
+                            # 最初のチャンクは句点優先、読点は20文字以上で分割
+                            if '。' in text_buffer and len(text_buffer) >= 8:
+                                # 句点があり、8文字以上なら送信
+                                should_send = True
+                                delimiter = '。'
+                            elif '、' in text_buffer and len(text_buffer) >= 20:
+                                # 読点は20文字以上溜まったら送信
+                                should_send = True
+                                delimiter = '、'
+                            elif len(text_buffer) >= 30:
+                                # 句読点なしでも30文字で送信
                                 should_send = True
                                 delimiter = None
                         else:
                             # 2チャンク目以降は通常ルール
-                            if '。' in text_buffer:
-                                # 句点があったら即座に送信
+                            if '。' in text_buffer and len(text_buffer) >= 8:
+                                # 句点があり、8文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 12:
-                                # 読点でも12文字以上溜まったら送信（より長く）
+                            elif '、' in text_buffer and len(text_buffer) >= 18:
+                                # 読点でも18文字以上溜まったら送信
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 25:  # 句読点なくても25文字で送信（より長く）
+                            elif len(text_buffer) >= 30:  # 句読点なくても30文字で送信
                                 should_send = True
                                 delimiter = None
 
