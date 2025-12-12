@@ -280,9 +280,16 @@ function RoleplayApp() {
           }
         }
 
-        // ループ終了時の処理
+        // ループ終了時の処理（クリーンアップ）
         console.log('🛑 再生ループ終了');
         setMediaSubtitle('');
+
+        // 表情をlisteningに戻す（会話終了を視覚的に示す）
+        const listeningExpression = getExpressionImageUrl(currentAvatarId, 'listening');
+        setImageSrc(listeningExpression);
+        lastExpressionRef.current = listeningExpression;
+        console.log('[アバター] 再生終了、listening表情に復帰');
+
         if (isVADMode) {
           audioRecorderRef.resumeVAD();
         }
@@ -421,29 +428,34 @@ function RoleplayApp() {
         );
       }
 
+      // 📝 ストリーム完了後の表情更新は不要（t2で先行表示済み）
+      // t2（GPT最初のトークン受信時）に表情を先行変化させているため、
+      // ストリーム完了時に再度変更すると表情がチラついて不自然になる
+      // 必要に応じて、以下のコードを有効化してください
+
       // AIの返答から適切な表情画像を選択（文脈ベース・自然な切り替え）
       // 直近の会話履歴を変換（expressionSelector用の形式に）※より長い文脈を見る
-      const recentMessagesForExpression = messages.slice(-10).map(msg => ({
-        role: (msg.role === 'bot' ? 'assistant' : 'user') as 'user' | 'assistant',
-        text: msg.text
-      }));
+      // const recentMessagesForExpression = messages.slice(-10).map(msg => ({
+      //   role: (msg.role === 'bot' ? 'assistant' : 'user') as 'user' | 'assistant',
+      //   text: msg.text
+      // }));
 
-      const expressionImageUrl = getExpressionForResponse(
-        fullText,
-        currentAvatarId,
-        recentMessagesForExpression,
-        text // 営業の質問内容
-      );
+      // const expressionImageUrl = getExpressionForResponse(
+      //   fullText,
+      //   currentAvatarId,
+      //   recentMessagesForExpression,
+      //   text // 営業の質問内容
+      // );
 
-      // 前回と同じ表情の場合は切り替えない（自然な会話を維持）
-      if (expressionImageUrl !== lastExpressionRef.current) {
-        console.log(`[アバター] 表情を切り替え: ${lastExpressionRef.current} → ${expressionImageUrl}`);
-        setImageSrc(expressionImageUrl);
-        setVideoSrc(undefined);
-        lastExpressionRef.current = expressionImageUrl;
-      } else {
-        console.log(`[アバター] 表情は同じなので切り替えなし: ${expressionImageUrl}`);
-      }
+      // // 前回と同じ表情の場合は切り替えない（自然な会話を維持）
+      // if (expressionImageUrl !== lastExpressionRef.current) {
+      //   console.log(`[アバター] 表情を切り替え: ${lastExpressionRef.current} → ${expressionImageUrl}`);
+      //   setImageSrc(expressionImageUrl);
+      //   setVideoSrc(undefined);
+      //   lastExpressionRef.current = expressionImageUrl;
+      // } else {
+      //   console.log(`[アバター] 表情は同じなので切り替えなし: ${expressionImageUrl}`);
+      // }
 
     } catch (error) {
       console.error('ストリーミング送信エラー:', error);

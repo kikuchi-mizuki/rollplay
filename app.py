@@ -13,6 +13,9 @@ from dotenv import load_dotenv
 from shutil import which
 from supabase import create_client, Client
 from d_id_client import get_did_client, generate_cache_key, get_cached_video, save_video_to_cache, download_video_to_storage
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from queue import Queue, Empty
+import threading
 
 # flask-corsのインポート（エラーハンドリング付き）
 try:
@@ -667,8 +670,28 @@ def chat_stream():
         scenario_obj = load_scenario_object(scenario_id)
 
         def generate():
-            """SSE (Server-Sent Events) でストリーミング送信"""
+            """SSE (Server-Sent Events) でストリーミング送信（TTS並列生成対応）"""
             try:
+                # TTS生成用スレッドプール（最大3並列でTTS生成）
+                executor = ThreadPoolExecutor(max_workers=3)
+                tts_futures = {}  # {chunk_index: Future}
+
+                def generate_tts_task(chunk_text, chunk_index):
+                    """TTS生成タスク（スレッドプールで実行）"""
+                    try:
+                        tts_response = openai_client.audio.speech.create(
+                            model="tts-1",
+                            voice="nova",
+                            input=chunk_text,
+                            speed=1.1
+                        )
+                        audio_data = tts_response.content
+                        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+                        return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
+                    except Exception as e:
+                        print(f"[TTS エラー] チャンク{chunk_index}: {e}")
+                        return None
+
                 if not openai_api_key or not openai_client:
                     yield f"data: {json.dumps({'error': 'OpenAI API未設定'})}\n\n"
                     return
@@ -764,8 +787,10 @@ def chat_stream():
                 chunk_count = 0
                 first_chunk_sent = False  # 最初のチャンクを送信したかフラグ
 
-                # ストリーミングレスポンスを処理
+                # ストリーミングレスポンスを処理（TTS並列生成）
                 sentence_count = 0  # 文数カウント
+                next_yield_index = 1  # 次にyieldすべきチャンクのインデックス
+
                 for chunk in response:
                     if chunk.choices[0].delta.content:
                         content = chunk.choices[0].delta.content
@@ -790,7 +815,7 @@ def chat_stream():
                                 # 読点でも7文字以上溜まったら送信
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 15:  # 句読点がなくても15文字で送信
+                            elif len(text_buffer) >= 15:  # 句読点なくても15文字で送信
                                 should_send = True
                                 delimiter = None
 
@@ -802,24 +827,11 @@ def chat_stream():
                                     if part.strip():
                                         chunk_text = part.strip() + delimiter
                                         chunk_count += 1
-                                        print(f"[チャンク{chunk_count}] {chunk_text}")
+                                        print(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
 
-                                        # TTS生成（自然な速度）
-                                        try:
-                                            tts_response = openai_client.audio.speech.create(
-                                                model="tts-1",  # 高速モデル（レスポンス重視）
-                                                voice="nova",
-                                                input=chunk_text,
-                                                speed=1.1  # 落ち着いた自然な速度
-                                            )
-                                            audio_data = tts_response.content
-                                            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-
-                                            # SSEで音声データを送信
-                                            yield f"data: {json.dumps({'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_count})}\n\n"
-                                            first_chunk_sent = True  # 最初のチャンク送信完了
-                                        except Exception as tts_error:
-                                            print(f"[TTS エラー] {tts_error}")
+                                        # TTS生成を並列実行（ブロックしない）
+                                        future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                        tts_futures[chunk_count] = future
 
                                 # 未完成の文をバッファに残す
                                 text_buffer = chunks[-1]
@@ -827,40 +839,51 @@ def chat_stream():
                                 # 最初のチャンク or 句読点なしで強制送信
                                 chunk_text = text_buffer.strip()
                                 chunk_count += 1
-                                print(f"[チャンク{chunk_count}] {chunk_text}")
+                                print(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
 
-                                try:
-                                    tts_response = openai_client.audio.speech.create(
-                                        model="tts-1",  # 高速モデル（レスポンス重視）
-                                        voice="nova",
-                                        input=chunk_text,
-                                        speed=1.1  # 落ち着いた自然な速度
-                                    )
-                                    audio_data = tts_response.content
-                                    audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-                                    yield f"data: {json.dumps({'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_count})}\n\n"
-                                    first_chunk_sent = True  # 最初のチャンク送信完了
-                                except Exception as tts_error:
-                                    print(f"[TTS エラー] {tts_error}")
+                                # TTS生成を並列実行（ブロックしない）
+                                future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                tts_futures[chunk_count] = future
 
                                 text_buffer = ""
+
+                    # 完成したTTSから順序通りにyield（GPTストリーム受信と並列実行）
+                    while next_yield_index in tts_futures:
+                        future = tts_futures[next_yield_index]
+                        if future.done():
+                            result = future.result()
+                            if result:
+                                yield f"data: {json.dumps(result)}\n\n"
+                                if not first_chunk_sent:
+                                    first_chunk_sent = True
+                                print(f"[チャンク{next_yield_index}] 送信完了（並列生成）")
+                            del tts_futures[next_yield_index]
+                            next_yield_index += 1
+                        else:
+                            break  # まだ完成していないのでループを抜ける
 
                 # 残りのテキストを処理
                 if text_buffer.strip():
                     chunk_count += 1
-                    print(f"[最終チャンク{chunk_count}] {text_buffer}")
-                    try:
-                        tts_response = openai_client.audio.speech.create(
-                            model="tts-1",  # 高速モデル（レスポンス重視）
-                            voice="nova",
-                            input=text_buffer.strip(),
-                            speed=1.1  # 落ち着いた自然な速度
-                        )
-                        audio_data = tts_response.content
-                        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-                        yield f"data: {json.dumps({'audio': audio_base64, 'text': text_buffer.strip(), 'chunk': chunk_count, 'final': True})}\n\n"
-                    except Exception as tts_error:
-                        print(f"[最終TTS エラー] {tts_error}")
+                    print(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
+                    future = executor.submit(generate_tts_task, text_buffer.strip(), chunk_count)
+                    tts_futures[chunk_count] = future
+
+                # 全てのTTS生成完了を待ち、順序通りにyield
+                while next_yield_index <= chunk_count:
+                    if next_yield_index in tts_futures:
+                        future = tts_futures[next_yield_index]
+                        result = future.result()  # 完了を待つ
+                        if result:
+                            if next_yield_index == chunk_count:
+                                result['final'] = True  # 最終チャンクマーク
+                            yield f"data: {json.dumps(result)}\n\n"
+                            print(f"[チャンク{next_yield_index}] 送信完了（最終処理）")
+                        del tts_futures[next_yield_index]
+                    next_yield_index += 1
+
+                # スレッドプールをクリーンアップ
+                executor.shutdown(wait=False)
 
                 print(f"[ストリーミング完了] 合計{chunk_count}チャンク送信")
 
