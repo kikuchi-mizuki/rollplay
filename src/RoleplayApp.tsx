@@ -150,7 +150,20 @@ function RoleplayApp() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // 長時間会話での安定性向上：メッセージ数を制限（最大50件）
+    setMessages((prev) => {
+      const newMessages = [...prev, userMessage];
+      const MAX_MESSAGES = 50;
+
+      if (newMessages.length > MAX_MESSAGES) {
+        // 古いメッセージを削除（最新50件のみ保持）
+        const trimmed = newMessages.slice(-MAX_MESSAGES);
+        console.log(`[メモリ最適化] メッセージ履歴をトリミング: ${newMessages.length} → ${trimmed.length}件`);
+        return trimmed;
+      }
+
+      return newMessages;
+    });
 
     // ⏱️ レイテンシー計測用（t0から引き継ぎ）
     let firstTokenReceived = false;
@@ -539,8 +552,15 @@ function RoleplayApp() {
         source.connect(audioContext.destination);
         currentAudioSourceRef.current = source; // 停止用に保存
 
-        // 再生終了時のコールバック
+        // 再生終了時のコールバック（メモリクリーンアップ）
         source.onended = () => {
+          // メモリリーク防止：明示的にdisconnectして参照をクリア
+          try {
+            source.disconnect();
+            source.buffer = null;
+          } catch (e) {
+            // 既にdisconnect済みの場合はエラーを無視
+          }
           currentAudioSourceRef.current = null;
           resolve();
         };

@@ -677,20 +677,39 @@ def chat_stream():
                 tts_futures = {}  # {chunk_index: Future}
 
                 def generate_tts_task(chunk_text, chunk_index):
-                    """TTS生成タスク（スレッドプールで実行）"""
-                    try:
-                        tts_response = openai_client.audio.speech.create(
-                            model="tts-1",
-                            voice="nova",
-                            input=chunk_text,
-                            speed=1.1
-                        )
-                        audio_data = tts_response.content
-                        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-                        return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
-                    except Exception as e:
-                        print(f"[TTS エラー] チャンク{chunk_index}: {e}")
-                        return None
+                    """TTS生成タスク（スレッドプールで実行、リトライ対応）"""
+                    import time
+                    tts_start = time.time()
+
+                    # リトライ設定（最大3回、指数バックオフ）
+                    max_retries = 3
+                    retry_delay = 0.1  # 初期遅延100ms
+
+                    for attempt in range(max_retries):
+                        try:
+                            tts_response = openai_client.audio.speech.create(
+                                model="tts-1",
+                                voice="nova",
+                                input=chunk_text,
+                                speed=1.1
+                            )
+                            audio_data = tts_response.content
+                            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+
+                            # TTS生成時間を計測
+                            tts_duration = (time.time() - tts_start) * 1000  # ms
+                            retry_info = f" (リトライ{attempt}回)" if attempt > 0 else ""
+                            print(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字){retry_info}")
+
+                            return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
+                        except Exception as e:
+                            if attempt < max_retries - 1:
+                                print(f"[TTS リトライ] チャンク{chunk_index} 試行{attempt + 1}/{max_retries}: {e}")
+                                time.sleep(retry_delay)
+                                retry_delay *= 2  # 指数バックオフ（100ms → 200ms → 400ms）
+                            else:
+                                print(f"[TTS 最終エラー] チャンク{chunk_index}: {e} （{max_retries}回試行後）")
+                                return None
 
                 if not openai_api_key or not openai_client:
                     yield f"data: {json.dumps({'error': 'OpenAI API未設定'})}\n\n"
