@@ -463,6 +463,25 @@ def sniff_suffix(path: str) -> str:
         return '.mp3'
     return '.bin'
 
+@app.route('/api/clear-cache', methods=['POST'])
+def clear_cache():
+    """シナリオキャッシュをクリア（開発用）"""
+    try:
+        global SCENARIO_CACHE
+        cache_size = len(SCENARIO_CACHE)
+        SCENARIO_CACHE.clear()
+        print(f"✅ シナリオキャッシュをクリアしました（{cache_size}件）")
+        return jsonify({
+            'success': True,
+            'message': f'キャッシュをクリアしました（{cache_size}件）'
+        })
+    except Exception as e:
+        print(f"❌ キャッシュクリアエラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @app.route('/api/scenarios', methods=['GET'])
 def get_scenarios():
     """シナリオ一覧を取得"""
