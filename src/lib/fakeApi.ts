@@ -63,9 +63,9 @@ export async function getEvaluation(history: Message[], _scenarioId?: string): P
       
       // Flaskの評価結果をReactのEvaluation型に変換
       return {
-        overall: evalData.overall_comment || evalData.comments?.join('. ') || '評価完了しました。',
-        strengths: evalData.positive_points || evalData.comments?.filter((c: string) => c.startsWith('✅')) || [],
-        improvements: evalData.improvement_points || evalData.comments?.filter((c: string) => c.startsWith('⚠️')) || [],
+        overall: evalData.overall || evalData.overall_comment || evalData.comments?.join('. ') || '評価完了しました。',
+        strengths: evalData.strengths || evalData.positive_points || evalData.comments?.filter((c: string) => c.startsWith('✅')) || [],
+        improvements: evalData.improvements || evalData.improvement_points || evalData.comments?.filter((c: string) => c.startsWith('⚠️')) || [],
         scores: {
           questioning: (evalData.scores?.questioning_skill || evalData.scores?.questioning || 0) * 20, // 5段階を100点満点に変換
           listening: (evalData.scores?.listening_skill || evalData.scores?.listening || 0) * 20,
