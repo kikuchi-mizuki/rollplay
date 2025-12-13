@@ -316,8 +316,11 @@ function RoleplayApp() {
         lastExpressionRef.current = listeningExpression;
         console.log('[アバター] 再生終了、listening表情に復帰');
 
+        // 割り込みモードを無効化してVADを再開
         if (isVADMode) {
+          audioRecorderRef.disableInterruptMode();
           audioRecorderRef.resumeVAD();
+          console.log('🔓 VAD再開（正常終了）');
         }
       };
 
@@ -449,6 +452,12 @@ function RoleplayApp() {
 
       // 全てのチャンク再生完了後、再生ループを停止
       playbackLoopRunning = false;
+
+      // 待機中のwaitForQueueを解除
+      if (resolveWaiter) {
+        (resolveWaiter as () => void)();
+        resolveWaiter = null;
+      }
 
       // もしテキストが空の場合はエラーメッセージを表示
       if (!fullText) {
