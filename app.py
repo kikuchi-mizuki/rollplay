@@ -1490,46 +1490,83 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
 - 提案力: 顧客の課題に対する具体的な解決策を提示
 - クロージング力: 次のアクション・決定を促す適切なクロージング"""
 
-        # GPT-4で評価を生成（Few-shot対応）
+        # GPT-4で評価を生成（Few-shot対応・具体的な講評生成）
         evaluation_prompt = f"""
-        あなたはSNS動画制作営業のスキル評価の専門家です。以下の営業の発言を分析して、営業スキルを詳細に評価してください。
+        あなたはショート動画制作営業のプロフェッショナルコーチです。以下の営業の発言を分析して、具体的で実践的な評価を提供してください。
+
         {scenario_context}
         【営業の発言】
         {sales_text}
 
         【評価項目】（5点満点で評価）
         {rubric_description}
+
+        【点数基準】
+        5点: 非常に優れている（プロレベル、模範的）
+        4点: 優れている（十分なスキル、わずかな改善余地）
+        3点: 平均的（基本はできているが、改善の余地あり）
+        2点: 要改善（基本スキルが不足、重要な改善点あり）
+        1点: 大幅な改善が必要（スキルがほとんど発揮されていない）
+
         {few_shot_examples}
 
-        上記のサンプルを参考に、以下のJSON形式で評価を出力してください：
+        【重要な評価指針】
+        1. **良かった点**は具体的な発言を引用して評価する
+           例: 「『どのような課題をお持ちですか？』というオープンクエスチョンで、顧客のニーズを幅広く聞き出せています」
+
+        2. **改善点**も具体的な発言を引用し、どう改善すべきか明示する
+           例: 「『うちのサービスは月5万円です』と価格を先に提示していますが、まず顧客の予算感をヒアリングしてから提案すると効果的です」
+
+        3. **会話の流れ**を時系列で分析する（挨拶→ヒアリング→提案→クロージング）
+
+        4. **評価は厳しく、具体的に**（曖昧な褒め言葉は避ける）
+
+        上記の指針に従って、以下のJSON形式で評価を出力してください：
         {{
             "scores": {{
-                "questioning": 数値,
-                "listening": 数値,
-                "proposing": 数値,
-                "closing": 数値,
-                "total": 数値
+                "questioning": 数値（1-5）,
+                "listening": 数値（1-5）,
+                "proposing": 数値（1-5）,
+                "closing": 数値（1-5）,
+                "total": 数値（4項目の合計）
             }},
-            "comments": ["コメント1", "コメント2", ...],
-            "overall_comment": "総合評価コメント",
-            "improvement_suggestions": ["改善提案1", "改善提案2", ...],
+            "strengths": [
+                "【質問力】具体的な発言を引用した良かった点",
+                "【傾聴力】具体的な発言を引用した良かった点",
+                "【提案力】具体的な発言を引用した良かった点"
+            ],
+            "improvements": [
+                "【質問力】具体的な発言を引用した改善点と改善方法",
+                "【傾聴力】具体的な発言を引用した改善点と改善方法",
+                "【提案力】具体的な発言を引用した改善点と改善方法"
+            ],
+            "overall": "総合評価（全体の印象と次回への具体的なアドバイス。100-200文字程度）",
             "analysis": {{
                 "questions_count": 数値,
                 "listening_responses_count": 数値,
                 "proposals_count": 数値,
                 "closings_count": 数値,
-                "conversation_flow": "会話段階"
+                "conversation_flow": "会話の流れの分析（挨拶→ヒアリング→提案→クロージングのどの段階まで進んだか）"
             }}
         }}
+
+        【注意】
+        - strengths（良かった点）には最低3項目、最大5項目を記載
+        - improvements（改善点）には最低3項目、最大5項目を記載
+        - 各項目は具体的な発言を引用し、「なぜ良い/悪い」「どう改善すべき」を明記
+        - 評価は実践的で、次回のロープレで即実行できる内容にする
         """
         
         response = openai_client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "あなたは営業スキルの専門家です。営業の発言を分析して詳細な評価を提供してください。"},
+                {"role": "system", "content": """あなたはショート動画制作営業のプロフェッショナルコーチです。
+10年以上の営業経験を持ち、1000件以上のロープレを評価してきました。
+営業の発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。
+良かった点と改善点を明確に分け、次回のロープレで即実行できる具体的なアドバイスを心がけてください。"""},
                 {"role": "user", "content": evaluation_prompt}
             ],
-            max_tokens=1000,
+            max_tokens=1500,  # より詳細な評価のため増量
             temperature=0.3
         )
         
@@ -1543,10 +1580,20 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
         if start_idx != -1 and end_idx != -1:
             json_text = evaluation_text[start_idx:end_idx]
             evaluation = json.loads(json_text)
-            
+
             # 基本情報を追加
             evaluation['total_utterances'] = len(sales_utterances)
-            
+
+            # overall_commentをoverallにマッピング（フロントエンド互換性のため）
+            if 'overall_comment' in evaluation and 'overall' not in evaluation:
+                evaluation['overall'] = evaluation['overall_comment']
+
+            # strengths/improvementsが存在しない場合は空配列を設定
+            if 'strengths' not in evaluation:
+                evaluation['strengths'] = []
+            if 'improvements' not in evaluation:
+                evaluation['improvements'] = []
+
             return evaluation
         else:
             # JSON解析に失敗した場合はフォールバック
