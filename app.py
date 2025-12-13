@@ -691,7 +691,7 @@ def chat_stream():
                                 model="tts-1",
                                 voice="nova",
                                 input=chunk_text,
-                                speed=1.1
+                                speed=1.0  # 自然な速度に変更（1.1→1.0）
                             )
                             audio_data = tts_response.content
                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -820,30 +820,30 @@ def chat_stream():
                         delimiter = ''
 
                         if not first_chunk_sent:
-                            # 最初のチャンクは句点優先、読点は20文字以上で分割
-                            if '。' in text_buffer and len(text_buffer) >= 8:
-                                # 句点があり、8文字以上なら送信
+                            # 最初のチャンクは早めに送信（より細かく分割）
+                            if '。' in text_buffer and len(text_buffer) >= 5:
+                                # 句点があり、5文字以上なら送信（8→5に変更）
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 20:
-                                # 読点は20文字以上溜まったら送信
+                            elif '、' in text_buffer and len(text_buffer) >= 12:
+                                # 読点は12文字以上溜まったら送信（20→12に変更）
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 30:
-                                # 句読点なしでも30文字で送信
+                            elif len(text_buffer) >= 20:
+                                # 句読点なしでも20文字で送信（30→20に変更）
                                 should_send = True
                                 delimiter = None
                         else:
-                            # 2チャンク目以降は通常ルール
-                            if '。' in text_buffer and len(text_buffer) >= 8:
-                                # 句点があり、8文字以上なら送信
+                            # 2チャンク目以降も細かく分割
+                            if '。' in text_buffer and len(text_buffer) >= 5:
+                                # 句点があり、5文字以上なら送信（8→5に変更）
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 18:
-                                # 読点でも18文字以上溜まったら送信
+                            elif '、' in text_buffer and len(text_buffer) >= 12:
+                                # 読点でも12文字以上溜まったら送信（18→12に変更）
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 30:  # 句読点なくても30文字で送信
+                            elif len(text_buffer) >= 20:  # 句読点なくても20文字で送信（30→20に変更）
                                 should_send = True
                                 delimiter = None
 

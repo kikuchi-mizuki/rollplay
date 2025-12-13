@@ -565,8 +565,8 @@ export class AudioRecorder {
         if (this.isVadRecording && !this.silenceTimeout) {
           // 現在の発話時間を計算
           const currentSpeechDuration = Date.now() - this.recordingStartTime;
-          // 1秒未満の短い発話なら200ms、それ以上なら400msで無音検出
-          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 200 : 400;
+          // 1秒未満の短い発話なら300ms、それ以上なら500msで無音検出（200→300、400→500に変更）
+          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 300 : 500;
 
           console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, 発話時間: ${currentSpeechDuration}ms, 無音検出: ${dynamicSilenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
