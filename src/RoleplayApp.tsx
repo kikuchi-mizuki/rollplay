@@ -239,18 +239,19 @@ function RoleplayApp() {
         console.log('✅ 音声停止完了（キュークリア、再生停止）');
       };
 
-      // botメッセージを先に作成（考え中表示）
+      // botメッセージを先に作成（処理状態を表示）
       const botMessageId = `bot-${Date.now()}`;
       const botMessage: Message = {
         id: botMessageId,
         role: 'bot',
-        text: '...',  // ChatGPT風の考え中表示
+        text: '🎤 音声認識中...',  // 処理状態を明示
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
 
       // 🎭 t1: ユーザー発話終了 → thinking表情に先行変化（心理トリック）
       setImageSrc(getExpressionImageUrl(currentAvatarId, 'thinking'));
+      setMediaSubtitle('🎤 音声認識中...');  // 字幕にも処理状態を表示
       console.log('[t1] アバター表情を"thinking"に先行変化');
 
       // 再生専用ループ（イベント駆動型・オーバーラップ対応）
@@ -823,6 +824,20 @@ function RoleplayApp() {
               const t1 = performance.now();
               console.log(`[latency] t1: Whisper完了 (${t1.toFixed(0)}ms)`);
               console.log(`[latency] speech_end→whisper: ${(t1 - t0).toFixed(0)}ms`);
+
+              // 💬 処理状態を更新: 音声認識完了 → 回答生成中
+              setMessages((prev) => {
+                // 最後のbotメッセージを探して更新
+                const updated = [...prev];
+                for (let i = updated.length - 1; i >= 0; i--) {
+                  if (updated[i].role === 'bot') {
+                    updated[i] = { ...updated[i], text: '💭 回答を考えています...' };
+                    break;
+                  }
+                }
+                return updated;
+              });
+              setMediaSubtitle('💭 回答を考えています...');  // 字幕も更新
 
               if (!response.ok) {
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
