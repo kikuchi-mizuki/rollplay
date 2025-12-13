@@ -23,8 +23,8 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 60; // 音声検出閾値（0-100）※認識感度を改善
-  private vadInterruptThreshold: number = 85; // 割り込み検出閾値（AI話し中の割り込みを検出）
+  private vadThreshold: number = 70; // 音声検出閾値（0-100）※環境音誤検出を防ぐため70に設定
+  private vadInterruptThreshold: number = 92; // 割り込み検出閾値（AI話し中の割り込みを検出）※明確な割り込みのみ
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
   private silenceTimeout: number | null = null;
@@ -461,6 +461,7 @@ export class AudioRecorder {
   disableInterruptMode(): void {
     this.isInterruptMode = false;
     this.onInterruptCallback = undefined;
+    this.voiceStartTime = 0; // 音声検出状態をリセット
     console.log('🔕 割り込みモード無効化');
   }
 
@@ -510,14 +511,10 @@ export class AudioRecorder {
         if (this.onInterruptCallback) {
           this.onInterruptCallback();
         }
-        // 割り込みモード解除→通常の録音開始
+        // 割り込みモード解除→通常の音声検出フローに戻す（即座に録音開始しない）
         this.isInterruptMode = false;
-        this.isVadRecording = true;
-        this.recordingStartTime = Date.now();
-        this.startVADRecording();
-        if (this.onVadStartCallback) {
-          this.onVadStartCallback();
-        }
+        this.voiceStartTime = Date.now(); // 音声検出開始時刻を記録
+        console.log('👂 割り込み後、音声継続確認中...');
         return;
       }
 
