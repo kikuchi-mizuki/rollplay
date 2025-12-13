@@ -60,12 +60,41 @@ export async function getEvaluation(history: Message[], _scenarioId?: string): P
     
     if (result.success && result.evaluation) {
       const evalData = result.evaluation;
-      
+
+      // デバッグログ: 受信した評価データを出力
+      console.log('[講評API] 受信データ:', evalData);
+      console.log('[講評API] overall:', evalData.overall);
+      console.log('[講評API] strengths:', evalData.strengths);
+      console.log('[講評API] improvements:', evalData.improvements);
+
       // Flaskの評価結果をReactのEvaluation型に変換
+      // 空配列・空文字列もチェックして、適切にフォールバック
+      const overall = (evalData.overall && evalData.overall.trim() !== '')
+        ? evalData.overall
+        : (evalData.overall_comment && evalData.overall_comment.trim() !== '')
+          ? evalData.overall_comment
+          : evalData.comments?.join('. ') || '評価完了しました。';
+
+      const strengths = (evalData.strengths && Array.isArray(evalData.strengths) && evalData.strengths.length > 0)
+        ? evalData.strengths
+        : (evalData.positive_points && Array.isArray(evalData.positive_points) && evalData.positive_points.length > 0)
+          ? evalData.positive_points
+          : evalData.comments?.filter((c: string) => c.startsWith('✅')) || ['評価データを確認中です。'];
+
+      const improvements = (evalData.improvements && Array.isArray(evalData.improvements) && evalData.improvements.length > 0)
+        ? evalData.improvements
+        : (evalData.improvement_points && Array.isArray(evalData.improvement_points) && evalData.improvement_points.length > 0)
+          ? evalData.improvement_points
+          : evalData.comments?.filter((c: string) => c.startsWith('⚠️')) || ['継続的な練習で更なる向上を目指しましょう。'];
+
+      console.log('[講評API] 変換後 overall:', overall);
+      console.log('[講評API] 変換後 strengths:', strengths);
+      console.log('[講評API] 変換後 improvements:', improvements);
+
       return {
-        overall: evalData.overall || evalData.overall_comment || evalData.comments?.join('. ') || '評価完了しました。',
-        strengths: evalData.strengths || evalData.positive_points || evalData.comments?.filter((c: string) => c.startsWith('✅')) || [],
-        improvements: evalData.improvements || evalData.improvement_points || evalData.comments?.filter((c: string) => c.startsWith('⚠️')) || [],
+        overall,
+        strengths,
+        improvements,
         scores: {
           questioning: (evalData.scores?.questioning_skill || evalData.scores?.questioning || 0) * 20, // 5段階を100点満点に変換
           listening: (evalData.scores?.listening_skill || evalData.scores?.listening || 0) * 20,

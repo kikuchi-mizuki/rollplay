@@ -1429,6 +1429,15 @@ def evaluate_conversation():
         # 講評生成（Week 5改善版: シナリオ別Few-shot対応）
         evaluation = generate_evaluation_with_gpt4(sales_utterances, scenario_id)
 
+        # デバッグログ: 評価結果を出力
+        print("\n" + "="*80)
+        print("[評価結果デバッグ]")
+        print(f"overall: {evaluation.get('overall', 'N/A')}")
+        print(f"strengths: {evaluation.get('strengths', 'N/A')}")
+        print(f"improvements: {evaluation.get('improvements', 'N/A')}")
+        print(f"scores: {evaluation.get('scores', 'N/A')}")
+        print("="*80 + "\n")
+
         return jsonify({
             'success': True,
             'evaluation': evaluation,
