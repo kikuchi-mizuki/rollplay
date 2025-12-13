@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 70; // 音声検出閾値（0-100）※環境音誤検出を防ぐため70に設定
+  private vadThreshold: number = 65; // 音声検出閾値（0-100）※環境音と会話のバランスを取る
   private vadInterruptThreshold: number = 92; // 割り込み検出閾値（AI話し中の割り込みを検出）※明確な割り込みのみ
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
@@ -37,7 +37,7 @@ export class AudioRecorder {
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
-  private voiceContinueDuration: number = 150; // 音声が継続する必要がある時間（ミリ秒）※確実に音声検出
+  private voiceContinueDuration: number = 100; // 音声が継続する必要がある時間（ミリ秒）※より早く反応
 
   /**
    * 録音開始（モバイル対応強化）
@@ -526,6 +526,12 @@ export class AudioRecorder {
           if (this.voiceStartTime === 0) {
             this.voiceStartTime = Date.now();
             console.log(`👂 音声検出開始 (レベル: ${level.toFixed(1)}) → ${this.voiceContinueDuration}ms継続を確認中...`);
+          } else {
+            // 継続時間を計算して進捗をログ出力
+            const voiceDuration = Date.now() - this.voiceStartTime;
+            if (voiceDuration % 50 < 30) { // 約50msごとにログ出力
+              console.log(`🎙️ 音声継続中... ${voiceDuration}ms/${this.voiceContinueDuration}ms (レベル: ${level.toFixed(1)})`);
+            }
           }
 
           // 音声が一定時間継続したら録音開始
@@ -554,7 +560,8 @@ export class AudioRecorder {
       } else {
         // 音声レベルが閾値以下に戻った → 継続時間タイマーをリセット
         if (this.voiceStartTime !== 0) {
-          console.log(`⏹️ 音声検出キャンセル (レベル低下: ${level.toFixed(1)})`);
+          const voiceDuration = Date.now() - this.voiceStartTime;
+          console.log(`⏹️ 音声検出キャンセル (レベル低下: ${level.toFixed(1)}, 継続時間: ${voiceDuration}ms)`);
           this.voiceStartTime = 0;
         }
 
