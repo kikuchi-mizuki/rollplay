@@ -1604,15 +1604,19 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             # 基本情報を追加
             evaluation['total_utterances'] = len(sales_utterances)
 
-            # overall_commentをoverallにマッピング（フロントエンド互換性のため）
-            if 'overall_comment' in evaluation and 'overall' not in evaluation:
-                evaluation['overall'] = evaluation['overall_comment']
+            # overallフィールドの正規化（フロントエンド互換性のため）
+            if 'overall' not in evaluation or not evaluation['overall']:
+                if 'overall_comment' in evaluation:
+                    evaluation['overall'] = evaluation['overall_comment']
+                else:
+                    evaluation['overall'] = "評価を完了しました。"
 
-            # strengths/improvementsが存在しない場合は空配列を設定
-            if 'strengths' not in evaluation:
-                evaluation['strengths'] = []
-            if 'improvements' not in evaluation:
-                evaluation['improvements'] = []
+            # strengths/improvementsが存在しない、または空の場合
+            if 'strengths' not in evaluation or not evaluation['strengths']:
+                evaluation['strengths'] = ["評価データを確認中です。"]
+
+            if 'improvements' not in evaluation or not evaluation['improvements']:
+                evaluation['improvements'] = ["継続的な練習で更なる向上を目指しましょう。"]
 
             return evaluation
         else:
@@ -1688,6 +1692,29 @@ def generate_evaluation_fallback(sales_utterances):
     improvement_suggestions = generate_improvement_suggestions(questioning_score, listening_score, 
                                                              proposing_score, closing_score, conversation_flow)
     
+    # フロントエンド互換性のため、strengths と improvements を追加
+    strengths = []
+    improvements = []
+
+    # commentsから良かった点を抽出
+    if comments:
+        for comment in comments:
+            if '✅' in comment or '👍' in comment or '⭐' in comment or '良い' in comment or '優秀' in comment:
+                strengths.append(comment)
+            else:
+                improvements.append(comment)
+
+    # improvement_suggestionsをimprovementsに追加
+    if improvement_suggestions:
+        improvements.extend(improvement_suggestions)
+
+    # 最低限のコメントを保証
+    if not strengths:
+        strengths = [overall_comment if overall_comment else "評価を実施しました。"]
+
+    if not improvements:
+        improvements = ["さらなる向上のため、継続的な練習を心がけましょう。"]
+
     return {
         'scores': {
             'questioning': round(questioning_score, 1),
@@ -1696,9 +1723,12 @@ def generate_evaluation_fallback(sales_utterances):
             'closing': round(closing_score, 1),
             'total': round(total_score, 1)
         },
+        'overall': overall_comment,  # フロントエンドが期待するフィールド名
+        'strengths': strengths,  # フロントエンドが期待するフィールド名
+        'improvements': improvements,  # フロントエンドが期待するフィールド名
         'comments': comments,
-        'overall_comment': overall_comment,
-        'improvement_suggestions': improvement_suggestions,
+        'overall_comment': overall_comment,  # 後方互換性のため維持
+        'improvement_suggestions': improvement_suggestions,  # 後方互換性のため維持
         'total_utterances': total_utterances,
         'analysis': {
             'questions_count': len(questions),
