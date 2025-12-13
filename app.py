@@ -851,33 +851,71 @@ def chat_stream():
                         if not first_chunk_sent:
                             # 最初のチャンクは早めに送信（より細かく分割）
                             if '。' in text_buffer and len(text_buffer) >= 5:
-                                # 句点があり、5文字以上なら送信（8→5に変更）
+                                # 句点があり、5文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
                             elif '、' in text_buffer and len(text_buffer) >= 12:
-                                # 読点は12文字以上溜まったら送信（20→12に変更）
+                                # 読点は12文字以上溜まったら送信
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 20:
-                                # 句読点なしでも20文字で送信（30→20に変更）
-                                should_send = True
-                                delimiter = None
+                            elif len(text_buffer) >= 60:
+                                # 句読点なしの場合は60文字まで待つ（単語の途中で切らないため）
+                                # 助詞の位置で切る
+                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
+                                best_pos = -1
+                                for particle in particles:
+                                    pos = text_buffer.rfind(particle)
+                                    if pos > best_pos and pos >= 15:  # 最低15文字は必要
+                                        best_pos = pos + len(particle)
+                                if best_pos > 0:
+                                    should_send = True
+                                    delimiter = 'particle'  # 助詞で切ることを示す特殊フラグ
                         else:
                             # 2チャンク目以降も細かく分割
                             if '。' in text_buffer and len(text_buffer) >= 5:
-                                # 句点があり、5文字以上なら送信（8→5に変更）
+                                # 句点があり、5文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
                             elif '、' in text_buffer and len(text_buffer) >= 12:
-                                # 読点でも12文字以上溜まったら送信（18→12に変更）
+                                # 読点でも12文字以上溜まったら送信
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 20:  # 句読点なくても20文字で送信（30→20に変更）
-                                should_send = True
-                                delimiter = None
+                            elif len(text_buffer) >= 60:
+                                # 句読点なしの場合は60文字まで待つ（単語の途中で切らないため）
+                                # 助詞の位置で切る
+                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
+                                best_pos = -1
+                                for particle in particles:
+                                    pos = text_buffer.rfind(particle)
+                                    if pos > best_pos and pos >= 15:  # 最低15文字は必要
+                                        best_pos = pos + len(particle)
+                                if best_pos > 0:
+                                    should_send = True
+                                    delimiter = 'particle'  # 助詞で切ることを示す特殊フラグ
 
                         if should_send:
-                            if delimiter:
+                            if delimiter == 'particle':
+                                # 助詞の位置で切る（特殊処理）
+                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
+                                best_pos = -1
+                                for particle in particles:
+                                    pos = text_buffer.rfind(particle)
+                                    if pos > best_pos and pos >= 15:
+                                        best_pos = pos + len(particle)
+
+                                if best_pos > 0:
+                                    chunk_text = text_buffer[:best_pos].strip()
+                                    chunk_count += 1
+                                    print(f"[チャンク{chunk_count}] {chunk_text} （助詞で分割・TTS並列生成開始）")
+
+                                    # TTS生成を並列実行（ブロックしない）
+                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                    tts_futures[chunk_count] = future
+
+                                    text_buffer = text_buffer[best_pos:]
+                                    first_chunk_sent = True
+                            elif delimiter:
+                                # 句読点で分割
                                 chunks = text_buffer.split(delimiter)
                                 # 最後の要素（未完成の文）を除いて処理
                                 for part in chunks[:-1]:
@@ -892,8 +930,9 @@ def chat_stream():
 
                                 # 未完成の文をバッファに残す
                                 text_buffer = chunks[-1]
+                                first_chunk_sent = True
                             else:
-                                # 最初のチャンク or 句読点なしで強制送信
+                                # delimiter が None の場合（このケースはもう発生しないはず）
                                 chunk_text = text_buffer.strip()
                                 chunk_count += 1
                                 print(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
@@ -903,6 +942,7 @@ def chat_stream():
                                 tts_futures[chunk_count] = future
 
                                 text_buffer = ""
+                                first_chunk_sent = True
 
                     # 完成したTTSから順序通りにyield（GPTストリーム受信と並列実行）
                     while next_yield_index in tts_futures:
