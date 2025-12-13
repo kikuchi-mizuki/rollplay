@@ -838,19 +838,8 @@ function RoleplayApp() {
               console.log(`[latency] t1: Whisper完了 (${t1.toFixed(0)}ms)`);
               console.log(`[latency] speech_end→whisper: ${(t1 - t0).toFixed(0)}ms`);
 
-              // 💬 処理状態を更新: 音声認識完了 → 回答生成中
-              setMessages((prev) => {
-                // 最後のbotメッセージを探して更新
-                const updated = [...prev];
-                for (let i = updated.length - 1; i >= 0; i--) {
-                  if (updated[i].role === 'bot') {
-                    updated[i] = { ...updated[i], text: '💭 回答を考えています...' };
-                    break;
-                  }
-                }
-                return updated;
-              });
-              setMediaSubtitle('💭 回答を考えています...');  // 字幕も更新
+              // 💬 処理状態を字幕のみ更新（botメッセージはhandleSendStream内で作成される）
+              setMediaSubtitle('💭 回答を考えています...');
 
               if (!response.ok) {
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
