@@ -229,6 +229,10 @@ function RoleplayApp() {
         isPlaying = false;
         interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
+        if (isVADMode) {
+          audioRecorderRef.resumeVAD();
+          console.log('🔓 VAD再開（割り込み停止後）');
+        }
 
         // イベント駆動型キューの待機をキャンセル
         if (resolveWaiter) {
