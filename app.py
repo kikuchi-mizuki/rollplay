@@ -836,11 +836,11 @@ def chat_stream():
                     if RAG_INDEX and RAG_METADATA:
                         # 検索クエリ: ユーザーメッセージ + 直近の会話（文脈精度向上）
                         recent_context = []
-                        for msg in conversation_history[-3:]:  # 直近3件（処理軽量化）
+                        for msg in conversation_history[-4:]:  # 直近4件（会話の流れを把握）
                             recent_context.append(f"{msg['speaker']}: {msg['text']}")
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"])
 
-                        # top_k=5に削減（質の高いパターンに絞る）
+                        # top_k=5（質の高いパターンに絞る）
                         rag_results = search_rag_patterns(search_query, top_k=5, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
@@ -869,9 +869,9 @@ def chat_stream():
                     print(f"[RAG] 検索エラー（続行）: {e}")
                     # エラーでも続行
 
-                # メッセージ履歴構築（直近6件：処理軽量化でレスポンス向上）
+                # メッセージ履歴構築（直近10件：会話の一貫性を保つ）
                 messages = [{"role": "system", "content": system_prompt}]
-                for msg in conversation_history[-6:]:
+                for msg in conversation_history[-10:]:
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -884,8 +884,8 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 超高速モデル（2-3倍速い）
                     messages=messages,
-                    max_tokens=600,         # 短く簡潔に（1500→600：テンポ重視）
-                    temperature=0.6,        # より決定的で高速（0.7→0.6）
+                    max_tokens=1000,        # 適度な長さで文脈を考慮（テンポと質のバランス）
+                    temperature=0.65,       # ペルソナの一貫性とレスポンスのバランス
                     stream=True  # ストリーミング有効化
                 )
 
