@@ -229,7 +229,7 @@ function RoleplayApp() {
         isPlaying = false;
         interruptModeEnabled = false;
         audioRecorderRef.disableInterruptMode();
-        if (isVADMode) {
+        if (vadMode) {
           audioRecorderRef.resumeVAD();
           console.log('🔓 VAD再開（割り込み停止後）');
         }
@@ -317,7 +317,7 @@ function RoleplayApp() {
         console.log('[アバター] 再生終了、listening表情に復帰');
 
         // 割り込みモードを無効化してVADを再開
-        if (isVADMode) {
+        if (vadMode) {
           audioRecorderRef.disableInterruptMode();
           audioRecorderRef.resumeVAD();
           console.log('🔓 VAD再開（正常終了）');
@@ -507,7 +507,7 @@ function RoleplayApp() {
       });
 
       // エラー時は割り込みモードを無効化してVADを再開
-      if (isVADMode) {
+      if (vadMode) {
         audioRecorderRef.disableInterruptMode();
         audioRecorderRef.resumeVAD();
         console.log('🔓 VAD再開（エラー時）');
