@@ -243,6 +243,9 @@ function RoleplayApp() {
         console.log('✅ 音声停止完了（キュークリア、再生停止）');
       };
 
+      // 🔍 会話履歴を先にキャプチャ（botのプレースホルダーを含めない）
+      const historyBeforeBot = messages;
+
       // botメッセージを先に作成（AI回答の最初のチャンクで更新される）
       const botMessageId = `bot-${Date.now()}`;
       const botMessage: Message = {
@@ -327,6 +330,13 @@ function RoleplayApp() {
       // 再生ループを起動（常駐・バックグラウンド実行）
       playbackLoop();
 
+      // 🔍 デバッグ: 送信する会話履歴を確認（プレースホルダーを含めないhistoryBeforeBotを使用）
+      const historyToSend = historyBeforeBot.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text }));
+      console.log(`[会話履歴送信] 件数: ${historyToSend.length}`);
+      historyToSend.slice(-5).forEach((h, i) => {
+        console.log(`  [${i}] ${h.speaker}: ${h.text.substring(0, 50)}...`);
+      });
+
       // SSEでストリーミング受信
       const response = await fetch('/api/chat-stream', {
         method: 'POST',
@@ -335,7 +345,7 @@ function RoleplayApp() {
         },
         body: JSON.stringify({
           message: text,
-          history: messages.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text })),
+          history: historyToSend,
           scenario_id: selectedScenarioId
         }),
       });

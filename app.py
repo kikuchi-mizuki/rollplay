@@ -914,6 +914,10 @@ def chat_stream():
                     # エラーでも続行
 
                 # メッセージ履歴構築（直近10件：会話の一貫性を保つ）
+                print(f"[会話履歴デバッグ] 受信した履歴件数: {len(conversation_history)}")
+                for i, msg in enumerate(conversation_history[-10:]):
+                    print(f"  履歴[{i}] {msg.get('speaker', '不明')}: {msg.get('text', '')[:50]}...")
+
                 messages = [{"role": "system", "content": system_prompt}]
                 for msg in conversation_history[-10:]:
                     if msg['speaker'] == '営業':
@@ -922,6 +926,7 @@ def chat_stream():
                         messages.append({"role": "assistant", "content": msg['text']})
 
                 messages.append({"role": "user", "content": user_message})
+                print(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
 
                 # GPT-4o-miniストリーミング応答（超高速＋自然な会話）
                 print("[ストリーミング] GPT-4o-mini応答生成開始（超高速＋自然モード）")
