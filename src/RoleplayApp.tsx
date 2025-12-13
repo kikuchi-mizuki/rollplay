@@ -52,22 +52,6 @@ function RoleplayApp() {
   const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
 
-  // 自然な相槌のリスト（音声認識時に使用）
-  const naturalAcknowledgments = ['はい', 'なるほど', 'そうですね', 'ええ', 'はいはい'];
-
-  // 考えている時の自然な表現（回答生成時に使用）
-  const thinkingPhrases = ['えーと...', 'そうですね...', 'なるほど...', 'ふむ...', 'ええと...'];
-
-  // ランダムに相槌を取得する関数
-  const getRandomAcknowledgment = () => {
-    return naturalAcknowledgments[Math.floor(Math.random() * naturalAcknowledgments.length)];
-  };
-
-  // ランダムに考えている表現を取得する関数
-  const getRandomThinkingPhrase = () => {
-    return thinkingPhrases[Math.floor(Math.random() * thinkingPhrases.length)];
-  };
-
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
   // const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
@@ -259,21 +243,20 @@ function RoleplayApp() {
         console.log('✅ 音声停止完了（キュークリア、再生停止）');
       };
 
-      // botメッセージを先に作成（自然な相槌を表示）
-      const acknowledgment = getRandomAcknowledgment();
+      // botメッセージを先に作成（AI回答の最初のチャンクで更新される）
       const botMessageId = `bot-${Date.now()}`;
       const botMessage: Message = {
         id: botMessageId,
         role: 'bot',
-        text: acknowledgment,  // 自然な相槌
+        text: '...',  // プレースホルダー（すぐにAI回答で置き換えられる）
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
 
       // 🎭 t1: ユーザー発話終了 → thinking表情に先行変化（心理トリック）
       setImageSrc(getExpressionImageUrl(currentAvatarId, 'thinking'));
-      setMediaSubtitle(acknowledgment);  // 字幕にも相槌を表示
-      console.log('[t1] アバター表情を"thinking"に先行変化、相槌:', acknowledgment);
+      setMediaSubtitle('');  // 字幕は空にして、AI回答を待つ
+      console.log('[t1] アバター表情を"thinking"に先行変化');
 
       // 再生専用ループ（イベント駆動型・オーバーラップ対応）
       const playbackLoop = async () => {
@@ -855,10 +838,8 @@ function RoleplayApp() {
               console.log(`[latency] t1: Whisper完了 (${t1.toFixed(0)}ms)`);
               console.log(`[latency] speech_end→whisper: ${(t1 - t0).toFixed(0)}ms`);
 
-              // 💬 処理状態を字幕のみ更新（自然な考えている表現）
-              const thinkingPhrase = getRandomThinkingPhrase();
-              setMediaSubtitle(thinkingPhrase);
-              console.log('[Whisper完了] 考えている表現:', thinkingPhrase);
+              // 💬 字幕は空のままAI回答を待つ（最速で回答を表示）
+              // 不要な「考えている表現」は削除し、AI回答の最初のチャンクをできるだけ早く表示する
 
               if (!response.ok) {
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);

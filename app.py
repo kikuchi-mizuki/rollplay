@@ -599,21 +599,27 @@ def chat():
                     guidelines = scenario_obj.get('guidelines') or []
                     persona_txt = []
 
-                    # 顧客役の詳細情報を追加
+                    # ペルソナ情報を詳細にシステムプロンプトに追加
                     if 'customer_role' in persona:
                         persona_txt.append(f"顧客役: {persona['customer_role']}")
                     if 'business_detail' in persona:
                         persona_txt.append(f"事業詳細: {persona['business_detail']}")
                     if 'tone' in persona:
                         persona_txt.append(f"トーン・態度: {persona['tone']}")
+                    if 'relationship' in persona:
+                        persona_txt.append(f"営業との関係性: {persona['relationship']}")
                     if 'knowledge_level' in persona:
                         persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
-
-                    # SNS運用状況の詳細を追加
+                    if 'decision_power' in persona:
+                        persona_txt.append(f"意思決定権: {persona['decision_power']}")
                     if 'current_sns_status' in persona:
                         sns_status = persona['current_sns_status']
                         if isinstance(sns_status, dict):
                             persona_txt.append("現在のSNS運用状況:")
+                            if 'status' in sns_status:
+                                persona_txt.append(f"  - 状況: {sns_status['status']}")
+                            if 'video_production' in sns_status:
+                                persona_txt.append(f"  - 動画制作: {sns_status['video_production']}")
                             if 'instagram' in sns_status:
                                 persona_txt.append(f"  - Instagram: {sns_status['instagram']}")
                             if 'tiktok' in sns_status:
@@ -621,9 +627,15 @@ def chat():
                             if 'challenges' in sns_status:
                                 challenges = sns_status['challenges']
                                 if challenges:
-                                    persona_txt.append("  - 具体的な課題: " + "、".join(challenges[:3]))  # 最初の3つ
-
-                    # 予算感を追加
+                                    persona_txt.append("  - 具体的な課題:")
+                                    for challenge in challenges[:5]:  # 最大5件表示
+                                        persona_txt.append(f"    • {challenge}")
+                    if 'pain_points' in persona:
+                        pain_points = persona['pain_points']
+                        if pain_points:
+                            persona_txt.append("ペインポイント:")
+                            for pain in pain_points[:5]:  # 最大5件表示
+                                persona_txt.append(f"  • {pain}")
                     if 'budget_sense' in persona:
                         persona_txt.append(f"予算感: {persona['budget_sense']}")
 
@@ -802,19 +814,27 @@ def chat_stream():
                     guidelines = scenario_obj.get('guidelines') or []
                     persona_txt = []
 
-                    # ペルソナ情報をシステムプロンプトに追加
+                    # ペルソナ情報を詳細にシステムプロンプトに追加
                     if 'customer_role' in persona:
                         persona_txt.append(f"顧客役: {persona['customer_role']}")
                     if 'business_detail' in persona:
                         persona_txt.append(f"事業詳細: {persona['business_detail']}")
                     if 'tone' in persona:
                         persona_txt.append(f"トーン・態度: {persona['tone']}")
+                    if 'relationship' in persona:
+                        persona_txt.append(f"営業との関係性: {persona['relationship']}")
                     if 'knowledge_level' in persona:
                         persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
+                    if 'decision_power' in persona:
+                        persona_txt.append(f"意思決定権: {persona['decision_power']}")
                     if 'current_sns_status' in persona:
                         sns_status = persona['current_sns_status']
                         if isinstance(sns_status, dict):
                             persona_txt.append("現在のSNS運用状況:")
+                            if 'status' in sns_status:
+                                persona_txt.append(f"  - 状況: {sns_status['status']}")
+                            if 'video_production' in sns_status:
+                                persona_txt.append(f"  - 動画制作: {sns_status['video_production']}")
                             if 'instagram' in sns_status:
                                 persona_txt.append(f"  - Instagram: {sns_status['instagram']}")
                             if 'tiktok' in sns_status:
@@ -822,7 +842,15 @@ def chat_stream():
                             if 'challenges' in sns_status:
                                 challenges = sns_status['challenges']
                                 if challenges:
-                                    persona_txt.append("  - 具体的な課題: " + "、".join(challenges[:3]))
+                                    persona_txt.append("  - 具体的な課題:")
+                                    for challenge in challenges[:5]:  # 最大5件表示
+                                        persona_txt.append(f"    • {challenge}")
+                    if 'pain_points' in persona:
+                        pain_points = persona['pain_points']
+                        if pain_points:
+                            persona_txt.append("ペインポイント:")
+                            for pain in pain_points[:5]:  # 最大5件表示
+                                persona_txt.append(f"  • {pain}")
                     if 'budget_sense' in persona:
                         persona_txt.append(f"予算感: {persona['budget_sense']}")
 
