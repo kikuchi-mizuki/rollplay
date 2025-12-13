@@ -467,7 +467,7 @@ SALES_ROLEPLAY_PROMPT = """
 - 【一貫性】前の応答と矛盾しない（自分が話した内容を覚えておく）
 - 【自然さ】すべての応答を相槌から始めない（自然な流れで）
 - 【主導権】営業主導の会話を実現するため、最初から詳しく話さない
-- 【実例活用】下記の「実例パターン」は実際のロープレから抽出した本物の顧客応答です。これらを参考に、リアルで自然な応答を心がけてください
+- 【実例活用】下記の「実例パターン」は実際のロープレから抽出した本物の顧客応答です。これらの話し方・トーン・言葉遣いを積極的に真似て、よりリアルな顧客を演じてください
 """
 
 @app.route('/')
@@ -831,18 +831,20 @@ def chat_stream():
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
 
-                # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため: top_k=7）
+                # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため）
                 try:
                     if RAG_INDEX and RAG_METADATA:
                         # 検索クエリ: ユーザーメッセージ + 直近の会話（文脈精度向上）
                         recent_context = []
-                        for msg in conversation_history[-5:]:  # 直近5件（より正確な検索）
+                        for msg in conversation_history[-3:]:  # 直近3件（処理軽量化）
                             recent_context.append(f"{msg['speaker']}: {msg['text']}")
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"])
 
-                        rag_results = search_rag_patterns(search_query, top_k=7, scenario_id=scenario_id)
+                        # top_k=5に削減（質の高いパターンに絞る）
+                        rag_results = search_rag_patterns(search_query, top_k=5, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
+                            pattern_count = 0
                             for result in rag_results:
                                 pattern_text = result.get('text', '')
                                 if pattern_text and len(pattern_text) < 400:  # 詳細なパターンも許容
@@ -854,19 +856,22 @@ def chat_stream():
 
                                     if customer_lines:
                                         customer_only_text = '\n'.join(customer_lines)
-                                        rag_patterns.append(f"- {customer_only_text[:300]}")  # 300文字まで（詳細な応答）
+                                        rag_patterns.append(f"- {customer_only_text[:200]}")  # 200文字まで（簡潔化）
+                                        pattern_count += 1
+                                        if pattern_count >= 3:  # 最大3パターンまで（プロンプト簡潔化）
+                                            break
 
                             if rag_patterns:
-                                rag_context = "\n\n【実例パターン（実際のロープレから抽出）】\n" + "\n".join(rag_patterns)
+                                rag_context = "\n\n【実例パターン（実際のロープレから抽出）】\n以下は実際の顧客の応答例です。これらの自然な話し方を参考にしてください：\n" + "\n".join(rag_patterns)
                                 system_prompt += rag_context
-                                print(f"[RAG] {len(rag_results)}件の類似パターンを検出")
+                                print(f"[RAG活用] {len(rag_patterns)}個の顧客応答パターンを参照")
                 except Exception as e:
                     print(f"[RAG] 検索エラー（続行）: {e}")
                     # エラーでも続行
 
-                # メッセージ履歴構築
+                # メッセージ履歴構築（直近6件：処理軽量化でレスポンス向上）
                 messages = [{"role": "system", "content": system_prompt}]
-                for msg in conversation_history[-10:]:
+                for msg in conversation_history[-6:]:
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -879,8 +884,8 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 超高速モデル（2-3倍速い）
                     messages=messages,
-                    max_tokens=1500,        # 日本語対応で十分な長さ（200→1500）
-                    temperature=0.7,        # ペルソナの一貫性を保つ（0.9→0.7に変更）
+                    max_tokens=600,         # 短く簡潔に（1500→600：テンポ重視）
+                    temperature=0.6,        # より決定的で高速（0.7→0.6）
                     stream=True  # ストリーミング有効化
                 )
 
@@ -903,13 +908,13 @@ def chat_stream():
                         delimiter = ''
 
                         if not first_chunk_sent:
-                            # 最初のチャンクは早めに送信（より細かく分割）
-                            if '。' in text_buffer and len(text_buffer) >= 5:
-                                # 句点があり、5文字以上なら送信
+                            # 最初のチャンクは超早めに送信（レスポンス体感速度向上）
+                            if '。' in text_buffer and len(text_buffer) >= 3:
+                                # 句点があり、3文字以上なら即送信
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 12:
-                                # 読点は12文字以上溜まったら送信
+                            elif '、' in text_buffer and len(text_buffer) >= 8:
+                                # 読点は8文字以上で送信
                                 should_send = True
                                 delimiter = '、'
                             elif len(text_buffer) >= 60:
