@@ -674,10 +674,19 @@ def chat():
                                 search_query = f"{recent_context} {user_message}"
 
                         # 類似パターンを検索（シナリオIDでフィルタリング、より多くの実例を参照）
-                        rag_results = search_rag_patterns(search_query, top_k=7, scenario_id=scenario_id)
+                        rag_results = search_rag_patterns(search_query, top_k=10, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
+                            pattern_count = 0
+                            similarity_threshold = 0.5  # 🎯 類似度閾値（高品質保証）
+
                             for result in rag_results:
+                                # 類似度チェック（距離が小さいほど類似度が高い：L2距離）
+                                similarity = result.get('similarity', 999)
+                                if similarity > similarity_threshold:
+                                    print(f"[RAG除外] 類似度が低いパターンをスキップ（距離: {similarity:.3f}）")
+                                    continue
+
                                 pattern_text = result.get('text', '')
                                 pattern_type = result.get('type', '')
                                 if pattern_text:
@@ -689,6 +698,10 @@ def chat():
                                     }.get(pattern_type, '実例')
                                     # 300文字まで（詳細な応答パターン）
                                     rag_patterns.append(f"- [{type_label}] {pattern_text[:300]}")
+                                    pattern_count += 1
+                                    print(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
+                                    if pattern_count >= 7:  # 最大7パターン
+                                        break
 
                             if rag_patterns:
                                 rag_context = "\n\n【過去の実例パターン（実際のロープレから抽出）】\n以下のような実際の会話パターンを参考に、自然でリアルな応答をしてください：\n" + "\n".join(rag_patterns)
@@ -876,12 +889,20 @@ def chat_stream():
                             recent_context.append(f"{msg['speaker']}: {msg['text']}")
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"])
 
-                        # top_k=7（より多くのバリエーションを取得）
-                        rag_results = search_rag_patterns(search_query, top_k=7, scenario_id=scenario_id)
+                        # top_k=10（より多くのバリエーションを取得）
+                        rag_results = search_rag_patterns(search_query, top_k=10, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             pattern_count = 0
+                            similarity_threshold = 0.5  # 🎯 類似度閾値（0.5以上のみ使用：高品質保証）
+
                             for result in rag_results:
+                                # 類似度チェック（距離が小さいほど類似度が高い：L2距離）
+                                similarity = result.get('similarity', 999)
+                                if similarity > similarity_threshold:
+                                    print(f"[RAG除外] 類似度が低いパターンをスキップ（距離: {similarity:.3f}）")
+                                    continue
+
                                 pattern_text = result.get('text', '')
                                 if pattern_text and len(pattern_text) < 500:  # より詳細なパターンを許容
                                     # 顧客側の発言のみを抽出（営業側の発言を除外）
@@ -894,7 +915,8 @@ def chat_stream():
                                         customer_only_text = '\n'.join(customer_lines)
                                         rag_patterns.append(f"- {customer_only_text[:300]}")  # 300文字まで（リアル感を保つ）
                                         pattern_count += 1
-                                        if pattern_count >= 5:  # 最大5パターンまで（バリエーション重視）
+                                        print(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
+                                        if pattern_count >= 7:  # 最大7パターンまで（バリエーション重視）
                                             break
 
                             if rag_patterns:
@@ -934,7 +956,7 @@ def chat_stream():
                     model="gpt-4o-mini",    # 超高速モデル（2-3倍速い）
                     messages=messages,
                     max_tokens=1000,        # 適度な長さで文脈を考慮（テンポと質のバランス）
-                    temperature=0.65,       # ペルソナの一貫性とレスポンスのバランス
+                    temperature=0.7,        # 🎯 自然なバリエーション（0.65→0.7：RAG活用と創造性のバランス）
                     stream=True  # ストリーミング有効化
                 )
 
