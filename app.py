@@ -839,7 +839,15 @@ def chat_stream():
                             for result in rag_results:
                                 pattern_text = result.get('text', '')
                                 if pattern_text and len(pattern_text) < 400:  # 詳細なパターンも許容
-                                    rag_patterns.append(f"- {pattern_text[:300]}")  # 300文字まで（詳細な応答）
+                                    # 顧客側の発言のみを抽出（営業側の発言を除外）
+                                    customer_lines = []
+                                    for line in pattern_text.split('\n'):
+                                        if line.strip().startswith('顧客:'):
+                                            customer_lines.append(line.strip())
+
+                                    if customer_lines:
+                                        customer_only_text = '\n'.join(customer_lines)
+                                        rag_patterns.append(f"- {customer_only_text[:300]}")  # 300文字まで（詳細な応答）
 
                             if rag_patterns:
                                 rag_context = "\n\n【実例パターン（実際のロープレから抽出）】\n" + "\n".join(rag_patterns)
