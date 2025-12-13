@@ -137,7 +137,7 @@ function RoleplayApp() {
    * ストリーミング対応の音声再生
    * SSEで音声チャンクを受信して即座に再生
    */
-  const handleSendStream = async (text: string, vadMode: boolean, t0?: number) => {
+  const handleSendStream = async (text: string, vadMode: boolean, t0?: number, t1?: number) => {
     if (!text.trim() || isSending) return;
 
     setIsSending(true);
@@ -165,9 +165,10 @@ function RoleplayApp() {
       return newMessages;
     });
 
-    // ⏱️ レイテンシー計測用（t0から引き継ぎ）
+    // ⏱️ レイテンシー計測用（t0, t1から引き継ぎ）
     let firstTokenReceived = false;
     let firstAudioPlayed = false;
+    let t2: number | undefined; // GPT最初のトークン受信時刻
 
     try {
       // 音声チャンクキュー
@@ -279,8 +280,10 @@ function RoleplayApp() {
               if (!firstAudioPlayed && t0) {
                 const t3 = performance.now();
                 console.log(`[latency] t3: TTS再生開始 (${t3.toFixed(0)}ms)`);
-                console.log(`[latency] total (speech_end→tts_play): ${(t3 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
-                console.log(`[latency] gpt_first_token→tts_play: ${(t3 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
+                console.log(`[latency] total (speech_end→tts_play): ${(t3 - t0).toFixed(0)}ms`);
+                if (t2) {
+                  console.log(`[latency] gpt_first_token→tts_play: ${(t3 - t2).toFixed(0)}ms`);
+                }
                 firstAudioPlayed = true;
               }
 
@@ -365,10 +368,10 @@ function RoleplayApp() {
 
               if (data.audio) {
                 // ⏱️ GPT最初のトークン受信
-                if (!firstTokenReceived && t0) {
-                  const t2 = performance.now();
+                if (!firstTokenReceived && t1) {
+                  t2 = performance.now();
                   console.log(`[latency] t2: GPT最初のトークン受信 (${t2.toFixed(0)}ms)`);
-                  console.log(`[latency] whisper→gpt_first_token: ${(t2 - (performance.timeOrigin + t0)).toFixed(0)}ms`);
+                  console.log(`[latency] whisper→gpt_first_token: ${(t2 - t1).toFixed(0)}ms`);
                   firstTokenReceived = true;
 
                   // 🎭 t2: GPT最初のトークン受信 → 表情を先行変化（心理トリック）
@@ -695,14 +698,14 @@ function RoleplayApp() {
     };
   }, [audioRecorderRef]);
 
-  const handleSend = async (text: string, t0?: number) => {
+  const handleSend = async (text: string, t0?: number, t1?: number) => {
     // 音声を初期化（初回のみ・モバイル対応）
     if (!audioInitialized) {
       await initializeAudio();
     }
 
     // ストリーミング対応版を使用（現在のVADモード状態を渡す - Refから取得）
-    await handleSendStream(text, isVADModeRef.current, t0);
+    await handleSendStream(text, isVADModeRef.current, t0, t1);
   };
 
   // VAD（会話モード）のトグル
@@ -828,8 +831,8 @@ function RoleplayApp() {
               const result = JSON.parse(rawText);
 
               if (result.success && result.text) {
-                // handleSendがisSendingをfalseにするまで待つ（t0を渡す）
-                await handleSend(result.text, t0);
+                // handleSendがisSendingをfalseにするまで待つ（t0, t1を渡す）
+                await handleSend(result.text, t0, t1);
               } else {
                 setIsSending(false);
                 isSendingRef.current = false;
