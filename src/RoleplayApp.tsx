@@ -859,8 +859,9 @@ function RoleplayApp() {
               const result = JSON.parse(rawText);
 
               if (result.success && result.text) {
-                // handleSendがisSendingをfalseにするまで待つ（t0, t1を渡す）
-                await handleSend(result.text, t0, t1);
+                // VAD録音経由なので、vadMode=trueを明示的に渡す
+                // handleSendではなくhandleSendStreamを直接呼ぶ
+                await handleSendStream(result.text, true, t0, t1);
               } else {
                 setIsSending(false);
                 isSendingRef.current = false;
