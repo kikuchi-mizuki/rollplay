@@ -460,6 +460,7 @@ InstagramリールやTikTok用の縦型ショート動画を月間15〜20本制�
 - 【一貫性】前の応答と矛盾しない（自分が話した内容を覚えておく）
 - 【自然さ】すべての応答を相槌から始めない（自然な流れで）
 - 【主導権】営業主導の会話を実現するため、最初から詳しく話さない
+- 【実例活用】下記の「実例パターン」は実際のロープレから抽出した本物の顧客応答です。これらを参考に、リアルで自然な応答を心がけてください
 """
 
 @app.route('/')
@@ -638,15 +639,15 @@ def chat():
                 if RAG_INDEX and RAG_METADATA and len(RAG_METADATA) > 0:
                     try:
                         # 営業の発言と直近の会話履歴から検索クエリを構築
-                        # 直近2-3往復の会話も含めて検索精度を向上
+                        # 直近5往復の会話も含めて検索精度を向上
                         search_query = user_message
                         if conversation_history:
-                            recent_context = " ".join([msg.get('text', '') for msg in conversation_history[-4:]])
+                            recent_context = " ".join([msg.get('text', '') for msg in conversation_history[-5:]])
                             if recent_context:
                                 search_query = f"{recent_context} {user_message}"
-                        
-                        # 類似パターンを検索（シナリオIDでフィルタリング）
-                        rag_results = search_rag_patterns(search_query, top_k=3, scenario_id=scenario_id)
+
+                        # 類似パターンを検索（シナリオIDでフィルタリング、より多くの実例を参照）
+                        rag_results = search_rag_patterns(search_query, top_k=7, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             for result in rag_results:
@@ -659,10 +660,11 @@ def chat():
                                         'objection_handling': '異論処理例',
                                         'closing': 'クロージング例'
                                     }.get(pattern_type, '実例')
-                                    rag_patterns.append(f"- [{type_label}] {pattern_text}")
-                            
+                                    # 300文字まで（詳細な応答パターン）
+                                    rag_patterns.append(f"- [{type_label}] {pattern_text[:300]}")
+
                             if rag_patterns:
-                                rag_context = "\n\n【過去の実例パターン（参考）】\n以下のような実際の会話パターンを参考に、自然でリアルな応答をしてください：\n" + "\n".join(rag_patterns)
+                                rag_context = "\n\n【過去の実例パターン（実際のロープレから抽出）】\n以下のような実際の会話パターンを参考に、自然でリアルな応答をしてください：\n" + "\n".join(rag_patterns)
                                 # system_promptに追加
                                 system_prompt += rag_context
                                 messages[0] = {"role": "system", "content": system_prompt}
@@ -822,25 +824,25 @@ def chat_stream():
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
 
-                # RAG検索: 実際のロープレデータから類似パターンを取得（速度最適化: top_k=2）
+                # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため: top_k=7）
                 try:
                     if RAG_INDEX and RAG_METADATA:
-                        # 検索クエリ: ユーザーメッセージ + 直近の会話
+                        # 検索クエリ: ユーザーメッセージ + 直近の会話（文脈精度向上）
                         recent_context = []
-                        for msg in conversation_history[-3:]:  # 直近3件のみ
+                        for msg in conversation_history[-5:]:  # 直近5件（より正確な検索）
                             recent_context.append(f"{msg['speaker']}: {msg['text']}")
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"])
 
-                        rag_results = search_rag_patterns(search_query, top_k=2, scenario_id=scenario_id)
+                        rag_results = search_rag_patterns(search_query, top_k=7, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             for result in rag_results:
                                 pattern_text = result.get('text', '')
-                                if pattern_text and len(pattern_text) < 300:  # 長すぎるパターンは除外
-                                    rag_patterns.append(f"- {pattern_text[:200]}")  # 200文字まで
+                                if pattern_text and len(pattern_text) < 400:  # 詳細なパターンも許容
+                                    rag_patterns.append(f"- {pattern_text[:300]}")  # 300文字まで（詳細な応答）
 
                             if rag_patterns:
-                                rag_context = "\n\n【実例パターン】\n" + "\n".join(rag_patterns)
+                                rag_context = "\n\n【実例パターン（実際のロープレから抽出）】\n" + "\n".join(rag_patterns)
                                 system_prompt += rag_context
                                 print(f"[RAG] {len(rag_results)}件の類似パターンを検出")
                 except Exception as e:
