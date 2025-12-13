@@ -33,7 +33,7 @@ export class AudioRecorder {
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 500; // 最低録音時間（ミリ秒）※自然な発話を確保
+  private minRecordingDuration: number = 700; // 最低録音時間（ミリ秒）※環境音を確実に排除
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
@@ -574,10 +574,10 @@ export class AudioRecorder {
 
           console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, 発話時間: ${currentSpeechDuration}ms, 無音検出: ${dynamicSilenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
-            // 最低録音時間チェック
+            // 最低録音時間チェック（環境音フィルタ）
             const recordingDuration = Date.now() - this.recordingStartTime;
             if (recordingDuration < this.minRecordingDuration) {
-              console.log(`⏭️ 録音時間が短すぎるためスキップ (${recordingDuration}ms)`);
+              console.log(`🚫 環境音として破棄 (録音時間: ${recordingDuration}ms < 最低${this.minRecordingDuration}ms)`);
               // 録音をキャンセル
               if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
                 this.mediaRecorder.stop();
@@ -587,6 +587,7 @@ export class AudioRecorder {
               this.isVadRecording = false;
               this.state.isRecording = false;
               this.stopTimer();
+              console.log('✅ 環境音フィルタ: 録音キャンセル完了');
             } else {
               console.log('🔇 無音検出 → 録音停止');
               this.stopVADRecording();
@@ -666,8 +667,17 @@ export class AudioRecorder {
         const audioBlob = new Blob(this.audioChunks, { type: this.mimeType });
         this.audioChunks = [];
 
+        // 録音データのサイズチェック（環境音フィルタ）
+        const minBlobSize = 5000; // 5KB未満は環境音として破棄
+        if (audioBlob.size < minBlobSize) {
+          console.log(`🚫 環境音として破棄 (データサイズ: ${audioBlob.size} bytes < 最低${minBlobSize} bytes)`);
+          resolve();
+          return;
+        }
+
         // コールバック実行
         if (this.onVadStopCallback && audioBlob.size > 0) {
+          console.log(`📤 録音データ送信 (サイズ: ${audioBlob.size} bytes)`);
           this.onVadStopCallback(audioBlob);
         }
 
