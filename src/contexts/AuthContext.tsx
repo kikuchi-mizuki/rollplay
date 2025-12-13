@@ -109,12 +109,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return fetchProfile(userId, retryCount + 1)
         } else {
           console.error('❌ リトライ上限に達しました')
-          console.error('💡 対策1: ページをリロード（Cmd/Ctrl + R）してください')
-          console.error('💡 対策2: 数分待ってから再度アクセスしてください')
-          console.error('💡 対策3: 本番環境ではSupabase Proプランをご検討ください')
+          console.warn('⚠️  既存のプロフィールを保持します（会話を継続できます）')
+          // タイムアウトの場合は既存のプロフィールを保持（setProfile(null)を呼ばない）
+          // これにより、会話中にリダイレクトされることを防ぐ
+          return
         }
       }
 
+      // タイムアウト以外のエラーの場合のみnullに設定
       setProfile(null)
     }
   }
