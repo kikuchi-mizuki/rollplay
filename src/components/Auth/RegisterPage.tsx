@@ -154,6 +154,22 @@ export function RegisterPage() {
     }
   }, [])
 
+  // Googleアカウント変更
+  const handleChangeAccount = async () => {
+    try {
+      console.log('🔄 Googleアカウント変更: サインアウト開始')
+      // 現在のセッションからサインアウト
+      await supabase.auth.signOut()
+
+      // ログインページにリダイレクト（新しいGoogleアカウントで再ログイン）
+      console.log('✅ サインアウト完了 → ログインページへ')
+      navigate('/login')
+    } catch (err) {
+      console.error('❌ アカウント変更エラー:', err)
+      setError('アカウント変更に失敗しました。もう一度お試しください。')
+    }
+  }
+
   // 登録処理
   const handleRegister = async () => {
     if (!user || !storeCodeValid || !displayName) return
@@ -216,7 +232,15 @@ export function RegisterPage() {
 
           {/* Googleから取得した情報 */}
           <div className="bg-white/5 border border-white/10 p-4 rounded-2xl mb-6 backdrop-blur-sm">
-            <p className="text-xs text-slate-400 mb-2">Googleアカウント</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-slate-400">Googleアカウント</p>
+              <button
+                onClick={handleChangeAccount}
+                className="text-xs text-[#6C5CE7] hover:text-[#A29BFE] transition-colors font-medium"
+              >
+                変更
+              </button>
+            </div>
             <div className="flex items-center gap-3">
               {user.user_metadata?.avatar_url && (
                 <img
