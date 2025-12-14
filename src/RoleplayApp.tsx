@@ -143,6 +143,9 @@ function RoleplayApp() {
     setIsSending(true);
     isSendingRef.current = true;
 
+    // 🔍 会話履歴を先にキャプチャ（setMessagesの前に取得 - Reactのステート更新は非同期のため）
+    const historyBeforeBot = messages;
+
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -242,9 +245,6 @@ function RoleplayApp() {
 
         console.log('✅ 音声停止完了（キュークリア、再生停止）');
       };
-
-      // 🔍 会話履歴を先にキャプチャ（botのプレースホルダーを含めない）
-      const historyBeforeBot = messages;
 
       // botメッセージを先に作成（AI回答の最初のチャンクで更新される）
       const botMessageId = `bot-${Date.now()}`;
