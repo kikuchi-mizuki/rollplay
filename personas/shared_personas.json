@@ -1,0 +1,1203 @@
+[
+  {
+    "persona_id": "beauty_salon_beginner",
+    "persona_name": "美容サロン経営者（動画未経験）",
+    "base_profile": {
+      "business_type": "美容サロン",
+      "location": "渋谷",
+      "business_detail": "渋谷で美容サロンを経営している。Instagramのフォロワーは800人程度。リピーター獲得に悩んでいる。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー800人）",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "リピーターが増えない",
+        "動画の作り方が分からない",
+        "SNS運用のノウハウがない",
+        "何から始めればいいか分からない"
+      ],
+      "budget_sense": "月3-5万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "警戒心があり、様子見の姿勢。慎重に質問する。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作未経験。サービス内容もよく分かっていない。",
+        "decision_power": "情報収集段階。他社も検討している。",
+        "typical_questions": [
+          "料金はどのくらいですか？",
+          "どんなサービスなんですか？",
+          "動画制作って難しくないですか？"
+        ],
+        "concerns": [
+          "本当に効果があるのか不安",
+          "続けられるか心配",
+          "コストが高いかも"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味を持ち始めた。もう少し詳しく知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。他社と比較中。",
+        "decision_power": "比較検討段階。前向きだが慎重。",
+        "typical_questions": [
+          "他社との違いは何ですか？",
+          "事例はありますか？",
+          "どんな動画が作れますか？"
+        ],
+        "concerns": [
+          "他社と比べてどうか",
+          "本当に自分の業種に合うか",
+          "サポート体制は大丈夫か"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向きに検討している。具体的な質問が増える。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。具体的なプランを知りたい。",
+        "decision_power": "前向き検討段階。ほぼ決めかけている。",
+        "typical_questions": [
+          "いつから始められますか？",
+          "契約期間はどのくらいですか？",
+          "どんな流れで進みますか？"
+        ],
+        "concerns": [
+          "タイミングはいつがいいか",
+          "予算内で収まるか",
+          "効果が出るまでの期間"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決めかけている。最後の不安を解消したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。最終確認段階。",
+        "decision_power": "最終確認段階。あと一押しで決定。",
+        "typical_questions": [
+          "契約の流れを教えてください",
+          "途中解約はできますか？",
+          "サポートはどこまでしてもらえますか？"
+        ],
+        "concerns": [
+          "契約後のサポート",
+          "万が一の解約",
+          "追加費用の有無"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。やる気がある。具体的な制作内容を知りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。制作の詳細を知りたい。",
+        "decision_power": "制作開始段階。具体的な内容を決めたい。",
+        "typical_questions": [
+          "どんな動画を作りますか？",
+          "撮影はどうすればいいですか？",
+          "どんな素材が必要ですか？"
+        ],
+        "concerns": [
+          "撮影の手間",
+          "素材の準備",
+          "投稿のタイミング"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。サービスに満足している。追加を検討。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。追加プランを検討。",
+        "decision_power": "追加検討段階。効果を感じている。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他のSNSにも対応できますか？",
+          "料金はどのくらい上がりますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "リソースの確保",
+          "効果の持続性"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "restaurant_owner_diy",
+    "persona_name": "飲食店オーナー（自社制作、月1-2本）",
+    "base_profile": {
+      "business_type": "カフェ",
+      "location": "表参道",
+      "business_detail": "表参道でカフェを経営している。Instagramで月1-2本程度、店長が自分で動画を作っている。",
+      "current_video_status": "月1-2本（自社制作）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー1,200人）",
+        "tiktok": "あり（フォロワー300人）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "時間がなくて本数を増やせない",
+        "クオリティが低い",
+        "再生数が伸びない",
+        "プロっぽい動画を作りたい"
+      ],
+      "budget_sense": "月3-5万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "真剣に悩んでいる。時間がないことを強調。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作の経験は少しある。もっと良くしたい。",
+        "decision_power": "情報収集段階。効果が出れば検討したい。",
+        "typical_questions": [
+          "どのくらいクオリティ上がりますか？",
+          "撮影は誰がやるんですか？",
+          "時間はどのくらいかかりますか？"
+        ],
+        "concerns": [
+          "時間が取られないか",
+          "本当にクオリティが上がるか",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。具体的なイメージを知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。事例を見たい。",
+        "decision_power": "比較検討段階。事例次第で決めたい。",
+        "typical_questions": [
+          "飲食店の事例はありますか？",
+          "どんな構成の動画が作れますか？",
+          "投稿頻度はどのくらいがいいですか？"
+        ],
+        "concerns": [
+          "飲食店に合った動画が作れるか",
+          "来店につながるか",
+          "継続できるか"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的な開始時期を相談したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。開始時期を検討中。",
+        "decision_power": "前向き検討段階。タイミングを決めたい。",
+        "typical_questions": [
+          "来月から始められますか？",
+          "最初はどんな動画を作りますか？",
+          "効果が出るまでどのくらいですか？"
+        ],
+        "concerns": [
+          "繁忙期と被らないか",
+          "スタッフの協力が得られるか",
+          "効果測定の方法"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中で本数変更できますか？",
+          "支払いはいつですか？"
+        ],
+        "concerns": [
+          "契約の縛り",
+          "柔軟性があるか",
+          "追加費用"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。早く始めたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。制作の流れを知りたい。",
+        "decision_power": "制作開始段階。具体的な動画を決めたい。",
+        "typical_questions": [
+          "どんなメニューを撮影しますか？",
+          "お客様の声も撮りますか？",
+          "投稿時間はいつがいいですか？"
+        ],
+        "concerns": [
+          "撮影の段取り",
+          "スタッフの準備",
+          "初回の反応"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。効果を感じている。本数を増やしたい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。本数増加を検討。",
+        "decision_power": "追加検討段階。予算と相談したい。",
+        "typical_questions": [
+          "月20本に増やせますか？",
+          "料金はどのくらい上がりますか？",
+          "YouTubeにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コストが予算内か",
+          "撮影の負担が増えないか",
+          "効果が継続するか"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "ec_business_outsourcing",
+    "persona_name": "EC事業者（外注中、コスト高）",
+    "base_profile": {
+      "business_type": "アパレルEC",
+      "location": "東京",
+      "business_detail": "アパレルのECサイトを運営している。現在、月5本を外注しているが、月12-15万円かかっている。",
+      "current_video_status": "月5本（外注中）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー3,000人）",
+        "tiktok": "あり（フォロワー1,500人）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "外注コストが高すぎる",
+        "外注先の品質が安定しない",
+        "コミュニケーションに時間がかかる",
+        "コスパの良い方法を探している"
+      ],
+      "budget_sense": "月5-8万円程度（外注費の半分に抑えたい）"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "ビジネスライク。コスト削減を重視。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作を外注中。コスト削減したい。",
+        "decision_power": "情報収集段階。コスパを重視。",
+        "typical_questions": [
+          "料金は外注より安いですか？",
+          "品質は外注と同じですか？",
+          "納期はどのくらいですか？"
+        ],
+        "concerns": [
+          "コストが本当に下がるか",
+          "品質が落ちないか",
+          "納期が遅れないか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。具体的な料金を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。料金を比較中。",
+        "decision_power": "比較検討段階。料金次第で決めたい。",
+        "typical_questions": [
+          "月5本でいくらですか？",
+          "外注先との違いは？",
+          "修正は何回までできますか？"
+        ],
+        "concerns": [
+          "外注先と比べてどうか",
+          "修正回数の制限",
+          "品質の担保"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。切り替え時期を検討中。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。切り替えを検討中。",
+        "decision_power": "前向き検討段階。タイミングを決めたい。",
+        "typical_questions": [
+          "いつから切り替えられますか？",
+          "外注先との並行は可能ですか？",
+          "最初のテスト期間はありますか？"
+        ],
+        "concerns": [
+          "外注先との契約",
+          "切り替えのタイミング",
+          "品質の確認方法"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約条件を詰めたい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。契約条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "最低利用期間はありますか？",
+          "請求書払いは可能ですか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "支払い条件",
+          "解約条件"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。スムーズに進めたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。制作の流れを確認。",
+        "decision_power": "制作開始段階。効率的に進めたい。",
+        "typical_questions": [
+          "素材はどう提供すればいいですか？",
+          "納品はいつですか？",
+          "修正はどう依頼しますか？"
+        ],
+        "concerns": [
+          "素材提供の方法",
+          "納期の管理",
+          "修正フロー"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。満足している。本数増加を検討。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。本数増加を検討。",
+        "decision_power": "追加検討段階。ROIを重視。",
+        "typical_questions": [
+          "月10本に増やせますか？",
+          "料金はどのくらい上がりますか？",
+          "YouTube用の動画も作れますか？"
+        ],
+        "concerns": [
+          "追加コストとROI",
+          "品質の維持",
+          "納期の調整"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "real_estate_newcomer",
+    "persona_name": "不動産会社（これから開始）",
+    "base_profile": {
+      "business_type": "不動産仲介",
+      "location": "東京",
+      "business_detail": "不動産の仲介を行っている。TikTokアカウントを開設したばかりで、動画はまだ未制作。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "なし",
+        "tiktok": "あり（フォロワー0人、開設したばかり）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "動画の作り方が分からない",
+        "何を投稿すべきか不明",
+        "SNS運用のノウハウがない",
+        "競合はTikTokで成功している"
+      ],
+      "budget_sense": "月5-10万円程度（広告費を動画に回したい）"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "不安が大きい。基本から教えて欲しい。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作未経験。何も分かっていない。",
+        "decision_power": "情報収集段階。不安が大きい。",
+        "typical_questions": [
+          "何から始めればいいですか？",
+          "どんな動画を作るんですか？",
+          "本当に効果がありますか？"
+        ],
+        "concerns": [
+          "何も分からない不安",
+          "本当にできるか",
+          "効果が出るか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "少し安心。具体的なイメージを知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。不動産の事例を見たい。",
+        "decision_power": "比較検討段階。事例次第で決めたい。",
+        "typical_questions": [
+          "不動産の事例はありますか？",
+          "どんな内容の動画を作りますか？",
+          "撮影は難しいですか？"
+        ],
+        "concerns": [
+          "不動産に合った動画が作れるか",
+          "撮影の手間",
+          "効果が出るか"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。始める準備を知りたい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。準備を知りたい。",
+        "decision_power": "前向き検討段階。準備を確認したい。",
+        "typical_questions": [
+          "何を準備すればいいですか？",
+          "いつから始められますか？",
+          "サポートはありますか？"
+        ],
+        "concerns": [
+          "準備の手間",
+          "サポート体制",
+          "初回の反応"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "決めかけている。最後の不安を解消したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。最終確認段階。",
+        "decision_power": "最終確認段階。サポートを重視。",
+        "typical_questions": [
+          "どこまでサポートしてもらえますか？",
+          "途中で分からないことがあったら？",
+          "契約後の流れは？"
+        ],
+        "concerns": [
+          "サポートの範囲",
+          "困った時の対応",
+          "本当にできるか"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。不安だが頑張りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。一から教えて欲しい。",
+        "decision_power": "制作開始段階。丁寧に教えて欲しい。",
+        "typical_questions": [
+          "最初は何をすればいいですか？",
+          "どんな物件を撮影しますか？",
+          "どう撮影すればいいですか？"
+        ],
+        "concerns": [
+          "撮影の方法",
+          "最初の一歩",
+          "失敗しないか"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。手応えを感じている。拡大したい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。効果を感じている。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "Instagramも始められますか？",
+          "他の物件タイプにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "撮影の負担",
+          "効果の持続"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "fitness_gym_stagnant",
+    "persona_name": "フィットネスジム（フォロワー伸びない）",
+    "base_profile": {
+      "business_type": "パーソナルジム",
+      "location": "新宿",
+      "business_detail": "新宿でパーソナルジムを経営している。Instagramで月2本程度を自作。フォロワーは500人で停滞。",
+      "current_video_status": "月2本（自社制作）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー500人）",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "フォロワーが増えない",
+        "再生数が伸びない（100-200程度）",
+        "何が悪いのか分からない",
+        "競合はフォロワー数千人"
+      ],
+      "budget_sense": "月3-5万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "焦りがある。何とかしたい。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作の経験あり。伸びない理由を知りたい。",
+        "decision_power": "情報収集段階。効果重視。",
+        "typical_questions": [
+          "なぜフォロワーが増えないんですか？",
+          "どうすれば伸びますか？",
+          "どのくらいで効果が出ますか？"
+        ],
+        "concerns": [
+          "本当に伸びるか",
+          "投資に見合うか",
+          "すぐに効果が出るか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。成功事例を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。事例を見たい。",
+        "decision_power": "比較検討段階。事例次第で決めたい。",
+        "typical_questions": [
+          "ジムの事例はありますか？",
+          "フォロワーはどのくらい増えますか？",
+          "どんな動画が伸びますか？"
+        ],
+        "concerns": [
+          "本当に伸びるか",
+          "どのくらいの期間がかかるか",
+          "費用対効果"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的な効果を知りたい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。効果を確認したい。",
+        "decision_power": "前向き検討段階。効果測定を重視。",
+        "typical_questions": [
+          "効果測定はどうしますか？",
+          "目標設定はどうしますか？",
+          "いつから始めるのがいいですか？"
+        ],
+        "concerns": [
+          "効果が測定できるか",
+          "目標達成できるか",
+          "タイミング"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。最後の確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。効果を期待。",
+        "typical_questions": [
+          "契約後のサポートは？",
+          "効果が出なかったら？",
+          "途中で戦略変更できますか？"
+        ],
+        "concerns": [
+          "効果が出なかった時",
+          "柔軟性",
+          "サポート体制"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。早く結果を出したい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。戦略を知りたい。",
+        "decision_power": "制作開始段階。効果を重視。",
+        "typical_questions": [
+          "どんな動画を作りますか？",
+          "ターゲットは誰ですか？",
+          "どのくらいで伸びますか？"
+        ],
+        "concerns": [
+          "戦略が合っているか",
+          "効果が出るまでの期間",
+          "初回の反応"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。効果を実感。さらに伸ばしたい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに伸ばしたい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "TikTokも始められますか？",
+          "YouTube Shortsにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "効果の持続",
+          "複数SNSの管理"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "nail_salon_quality",
+    "persona_name": "ネイルサロン（クオリティ向上したい）",
+    "base_profile": {
+      "business_type": "ネイルサロン",
+      "location": "原宿",
+      "business_detail": "原宿でネイルサロンを経営している。Instagramで月3-4本を自作。再生数は100-200程度。もっとプロっぽくしたい。",
+      "current_video_status": "月3-4本（自社制作）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー1,000人）",
+        "tiktok": "あり（フォロワー500人）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "クオリティが低い",
+        "もっとプロっぽくしたい",
+        "編集技術がない",
+        "競合のクオリティが高い"
+      ],
+      "budget_sense": "月3-5万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "真剣。クオリティを上げたい。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作の経験あり。クオリティを上げたい。",
+        "decision_power": "情報収集段階。クオリティ重視。",
+        "typical_questions": [
+          "どのくらいクオリティが上がりますか？",
+          "プロっぽくなりますか？",
+          "編集はどこまでやってもらえますか？"
+        ],
+        "concerns": [
+          "本当にクオリティが上がるか",
+          "自分で作るのと違いが分かるか",
+          "費用対効果"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。サンプルを見たい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。サンプルを見たい。",
+        "decision_power": "比較検討段階。サンプル次第で決めたい。",
+        "typical_questions": [
+          "ネイルサロンの事例はありますか？",
+          "どんな編集ができますか？",
+          "BGMや字幕もつけられますか？"
+        ],
+        "concerns": [
+          "ネイルサロンに合った動画が作れるか",
+          "編集のクオリティ",
+          "細かい要望に対応できるか"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的なイメージを共有したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。イメージを伝えたい。",
+        "decision_power": "前向き検討段階。イメージが合うか確認。",
+        "typical_questions": [
+          "こんな感じの動画は作れますか？",
+          "参考動画を見てもらえますか？",
+          "修正は何回までできますか？"
+        ],
+        "concerns": [
+          "イメージ通りになるか",
+          "修正対応",
+          "細かい要望"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。細かい条件を確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細部を詰めたい。",
+        "typical_questions": [
+          "修正の範囲は？",
+          "納期はどのくらいですか？",
+          "急ぎの対応は可能ですか？"
+        ],
+        "concerns": [
+          "修正の柔軟性",
+          "納期の調整",
+          "急な対応"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。こだわりたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。細かく相談したい。",
+        "decision_power": "制作開始段階。イメージを共有したい。",
+        "typical_questions": [
+          "どんなテイストにしますか？",
+          "BGMはどんな感じですか？",
+          "字幕のフォントは選べますか？"
+        ],
+        "concerns": [
+          "イメージが伝わるか",
+          "細かい調整",
+          "初回の仕上がり"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。満足している。拡大したい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。本数増加を検討。",
+        "decision_power": "追加検討段階。さらに活用したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "ストーリーズ用の動画も作れますか？",
+          "YouTube用の長尺動画も対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "品質の維持",
+          "納期の調整"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "chiropractic_losing",
+    "persona_name": "整体院（競合に負けている）",
+    "base_profile": {
+      "business_type": "整体院",
+      "location": "池袋",
+      "business_detail": "池袋で整体院を経営している。動画は未制作。競合はTikTokで集客に成功している。焦りがある。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー200人）",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "競合に負けている",
+        "TikTokで集客したい",
+        "今すぐ始めたい",
+        "効果を早く出したい"
+      ],
+      "budget_sense": "月5-8万円程度（すぐに効果が欲しい）"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "焦りがある。すぐに始めたい。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作未経験。競合を意識。",
+        "decision_power": "情報収集段階。即効性を重視。",
+        "typical_questions": [
+          "どのくらいで効果が出ますか？",
+          "競合と同じように集客できますか？",
+          "すぐに始められますか？"
+        ],
+        "concerns": [
+          "効果が出るまでの期間",
+          "競合に勝てるか",
+          "初期投資"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "前のめり。具体的な開始時期を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。早く始めたい。",
+        "decision_power": "比較検討段階。即決の可能性あり。",
+        "typical_questions": [
+          "来週から始められますか？",
+          "整体院の事例はありますか？",
+          "どんな動画が効果的ですか？"
+        ],
+        "concerns": [
+          "開始のスピード",
+          "整体院に合った動画",
+          "競合との差別化"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "ほぼ決定。すぐに始めたい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。決める準備ができた。",
+        "decision_power": "前向き検討段階。ほぼ即決。",
+        "typical_questions": [
+          "今日決めたらいつから始められますか？",
+          "初回の動画はどんな内容ですか？",
+          "支払いはいつですか？"
+        ],
+        "concerns": [
+          "開始までの期間",
+          "初回の効果",
+          "支払い条件"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "決定済み。契約手続きを進めたい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約したい。",
+        "decision_power": "最終確認段階。契約を進めたい。",
+        "typical_questions": [
+          "契約はどう進めますか？",
+          "必要な書類は？",
+          "いつから撮影しますか？"
+        ],
+        "concerns": [
+          "契約手続き",
+          "撮影の準備",
+          "早く結果を出したい"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。早く結果を出したい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。戦略を知りたい。",
+        "decision_power": "制作開始段階。効果を期待。",
+        "typical_questions": [
+          "どんな動画で集客しますか？",
+          "TikTokはどう始めますか？",
+          "いつ投稿しますか？"
+        ],
+        "concerns": [
+          "集客戦略",
+          "TikTokの開始",
+          "初回の反応"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。効果を実感。拡大したい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに伸ばしたい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "Instagramも強化できますか？",
+          "広告配信もお願いできますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "複数SNSの管理",
+          "広告費用"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "dental_clinic_inconsistent",
+    "persona_name": "歯科医院（継続できない）",
+    "base_profile": {
+      "business_type": "歯科医院",
+      "location": "横浜",
+      "business_detail": "横浜で歯科医院を経営している。過去に動画制作を試したが継続できず。継続的に投稿する仕組みが作れない。",
+      "current_video_status": "月0本（過去に制作経験あり、継続できず）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー300人）",
+        "tiktok": "なし",
+        "youtube": "あり（登録者50人）"
+      },
+      "pain_points": [
+        "継続できない",
+        "仕組みが作れない",
+        "忙しくて時間がない",
+        "モチベーションが続かない"
+      ],
+      "budget_sense": "月5-8万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "過去の失敗を気にしている。今度こそ続けたい。",
+        "relationship": "初対面",
+        "knowledge_level": "過去に動画制作経験あり。継続が課題。",
+        "decision_power": "情報収集段階。継続できるか不安。",
+        "typical_questions": [
+          "どうすれば継続できますか？",
+          "忙しくても大丈夫ですか？",
+          "サポートはありますか？"
+        ],
+        "concerns": [
+          "また継続できないかも",
+          "時間が取れるか",
+          "サポート体制"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。仕組みを知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。仕組みを確認したい。",
+        "decision_power": "比較検討段階。仕組み次第で決めたい。",
+        "typical_questions": [
+          "どんな流れで進みますか？",
+          "撮影は月に何回ですか？",
+          "時間はどのくらいかかりますか？"
+        ],
+        "concerns": [
+          "負担が大きくないか",
+          "継続できる仕組みか",
+          "時間的な余裕"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。今度こそ続けたい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。決意を固めたい。",
+        "decision_power": "前向き検討段階。背中を押して欲しい。",
+        "typical_questions": [
+          "他のクリニックは続いてますか？",
+          "どうすれば続けられますか？",
+          "モチベーションを保つコツは？"
+        ],
+        "concerns": [
+          "継続の実績",
+          "モチベーション維持",
+          "本当に続けられるか"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "決めかけている。最後の確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。決意を固めた。",
+        "decision_power": "最終確認段階。契約を決めたい。",
+        "typical_questions": [
+          "契約したら何をすればいいですか？",
+          "最初のステップは？",
+          "継続のサポートは？"
+        ],
+        "concerns": [
+          "最初の一歩",
+          "継続のサポート",
+          "途中で挫折しないか"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。今度こそ続ける決意。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。丁寧に教えて欲しい。",
+        "decision_power": "制作開始段階。続けられる仕組みを作りたい。",
+        "typical_questions": [
+          "どんなペースで進めますか？",
+          "撮影はどうスケジュールしますか？",
+          "続けるコツは？"
+        ],
+        "concerns": [
+          "無理のないペース",
+          "スケジュール管理",
+          "継続の仕組み"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。続けられている。自信がついた。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに活用したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他のSNSも始められますか？",
+          "新しい企画もできますか？"
+        ],
+        "concerns": [
+          "追加の負担",
+          "継続できるか",
+          "効果の持続"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "yoga_instructor_frequency",
+    "persona_name": "ヨガインストラクター（投稿頻度を上げたい）",
+    "base_profile": {
+      "business_type": "ヨガインストラクター（個人事業主）",
+      "location": "鎌倉",
+      "business_detail": "鎌倉でヨガインストラクターをしている個人事業主。Instagramで月1本程度を自作。週3-4本投稿したい。",
+      "current_video_status": "月1本（自社制作）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー600人）",
+        "tiktok": "なし",
+        "youtube": "あり（登録者100人）"
+      },
+      "pain_points": [
+        "投稿頻度が低い",
+        "週3-4本投稿したい",
+        "時間がない",
+        "フォロワーを増やしたい"
+      ],
+      "budget_sense": "月3-5万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "真剣。投稿頻度を上げたい。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作の経験あり。頻度を上げたい。",
+        "decision_power": "情報収集段階。頻度アップを重視。",
+        "typical_questions": [
+          "週3-4本は可能ですか？",
+          "どのくらい時間がかかりますか？",
+          "撮影は毎週ですか？"
+        ],
+        "concerns": [
+          "本当に週3-4本出せるか",
+          "撮影の負担",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。具体的な流れを知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。流れを確認したい。",
+        "decision_power": "比較検討段階。流れ次第で決めたい。",
+        "typical_questions": [
+          "どんな流れで進みますか？",
+          "撮影は月に何回ですか？",
+          "素材はどう提供しますか？"
+        ],
+        "concerns": [
+          "撮影の頻度",
+          "素材提供の方法",
+          "負担の大きさ"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。スケジュールを確認したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。スケジュールを知りたい。",
+        "decision_power": "前向き検討段階。スケジュールを調整したい。",
+        "typical_questions": [
+          "撮影日はどう決めますか？",
+          "投稿スケジュールは？",
+          "編集はどのくらいかかりますか？"
+        ],
+        "concerns": [
+          "スケジュール調整",
+          "投稿のタイミング",
+          "納期管理"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。細かい流れを確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。流れを詰めたい。",
+        "typical_questions": [
+          "契約後の流れは？",
+          "最初の撮影はいつですか？",
+          "修正対応は？"
+        ],
+        "concerns": [
+          "開始までの流れ",
+          "撮影の準備",
+          "修正の柔軟性"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。スムーズに進めたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。効率的に進めたい。",
+        "decision_power": "制作開始段階。スケジュールを決めたい。",
+        "typical_questions": [
+          "撮影スケジュールはどうしますか？",
+          "どんなポーズを撮りますか？",
+          "投稿時間はいつがいいですか？"
+        ],
+        "concerns": [
+          "撮影スケジュール",
+          "撮影内容",
+          "投稿タイミング"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。満足している。さらに増やしたい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。さらに増やしたい。",
+        "decision_power": "追加検討段階。毎日投稿したい。",
+        "typical_questions": [
+          "毎日投稿できますか？",
+          "YouTube用の長尺動画も作れますか？",
+          "ライブ配信のサポートもできますか？"
+        ],
+        "concerns": [
+          "毎日投稿の負担",
+          "追加コスト",
+          "品質の維持"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "btob_saas_inhouse",
+    "persona_name": "BtoB SaaS企業（内製化したい）",
+    "base_profile": {
+      "business_type": "BtoB SaaS企業",
+      "location": "東京",
+      "business_detail": "BtoB SaaSを提供している企業。現在、月10本を外注しているが月30万円かかっている。内製化したいが方法が分からない。",
+      "current_video_status": "月10本（外注中）",
+      "sns_accounts": {
+        "instagram": "なし",
+        "tiktok": "なし",
+        "youtube": "あり（登録者1,000人）",
+        "linkedin": "あり"
+      },
+      "pain_points": [
+        "外注コストが高すぎる（月30万円）",
+        "内製化したいが方法が分からない",
+        "社内にノウハウがない",
+        "コストを半分に抑えたい"
+      ],
+      "budget_sense": "月10-15万円程度（外注費の半分に抑えたい）"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "ビジネスライク。コスト削減を最優先。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作を外注中。内製化を検討。",
+        "decision_power": "情報収集段階。ROI重視。",
+        "typical_questions": [
+          "本当にコスト削減できますか？",
+          "品質は外注と同じですか？",
+          "BtoB向けの動画も作れますか？"
+        ],
+        "concerns": [
+          "コスト削減の実現性",
+          "品質の担保",
+          "BtoB向けの対応"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。具体的な数字を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービス内容を理解。ROIを計算中。",
+        "decision_power": "比較検討段階。数字次第で決めたい。",
+        "typical_questions": [
+          "月10本でいくらですか？",
+          "年間でどのくらい削減できますか？",
+          "他のBtoB企業の事例は？"
+        ],
+        "concerns": [
+          "ROIの計算",
+          "年間コスト削減額",
+          "BtoB企業の実績"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。社内承認を取りたい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。社内承認を準備中。",
+        "decision_power": "前向き検討段階。稟議を通したい。",
+        "typical_questions": [
+          "提案資料はもらえますか？",
+          "導入事例の詳細は？",
+          "契約書のサンプルは？"
+        ],
+        "concerns": [
+          "社内承認",
+          "稟議資料",
+          "契約条件"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約条件を詰めたい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を進めたい。",
+        "decision_power": "最終確認段階。契約条件を確認。",
+        "typical_questions": [
+          "契約期間は？",
+          "支払い条件は？",
+          "請求書払いは可能ですか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "支払い条件",
+          "法務チェック"
+        ]
+      },
+      "kickoff": {
+        "tone": "契約済み。効率的に進めたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。体制を整えたい。",
+        "decision_power": "制作開始段階。体制構築を重視。",
+        "typical_questions": [
+          "社内の体制はどうすればいいですか？",
+          "素材管理の方法は？",
+          "承認フローはどうしますか？"
+        ],
+        "concerns": [
+          "社内体制",
+          "素材管理",
+          "承認フロー"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。満足している。拡大を検討。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに活用したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他部署でも使えますか？",
+          "ウェビナー動画も作れますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "複数部署での活用",
+          "動画の種類拡大"
+        ]
+      }
+    }
+  }
+]

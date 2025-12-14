@@ -182,6 +182,73 @@ def load_rubric():
 
 load_rubric()
 
+# ===== 共有ペルソナ読込（全シーン共通） =====
+PERSONAS_DIR = os.path.join(os.path.dirname(__file__), 'personas')
+PERSONAS_PATH = os.path.join(PERSONAS_DIR, 'shared_personas.json')
+SHARED_PERSONAS = []
+
+def load_shared_personas():
+    """`personas/shared_personas.json` を読み込み、全シーン共通のペルソナ一覧を保持する"""
+    global SHARED_PERSONAS
+    try:
+        if not os.path.exists(PERSONAS_PATH):
+            print(f"共有ペルソナファイルが見つかりません: {PERSONAS_PATH}")
+            SHARED_PERSONAS = []
+            return
+        with open(PERSONAS_PATH, 'r', encoding='utf-8') as f:
+            SHARED_PERSONAS = json.load(f)
+        print(f"共有ペルソナ読込完了: {len(SHARED_PERSONAS)}パターン")
+    except Exception as e:
+        print(f"共有ペルソナ読込エラー: {e}")
+        SHARED_PERSONAS = []
+
+def select_random_persona_for_scene(scene_id: str):
+    """
+    シーンIDに応じて、ランダムにペルソナを選択し、そのシーンの状況設定を返す
+
+    Args:
+        scene_id: シーンID (meeting_1st, meeting_1_5th, meeting_2nd, meeting_3rd, kickoff, upsell)
+
+    Returns:
+        dict: ペルソナ情報（base_profile + scene_variation）
+    """
+    import random
+
+    if not SHARED_PERSONAS:
+        print("[ペルソナ選択] 共有ペルソナが読み込まれていません")
+        return None
+
+    # ランダムにペルソナを選択
+    persona = random.choice(SHARED_PERSONAS)
+    persona_id = persona.get('persona_id', '不明')
+    persona_name = persona.get('persona_name', '不明')
+
+    print(f"[ペルソナ選択] ランダム選択: {persona_name} (ID: {persona_id})")
+
+    # シーンに応じた状況設定を取得
+    base_profile = persona.get('base_profile', {})
+    scene_variations = persona.get('scene_variations', {})
+
+    # シーンIDに対応する状況設定を取得（デフォルトはmeeting_1st）
+    scene_variation = scene_variations.get(scene_id, scene_variations.get('meeting_1st', {}))
+
+    if not scene_variation:
+        print(f"[ペルソナ選択] 警告: シーンID '{scene_id}' の状況設定が見つかりません")
+
+    # ベースプロフィールとシーン状況を統合
+    combined_persona = {
+        'persona_id': persona_id,
+        'persona_name': persona_name,
+        **base_profile,
+        **scene_variation
+    }
+
+    print(f"[ペルソナ選択] シーン: {scene_id}, 態度: {scene_variation.get('tone', '不明')}")
+
+    return combined_persona
+
+load_shared_personas()
+
 # ===== Few-shot評価サンプル読込（Week 5：評価精度向上） =====
 EVALUATION_SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'evaluation_samples')
 EVALUATION_SAMPLES_CACHE = {}
@@ -389,7 +456,7 @@ SALES_ROLEPLAY_PROMPT = """
 
 ### 【営業が具体的に掘り下げたら】詳細を話す（40-80文字程度）
 営業が「月に何本作ってますか？」など、具体的に質問したら詳しく答える：
-- ○ 「繁忙期だと15本とか20本は社内で作ってて...それに余る分は外注に頼んでるって感じですね」（47文字）
+- ○ 「うーん、月1-2本くらいですかね...時間がなくて、なかなか増やせないんですよ」（38文字）
 
 ## 返答の構造（自然な会話）
 
@@ -414,7 +481,7 @@ SALES_ROLEPLAY_PROMPT = """
 
 **例3: 具体的な質問への応答（詳細）**
 - 営業: 「月に何本くらい作られてますか？」
-- あなた: 「繁忙期だと15本とか20本は社内で作ってて...」（具体的に答える）
+- あなた: 「うーん、月1-2本くらいですかね...時間がなくて、なかなか増やせないんですよ」（具体的に答える）
 
 **例4: 自己紹介への応答**
 - 営業: 「私、ショート動画屋さんの〇〇と申します」
@@ -442,11 +509,11 @@ SALES_ROLEPLAY_PROMPT = """
 - **具体的な数字や固有名詞を使うとよりリアルになる**
 
 **✅ 良い例（人間らしくリアルな話し方）:**
-- 「えーと、繁忙期だと15本とか20本は作ってて...でも、閑散期は5本くらいで。うーん、正直安定しないんですよね」
+- 「えーと、月1-2本くらいしか作れてなくて...時間がなくて。うーん、もっと増やしたいんですけどね」
 - 「あー、そうなんですよ。Instagram だと週3回は投稿してて...でもなかなかフォロワー増えなくて」
 
 **❌ 悪い例（一般的で機械的）:**
-- 「繁忙期は15-20本、閑散期は5-10本制作しています」← 硬すぎる、リアル感ゼロ
+- 「月1-2本制作しています」← 硬すぎる、リアル感ゼロ
 - 「動画制作に課題があります」← 抽象的すぎる、具体性がない
 
 ## 会話の自然な流れ
@@ -617,22 +684,50 @@ def chat():
             try:
                 # 会話履歴を構築
                 system_prompt = SALES_ROLEPLAY_PROMPT
-                # シナリオのpersona/guidelinesをsystem補強
-                if scenario_obj:
-                    # persona_variationsがある場合は最初のペルソナを使用（一貫性を保つため）
-                    if 'persona_variations' in scenario_obj and scenario_obj['persona_variations']:
-                        persona = scenario_obj['persona_variations'][0]
-                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を使用します（一貫性のため固定）")
-                    else:
-                        persona = scenario_obj.get('persona') or {}
-                    guidelines = scenario_obj.get('guidelines') or []
-                    persona_txt = []
+                # ペルソナをランダムに選択（シーンに応じた状況設定を含む）
+                persona = select_random_persona_for_scene(scenario_id)
 
+                # シナリオのguidelinesを取得
+                guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
+                persona_txt = []
+
+                if persona:
                     # ペルソナ情報を詳細にシステムプロンプトに追加
-                    if 'customer_role' in persona:
-                        persona_txt.append(f"顧客役: {persona['customer_role']}")
+                    if 'business_type' in persona:
+                        persona_txt.append(f"業種: {persona['business_type']}")
+                    if 'location' in persona:
+                        persona_txt.append(f"場所: {persona['location']}")
                     if 'business_detail' in persona:
                         persona_txt.append(f"事業詳細: {persona['business_detail']}")
+                    if 'current_video_status' in persona:
+                        persona_txt.append(f"現在の動画制作状況: {persona['current_video_status']}")
+
+                    # SNSアカウント情報
+                    if 'sns_accounts' in persona:
+                        sns_accounts = persona['sns_accounts']
+                        if isinstance(sns_accounts, dict):
+                            sns_list = []
+                            for platform, info in sns_accounts.items():
+                                if info and info != "なし":
+                                    sns_list.append(f"{platform.capitalize()}: {info}")
+                            if sns_list:
+                                persona_txt.append("SNSアカウント:")
+                                for sns_info in sns_list:
+                                    persona_txt.append(f"  - {sns_info}")
+
+                    # ペインポイント
+                    if 'pain_points' in persona:
+                        pain_points = persona['pain_points']
+                        if pain_points and isinstance(pain_points, list):
+                            persona_txt.append("ペインポイント:")
+                            for pain in pain_points[:5]:  # 最大5件表示
+                                persona_txt.append(f"  • {pain}")
+
+                    # 予算感
+                    if 'budget_sense' in persona:
+                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+
+                    # シーン別の状況設定
                     if 'tone' in persona:
                         persona_txt.append(f"トーン・態度: {persona['tone']}")
                     if 'relationship' in persona:
@@ -641,32 +736,22 @@ def chat():
                         persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
                     if 'decision_power' in persona:
                         persona_txt.append(f"意思決定権: {persona['decision_power']}")
-                    if 'current_sns_status' in persona:
-                        sns_status = persona['current_sns_status']
-                        if isinstance(sns_status, dict):
-                            persona_txt.append("現在のSNS運用状況:")
-                            if 'status' in sns_status:
-                                persona_txt.append(f"  - 状況: {sns_status['status']}")
-                            if 'video_production' in sns_status:
-                                persona_txt.append(f"  - 動画制作: {sns_status['video_production']}")
-                            if 'instagram' in sns_status:
-                                persona_txt.append(f"  - Instagram: {sns_status['instagram']}")
-                            if 'tiktok' in sns_status:
-                                persona_txt.append(f"  - TikTok: {sns_status['tiktok']}")
-                            if 'challenges' in sns_status:
-                                challenges = sns_status['challenges']
-                                if challenges:
-                                    persona_txt.append("  - 具体的な課題:")
-                                    for challenge in challenges[:5]:  # 最大5件表示
-                                        persona_txt.append(f"    • {challenge}")
-                    if 'pain_points' in persona:
-                        pain_points = persona['pain_points']
-                        if pain_points:
-                            persona_txt.append("ペインポイント:")
-                            for pain in pain_points[:5]:  # 最大5件表示
-                                persona_txt.append(f"  • {pain}")
-                    if 'budget_sense' in persona:
-                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+
+                    # 典型的な質問（シーン別）
+                    if 'typical_questions' in persona:
+                        typical_questions = persona['typical_questions']
+                        if typical_questions and isinstance(typical_questions, list):
+                            persona_txt.append("このシーンで顧客がよくする質問:")
+                            for question in typical_questions[:3]:  # 最大3件表示
+                                persona_txt.append(f"  • {question}")
+
+                    # 懸念事項（シーン別）
+                    if 'concerns' in persona:
+                        concerns = persona['concerns']
+                        if concerns and isinstance(concerns, list):
+                            persona_txt.append("このシーンでの懸念事項:")
+                            for concern in concerns[:3]:  # 最大3件表示
+                                persona_txt.append(f"  • {concern}")
 
                     if persona_txt:
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
@@ -871,23 +956,53 @@ def chat_stream():
                     yield f"data: {json.dumps({'error': 'OpenAI API未設定'})}\n\n"
                     return
 
-                # システムプロンプト構築（既存ロジックと同じ）
+                # システムプロンプト構築（共有ペルソナを使用）
                 system_prompt = SALES_ROLEPLAY_PROMPT
-                if scenario_obj:
-                    persona = scenario_obj.get('persona') or {}
-                    # persona_variationsがある場合は最初のペルソナを使用（一貫性を保つため）
-                    if 'persona_variations' in scenario_obj and scenario_obj['persona_variations']:
-                        persona = scenario_obj['persona_variations'][0]
-                        print(f"[ペルソナ選択] {persona.get('variation_name', '不明')} を使用します（一貫性のため固定）")
 
-                    guidelines = scenario_obj.get('guidelines') or []
-                    persona_txt = []
+                # ペルソナをランダムに選択（シーンに応じた状況設定を含む）
+                persona = select_random_persona_for_scene(scenario_id)
 
+                # シナリオのguidelinesを取得
+                guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
+                persona_txt = []
+
+                if persona:
                     # ペルソナ情報を詳細にシステムプロンプトに追加
-                    if 'customer_role' in persona:
-                        persona_txt.append(f"顧客役: {persona['customer_role']}")
+                    if 'business_type' in persona:
+                        persona_txt.append(f"業種: {persona['business_type']}")
+                    if 'location' in persona:
+                        persona_txt.append(f"場所: {persona['location']}")
                     if 'business_detail' in persona:
                         persona_txt.append(f"事業詳細: {persona['business_detail']}")
+                    if 'current_video_status' in persona:
+                        persona_txt.append(f"現在の動画制作状況: {persona['current_video_status']}")
+
+                    # SNSアカウント情報
+                    if 'sns_accounts' in persona:
+                        sns_accounts = persona['sns_accounts']
+                        if isinstance(sns_accounts, dict):
+                            sns_list = []
+                            for platform, info in sns_accounts.items():
+                                if info and info != "なし":
+                                    sns_list.append(f"{platform.capitalize()}: {info}")
+                            if sns_list:
+                                persona_txt.append("SNSアカウント:")
+                                for sns_info in sns_list:
+                                    persona_txt.append(f"  - {sns_info}")
+
+                    # ペインポイント
+                    if 'pain_points' in persona:
+                        pain_points = persona['pain_points']
+                        if pain_points and isinstance(pain_points, list):
+                            persona_txt.append("ペインポイント:")
+                            for pain in pain_points[:5]:  # 最大5件表示
+                                persona_txt.append(f"  • {pain}")
+
+                    # 予算感
+                    if 'budget_sense' in persona:
+                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+
+                    # シーン別の状況設定
                     if 'tone' in persona:
                         persona_txt.append(f"トーン・態度: {persona['tone']}")
                     if 'relationship' in persona:
@@ -896,32 +1011,22 @@ def chat_stream():
                         persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
                     if 'decision_power' in persona:
                         persona_txt.append(f"意思決定権: {persona['decision_power']}")
-                    if 'current_sns_status' in persona:
-                        sns_status = persona['current_sns_status']
-                        if isinstance(sns_status, dict):
-                            persona_txt.append("現在のSNS運用状況:")
-                            if 'status' in sns_status:
-                                persona_txt.append(f"  - 状況: {sns_status['status']}")
-                            if 'video_production' in sns_status:
-                                persona_txt.append(f"  - 動画制作: {sns_status['video_production']}")
-                            if 'instagram' in sns_status:
-                                persona_txt.append(f"  - Instagram: {sns_status['instagram']}")
-                            if 'tiktok' in sns_status:
-                                persona_txt.append(f"  - TikTok: {sns_status['tiktok']}")
-                            if 'challenges' in sns_status:
-                                challenges = sns_status['challenges']
-                                if challenges:
-                                    persona_txt.append("  - 具体的な課題:")
-                                    for challenge in challenges[:5]:  # 最大5件表示
-                                        persona_txt.append(f"    • {challenge}")
-                    if 'pain_points' in persona:
-                        pain_points = persona['pain_points']
-                        if pain_points:
-                            persona_txt.append("ペインポイント:")
-                            for pain in pain_points[:5]:  # 最大5件表示
-                                persona_txt.append(f"  • {pain}")
-                    if 'budget_sense' in persona:
-                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+
+                    # 典型的な質問（シーン別）
+                    if 'typical_questions' in persona:
+                        typical_questions = persona['typical_questions']
+                        if typical_questions and isinstance(typical_questions, list):
+                            persona_txt.append("このシーンで顧客がよくする質問:")
+                            for question in typical_questions[:3]:  # 最大3件表示
+                                persona_txt.append(f"  • {question}")
+
+                    # 懸念事項（シーン別）
+                    if 'concerns' in persona:
+                        concerns = persona['concerns']
+                        if concerns and isinstance(concerns, list):
+                            persona_txt.append("このシーンでの懸念事項:")
+                            for concern in concerns[:3]:  # 最大3件表示
+                                persona_txt.append(f"  • {concern}")
 
                     if persona_txt:
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
