@@ -48,6 +48,7 @@ function RoleplayApp() {
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
+  const messagesRef = useRef<Message[]>([]); // messagesの最新値を保持（ステート更新タイミング問題を回避）
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
   const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
@@ -112,11 +113,17 @@ function RoleplayApp() {
       });
   }, []);
 
+  // messagesステートの変更をRefに同期（ステート更新タイミング問題を回避）
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   // シナリオ選択時に、会話をリセット（ユーザーが最初に話しかける形式）
   useEffect(() => {
     if (selectedScenarioId) {
       // シナリオが切り替わったら会話をリセット
       setMessages([]);
+      messagesRef.current = []; // Refも同期
       setEvaluation(null);
       setShowEvaluation(false);
       setConversationId(null);
@@ -143,8 +150,8 @@ function RoleplayApp() {
     setIsSending(true);
     isSendingRef.current = true;
 
-    // 🔍 会話履歴を先にキャプチャ（setMessagesの前に取得 - Reactのステート更新は非同期のため）
-    const historyBeforeBot = messages;
+    // 🔍 会話履歴を先にキャプチャ（messagesRefから最新値を取得 - ステート更新タイミング問題を回避）
+    const historyBeforeBot = messagesRef.current;
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -907,6 +914,7 @@ function RoleplayApp() {
 
   const handleConfirmClear = () => {
     setMessages([]);
+    messagesRef.current = []; // Refも同期
     setShowClearConfirm(false);
     setMediaSubtitle('');
     // 動画はクリアせず、初期状態に戻す（ループ再生を維持）
