@@ -1615,6 +1615,7 @@ def transcribe_with_whisper(audio_bytes):
                 "TikTok、Instagram、YouTubeを活用したマーケティング、集客、"
                 "ブランディングについて相談させていただきます。"
             )
+            print(f"[Whisper設定] prompt: {context_prompt[:50]}..., temperature: 0")
             with open(mp3_path, 'rb') as audio_file:
                 transcript = openai_client.audio.transcriptions.create(
                     model="whisper-1",
