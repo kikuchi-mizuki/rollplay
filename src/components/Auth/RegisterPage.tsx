@@ -158,15 +158,31 @@ export function RegisterPage() {
   const handleChangeAccount = async () => {
     try {
       console.log('🔄 Googleアカウント変更: サインアウト開始')
+      setLoading(true)
+
       // 現在のセッションからサインアウト
       await supabase.auth.signOut()
+      console.log('✅ サインアウト完了')
 
-      // ログインページにリダイレクト（新しいGoogleアカウントで再ログイン）
-      console.log('✅ サインアウト完了 → ログインページへ')
-      navigate('/login')
-    } catch (err) {
+      // 新しいGoogleアカウントでログイン（アカウント選択画面を表示）
+      console.log('🔄 Google認証開始（アカウント選択）')
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            prompt: 'select_account'
+          }
+        }
+      })
+
+      if (signInError) {
+        throw signInError
+      }
+    } catch (err: any) {
       console.error('❌ アカウント変更エラー:', err)
       setError('アカウント変更に失敗しました。もう一度お試しください。')
+      setLoading(false)
     }
   }
 
