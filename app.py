@@ -389,15 +389,21 @@ def search_rag_patterns(query: str, top_k: int = 3, scenario_id: str = None):
 SALES_ROLEPLAY_PROMPT = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【絶対に守ること - これは最優先ルールです】
-あなたは「顧客（悩みを持った事業主）」です。
-あなたは「営業担当」ではありません。
-あなたは「クリーニング業」でも「美容サロン」でもありません。
+
+⚠️⚠️⚠️ 【最優先】ペルソナ設定に完全に従うこと ⚠️⚠️⚠️
+- あなたは「顧客（悩みを持った事業主）」です。営業担当ではありません。
+- 必ず【シナリオ設定】で指定された業種、事業内容、課題で応答してください
+- 【シナリオ設定】に記載されていない業種については一切言及しないでください
+- 後述の【過去の実例パターン】は会話のトーンや応答スタイルの参考例です
+- 実例パターンの業種（クリーニング、音楽、教育など）は無視し、必ず【シナリオ設定】のペルソナで応答してください
+- 重要: 「事業」と「授業」を混同しないでください。あなたは「ビジネス（事業）」を営んでいます
 
 ✗ 絶対に禁止: 営業のように質問すること（「どんな悩みをお持ちですか？」など）
 ✗ 絶対に禁止: 「私はまだお話を伺っている段階なので」などの営業的発言
 ✗ 絶対に禁止: 業種を勝手に変えること（一貫して同じ業種・悩みを話す）
+✗ 絶対に禁止: 実例パターンの業種をそのまま使うこと
+✓ 必ず守ること: 【シナリオ設定】のペルソナ情報に従って応答する
 ✓ 必ず守ること: 顧客として悩みを話す
-✓ 必ず守ること: ショート動画制作の本数スケールに悩んでいる事業主として話す
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 【あなたは誰ですか？】
@@ -684,14 +690,23 @@ def chat():
             try:
                 # 会話履歴を構築
                 system_prompt = SALES_ROLEPLAY_PROMPT
-                # ペルソナをランダムに選択（シーンに応じた状況設定を含む）
-                persona = select_random_persona_for_scene(scenario_id)
+
+                # ペルソナ選択: 会話の最初のみランダム選択、2回目以降は選択しない（一貫性を保つ）
+                is_first_message = len(conversation_history) == 0
+                if is_first_message:
+                    # 会話開始時のみ、ペルソナをランダムに選択
+                    persona = select_random_persona_for_scene(scenario_id)
+                else:
+                    # 会話継続中はペルソナを選択しない（GPTが過去の会話から一貫性を保つ）
+                    print("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
+                    persona = None
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
                 persona_txt = []
 
-                if persona:
+                # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
+                if persona and is_first_message:
                     # ペルソナ情報を詳細にシステムプロンプトに追加
                     if 'business_type' in persona:
                         persona_txt.append(f"業種: {persona['business_type']}")
@@ -757,6 +772,13 @@ def chat():
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
+                elif not is_first_message:
+                    # 会話継続中は、過去の会話との一貫性を強調
+                    system_prompt += "\n\n【重要：会話継続中】\n"
+                    system_prompt += "- あなたは既に会話を開始しています\n"
+                    system_prompt += "- 必ず過去の会話で話した業種、事業内容、課題と一貫性を保ってください\n"
+                    system_prompt += "- 業種や事業内容を途中で変えてはいけません\n"
+                    system_prompt += "- 【過去の実例パターン】の業種は無視し、あなたが既に話した業種を使い続けてください\n"
 
                 messages = [{"role": "system", "content": system_prompt}]
                 
@@ -837,7 +859,7 @@ def chat():
                                         break
 
                             if rag_patterns:
-                                rag_context = "\n\n【過去の実例パターン（実際のロープレから抽出）】\n以下のような実際の会話パターンを参考に、自然でリアルな応答をしてください：\n" + "\n".join(rag_patterns)
+                                rag_context = "\n\n【過去の実例パターン（実際のロープレから抽出）】\n⚠️ 重要: 以下はあくまで会話の「トーン」や「応答スタイル」の参考例です。\n⚠️ 業種や事業内容は【シナリオ設定】で指定されたペルソナ情報に必ず従ってください。\n⚠️ 実例パターンに含まれる業種（クリーニング、音楽など）は無視し、必ずペルソナの業種で応答してください。\n\n参考例：\n" + "\n".join(rag_patterns)
                                 # system_promptに追加
                                 system_prompt += rag_context
                                 messages[0] = {"role": "system", "content": system_prompt}
@@ -959,14 +981,22 @@ def chat_stream():
                 # システムプロンプト構築（共有ペルソナを使用）
                 system_prompt = SALES_ROLEPLAY_PROMPT
 
-                # ペルソナをランダムに選択（シーンに応じた状況設定を含む）
-                persona = select_random_persona_for_scene(scenario_id)
+                # ペルソナ選択: 会話の最初のみランダム選択、2回目以降は選択しない（一貫性を保つ）
+                is_first_message = len(conversation_history) == 0
+                if is_first_message:
+                    # 会話開始時のみ、ペルソナをランダムに選択
+                    persona = select_random_persona_for_scene(scenario_id)
+                else:
+                    # 会話継続中はペルソナを選択しない（GPTが過去の会話から一貫性を保つ）
+                    print("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
+                    persona = None
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
                 persona_txt = []
 
-                if persona:
+                # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
+                if persona and is_first_message:
                     # ペルソナ情報を詳細にシステムプロンプトに追加
                     if 'business_type' in persona:
                         persona_txt.append(f"業種: {persona['business_type']}")
@@ -1032,6 +1062,13 @@ def chat_stream():
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
+                elif not is_first_message:
+                    # 会話継続中は、過去の会話との一貫性を強調
+                    system_prompt += "\n\n【重要：会話継続中】\n"
+                    system_prompt += "- あなたは既に会話を開始しています\n"
+                    system_prompt += "- 必ず過去の会話で話した業種、事業内容、課題と一貫性を保ってください\n"
+                    system_prompt += "- 業種や事業内容を途中で変えてはいけません\n"
+                    system_prompt += "- 【過去の実例パターン】の業種は無視し、あなたが既に話した業種を使い続けてください\n"
 
                 # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため）
                 try:
@@ -1102,15 +1139,17 @@ def chat_stream():
                                             break
 
                             if rag_patterns:
-                                rag_context = "\n\n【⭐ 重要：実際のロープレパターン（必ず活用すること）】\n"
-                                rag_context += "以下は実際の顧客の応答例です。これらの口調、表現、フィラー（「えーと」「あのー」「そうですね...」など）、間（「...」）を積極的に使って応答してください。\n"
-                                rag_context += "**同じような状況では、これらのパターンのような自然でリアルな話し方を必ず真似してください：**\n\n"
+                                rag_context = "\n\n【⭐ 重要：実際のロープレパターン（参考例）】\n"
+                                rag_context += "⚠️ 重要: 以下はあくまで会話の「トーン」や「応答スタイル」の参考例です。\n"
+                                rag_context += "⚠️ 業種や事業内容は【シナリオ設定】で指定されたペルソナ情報に必ず従ってください。\n"
+                                rag_context += "⚠️ 実例パターンに含まれる業種（クリーニング、音楽など）は無視し、必ずペルソナの業種で応答してください。\n\n"
+                                rag_context += "以下は実際の顧客の応答例です。これらの口調、表現、フィラー（「えーと」「あのー」「そうですね...」など）、間（「...」）を参考にしてください：\n\n"
                                 rag_context += "\n".join(rag_patterns)
                                 rag_context += "\n\n【応答時の注意】\n"
-                                rag_context += "- 上記のパターンと同じような口調・言い回しを使うこと\n"
+                                rag_context += "- 上記のパターンと同じような口調・言い回しを参考にすること（業種は除く）\n"
                                 rag_context += "- フィラー（「えーと」「あのー」「そうですね...」）を適度に入れること\n"
                                 rag_context += "- 間（「...」）を使って考えている様子を表現すること\n"
-                                rag_context += "- 一般的な回答ではなく、具体的でリアルな表現を心がけること"
+                                rag_context += "- 必ず【シナリオ設定】のペルソナ情報（業種、事業内容、課題）に基づいて応答すること"
                                 system_prompt += rag_context
                                 print(f"[RAG強化] {len(rag_patterns)}個の顧客応答パターンを参照（口調・表現を積極活用）")
                 except Exception as e:
