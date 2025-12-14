@@ -9,12 +9,15 @@ AIペルソナ設定の壁打ちテストツール
 - 営業役として質問を入力
 - AI（顧客役）が応答
 - 設定やプロンプトの動作を確認
+- RAGパターンの活用状況を可視化
 - Ctrl+C で終了
 """
 
 import os
 import sys
 import json
+import numpy as np
+import faiss
 from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -27,6 +30,77 @@ load_dotenv()
 
 # OpenAI クライアント初期化
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+# RAGインデックス読み込み
+RAG_INDEX_DIR = Path(__file__).parent.parent / 'rag_index'
+RAG_INDEX_PATH = RAG_INDEX_DIR / 'sales_patterns.faiss'
+RAG_METADATA_PATH = RAG_INDEX_DIR / 'sales_patterns.json'
+RAG_INDEX = None
+RAG_METADATA = []
+
+def load_rag_index():
+    """RAGインデックスを読み込み"""
+    global RAG_INDEX, RAG_METADATA
+
+    if not RAG_INDEX_PATH.exists() or not RAG_METADATA_PATH.exists():
+        print(f"⚠️  RAGインデックスが見つかりません")
+        return False
+
+    try:
+        RAG_INDEX = faiss.read_index(str(RAG_INDEX_PATH))
+        with open(RAG_METADATA_PATH, 'r', encoding='utf-8') as f:
+            RAG_METADATA = json.load(f)
+        print(f"✅ RAGインデックス読込: {len(RAG_METADATA)}件")
+        return True
+    except Exception as e:
+        print(f"❌ RAGインデックス読込エラー: {e}")
+        return False
+
+def search_rag_patterns(query: str, top_k: int = 10, scenario_id: str = None):
+    """RAGパターンを検索"""
+    if not RAG_INDEX or not RAG_METADATA:
+        return []
+
+    try:
+        # シナリオIDでフィルタリング
+        if scenario_id:
+            filtered_indices = [i for i, m in enumerate(RAG_METADATA) if m.get('scenario_id') == scenario_id]
+            if not filtered_indices:
+                filtered_indices = list(range(len(RAG_METADATA)))
+        else:
+            filtered_indices = list(range(len(RAG_METADATA)))
+
+        # クエリをEmbedding化
+        response = client.embeddings.create(
+            model="text-embedding-3-large",
+            input=[query]
+        )
+        query_embedding = np.array([response.data[0].embedding], dtype=np.float32)
+
+        # L2正規化
+        faiss.normalize_L2(query_embedding)
+
+        # FAISSで検索
+        search_k = min(top_k * 10, len(RAG_METADATA))
+        if search_k == 0:
+            return []
+
+        distances, indices = RAG_INDEX.search(query_embedding, search_k)
+
+        # メタデータから結果を取得
+        results = []
+        for i, idx in enumerate(indices[0]):
+            if idx < len(RAG_METADATA) and idx in filtered_indices:
+                pattern = RAG_METADATA[idx].copy()
+                pattern['similarity'] = float(distances[0][i])
+                results.append(pattern)
+                if len(results) >= top_k:
+                    break
+
+        return results
+    except Exception as e:
+        print(f"❌ RAG検索エラー: {e}")
+        return []
 
 # ディレクトリ設定
 BASE_DIR = Path(__file__).parent.parent
@@ -125,6 +199,7 @@ def chat_loop(scenario_id: str):
   - 'reset' で会話をリセット
   - 'show' でシステムプロンプトを表示
   - 'persona' でペルソナ情報を表示
+  - 'rag' で最後の質問に対するRAGパターンを表示
 {'='*60}
 """)
 
@@ -138,6 +213,7 @@ def chat_loop(scenario_id: str):
 
     # 会話履歴
     messages = [{"role": "system", "content": system_prompt}]
+    last_user_input = ""  # 最後のユーザー入力を保存（RAG検索用）
 
     print("✅ 準備完了！質問を入力してください\n")
 
@@ -175,6 +251,43 @@ def chat_loop(scenario_id: str):
                 print(json.dumps(persona, ensure_ascii=False, indent=2))
                 print("="*60)
                 continue
+
+            if user_input.lower() == 'rag':
+                if not last_user_input:
+                    print("\n⚠️  まだ質問をしていません")
+                    continue
+
+                print("\n" + "="*60)
+                print(f"🔍 RAGパターン検索結果（質問: {last_user_input[:50]}...）")
+                print("="*60)
+
+                # RAG検索実行
+                rag_results = search_rag_patterns(last_user_input, top_k=10, scenario_id=scenario_id)
+
+                if not rag_results:
+                    print("⚠️  パターンが見つかりませんでした")
+                else:
+                    # 類似度閾値
+                    similarity_threshold = 0.5
+                    high_quality = [r for r in rag_results if r['similarity'] <= similarity_threshold]
+                    low_quality = [r for r in rag_results if r['similarity'] > similarity_threshold]
+
+                    print(f"\n✅ 高品質パターン（類似度距離 ≤ {similarity_threshold}）: {len(high_quality)}件")
+                    for i, result in enumerate(high_quality[:7], 1):
+                        print(f"\n  [{i}] 類似度距離: {result['similarity']:.3f}")
+                        print(f"      テキスト: {result['text'][:150]}...")
+
+                    if low_quality:
+                        print(f"\n❌ 低品質パターン（除外、距離 > {similarity_threshold}）: {len(low_quality)}件")
+                        for i, result in enumerate(low_quality[:3], 1):
+                            print(f"\n  [{i}] 類似度距離: {result['similarity']:.3f}")
+                            print(f"      テキスト: {result['text'][:100]}...")
+
+                print("="*60)
+                continue
+
+            # 最後のユーザー入力を保存
+            last_user_input = user_input
 
             # ユーザーメッセージを追加
             messages.append({"role": "user", "content": user_input})
@@ -216,6 +329,12 @@ def main():
     if not os.getenv('OPENAI_API_KEY'):
         print("❌ エラー: OPENAI_API_KEYが設定されていません")
         sys.exit(1)
+
+    # RAGインデックス読み込み
+    print("\n🔧 RAGインデックス読み込み中...")
+    rag_loaded = load_rag_index()
+    if not rag_loaded:
+        print("⚠️  RAGインデックスなしで続行します（'rag'コマンドは使用できません）")
 
     # シナリオ選択
     scenarios = [
