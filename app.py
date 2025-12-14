@@ -1608,11 +1608,19 @@ def transcribe_with_whisper(audio_bytes):
             
             print("Whisper API呼び出し開始...")
             # Whisper APIで音声認識（新しいAPI形式）
+            # プロンプトでビジネス用語の文脈を提供（精度向上）
+            context_prompt = (
+                "御社、貴社、事業内容、SNS、動画制作、ショート動画、TikTok、Instagram、"
+                "YouTube、マーケティング、集客、ブランディング、コンテンツ、企画、"
+                "撮影、編集、投稿、運用、分析、効果測定"
+            )
             with open(mp3_path, 'rb') as audio_file:
                 transcript = openai_client.audio.transcriptions.create(
                     model="whisper-1",
                     file=audio_file,
-                    language="ja"  # 日本語指定
+                    language="ja",  # 日本語指定
+                    prompt=context_prompt,  # 文脈ヒント（誤認識を減らす）
+                    temperature=0  # 最も確実な認識結果を返す
                 )
             
             transcribed_text = transcript.text.strip()
