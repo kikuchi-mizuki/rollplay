@@ -1540,12 +1540,23 @@ def transcribe():
         # Whisperへ（まず直送）
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
+
+        # プロンプトで文脈を提供（精度向上）
+        context_prompt = (
+            "御社の事業内容について伺います。SNS動画制作、ショート動画、"
+            "TikTok、Instagram、YouTubeを活用したマーケティング、集客、"
+            "ブランディングについて相談させていただきます。"
+        )
+        print(f"[Whisper設定] prompt: {context_prompt[:50]}..., temperature: 0")
+
         try:
             with open(new_path, 'rb') as f:
                 r = openai_client.audio.transcriptions.create(
                     model='whisper-1',
                     file=f,
-                    language='ja'
+                    language='ja',
+                    prompt=context_prompt,
+                    temperature=0
                 )
             text = (getattr(r, 'text', '') or '').strip()
             print(f"[Whisper成功] 認識結果: {text}")
@@ -1561,7 +1572,9 @@ def transcribe():
                     r = openai_client.audio.transcriptions.create(
                         model='whisper-1',
                         file=f,
-                        language='ja'
+                        language='ja',
+                        prompt=context_prompt,
+                        temperature=0
                     )
                 text = (getattr(r, 'text', '') or '').strip()
                 return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
