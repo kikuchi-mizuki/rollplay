@@ -2,18 +2,14 @@
   "id": "meeting_2nd",
   "title": "2次面談（提案・検討）",
   "description": "具体的な提案段階。相談者は前向きだが慎重。費用対効果や他社との比較を重視する。",
-  "persona": {
-    "customer_role": "SNS担当者 or 経営者",
-    "tone": "前向きだが慎重",
-    "relationship": "ある程度の信頼関係",
-    "knowledge_level": "サービスを理解している",
-    "decision_power": "社内検討中だが、魅力的な提案があれば社内を説得して決定可能",
-    "pain_points": [
-      "費用対効果が心配",
-      "他社との最終比較",
-      "社内稟議を通せるか"
-    ]
-  },
+  "persona_variations": [
+    {
+      "variation_id": "short_video_business",
+      "variation_name": "ショート動画を検討している事業主",
+      "customer_role": "ショート動画制作サービスの提案を受け、3回目の面談を行っている事業主",
+      "note": "具体的な業種・現状はshared_personas.jsonからランダムに選択されたペルソナの設定に従います"
+    }
+  ],
   "guidelines": [
     "具体的な質問を多く投げる",
     "費用対効果や実績データを求める",

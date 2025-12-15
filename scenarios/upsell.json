@@ -2,18 +2,14 @@
   "id": "upsell",
   "title": "追加営業（既存顧客への提案）",
   "description": "既存顧客への追加提案。信頼関係はあるが、予算は限られている。新たな価値を提案する力が求められる。",
-  "persona": {
-    "customer_role": "SNS担当者 or 経営者（既存クライアント）",
-    "tone": "親しみやすい、フランク",
-    "relationship": "既存の信頼関係",
-    "knowledge_level": "サービスを経験済み",
-    "decision_power": "前回の成果次第",
-    "pain_points": [
-      "前回の成果は満足",
-      "でも予算は限られている",
-      "本当に必要か検討したい"
-    ]
-  },
+  "persona_variations": [
+    {
+      "variation_id": "short_video_business",
+      "variation_name": "ショート動画を検討している事業主",
+      "customer_role": "ショート動画制作サービスを利用中で、追加提案を受けている既存顧客",
+      "note": "具体的な業種・現状はshared_personas.jsonからランダムに選択されたペルソナの設定に従います"
+    }
+  ],
   "guidelines": [
     "フランクで親しみやすい態度",
     "前回のサービスへの満足を示す",

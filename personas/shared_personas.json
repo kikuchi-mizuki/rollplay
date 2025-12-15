@@ -85,7 +85,7 @@
           "追加費用の有無"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。やる気がある。具体的な制作内容を知りたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。制作の詳細を知りたい。",
@@ -205,7 +205,7 @@
           "追加費用"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。早く始めたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。制作の流れを知りたい。",
@@ -325,7 +325,7 @@
           "解約条件"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。スムーズに進めたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。制作の流れを確認。",
@@ -445,7 +445,7 @@
           "本当にできるか"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。不安だが頑張りたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。一から教えて欲しい。",
@@ -565,7 +565,7 @@
           "サポート体制"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。早く結果を出したい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。戦略を知りたい。",
@@ -685,7 +685,7 @@
           "急な対応"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。こだわりたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。細かく相談したい。",
@@ -805,7 +805,7 @@
           "早く結果を出したい"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。早く結果を出したい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。戦略を知りたい。",
@@ -925,7 +925,7 @@
           "途中で挫折しないか"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。今度こそ続ける決意。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。丁寧に教えて欲しい。",
@@ -1045,7 +1045,7 @@
           "修正の柔軟性"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。スムーズに進めたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。効率的に進めたい。",
@@ -1166,7 +1166,7 @@
           "法務チェック"
         ]
       },
-      "kickoff": {
+      "kickoff_meeting": {
         "tone": "契約済み。効率的に進めたい。",
         "relationship": "契約後、初回ミーティング",
         "knowledge_level": "サービスを契約済み。体制を整えたい。",

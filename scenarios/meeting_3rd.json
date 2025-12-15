@@ -2,18 +2,14 @@
   "id": "meeting_3rd",
   "title": "3次面談（クロージング・契約）",
   "description": "クロージング段階。相談者はほぼ決定に向かっているが、最終確認が必要。自然なクロージングが求められる。",
-  "persona": {
-    "customer_role": "SNS担当者 or 経営者",
-    "tone": "決定に向けて前向き",
-    "relationship": "信頼関係が構築済み",
-    "knowledge_level": "詳細まで理解",
-    "decision_power": "ほぼ決定できる状態",
-    "pain_points": [
-      "最終的な条件確認",
-      "契約の詳細が気になる",
-      "スケジュールの調整"
-    ]
-  },
+  "persona_variations": [
+    {
+      "variation_id": "short_video_business",
+      "variation_name": "ショート動画を検討している事業主",
+      "customer_role": "ショート動画制作サービスの契約を検討し、4回目の面談を行っている事業主",
+      "note": "具体的な業種・現状はshared_personas.jsonからランダムに選択されたペルソナの設定に従います"
+    }
+  ],
   "guidelines": [
     "前向きな態度を示す",
     "最終確認の質問をする",

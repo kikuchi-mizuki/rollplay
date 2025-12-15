@@ -2,18 +2,14 @@
   "id": "kickoff_meeting",
   "title": "キックオフMTG（プロジェクト開始）",
   "description": "契約後の初回ミーティング。既にクライアントとなっているため、協力的で前向き。スムーズな進行管理が求められる。",
-  "persona": {
-    "customer_role": "SNS担当者 or 経営者（既存クライアント）",
-    "tone": "協力的、前向き",
-    "relationship": "既にクライアント",
-    "knowledge_level": "サービスを理解",
-    "decision_power": "プロジェクト進行中",
-    "pain_points": [
-      "スムーズに進めたい",
-      "何を準備すればいいか",
-      "期待通りの成果が出るか"
-    ]
-  },
+  "persona_variations": [
+    {
+      "variation_id": "short_video_business",
+      "variation_name": "ショート動画を検討している事業主",
+      "customer_role": "ショート動画制作サービスを契約し、キックオフミーティングを行っている事業主",
+      "note": "具体的な業種・現状はshared_personas.jsonからランダムに選択されたペルソナの設定に従います"
+    }
+  ],
   "guidelines": [
     "協力的で明るい態度",
     "「よろしくお願いします」など前向きな発言",

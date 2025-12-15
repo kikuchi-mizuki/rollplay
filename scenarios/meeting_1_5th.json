@@ -2,18 +2,14 @@
   "id": "meeting_1_5th",
   "title": "1.5次面談（関係構築・情報交換）",
   "description": "2回目の面談。少し打ち解けてきた状態。具体的な情報を聞き出し、サービス詳細を説明する段階。",
-  "persona": {
-    "customer_role": "SNS担当者 or 経営者",
-    "tone": "少し打ち解けてきた",
-    "relationship": "2回目",
-    "knowledge_level": "基本的な理解はある",
-    "decision_power": "基本は検討中だが、良い提案があれば決定可能",
-    "pain_points": [
-      "具体的な費用感が知りたい",
-      "制作期間が気になる",
-      "他社との違いが知りたい"
-    ]
-  },
+  "persona_variations": [
+    {
+      "variation_id": "short_video_business",
+      "variation_name": "ショート動画を検討している事業主",
+      "customer_role": "ショート動画制作サービスに興味を持ち、2回目の面談を行っている事業主",
+      "note": "具体的な業種・現状はshared_personas.jsonからランダムに選択されたペルソナの設定に従います"
+    }
+  ],
   "guidelines": [
     "1-2文で返答する",
     "前回より少しフランクに話す",
