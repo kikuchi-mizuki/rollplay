@@ -1364,20 +1364,36 @@ def chat_stream():
 
                 print(f"[ストリーミング完了] 合計{chunk_count}チャンク送信")
 
+            except ValueError as e:
+                # 入力値エラー（JSON解析、不正な値など）
+                print(f"[エラー] チャットストリーム - 入力値が不正: {e}")
+                yield f"data: {json.dumps({'error': 'メッセージの形式が不正です'})}\n\n"
+            except TimeoutError as e:
+                # OpenAI APIタイムアウト
+                print(f"[エラー] チャットストリーム - タイムアウト: {e}")
+                yield f"data: {json.dumps({'error': '応答生成がタイムアウトしました。もう一度お試しください'})}\n\n"
             except Exception as e:
+                # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+                print(f"[エラー] チャットストリーム - 予期しないエラー: {type(e).__name__}: {e}")
                 import traceback
                 traceback.print_exc()
-                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+                yield f"data: {json.dumps({'error': '応答生成中にエラーが発生しました。もう一度お試しください'})}\n\n"
 
         return Response(generate(), mimetype='text/event-stream', headers={
             'Cache-Control': 'no-cache',
             'X-Accel-Buffering': 'no'
         })
 
+    except ValueError as e:
+        # リクエストデータの入力値エラー
+        print(f"[エラー] チャットストリーム初期化 - 入力値が不正: {e}")
+        return jsonify({'success': False, 'error': 'リクエストの形式が不正です'}), 400
     except Exception as e:
+        # エンドポイント全体での予期しないエラー
+        print(f"[エラー] チャットストリーム初期化 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': 'サーバーエラーが発生しました。もう一度お試しください'}), 500
 
 
 def get_mock_response(user_message):
@@ -1430,10 +1446,20 @@ def text_to_speech():
         audio_data = response.content
         return Response(audio_data, mimetype='audio/mpeg')
 
+    except ValueError as e:
+        # 入力値エラー（不正な音声ID、空のテキストなど）
+        print(f"[エラー] TTS生成 - 入力値が不正: {e}")
+        return jsonify(success=False, error='音声生成のパラメータが不正です'), 400
+    except TimeoutError as e:
+        # OpenAI TTS APIタイムアウト
+        print(f"[エラー] TTS生成 - タイムアウト: {e}")
+        return jsonify(success=False, error='音声生成がタイムアウトしました。もう一度お試しください'), 500
     except Exception as e:
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        print(f"[エラー] TTS生成 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify(success=False, error=str(e)), 500
+        return jsonify(success=False, error='音声生成中にエラーが発生しました。もう一度お試しください'), 500
 
 
 @app.route('/api/did-video', methods=['POST'])
@@ -1791,10 +1817,35 @@ def evaluate_conversation():
             'timestamp': datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except ValueError as e:
+        # 入力値エラー（不正なJSON、空の会話など）
+        print(f"[エラー] 評価生成 - 入力値が不正: {e}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': '会話データの形式が不正です'
+        }), 400
+    except KeyError as e:
+        # 必要なフィールドが欠落
+        print(f"[エラー] 評価生成 - 必須フィールドが欠落: {e}")
+        return jsonify({
+            'success': False,
+            'error': '会話データに必要な情報が含まれていません'
+        }), 400
+    except TimeoutError as e:
+        # GPT-4 APIタイムアウト
+        print(f"[エラー] 評価生成 - タイムアウト: {e}")
+        return jsonify({
+            'success': False,
+            'error': '評価生成がタイムアウトしました。もう一度お試しください'
+        }), 500
+    except Exception as e:
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        print(f"[エラー] 評価生成 - 予期しないエラー: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': '評価生成中にエラーが発生しました。もう一度お試しください'
         }), 500
 
 def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
@@ -2251,10 +2302,20 @@ def save_conversation():
             'timestamp': datetime.now().isoformat()
         })
 
+    except ValueError as e:
+        # 入力値エラー（不正なJSON、必須フィールド欠落など）
+        print(f"[エラー] 会話保存 - 入力値が不正: {e}")
+        return jsonify({'success': False, 'error': '会話データの形式が不正です'}), 400
+    except KeyError as e:
+        # 必要なフィールドが欠落
+        print(f"[エラー] 会話保存 - 必須フィールドが欠落: {e}")
+        return jsonify({'success': False, 'error': '必要な情報が含まれていません'}), 400
     except Exception as e:
+        # データベースエラーまたは予期しないエラー
+        print(f"[エラー] 会話保存 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': '会話の保存中にエラーが発生しました'}), 500
 
 
 @app.route('/api/conversations', methods=['GET'])
@@ -2285,10 +2346,16 @@ def get_conversations():
             'count': len(result.data)
         })
 
+    except ValueError as e:
+        # 入力値エラー（不正なパラメータなど）
+        print(f"[エラー] 会話取得 - 入力値が不正: {e}")
+        return jsonify({'success': False, 'error': 'リクエストパラメータが不正です'}), 400
     except Exception as e:
+        # データベースエラーまたは予期しないエラー
+        print(f"[エラー] 会話取得 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': '会話履歴の取得中にエラーが発生しました'}), 500
 
 
 @app.route('/api/evaluations', methods=['GET', 'POST'])
@@ -2321,10 +2388,16 @@ def handle_evaluations():
                 'count': len(result.data)
             })
 
+        except ValueError as e:
+            # 入力値エラー（不正なパラメータなど）
+            print(f"[エラー] 評価取得 - 入力値が不正: {e}")
+            return jsonify({'success': False, 'error': 'リクエストパラメータが不正です'}), 400
         except Exception as e:
+            # データベースエラーまたは予期しないエラー
+            print(f"[エラー] 評価取得 - 予期しないエラー: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
-            return jsonify({'success': False, 'error': str(e)}), 500
+            return jsonify({'success': False, 'error': '評価履歴の取得中にエラーが発生しました'}), 500
 
     else:  # POST
         # 評価履歴を保存
@@ -2370,10 +2443,24 @@ def handle_evaluations():
                 'timestamp': datetime.now().isoformat()
             })
 
+        except ValueError as e:
+            # 入力値エラー（不正なJSON、必須フィールド欠落など）
+            print(f"[エラー] 評価保存 - 入力値が不正: {e}")
+            return jsonify({'success': False, 'error': '評価データの形式が不正です'}), 400
+        except KeyError as e:
+            # 必要なフィールドが欠落
+            print(f"[エラー] 評価保存 - 必須フィールドが欠落: {e}")
+            return jsonify({'success': False, 'error': '必要な情報が含まれていません'}), 400
+        except ZeroDivisionError as e:
+            # スコアの平均計算でゼロ除算
+            print(f"[エラー] 評価保存 - スコア計算エラー: {e}")
+            return jsonify({'success': False, 'error': 'スコアデータが不正です'}), 400
         except Exception as e:
+            # データベースエラーまたは予期しないエラー
+            print(f"[エラー] 評価保存 - 予期しないエラー: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
-            return jsonify({'success': False, 'error': str(e)}), 500
+            return jsonify({'success': False, 'error': '評価の保存中にエラーが発生しました'}), 500
 
 
 @app.route('/ingest', methods=['GET', 'POST'])
