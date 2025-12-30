@@ -26,6 +26,7 @@ get_cached_video = None
 get_did_client = None
 download_video_to_storage = None
 save_video_to_cache = None
+limiter = None  # レート制限機能
 
 
 def init_blueprint(app):
@@ -37,6 +38,7 @@ def init_blueprint(app):
     global AudioSegment, sniff_suffix
     global generate_cache_key, get_cached_video, get_did_client
     global download_video_to_storage, save_video_to_cache
+    global limiter
 
     openai_client = app.config.get('openai_client')
     supabase_client = app.config.get('supabase_client')
@@ -49,6 +51,19 @@ def init_blueprint(app):
     get_did_client = app.config.get('get_did_client')
     download_video_to_storage = app.config.get('download_video_to_storage')
     save_video_to_cache = app.config.get('save_video_to_cache')
+    limiter = app.config.get('limiter')
+
+
+def apply_rate_limit(limit_string):
+    """
+    レート制限デコレータを条件付きで適用するヘルパー
+    limiterが利用可能な場合のみレート制限を適用
+    """
+    def decorator(func):
+        if limiter:
+            return limiter.limit(limit_string)(func)
+        return func
+    return decorator
 
 
 @media_bp.route('/tts', methods=['POST'])
@@ -206,6 +221,7 @@ def generate_did_video():
 
 
 @media_bp.route('/transcribe', methods=['POST'])
+@apply_rate_limit("5 per minute")  # Whisper API使用のためレート制限
 def transcribe():
     try:
         if 'audio' not in request.files:

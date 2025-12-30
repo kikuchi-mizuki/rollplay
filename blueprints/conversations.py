@@ -29,6 +29,7 @@ search_rag_patterns = None
 get_mock_response = None
 load_evaluation_samples = None
 RUBRIC_DATA = None
+limiter = None  # レート制限機能
 
 
 def init_blueprint(app):
@@ -41,6 +42,7 @@ def init_blueprint(app):
     global load_scenario_object, select_random_persona_for_scene
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
     global get_mock_response, load_evaluation_samples, RUBRIC_DATA
+    global limiter
 
     supabase_client = app.config.get('supabase_client')
     openai_client = app.config.get('openai_client')
@@ -55,6 +57,19 @@ def init_blueprint(app):
     get_mock_response = app.config.get('get_mock_response')
     load_evaluation_samples = app.config.get('load_evaluation_samples')
     RUBRIC_DATA = app.config.get('RUBRIC_DATA')
+    limiter = app.config.get('limiter')
+
+
+def apply_rate_limit(limit_string):
+    """
+    レート制限デコレータを条件付きで適用するヘルパー
+    limiterが利用可能な場合のみレート制限を適用
+    """
+    def decorator(func):
+        if limiter:
+            return limiter.limit(limit_string)(func)
+        return func
+    return decorator
 
 
 @conversations_bp.route('/api/conversations', methods=['POST'])
@@ -254,6 +269,7 @@ def handle_evaluations():
 # ===== チャット応答エンドポイント =====
 
 @conversations_bp.route('/api/chat', methods=['POST'])
+@apply_rate_limit("10 per minute")  # GPT-4使用のためレート制限
 def chat():
     try:
         data = request.get_json()
@@ -538,6 +554,7 @@ def chat():
 
 
 @conversations_bp.route('/api/chat-stream', methods=['POST'])
+@apply_rate_limit("10 per minute")  # GPT-4+TTS使用のためレート制限
 def chat_stream():
     """
     ストリーミング対応のチャットエンドポイント
@@ -1021,6 +1038,7 @@ def get_mock_response(user_message):
         return mock_responses[1]
 
 @conversations_bp.route('/api/evaluate', methods=['POST'])
+@apply_rate_limit("5 per minute")  # GPT-4評価生成のためレート制限
 def evaluate_conversation():
     try:
         data = request.get_json()

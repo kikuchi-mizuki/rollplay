@@ -36,6 +36,18 @@ except ImportError as e:
     CORS_AVAILABLE = False
     CORS = None
 
+# flask-limiterのインポート（レート制限用）
+try:
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+    LIMITER_AVAILABLE = True
+    print("flask-limiter利用可能")
+except ImportError as e:
+    print(f"flask-limiterインポートエラー: {e}")
+    LIMITER_AVAILABLE = False
+    Limiter = None
+    get_remote_address = None
+
 # pydubのインポート（エラーハンドリング付き）
 try:
     from pydub import AudioSegment
@@ -123,6 +135,20 @@ if CORS_AVAILABLE and CORS:
 
     CORS(app, origins=allowed_origins if allowed_origins else '*')
     print(f"CORS有効化: {allowed_origins if allowed_origins else 'すべてのオリジン'}")
+
+# レート制限の設定（APIコスト爆発を防ぐ）
+limiter = None
+if LIMITER_AVAILABLE and Limiter:
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"],
+        storage_uri="memory://",
+        strategy="fixed-window"
+    )
+    logger.info("レート制限有効化: デフォルト 200回/日, 50回/時間")
+else:
+    logger.warning("flask-limiterが利用できません（レート制限は無効）")
 
 # Supabase設定
 supabase_url = os.getenv('VITE_SUPABASE_URL')
@@ -655,6 +681,7 @@ app.config['get_cached_video'] = get_cached_video
 app.config['get_did_client'] = get_did_client
 app.config['download_video_to_storage'] = download_video_to_storage
 app.config['save_video_to_cache'] = save_video_to_cache
+app.config['limiter'] = limiter  # レート制限機能を渡す
 init_media_blueprint(app)
 
 # 管理者機能Blueprint
@@ -678,6 +705,7 @@ app.config['search_rag_patterns'] = search_rag_patterns
 app.config['get_mock_response'] = get_mock_response
 app.config['load_evaluation_samples'] = load_evaluation_samples
 app.config['RUBRIC_DATA'] = RUBRIC_DATA
+app.config['limiter'] = limiter  # レート制限機能を渡す
 init_conversations_blueprint(app)
 
 # ===== ルート定義 =====
