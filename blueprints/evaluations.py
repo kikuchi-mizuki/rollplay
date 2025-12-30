@@ -109,9 +109,9 @@ def save_instructor_evaluation():
         })
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        logger.exception(f"インストラクター評価保存 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({'success': False, 'error': '評価の保存中にエラーが発生しました'}), 500
 
 
 @evaluations_bp.route('/api/instructor-evaluations', methods=['GET'])
@@ -143,9 +143,9 @@ def get_instructor_evaluations():
         })
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        logger.exception(f"インストラクター評価取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({'success': False, 'error': '評価データの取得中にエラーが発生しました'}), 500
 
 
 @evaluations_bp.route('/api/evaluation-accuracy', methods=['GET'])
@@ -225,6 +225,6 @@ def get_evaluation_accuracy():
         })
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        logger.exception(f"評価精度レポート生成 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({'success': False, 'error': '評価精度レポートの生成中にエラーが発生しました'}), 500

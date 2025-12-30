@@ -359,9 +359,9 @@ def get_store_analytics(store_id):
         })
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        logger.exception(f"データエクスポート - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({'success': False, 'error': 'データのエクスポート中にエラーが発生しました'}), 500
 
 
 @admin_bp.route('/api/admin/export/evaluations', methods=['GET'])
@@ -552,6 +552,6 @@ def export_all_stores():
         }
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        logger.exception(f"店舗ランキング取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({'success': False, 'error': '店舗ランキングの取得中にエラーが発生しました'}), 500

@@ -422,9 +422,9 @@ def transcribe_with_whisper_file(input_file_path):
         return jsonify({'success': True, 'text': text, 'method': 'whisper', 'timestamp': datetime.now().isoformat()})
 
     except Exception as e:
-        logger.error(f"Whisper音声認識エラー詳細: {str(e)}")
-        import traceback; traceback.print_exc()
-        return jsonify({'success': False, 'error': f'Whisper音声認識エラー: {str(e)}'}), 500
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        logger.exception(f"Whisper音声認識 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({'success': False, 'error': '音声認識中にエラーが発生しました。もう一度お試しください'}), 500
     finally:
         # 一時ファイルを削除
         for file_path in [input_file_path, mp3_path] if 'mp3_path' in locals() else [input_file_path]:
