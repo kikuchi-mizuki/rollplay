@@ -16,6 +16,7 @@ from d_id_client import get_did_client, generate_cache_key, get_cached_video, sa
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue, Empty
 import threading
+from functools import wraps
 
 # flask-corsのインポート（エラーハンドリング付き）
 try:
@@ -88,6 +89,131 @@ if supabase_url and supabase_key:
         print(f"Supabase接続エラー: {e}")
 else:
     print("警告: Supabase設定が見つかりません（データ永続化は無効）")
+
+# ===== 認証と権限制御（アプリケーション層） =====
+
+def get_current_user():
+    """
+    リクエストヘッダーからSupabase JWTトークンを取得し、ユーザー情報を返す
+
+    Returns:
+        dict: {'user_id': str, 'role': str, 'profile': dict} または None
+    """
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return None
+
+    token = auth_header.replace('Bearer ', '')
+
+    try:
+        # Supabase auth APIでトークンを検証してユーザー情報を取得
+        user_response = supabase_client.auth.get_user(token)
+        if not user_response or not user_response.user:
+            return None
+
+        user = user_response.user
+        user_id = user.id
+
+        # profilesテーブルからロール情報を取得
+        profile_response = supabase_client.table('profiles').select('*').eq('id', user_id).single().execute()
+
+        if not profile_response.data:
+            # プロフィールが存在しない場合はデフォルトのuser role
+            return {
+                'user_id': user_id,
+                'role': 'user',
+                'profile': None
+            }
+
+        profile = profile_response.data
+        return {
+            'user_id': user_id,
+            'role': profile.get('role', 'user'),
+            'profile': profile
+        }
+    except Exception as e:
+        print(f"認証エラー: {e}")
+        return None
+
+def require_auth(f):
+    """
+    認証が必要なエンドポイント用デコレータ
+    ログインしていない場合は401エラーを返す
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        current_user = get_current_user()
+        if not current_user:
+            return jsonify({'success': False, 'error': 'Authentication required'}), 401
+
+        # リクエストコンテキストにユーザー情報を追加
+        request.current_user = current_user
+        return f(*args, **kwargs)
+    return decorated_function
+
+def require_role(*allowed_roles):
+    """
+    特定のロールが必要なエンドポイント用デコレータ
+
+    Args:
+        *allowed_roles: 許可されたロール ('admin', 'manager', 'user')
+
+    Example:
+        @require_role('admin')
+        @require_role('admin', 'manager')
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            current_user = get_current_user()
+            if not current_user:
+                return jsonify({'success': False, 'error': 'Authentication required'}), 401
+
+            if current_user['role'] not in allowed_roles:
+                return jsonify({
+                    'success': False,
+                    'error': f'Permission denied. Required role: {", ".join(allowed_roles)}'
+                }), 403
+
+            # リクエストコンテキストにユーザー情報を追加
+            request.current_user = current_user
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+def can_access_data(current_user, data_user_id=None, data_store_id=None):
+    """
+    現在のユーザーが指定されたデータにアクセス可能かチェック
+
+    Args:
+        current_user: get_current_user()の戻り値
+        data_user_id: データの所有者のuser_id
+        data_store_id: データの所属店舗ID
+
+    Returns:
+        bool: アクセス可能ならTrue
+    """
+    if not current_user:
+        return False
+
+    role = current_user['role']
+    user_id = current_user['user_id']
+    profile = current_user.get('profile', {})
+    user_store_id = profile.get('store_id') if profile else None
+
+    # 管理者は全データにアクセス可能
+    if role == 'admin':
+        return True
+
+    # 店舗管理者は自店舗のデータにアクセス可能
+    if role == 'manager' and data_store_id and user_store_id == data_store_id:
+        return True
+
+    # 一般ユーザーは自分のデータのみアクセス可能
+    if data_user_id and user_id == data_user_id:
+        return True
+
+    return False
 
 # OpenAI API設定（Whisper統一版）
 openai_api_key = os.getenv('OPENAI_API_KEY')
@@ -1478,15 +1604,24 @@ def transcribe():
             finally:
                 try: os.remove(wav_path)
                 except Exception: pass
-    except Exception as e:
+    except ValueError as e:
+        print(f"[エラー] 入力値が不正: {e}")
+        return jsonify(success=False, error='音声ファイルの形式が不正です'), 400
+    except OSError as e:
+        print(f"[エラー] ファイルI/O: {e}")
         import traceback; traceback.print_exc()
-        return jsonify(success=False, error=str(e)), 500
+        return jsonify(success=False, error='音声ファイルの処理中にエラーが発生しました'), 500
+    except Exception as e:
+        # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        print(f"[エラー] 予期しないエラー: {type(e).__name__}: {e}")
+        import traceback; traceback.print_exc()
+        return jsonify(success=False, error='音声認識中にエラーが発生しました。もう一度お試しください。'), 500
     finally:
         try:
             if 'new_path' in locals() and new_path and os.path.exists(new_path):
                 os.remove(new_path)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[警告] 一時ファイル削除失敗: {e}")
 
 def transcribe_with_whisper(audio_bytes):
     """Whisper APIを使用した音声認識"""
