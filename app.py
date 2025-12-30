@@ -2767,10 +2767,27 @@ def get_stores_rankings():
             'rankings': rankings
         })
 
+    except KeyError as e:
+        # 必要なフィールドが欠落
+        logger.error(f"店舗ランキング取得 - データフィールドが欠落: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'データの形式が不正です'
+        }), 500
+    except ZeroDivisionError as e:
+        # 平均スコア計算でゼロ除算
+        logger.error(f"店舗ランキング取得 - スコア計算エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'スコアデータの計算中にエラーが発生しました'
+        }), 500
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # データベースエラーまたは予期しないエラー
+        logger.exception(f"店舗ランキング取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '店舗ランキングの取得に失敗しました'
+        }), 500
 
 
 @app.route('/api/stores/<store_id>/members', methods=['GET'])
@@ -2803,10 +2820,34 @@ def get_store_members(store_id):
             'members': members
         })
 
+    except ValueError as e:
+        # 不正な店舗ID
+        logger.error(f"店舗メンバー取得 - 不正な店舗ID: {store_id}, {e}")
+        return jsonify({
+            'success': False,
+            'error': '店舗IDの形式が不正です'
+        }), 400
+    except KeyError as e:
+        # 必要なフィールドが欠落
+        logger.error(f"店舗メンバー取得 - データフィールドが欠落: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'データの形式が不正です'
+        }), 500
+    except ZeroDivisionError as e:
+        # 平均スコア計算でゼロ除算
+        logger.error(f"店舗メンバー取得 - スコア計算エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'スコアデータの計算中にエラーが発生しました'
+        }), 500
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # データベースエラーまたは予期しないエラー
+        logger.exception(f"店舗メンバー取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '店舗メンバー情報の取得に失敗しました'
+        }), 500
 
 
 @app.route('/api/admin/regions/stats', methods=['GET'])
@@ -2893,10 +2934,27 @@ def get_regions_stats():
             'regions': region_stats
         })
 
+    except KeyError as e:
+        # 必要なフィールドが欠落
+        logger.error(f"リージョン統計取得 - データフィールドが欠落: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'データの形式が不正です'
+        }), 500
+    except ZeroDivisionError as e:
+        # 平均スコア計算でゼロ除算
+        logger.error(f"リージョン統計取得 - スコア計算エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'スコアデータの計算中にエラーが発生しました'
+        }), 500
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # データベースエラーまたは予期しないエラー
+        logger.exception(f"リージョン統計取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'リージョン統計の取得に失敗しました'
+        }), 500
 
 
 @app.route('/api/stores/<store_id>/analytics', methods=['GET'])
@@ -3084,10 +3142,27 @@ def export_all_evaluations():
             'Content-Disposition': f'attachment; filename=evaluations_export_{evaluation.get("created_at", "").split("T")[0] if evaluations else "all"}.csv'
         }
 
+    except KeyError as e:
+        # 必要なフィールドが欠落
+        logger.error(f"評価エクスポート - データフィールドが欠落: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'データの形式が不正です'
+        }), 500
+    except OSError as e:
+        # ファイル操作エラー
+        logger.error(f"評価エクスポート - ファイル操作エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'CSVファイルの生成に失敗しました'
+        }), 500
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # データベースエラーまたは予期しないエラー
+        logger.exception(f"評価エクスポート - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '評価データのエクスポートに失敗しました'
+        }), 500
 
 
 @app.route('/api/admin/export/stores', methods=['GET'])
