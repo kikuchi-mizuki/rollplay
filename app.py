@@ -712,7 +712,6 @@ app.config['select_random_persona_for_scene'] = select_random_persona_for_scene
 app.config['RAG_INDEX'] = RAG_INDEX
 app.config['RAG_METADATA'] = RAG_METADATA
 app.config['search_rag_patterns'] = search_rag_patterns
-app.config['get_mock_response'] = get_mock_response
 app.config['load_evaluation_samples'] = load_evaluation_samples
 app.config['RUBRIC_DATA'] = RUBRIC_DATA
 app.config['limiter'] = limiter  # レート制限機能を渡す

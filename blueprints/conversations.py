@@ -26,7 +26,6 @@ select_random_persona_for_scene = None
 RAG_INDEX = None
 RAG_METADATA = None
 search_rag_patterns = None
-get_mock_response = None
 load_evaluation_samples = None
 RUBRIC_DATA = None
 limiter = None  # レート制限機能
@@ -44,7 +43,7 @@ def init_blueprint(app):
     global DEFAULT_SCENARIO_ID, SALES_ROLEPLAY_PROMPT
     global load_scenario_object, select_random_persona_for_scene
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
-    global get_mock_response, load_evaluation_samples, RUBRIC_DATA
+    global load_evaluation_samples, RUBRIC_DATA
     global limiter
     global MAX_MESSAGE_LENGTH, MAX_HISTORY_LENGTH, MAX_EVALUATION_TEXT_LENGTH
 
@@ -58,7 +57,6 @@ def init_blueprint(app):
     RAG_INDEX = app.config.get('RAG_INDEX')
     RAG_METADATA = app.config.get('RAG_METADATA')
     search_rag_patterns = app.config.get('search_rag_patterns')
-    get_mock_response = app.config.get('get_mock_response')
     load_evaluation_samples = app.config.get('load_evaluation_samples')
     RUBRIC_DATA = app.config.get('RUBRIC_DATA')
     limiter = app.config.get('limiter')
