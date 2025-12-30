@@ -23,7 +23,7 @@ from d_id_client import get_did_client, generate_cache_key, get_cached_video, sa
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue, Empty
 import threading
-from functools import wraps
+from functools import wraps, lru_cache
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -323,7 +323,6 @@ logger.info("対話生成: GPT-4o-mini (max_tokens=1500)")
 SCENARIO_DIR = os.path.join(os.path.dirname(__file__), 'scenarios')
 SCENARIOS_INDEX_PATH = os.path.join(SCENARIO_DIR, 'index.json')
 SCENARIOS_INDEX = {}
-SCENARIO_CACHE = {}
 DEFAULT_SCENARIO_ID = None
 
 def load_scenarios_index():
@@ -346,19 +345,17 @@ def load_scenarios_index():
         SCENARIOS_INDEX = {}
         DEFAULT_SCENARIO_ID = None
 
+@lru_cache(maxsize=128)
 def load_scenario_object(scenario_id: str):
-    """シナリオIDからJSONを読み込み、キャッシュして返す。存在しない場合はNone。"""
+    """シナリオIDからJSONを読み込み、LRUキャッシュで管理（最大128件）"""
     if not scenario_id:
         return None
-    if scenario_id in SCENARIO_CACHE:
-        return SCENARIO_CACHE[scenario_id]
     path = SCENARIOS_INDEX.get(scenario_id)
     if not path or not os.path.exists(path):
         return None
     try:
         with open(path, 'r', encoding='utf-8') as f:
             obj = json.load(f)
-        SCENARIO_CACHE[scenario_id] = obj
         return obj
     except Exception as e:
         logger.error(f"シナリオ読込エラー({scenario_id}): {e}")
@@ -461,18 +458,12 @@ load_shared_personas()
 
 # ===== Few-shot評価サンプル読込（Week 5：評価精度向上） =====
 EVALUATION_SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'evaluation_samples')
-EVALUATION_SAMPLES_CACHE = {}
 
+@lru_cache(maxsize=64)
 def load_evaluation_samples(scenario_id: str):
-    """シナリオIDに対応するFew-shot評価サンプルを読み込む"""
-    global EVALUATION_SAMPLES_CACHE
-
+    """シナリオIDに対応するFew-shot評価サンプルを読み込む（LRUキャッシュ管理、最大64件）"""
     if not scenario_id:
         return None
-
-    # キャッシュチェック
-    if scenario_id in EVALUATION_SAMPLES_CACHE:
-        return EVALUATION_SAMPLES_CACHE[scenario_id]
 
     # ファイルパスを構築
     samples_file = os.path.join(EVALUATION_SAMPLES_DIR, f"{scenario_id}_samples.json")
@@ -484,7 +475,6 @@ def load_evaluation_samples(scenario_id: str):
     try:
         with open(samples_file, 'r', encoding='utf-8') as f:
             samples_data = json.load(f)
-        EVALUATION_SAMPLES_CACHE[scenario_id] = samples_data
         logger.info(f"評価サンプル読込完了: {scenario_id} ({len(samples_data.get('few_shot_examples', []))}件)")
         return samples_data
     except Exception as e:
