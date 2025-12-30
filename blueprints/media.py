@@ -163,7 +163,7 @@ def generate_did_video():
             return jsonify(success=False, error='D-ID APIが設定されていません'), 500
 
         # D-ID動画を生成（テキストから直接）
-        print(f"🎬 Generating D-ID video for text: {text[:50]}...")
+        logger.info(f"🎬 Generating D-ID video for text: {text[:50]}...")
         result = did_client.create_talk_from_text(
             text=text,
             voice_id=voice_id,
@@ -171,13 +171,13 @@ def generate_did_video():
         )
 
         talk_id = result.get('id')
-        print(f"📝 D-ID talk created: {talk_id}")
+        logger.debug(f"📝 D-ID talk created: {talk_id}")
 
         # 完了を待機（最大120秒）
         did_video_url = did_client.wait_for_completion(talk_id, timeout=120)
 
         if did_video_url:
-            print(f"✅ D-ID video ready: {did_video_url}")
+            logger.info(f"✅ D-ID video ready: {did_video_url}")
 
             # Week 7: Supabase Storageに保存してキャッシュ
             if supabase_client:
@@ -238,7 +238,7 @@ def transcribe():
             new_path = temp_path + real_suffix
             os.replace(temp_path, new_path)
         size = os.path.getsize(new_path)
-        print(f"[upload] mime={up.mimetype} saved={new_path} size={size}")
+        logger.debug(f"[upload] mime={up.mimetype} saved={new_path} size={size}")
         if size < 1024:  # 1KB未満は明らかに短すぎる
             try: os.remove(new_path)
             except Exception: pass
@@ -250,7 +250,7 @@ def transcribe():
 
         # Whisperで音声認識（promptなしで無音時の誤認識を防止）
         # promptを削除：無音時に「ご視聴ありがとうございます」などの定型句を生成するのを防ぐ
-        print(f"[Whisper設定] prompt: なし, temperature: 0")
+        logger.debug(f"[Whisper設定] prompt: なし, temperature: 0")
 
         try:
             with open(new_path, 'rb') as f:
@@ -261,10 +261,10 @@ def transcribe():
                     temperature=0
                 )
             text = (getattr(r, 'text', '') or '').strip()
-            print(f"[Whisper成功] 認識結果: {text}")
+            logger.debug(f"[Whisper成功] 認識結果: {text}")
             return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
         except Exception as e:
-            print(f"[Whisper失敗] エラー: {e}, ファイルサイズ: {size} bytes")
+            logger.debug(f"[Whisper失敗] エラー: {e}, ファイルサイズ: {size} bytes")
             if not (PYDUB_AVAILABLE and FFMPEG_AVAILABLE):
                 raise
             wav_path = new_path + '.wav'
@@ -305,14 +305,14 @@ def transcribe():
 def transcribe_with_whisper(audio_bytes):
     """Whisper APIを使用した音声認識"""
     try:
-        print(f"音声データサイズ: {len(audio_bytes)} bytes")
+        logger.debug(f"音声データサイズ: {len(audio_bytes)} bytes")
 
         # 音声データを一時ファイルに保存
         with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
             temp_file.write(audio_bytes)
             temp_file_path = temp_file.name
 
-        print(f"一時ファイル作成: {temp_file_path}")
+        logger.debug(f"一時ファイル作成: {temp_file_path}")
 
         try:
             # pydubが利用可能かチェック
@@ -320,17 +320,17 @@ def transcribe_with_whisper(audio_bytes):
                 raise Exception("pydubが利用できません。ffmpegのインストールを確認してください。")
 
             # 音声ファイルを読み込み、MP3に変換（Whisperの推奨形式）
-            print("音声ファイル変換開始...")
+            logger.debug("音声ファイル変換開始...")
             audio = AudioSegment.from_wav(temp_file_path)
             mp3_path = temp_file_path.replace('.wav', '.mp3')
             audio.export(mp3_path, format="mp3")
-            print(f"MP3変換完了: {mp3_path}")
+            logger.debug(f"MP3変換完了: {mp3_path}")
 
             # OpenAIクライアントの確認
             if not openai_client:
                 raise Exception("OpenAIクライアントが初期化されていません")
 
-            print("Whisper API呼び出し開始...")
+            logger.debug("Whisper API呼び出し開始...")
             # Whisper APIで音声認識（新しいAPI形式）
             # プロンプトで文脈を提供（精度向上）
             # 文章形式の方が効果的：前のセグメントのスタイルを継続
@@ -339,7 +339,7 @@ def transcribe_with_whisper(audio_bytes):
                 "TikTok、Instagram、YouTubeを活用したマーケティング、集客、"
                 "ブランディングについて相談させていただきます。"
             )
-            print(f"[Whisper設定] prompt: {context_prompt[:50]}..., temperature: 0")
+            logger.debug(f"[Whisper設定] prompt: {context_prompt[:50]}..., temperature: 0")
             with open(mp3_path, 'rb') as audio_file:
                 transcript = openai_client.audio.transcriptions.create(
                     model="whisper-1",
@@ -350,7 +350,7 @@ def transcribe_with_whisper(audio_bytes):
                 )
 
             transcribed_text = transcript.text.strip()
-            print(f"音声認識結果: {transcribed_text}")
+            logger.info(f"音声認識結果: {transcribed_text}")
 
             return jsonify({
                 'success': True,
@@ -364,10 +364,10 @@ def transcribe_with_whisper(audio_bytes):
             for file_path in [temp_file_path, mp3_path]:
                 if os.path.exists(file_path):
                     os.unlink(file_path)
-                    print(f"一時ファイル削除: {file_path}")
+                    logger.debug(f"一時ファイル削除: {file_path}")
 
     except Exception as e:
-        print(f"Whisper音声認識エラー詳細: {str(e)}")
+        logger.error(f"Whisper音声認識エラー詳細: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({
@@ -380,9 +380,9 @@ def transcribe_with_whisper_file(input_file_path):
     """ファイルパスからWhisper APIを使用（直送→失敗時にWAVへ変換して再送）"""
     mp3_path = None
     try:
-        print(f"音声ファイル処理開始: {input_file_path}")
+        logger.debug(f"音声ファイル処理開始: {input_file_path}")
         size = os.path.getsize(input_file_path)
-        print(f"受信サイズ: {size} bytes")
+        logger.debug(f"受信サイズ: {size} bytes")
         if size < 2048:
             raise Exception("録音データが小さすぎます（2KB未満）")
 
@@ -391,7 +391,7 @@ def transcribe_with_whisper_file(input_file_path):
 
         # 1) まずはそのままWhisperへ
         try:
-            print("Whisperへ直接送信...")
+            logger.debug("Whisperへ直接送信...")
             with open(input_file_path, 'rb') as f:
                 transcript = openai_client.audio.transcriptions.create(
                     model="whisper-1",
@@ -399,10 +399,10 @@ def transcribe_with_whisper_file(input_file_path):
                     language="ja"
                 )
         except Exception as direct_err:
-            print(f"直接送信失敗: {direct_err}")
+            logger.warning(f"直接送信失敗: {direct_err}")
             if not PYDUB_AVAILABLE or not FFMPEG_AVAILABLE:
                 raise
-            print("pydubでWAV(16k,mono)へ変換して再送...")
+            logger.debug("pydubでWAV(16k,mono)へ変換して再送...")
             audio = AudioSegment.from_file(input_file_path)
             wav_path = input_file_path + '.wav'
             audio.set_frame_rate(16000).set_channels(1).export(wav_path, format='wav')
@@ -418,11 +418,11 @@ def transcribe_with_whisper_file(input_file_path):
                 pass
 
         text = (transcript.text or '').strip()
-        print(f"音声認識結果: {text}")
+        logger.info(f"音声認識結果: {text}")
         return jsonify({'success': True, 'text': text, 'method': 'whisper', 'timestamp': datetime.now().isoformat()})
 
     except Exception as e:
-        print(f"Whisper音声認識エラー詳細: {str(e)}")
+        logger.error(f"Whisper音声認識エラー詳細: {str(e)}")
         import traceback; traceback.print_exc()
         return jsonify({'success': False, 'error': f'Whisper音声認識エラー: {str(e)}'}), 500
     finally:
@@ -431,6 +431,6 @@ def transcribe_with_whisper_file(input_file_path):
             if file_path and os.path.exists(file_path):
                 try:
                     os.unlink(file_path)
-                    print(f"一時ファイル削除: {file_path}")
+                    logger.debug(f"一時ファイル削除: {file_path}")
                 except Exception:
                     pass

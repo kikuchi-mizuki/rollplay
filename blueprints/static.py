@@ -3,7 +3,10 @@
 フロントエンド（React）とアセットファイルの配信を提供
 """
 import os
+import logging
 from flask import Blueprint, render_template, send_from_directory, jsonify
+
+logger = logging.getLogger(__name__)
 
 # Blueprintオブジェクト作成（url_prefixなし - ルートパスを扱うため）
 static_bp = Blueprint('static_routes', __name__)
@@ -66,11 +69,11 @@ def catch_all(path):
     APIルート以外のすべてのパスでindex.htmlを返す
     これによりReact Routerがクライアント側でルーティングを処理できる
     """
-    print(f"🔍 Catch-all route called with path: {path}")
+    logger.debug(f"🔍 Catch-all route called with path: {path}")
 
     # APIルートは除外
     if path.startswith('api/'):
-        print(f"❌ API route, returning 404: {path}")
+        logger.debug(f"❌ API route, returning 404: {path}")
         return jsonify({'error': 'Not found'}), 404
 
     # メディアファイル（動画・画像）を配信
@@ -78,18 +81,18 @@ def catch_all(path):
         dist_path = os.path.join(os.path.dirname(__file__), '..', 'dist')
         file_path = os.path.join(dist_path, path)
         if os.path.exists(file_path):
-            print(f"📹 Serving media file: {path}")
+            logger.debug(f"📹 Serving media file: {path}")
             return send_from_directory(dist_path, path)
 
     # distディレクトリのindex.htmlを返す
     dist_index = os.path.join(os.path.dirname(__file__), '..', 'dist', 'index.html')
-    print(f"📁 Looking for index.html at: {dist_index}")
-    print(f"✅ File exists: {os.path.exists(dist_index)}")
+    logger.debug(f"📁 Looking for index.html at: {dist_index}")
+    logger.debug(f"✅ File exists: {os.path.exists(dist_index)}")
 
     if os.path.exists(dist_index):
-        print(f"✅ Serving index.html for path: {path}")
+        logger.debug(f"✅ Serving index.html for path: {path}")
         with open(dist_index, 'r', encoding='utf-8') as f:
             return f.read()
 
-    print(f"❌ index.html not found at: {dist_index}")
+    logger.warning(f"❌ index.html not found at: {dist_index}")
     return jsonify({'error': 'Frontend not built', 'path': path}), 404

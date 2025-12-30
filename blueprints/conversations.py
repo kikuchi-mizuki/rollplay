@@ -310,7 +310,7 @@ def chat():
                     persona = select_random_persona_for_scene(scenario_id)
                 else:
                     # 会話継続中はペルソナを選択しない（GPTが過去の会話から一貫性を保つ）
-                    print("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
+                    logger.debug("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
                     persona = None
 
                 # シナリオのguidelinesを取得
@@ -454,7 +454,7 @@ def chat():
                         # トピックキーワードを検索クエリに追加（重み付け）
                         if current_topics:
                             search_query += f"\n重要トピック: {', '.join(current_topics)}"
-                            print(f"[RAG文脈強化] 検出トピック: {', '.join(current_topics)}")
+                            logger.debug(f"[RAG文脈強化] 検出トピック: {', '.join(current_topics)}")
 
                         # 類似パターンを検索（シナリオIDでフィルタリング、より多くの実例を参照）
                         rag_results = search_rag_patterns(search_query, top_k=10, scenario_id=scenario_id)
@@ -467,7 +467,7 @@ def chat():
                                 # 類似度チェック（距離が小さいほど類似度が高い：L2距離）
                                 similarity = result.get('similarity', 999)
                                 if similarity > similarity_threshold:
-                                    print(f"[RAG除外] 類似度が低いパターンをスキップ（距離: {similarity:.3f}）")
+                                    logger.debug(f"[RAG除外] 類似度が低いパターンをスキップ（距離: {similarity:.3f}）")
                                     continue
 
                                 pattern_text = result.get('text', '')
@@ -482,7 +482,7 @@ def chat():
                                     # 300文字まで（詳細な応答パターン）
                                     rag_patterns.append(f"- [{type_label}] {pattern_text[:300]}")
                                     pattern_count += 1
-                                    print(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
+                                    logger.debug(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
                                     if pattern_count >= 7:  # 最大7パターン
                                         break
 
@@ -491,11 +491,11 @@ def chat():
                                 # system_promptに追加
                                 system_prompt += rag_context
                                 messages[0] = {"role": "system", "content": system_prompt}
-                                print(f"[RAG検索] {len(rag_results)}件の類似パターンを検出")
+                                logger.debug(f"[RAG検索] {len(rag_results)}件の類似パターンを検出")
                             else:
-                                print("[RAG検索] 類似パターンが見つかりませんでした")
+                                logger.debug("[RAG検索] 類似パターンが見つかりませんでした")
                     except Exception as e:
-                        print(f"RAG検索エラー（フォールバック）: {e}")
+                        logger.error(f"RAG検索エラー（フォールバック）: {e}")
                         import traceback
                         traceback.print_exc()
                         # RAG検索に失敗しても続行（通常の応答生成にフォールバック）
@@ -529,7 +529,7 @@ def chat():
                 ai_response = response.choices[0].message.content.strip()
                 
             except Exception as e:
-                print(f"GPT-4 API エラー: {e}")
+                logger.error(f"GPT-4 API エラー: {e}")
                 # フォールバック: モック応答
                 ai_response = get_mock_response(user_message)
         else:
@@ -628,16 +628,16 @@ def chat_stream():
                             # TTS生成時間を計測
                             tts_duration = (time.time() - tts_start) * 1000  # ms
                             retry_info = f" (リトライ{attempt}回)" if attempt > 0 else ""
-                            print(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字){retry_info}")
+                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字){retry_info}")
 
                             return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
                         except Exception as e:
                             if attempt < max_retries - 1:
-                                print(f"[TTS リトライ] チャンク{chunk_index} 試行{attempt + 1}/{max_retries}: {e}")
+                                logger.debug(f"[TTS リトライ] チャンク{chunk_index} 試行{attempt + 1}/{max_retries}: {e}")
                                 time.sleep(retry_delay)
                                 retry_delay *= 2  # 指数バックオフ（100ms → 200ms → 400ms）
                             else:
-                                print(f"[TTS 最終エラー] チャンク{chunk_index}: {e} （{max_retries}回試行後）")
+                                logger.debug(f"[TTS 最終エラー] チャンク{chunk_index}: {e} （{max_retries}回試行後）")
                                 return None
 
                 if not openai_api_key or not openai_client:
@@ -654,7 +654,7 @@ def chat_stream():
                     persona = select_random_persona_for_scene(scenario_id)
                 else:
                     # 会話継続中はペルソナを選択しない（GPTが過去の会話から一貫性を保つ）
-                    print("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
+                    logger.debug("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
                     persona = None
 
                 # シナリオのguidelinesを取得
@@ -786,7 +786,7 @@ def chat_stream():
                         topic_emphasis = ""
                         if current_topics:
                             topic_emphasis = f"\n重要トピック: {', '.join(current_topics)}"
-                            print(f"[RAG文脈強化] 検出トピック: {', '.join(current_topics)}")
+                            logger.debug(f"[RAG文脈強化] 検出トピック: {', '.join(current_topics)}")
 
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"]) + topic_emphasis
 
@@ -801,7 +801,7 @@ def chat_stream():
                                 # 類似度チェック（距離が小さいほど類似度が高い：L2距離）
                                 similarity = result.get('similarity', 999)
                                 if similarity > similarity_threshold:
-                                    print(f"[RAG除外] 類似度が低いパターンをスキップ（距離: {similarity:.3f}）")
+                                    logger.debug(f"[RAG除外] 類似度が低いパターンをスキップ（距離: {similarity:.3f}）")
                                     continue
 
                                 pattern_text = result.get('text', '')
@@ -816,7 +816,7 @@ def chat_stream():
                                         customer_only_text = '\n'.join(customer_lines)
                                         rag_patterns.append(f"- {customer_only_text[:300]}")  # 300文字まで（リアル感を保つ）
                                         pattern_count += 1
-                                        print(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
+                                        logger.debug(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
                                         if pattern_count >= 7:  # 最大7パターンまで（バリエーション重視）
                                             break
 
@@ -833,15 +833,15 @@ def chat_stream():
                                 rag_context += "- 間（「...」）を使って考えている様子を表現すること\n"
                                 rag_context += "- 必ず【シナリオ設定】のペルソナ情報（業種、事業内容、課題）に基づいて応答すること"
                                 system_prompt += rag_context
-                                print(f"[RAG強化] {len(rag_patterns)}個の顧客応答パターンを参照（口調・表現を積極活用）")
+                                logger.debug(f"[RAG強化] {len(rag_patterns)}個の顧客応答パターンを参照（口調・表現を積極活用）")
                 except Exception as e:
-                    print(f"[RAG] 検索エラー（続行）: {e}")
+                    logger.debug(f"[RAG] 検索エラー（続行）: {e}")
                     # エラーでも続行
 
                 # メッセージ履歴構築（直近10件：会話の一貫性を保つ）
-                print(f"[会話履歴デバッグ] 受信した履歴件数: {len(conversation_history)}")
+                logger.debug(f"[会話履歴デバッグ] 受信した履歴件数: {len(conversation_history)}")
                 for i, msg in enumerate(conversation_history[-10:]):
-                    print(f"  履歴[{i}] {msg.get('speaker', '不明')}: {msg.get('text', '')[:50]}...")
+                    logger.debug(f"  履歴[{i}] {msg.get('speaker', '不明')}: {msg.get('text', '')[:50]}...")
 
                 messages = [{"role": "system", "content": system_prompt}]
                 for msg in conversation_history[-10:]:
@@ -851,10 +851,10 @@ def chat_stream():
                         messages.append({"role": "assistant", "content": msg['text']})
 
                 messages.append({"role": "user", "content": user_message})
-                print(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
+                logger.debug(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
 
                 # GPT-4o-miniストリーミング応答（超高速＋自然な会話）
-                print("[ストリーミング] GPT-4o-mini応答生成開始（超高速＋自然モード）")
+                logger.debug("[ストリーミング] GPT-4o-mini応答生成開始（超高速＋自然モード）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
@@ -941,7 +941,7 @@ def chat_stream():
                                 if best_pos > 0:
                                     chunk_text = text_buffer[:best_pos].strip()
                                     chunk_count += 1
-                                    print(f"[チャンク{chunk_count}] {chunk_text} （助詞で分割・TTS並列生成開始）")
+                                    logger.debug(f"[チャンク{chunk_count}] {chunk_text} （助詞で分割・TTS並列生成開始）")
 
                                     # TTS生成を並列実行（ブロックしない）
                                     future = executor.submit(generate_tts_task, chunk_text, chunk_count)
@@ -957,7 +957,7 @@ def chat_stream():
                                     if part.strip():
                                         chunk_text = part.strip() + delimiter
                                         chunk_count += 1
-                                        print(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
+                                        logger.debug(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
 
                                         # TTS生成を並列実行（ブロックしない）
                                         future = executor.submit(generate_tts_task, chunk_text, chunk_count)
@@ -970,7 +970,7 @@ def chat_stream():
                                 # delimiter が None の場合（このケースはもう発生しないはず）
                                 chunk_text = text_buffer.strip()
                                 chunk_count += 1
-                                print(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
+                                logger.debug(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
 
                                 # TTS生成を並列実行（ブロックしない）
                                 future = executor.submit(generate_tts_task, chunk_text, chunk_count)
@@ -988,7 +988,7 @@ def chat_stream():
                                 yield f"data: {json.dumps(result)}\n\n"
                                 if not first_chunk_sent:
                                     first_chunk_sent = True
-                                print(f"[チャンク{next_yield_index}] 送信完了（並列生成）")
+                                logger.debug(f"[チャンク{next_yield_index}] 送信完了（並列生成）")
                             del tts_futures[next_yield_index]
                             next_yield_index += 1
                         else:
@@ -997,7 +997,7 @@ def chat_stream():
                 # 残りのテキストを処理
                 if text_buffer.strip():
                     chunk_count += 1
-                    print(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
+                    logger.debug(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
                     future = executor.submit(generate_tts_task, text_buffer.strip(), chunk_count)
                     tts_futures[chunk_count] = future
 
@@ -1010,14 +1010,14 @@ def chat_stream():
                             if next_yield_index == chunk_count:
                                 result['final'] = True  # 最終チャンクマーク
                             yield f"data: {json.dumps(result)}\n\n"
-                            print(f"[チャンク{next_yield_index}] 送信完了（最終処理）")
+                            logger.debug(f"[チャンク{next_yield_index}] 送信完了（最終処理）")
                         del tts_futures[next_yield_index]
                     next_yield_index += 1
 
                 # スレッドプールをクリーンアップ
                 executor.shutdown(wait=False)
 
-                print(f"[ストリーミング完了] 合計{chunk_count}チャンク送信")
+                logger.debug(f"[ストリーミング完了] 合計{chunk_count}チャンク送信")
 
             except ValueError as e:
                 # 入力値エラー（JSON解析、不正な値など）
@@ -1097,13 +1097,13 @@ def evaluate_conversation():
         evaluation = generate_evaluation_with_gpt4(sales_utterances, scenario_id)
 
         # デバッグログ: 評価結果を出力
-        print("\n" + "="*80)
-        print("[評価結果デバッグ]")
-        print(f"overall: {evaluation.get('overall', 'N/A')}")
-        print(f"strengths: {evaluation.get('strengths', 'N/A')}")
-        print(f"improvements: {evaluation.get('improvements', 'N/A')}")
-        print(f"scores: {evaluation.get('scores', 'N/A')}")
-        print("="*80 + "\n")
+        logger.debug("\n" + "="*80)
+        logger.debug("[評価結果デバッグ]")
+        logger.debug(f"overall: {evaluation.get('overall', 'N/A')}")
+        logger.debug(f"strengths: {evaluation.get('strengths', 'N/A')}")
+        logger.debug(f"improvements: {evaluation.get('improvements', 'N/A')}")
+        logger.debug(f"scores: {evaluation.get('scores', 'N/A')}")
+        logger.debug("="*80 + "\n")
 
         return jsonify({
             'success': True,
@@ -1325,7 +1325,7 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             return generate_evaluation_fallback(sales_utterances)
             
     except Exception as e:
-        print(f"GPT-4評価エラー: {e}")
+        logger.error(f"GPT-4評価エラー: {e}")
         # フォールバック: 従来の評価ロジック
         return generate_evaluation_fallback(sales_utterances)
 

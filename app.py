@@ -32,7 +32,7 @@ try:
     from flask_cors import CORS
     CORS_AVAILABLE = True
 except ImportError as e:
-    print(f"flask-corsインポートエラー: {e}")
+    logging.warning(f"flask-corsインポートエラー: {e}")
     CORS_AVAILABLE = False
     CORS = None
 
@@ -41,9 +41,9 @@ try:
     from flask_limiter import Limiter
     from flask_limiter.util import get_remote_address
     LIMITER_AVAILABLE = True
-    print("flask-limiter利用可能")
+    logging.info("flask-limiter利用可能")
 except ImportError as e:
-    print(f"flask-limiterインポートエラー: {e}")
+    logging.warning(f"flask-limiterインポートエラー: {e}")
     LIMITER_AVAILABLE = False
     Limiter = None
     get_remote_address = None
@@ -52,9 +52,9 @@ except ImportError as e:
 try:
     from pydub import AudioSegment
     PYDUB_AVAILABLE = True
-    print("pydub利用可能")
+    logging.info("pydub利用可能")
 except ImportError as e:
-    print(f"pydubインポートエラー: {e}")
+    logging.warning(f"pydubインポートエラー: {e}")
     PYDUB_AVAILABLE = False
     AudioSegment = None
 
@@ -62,9 +62,9 @@ except ImportError as e:
 try:
     import yaml
     YAML_AVAILABLE = True
-    print("yaml利用可能")
+    logging.info("yaml利用可能")
 except ImportError as e:
-    print(f"yamlインポートエラー: {e}")
+    logging.warning(f"yamlインポートエラー: {e}")
     YAML_AVAILABLE = False
     yaml = None
 
@@ -73,9 +73,9 @@ try:
     import faiss
     import numpy as np
     FAISS_AVAILABLE = True
-    print("FAISS利用可能")
+    logging.info("FAISS利用可能")
 except ImportError as e:
-    print(f"FAISSインポートエラー: {e}")
+    logging.warning(f"FAISSインポートエラー: {e}")
     FAISS_AVAILABLE = False
     faiss = None
     np = None
@@ -134,7 +134,7 @@ if CORS_AVAILABLE and CORS:
     allowed_origins = [origin for origin in allowed_origins if origin]
 
     CORS(app, origins=allowed_origins if allowed_origins else '*')
-    print(f"CORS有効化: {allowed_origins if allowed_origins else 'すべてのオリジン'}")
+    logger.info(f"CORS有効化: {allowed_origins if allowed_origins else 'すべてのオリジン'}")
 
 # レート制限の設定（APIコスト爆発を防ぐ）
 limiter = None
@@ -302,22 +302,22 @@ def can_access_data(current_user, data_user_id=None, data_store_id=None):
 # OpenAI API設定（Whisper統一版）
 openai_api_key = os.getenv('OPENAI_API_KEY')
 if not openai_api_key:
-    print("警告: OPENAI_API_KEYが設定されていません")
-    print("テストモードで実行します（モック応答を使用）")
+    logger.warning("警告: OPENAI_API_KEYが設定されていません")
+    logger.warning("テストモードで実行します（モック応答を使用）")
     openai_client = None
 else:
     try:
         os.environ['OPENAI_API_KEY'] = openai_api_key
         openai_client = OpenAI()  # 以降は必ずこのクライアントを使用
-        print("OpenAIモジュールAPIを使用します")
+        logger.info("OpenAIモジュールAPIを使用します")
     except Exception as e:
-        print(f"OpenAIモジュールAPI初期化に失敗: {e}")
+        logger.error(f"OpenAIモジュールAPI初期化に失敗: {e}")
         openai_client = None
 
 # Whisper統一版ではOpenAIのGPTモデルを使用
-print("Whisper統一版: OpenAI GPT-4を使用")
-print("音声認識: Whisper-1")
-print("対話生成: GPT-4o-mini (max_tokens=1500)")
+logger.info("Whisper統一版: OpenAI GPT-4を使用")
+logger.info("音声認識: Whisper-1")
+logger.info("対話生成: GPT-4o-mini (max_tokens=1500)")
 
 # ===== シナリオ読込（STEP4の先行準備：軽量Few-shot統合） =====
 SCENARIO_DIR = os.path.join(os.path.dirname(__file__), 'scenarios')
@@ -331,7 +331,7 @@ def load_scenarios_index():
     global SCENARIOS_INDEX, DEFAULT_SCENARIO_ID
     try:
         if not os.path.exists(SCENARIOS_INDEX_PATH):
-            print(f"シナリオindexが見つかりません: {SCENARIOS_INDEX_PATH}")
+            logger.warning(f"シナリオindexが見つかりません: {SCENARIOS_INDEX_PATH}")
             SCENARIOS_INDEX = {}
             DEFAULT_SCENARIO_ID = None
             return
@@ -340,9 +340,9 @@ def load_scenarios_index():
         DEFAULT_SCENARIO_ID = idx.get('default_id')
         entries = idx.get('scenarios', [])
         SCENARIOS_INDEX = {e['id']: os.path.join(SCENARIO_DIR, e['file']) for e in entries if e.get('enabled', True)}
-        print(f"シナリオ読込: {len(SCENARIOS_INDEX)}件、default={DEFAULT_SCENARIO_ID}")
+        logger.info(f"シナリオ読込: {len(SCENARIOS_INDEX)}件、default={DEFAULT_SCENARIO_ID}")
     except Exception as e:
-        print(f"シナリオindex読込エラー: {e}")
+        logger.error(f"シナリオindex読込エラー: {e}")
         SCENARIOS_INDEX = {}
         DEFAULT_SCENARIO_ID = None
 
@@ -361,7 +361,7 @@ def load_scenario_object(scenario_id: str):
         SCENARIO_CACHE[scenario_id] = obj
         return obj
     except Exception as e:
-        print(f"シナリオ読込エラー({scenario_id}): {e}")
+        logger.error(f"シナリオ読込エラー({scenario_id}): {e}")
         return None
 
 load_scenarios_index()
@@ -376,18 +376,18 @@ def load_rubric():
     global RUBRIC_DATA
     try:
         if not os.path.exists(RUBRIC_PATH):
-            print(f"Rubricファイルが見つかりません: {RUBRIC_PATH}")
+            logger.warning(f"Rubricファイルが見つかりません: {RUBRIC_PATH}")
             RUBRIC_DATA = None
             return
         if not YAML_AVAILABLE or not yaml:
-            print("yamlモジュールが利用不可のため、Rubricを読み込めません")
+            logger.warning("yamlモジュールが利用不可のため、Rubricを読み込めません")
             RUBRIC_DATA = None
             return
         with open(RUBRIC_PATH, 'r', encoding='utf-8') as f:
             RUBRIC_DATA = yaml.safe_load(f)
-        print(f"Rubric読込完了: version={RUBRIC_DATA.get('version')}")
+        logger.info(f"Rubric読込完了: version={RUBRIC_DATA.get('version')}")
     except Exception as e:
-        print(f"Rubric読込エラー: {e}")
+        logger.error(f"Rubric読込エラー: {e}")
         RUBRIC_DATA = None
 
 load_rubric()
@@ -402,14 +402,14 @@ def load_shared_personas():
     global SHARED_PERSONAS
     try:
         if not os.path.exists(PERSONAS_PATH):
-            print(f"共有ペルソナファイルが見つかりません: {PERSONAS_PATH}")
+            logger.warning(f"共有ペルソナファイルが見つかりません: {PERSONAS_PATH}")
             SHARED_PERSONAS = []
             return
         with open(PERSONAS_PATH, 'r', encoding='utf-8') as f:
             SHARED_PERSONAS = json.load(f)
-        print(f"共有ペルソナ読込完了: {len(SHARED_PERSONAS)}パターン")
+        logger.info(f"共有ペルソナ読込完了: {len(SHARED_PERSONAS)}パターン")
     except Exception as e:
-        print(f"共有ペルソナ読込エラー: {e}")
+        logger.error(f"共有ペルソナ読込エラー: {e}")
         SHARED_PERSONAS = []
 
 def select_random_persona_for_scene(scene_id: str):
@@ -425,7 +425,7 @@ def select_random_persona_for_scene(scene_id: str):
     import random
 
     if not SHARED_PERSONAS:
-        print("[ペルソナ選択] 共有ペルソナが読み込まれていません")
+        logger.warning("[ペルソナ選択] 共有ペルソナが読み込まれていません")
         return None
 
     # ランダムにペルソナを選択
@@ -433,7 +433,7 @@ def select_random_persona_for_scene(scene_id: str):
     persona_id = persona.get('persona_id', '不明')
     persona_name = persona.get('persona_name', '不明')
 
-    print(f"[ペルソナ選択] ランダム選択: {persona_name} (ID: {persona_id})")
+    logger.debug(f"[ペルソナ選択] ランダム選択: {persona_name} (ID: {persona_id})")
 
     # シーンに応じた状況設定を取得
     base_profile = persona.get('base_profile', {})
@@ -443,7 +443,7 @@ def select_random_persona_for_scene(scene_id: str):
     scene_variation = scene_variations.get(scene_id, scene_variations.get('meeting_1st', {}))
 
     if not scene_variation:
-        print(f"[ペルソナ選択] 警告: シーンID '{scene_id}' の状況設定が見つかりません")
+        logger.warning(f"[ペルソナ選択] 警告: シーンID '{scene_id}' の状況設定が見つかりません")
 
     # ベースプロフィールとシーン状況を統合
     combined_persona = {
@@ -453,7 +453,7 @@ def select_random_persona_for_scene(scene_id: str):
         **scene_variation
     }
 
-    print(f"[ペルソナ選択] シーン: {scene_id}, 態度: {scene_variation.get('tone', '不明')}")
+    logger.debug(f"[ペルソナ選択] シーン: {scene_id}, 態度: {scene_variation.get('tone', '不明')}")
 
     return combined_persona
 
@@ -478,17 +478,17 @@ def load_evaluation_samples(scenario_id: str):
     samples_file = os.path.join(EVALUATION_SAMPLES_DIR, f"{scenario_id}_samples.json")
 
     if not os.path.exists(samples_file):
-        print(f"評価サンプルファイルが見つかりません: {samples_file}")
+        logger.warning(f"評価サンプルファイルが見つかりません: {samples_file}")
         return None
 
     try:
         with open(samples_file, 'r', encoding='utf-8') as f:
             samples_data = json.load(f)
         EVALUATION_SAMPLES_CACHE[scenario_id] = samples_data
-        print(f"評価サンプル読込完了: {scenario_id} ({len(samples_data.get('few_shot_examples', []))}件)")
+        logger.info(f"評価サンプル読込完了: {scenario_id} ({len(samples_data.get('few_shot_examples', []))}件)")
         return samples_data
     except Exception as e:
-        print(f"評価サンプル読込エラー({scenario_id}): {e}")
+        logger.error(f"評価サンプル読込エラー({scenario_id}): {e}")
         return None
 
 # ===== RAGインデックス読込（STEP6：RAG連携） =====
@@ -503,13 +503,13 @@ def load_rag_index():
     global RAG_INDEX, RAG_METADATA
     try:
         if not FAISS_AVAILABLE or not faiss or not np:
-            print("FAISSが利用不可のため、RAG検索は無効です")
+            logger.warning("FAISSが利用不可のため、RAG検索は無効です")
             RAG_INDEX = None
             RAG_METADATA = []
             return
         
         if not os.path.exists(RAG_INDEX_PATH) or not os.path.exists(RAG_METADATA_PATH):
-            print(f"RAGインデックスが見つかりません: {RAG_INDEX_PATH}")
+            logger.warning(f"RAGインデックスが見つかりません: {RAG_INDEX_PATH}")
             RAG_INDEX = None
             RAG_METADATA = []
             return
@@ -521,9 +521,9 @@ def load_rag_index():
         with open(RAG_METADATA_PATH, 'r', encoding='utf-8') as f:
             RAG_METADATA = json.load(f)
         
-        print(f"RAGインデックス読込完了: {len(RAG_METADATA)}件のパターン")
+        logger.info(f"RAGインデックス読込完了: {len(RAG_METADATA)}件のパターン")
     except Exception as e:
-        print(f"RAGインデックス読込エラー: {e}")
+        logger.error(f"RAGインデックス読込エラー: {e}")
         RAG_INDEX = None
         RAG_METADATA = []
 
@@ -532,7 +532,7 @@ load_rag_index()
 # ffmpeg 存在チェック（pydub用）
 FFMPEG_AVAILABLE = which('ffmpeg') is not None
 if not FFMPEG_AVAILABLE:
-    print("警告: ffmpeg が見つかりません。'brew install ffmpeg' などで導入してください")
+    logger.warning("警告: ffmpeg が見つかりません。'brew install ffmpeg' などで導入してください")
 
 # ===== RAG検索関数（STEP6：RAG連携） =====
 def search_rag_patterns(query: str, top_k: int = 3, scenario_id: str = None):
@@ -557,7 +557,7 @@ def search_rag_patterns(query: str, top_k: int = 3, scenario_id: str = None):
             filtered_indices = [i for i, m in enumerate(RAG_METADATA) if m.get('scenario_id') == scenario_id]
             if not filtered_indices:
                 # 該当するシナリオのデータがない場合は全データから検索
-                print(f"[RAG検索] シナリオ {scenario_id} のデータがありません。全データから検索します。")
+                logger.debug(f"[RAG検索] シナリオ {scenario_id} のデータがありません。全データから検索します。")
                 filtered_indices = list(range(len(RAG_METADATA)))
         else:
             filtered_indices = list(range(len(RAG_METADATA)))
@@ -592,7 +592,7 @@ def search_rag_patterns(query: str, top_k: int = 3, scenario_id: str = None):
 
         return results
     except Exception as e:
-        print(f"RAG検索エラー: {e}")
+        logger.error(f"RAG検索エラー: {e}")
         return []
 
 # 営業ロープレ用のプロンプト（顧客役として明確に指示）
@@ -842,7 +842,7 @@ if __name__ == '__main__':
         try:
             port = int(sys.argv[1])
         except ValueError:
-            print("無効なポート番号です。環境変数またはデフォルトを使用します。")
+            logger.warning("無効なポート番号です。環境変数またはデフォルトを使用します。")
 
-    print(f"サーバーを起動中... ポート:{port}")
+    logger.info(f"サーバーを起動中... ポート:{port}")
     app.run(debug=False, use_reloader=False, host='0.0.0.0', port=port)
