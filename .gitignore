@@ -67,3 +67,4 @@ temp_chunks/
 transcribe_log.txt
 flask.log
 
+logs/

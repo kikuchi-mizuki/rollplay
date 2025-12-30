@@ -17,6 +17,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue, Empty
 import threading
 from functools import wraps
+import logging
+from logging.handlers import RotatingFileHandler
 
 # flask-corsのインポート（エラーハンドリング付き）
 try:
@@ -62,6 +64,45 @@ except ImportError as e:
 # 環境変数を読み込み
 load_dotenv()
 
+# ===== ログ記録システムの設定 =====
+
+# ロガーの設定
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# ログディレクトリの作成
+log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+
+# ファイルハンドラー（ローテーション付き: 最大10MB、5世代保持）
+file_handler = RotatingFileHandler(
+    os.path.join(log_dir, 'app.log'),
+    maxBytes=10 * 1024 * 1024,  # 10MB
+    backupCount=5,
+    encoding='utf-8'
+)
+file_handler.setLevel(logging.INFO)
+
+# コンソールハンドラー（開発用）
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+# フォーマッター設定
+formatter = logging.Formatter(
+    '%(asctime)s [%(levelname)s] %(name)s: %(message)s [in %(pathname)s:%(lineno)d]',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# ハンドラーを追加
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+logger.info("=" * 80)
+logger.info("アプリケーション起動 - ログシステム初期化完了")
+logger.info("=" * 80)
+
 app = Flask(__name__)
 if CORS_AVAILABLE and CORS:
     # CORS設定：開発環境と本番環境の両方に対応
@@ -84,11 +125,11 @@ supabase_client: Client = None
 if supabase_url and supabase_key:
     try:
         supabase_client = create_client(supabase_url, supabase_key)
-        print("Supabase接続成功")
+        logger.info("Supabase接続成功")
     except Exception as e:
-        print(f"Supabase接続エラー: {e}")
+        logger.error(f"Supabase接続エラー: {e}")
 else:
-    print("警告: Supabase設定が見つかりません（データ永続化は無効）")
+    logger.warning("Supabase設定が見つかりません（データ永続化は無効）")
 
 # ===== 認証と権限制御（アプリケーション層） =====
 
@@ -132,7 +173,7 @@ def get_current_user():
             'profile': profile
         }
     except Exception as e:
-        print(f"認証エラー: {e}")
+        logger.warning(f"認証エラー: {e}")
         return None
 
 def require_auth(f):
@@ -1366,17 +1407,15 @@ def chat_stream():
 
             except ValueError as e:
                 # 入力値エラー（JSON解析、不正な値など）
-                print(f"[エラー] チャットストリーム - 入力値が不正: {e}")
+                logger.error(f"チャットストリーム - 入力値が不正: {e}")
                 yield f"data: {json.dumps({'error': 'メッセージの形式が不正です'})}\n\n"
             except TimeoutError as e:
                 # OpenAI APIタイムアウト
-                print(f"[エラー] チャットストリーム - タイムアウト: {e}")
+                logger.error(f"チャットストリーム - タイムアウト: {e}")
                 yield f"data: {json.dumps({'error': '応答生成がタイムアウトしました。もう一度お試しください'})}\n\n"
             except Exception as e:
                 # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
-                print(f"[エラー] チャットストリーム - 予期しないエラー: {type(e).__name__}: {e}")
-                import traceback
-                traceback.print_exc()
+                logger.exception(f"チャットストリーム - 予期しないエラー: {type(e).__name__}: {e}")
                 yield f"data: {json.dumps({'error': '応答生成中にエラーが発生しました。もう一度お試しください'})}\n\n"
 
         return Response(generate(), mimetype='text/event-stream', headers={
@@ -1386,11 +1425,11 @@ def chat_stream():
 
     except ValueError as e:
         # リクエストデータの入力値エラー
-        print(f"[エラー] チャットストリーム初期化 - 入力値が不正: {e}")
+        logger.error(f"チャットストリーム初期化 - 入力値が不正: {e}")
         return jsonify({'success': False, 'error': 'リクエストの形式が不正です'}), 400
     except Exception as e:
         # エンドポイント全体での予期しないエラー
-        print(f"[エラー] チャットストリーム初期化 - 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"チャットストリーム初期化 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': 'サーバーエラーが発生しました。もう一度お試しください'}), 500
@@ -1448,15 +1487,15 @@ def text_to_speech():
 
     except ValueError as e:
         # 入力値エラー（不正な音声ID、空のテキストなど）
-        print(f"[エラー] TTS生成 - 入力値が不正: {e}")
+        logger.error(f"TTS生成 - 入力値が不正: {e}")
         return jsonify(success=False, error='音声生成のパラメータが不正です'), 400
     except TimeoutError as e:
         # OpenAI TTS APIタイムアウト
-        print(f"[エラー] TTS生成 - タイムアウト: {e}")
+        logger.error(f"TTS生成 - タイムアウト: {e}")
         return jsonify(success=False, error='音声生成がタイムアウトしました。もう一度お試しください'), 500
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
-        print(f"[エラー] TTS生成 - 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"TTS生成 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         return jsonify(success=False, error='音声生成中にエラーが発生しました。もう一度お試しください'), 500
@@ -1590,7 +1629,7 @@ def transcribe():
         if size < 1024:  # 1KB未満は明らかに短すぎる
             try: os.remove(new_path)
             except Exception: pass
-            print(f"[エラー] 録音データが小さすぎます: {size} bytes")
+            logger.error(f"録音データが小さすぎます: {size} bytes")
             return jsonify(success=False, error=f'録音データが小さすぎます({size} bytes)。もう少し長く話してください。'), 400
         # Whisperへ（まず直送）
         if not openai_client:
@@ -1631,15 +1670,15 @@ def transcribe():
                 try: os.remove(wav_path)
                 except Exception: pass
     except ValueError as e:
-        print(f"[エラー] 入力値が不正: {e}")
+        logger.error(f"入力値が不正: {e}")
         return jsonify(success=False, error='音声ファイルの形式が不正です'), 400
     except OSError as e:
-        print(f"[エラー] ファイルI/O: {e}")
+        logger.error(f"ファイルI/O: {e}")
         import traceback; traceback.print_exc()
         return jsonify(success=False, error='音声ファイルの処理中にエラーが発生しました'), 500
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
-        print(f"[エラー] 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"予期しないエラー: {type(e).__name__}: {e}")
         import traceback; traceback.print_exc()
         return jsonify(success=False, error='音声認識中にエラーが発生しました。もう一度お試しください。'), 500
     finally:
@@ -1647,7 +1686,7 @@ def transcribe():
             if 'new_path' in locals() and new_path and os.path.exists(new_path):
                 os.remove(new_path)
         except Exception as e:
-            print(f"[警告] 一時ファイル削除失敗: {e}")
+            logger.warning(f"一時ファイル削除失敗: {e}")
 
 def transcribe_with_whisper(audio_bytes):
     """Whisper APIを使用した音声認識"""
@@ -1819,28 +1858,28 @@ def evaluate_conversation():
 
     except ValueError as e:
         # 入力値エラー（不正なJSON、空の会話など）
-        print(f"[エラー] 評価生成 - 入力値が不正: {e}")
+        logger.error(f"評価生成 - 入力値が不正: {e}")
         return jsonify({
             'success': False,
             'error': '会話データの形式が不正です'
         }), 400
     except KeyError as e:
         # 必要なフィールドが欠落
-        print(f"[エラー] 評価生成 - 必須フィールドが欠落: {e}")
+        logger.error(f"評価生成 - 必須フィールドが欠落: {e}")
         return jsonify({
             'success': False,
             'error': '会話データに必要な情報が含まれていません'
         }), 400
     except TimeoutError as e:
         # GPT-4 APIタイムアウト
-        print(f"[エラー] 評価生成 - タイムアウト: {e}")
+        logger.error(f"評価生成 - タイムアウト: {e}")
         return jsonify({
             'success': False,
             'error': '評価生成がタイムアウトしました。もう一度お試しください'
         }), 500
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
-        print(f"[エラー] 評価生成 - 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"評価生成 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({
@@ -2304,15 +2343,15 @@ def save_conversation():
 
     except ValueError as e:
         # 入力値エラー（不正なJSON、必須フィールド欠落など）
-        print(f"[エラー] 会話保存 - 入力値が不正: {e}")
+        logger.error(f"会話保存 - 入力値が不正: {e}")
         return jsonify({'success': False, 'error': '会話データの形式が不正です'}), 400
     except KeyError as e:
         # 必要なフィールドが欠落
-        print(f"[エラー] 会話保存 - 必須フィールドが欠落: {e}")
+        logger.error(f"会話保存 - 必須フィールドが欠落: {e}")
         return jsonify({'success': False, 'error': '必要な情報が含まれていません'}), 400
     except Exception as e:
         # データベースエラーまたは予期しないエラー
-        print(f"[エラー] 会話保存 - 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"会話保存 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': '会話の保存中にエラーが発生しました'}), 500
@@ -2348,11 +2387,11 @@ def get_conversations():
 
     except ValueError as e:
         # 入力値エラー（不正なパラメータなど）
-        print(f"[エラー] 会話取得 - 入力値が不正: {e}")
+        logger.error(f"会話取得 - 入力値が不正: {e}")
         return jsonify({'success': False, 'error': 'リクエストパラメータが不正です'}), 400
     except Exception as e:
         # データベースエラーまたは予期しないエラー
-        print(f"[エラー] 会話取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"会話取得 - 予期しないエラー: {type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': '会話履歴の取得中にエラーが発生しました'}), 500
@@ -2390,11 +2429,11 @@ def handle_evaluations():
 
         except ValueError as e:
             # 入力値エラー（不正なパラメータなど）
-            print(f"[エラー] 評価取得 - 入力値が不正: {e}")
+            logger.error(f"評価取得 - 入力値が不正: {e}")
             return jsonify({'success': False, 'error': 'リクエストパラメータが不正です'}), 400
         except Exception as e:
             # データベースエラーまたは予期しないエラー
-            print(f"[エラー] 評価取得 - 予期しないエラー: {type(e).__name__}: {e}")
+            logger.error(f"評価取得 - 予期しないエラー: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
             return jsonify({'success': False, 'error': '評価履歴の取得中にエラーが発生しました'}), 500
@@ -2445,19 +2484,19 @@ def handle_evaluations():
 
         except ValueError as e:
             # 入力値エラー（不正なJSON、必須フィールド欠落など）
-            print(f"[エラー] 評価保存 - 入力値が不正: {e}")
+            logger.error(f"評価保存 - 入力値が不正: {e}")
             return jsonify({'success': False, 'error': '評価データの形式が不正です'}), 400
         except KeyError as e:
             # 必要なフィールドが欠落
-            print(f"[エラー] 評価保存 - 必須フィールドが欠落: {e}")
+            logger.error(f"評価保存 - 必須フィールドが欠落: {e}")
             return jsonify({'success': False, 'error': '必要な情報が含まれていません'}), 400
         except ZeroDivisionError as e:
             # スコアの平均計算でゼロ除算
-            print(f"[エラー] 評価保存 - スコア計算エラー: {e}")
+            logger.error(f"評価保存 - スコア計算エラー: {e}")
             return jsonify({'success': False, 'error': 'スコアデータが不正です'}), 400
         except Exception as e:
             # データベースエラーまたは予期しないエラー
-            print(f"[エラー] 評価保存 - 予期しないエラー: {type(e).__name__}: {e}")
+            logger.error(f"評価保存 - 予期しないエラー: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
             return jsonify({'success': False, 'error': '評価の保存中にエラーが発生しました'}), 500

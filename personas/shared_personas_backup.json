@@ -1,0 +1,1202 @@
+[
+  {
+    "persona_id": "beauty_salon_recruitment",
+    "persona_name": "美容サロン経営者（採用目的）",
+    "base_profile": {
+      "business_type": "美容サロン",
+      "location": "新宿",
+      "business_detail": "新宿で美容サロンを経営している。スタッフ不足で新規予約を断っている状態。若い世代にアピールして採用を強化したい。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー1,500人）",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "応募者が全然来ない",
+        "若い世代にアピールできない",
+        "採用サイトだけでは限界",
+        "サロンの雰囲気が伝わらない"
+      ],
+      "budget_sense": "月5-8万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "切実に悩んでいる。採用の緊急性を強調。",
+        "relationship": "初対面",
+        "knowledge_level": "動画で採用できるイメージがない。",
+        "decision_power": "情報収集段階。効果があれば検討したい。",
+        "typical_questions": [
+          "動画で本当に採用できますか？",
+          "どんな動画を作るんですか？",
+          "美容業界の採用事例はありますか？"
+        ],
+        "concerns": [
+          "本当に応募が来るか不安",
+          "コストに見合う効果があるか",
+          "若い世代に響くか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味を持ち始めた。具体的なイメージを知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "採用動画の可能性を理解。事例を見たい。",
+        "decision_power": "比較検討段階。事例次第で前向き。",
+        "typical_questions": [
+          "どんな内容の採用動画が効果的ですか？",
+          "スタッフの協力は必要ですか？",
+          "どのSNSに投稿するのがいいですか？"
+        ],
+        "concerns": [
+          "スタッフが撮影に協力してくれるか",
+          "プライバシーの問題",
+          "継続的に投稿できるか"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。採用シーズンに合わせて開始したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。開始時期を相談したい。",
+        "decision_power": "前向き検討段階。タイミングを決めたい。",
+        "typical_questions": [
+          "来月から始められますか？",
+          "採用シーズンに間に合いますか？",
+          "どのくらいで効果が出ますか？"
+        ],
+        "concerns": [
+          "採用シーズンに間に合うか",
+          "すぐに応募が来るか",
+          "継続期間はどのくらい必要か"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決めた。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中解約できますか？",
+          "採用が決まったら本数減らせますか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "採用できた後の対応",
+          "追加費用の有無"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。早く採用動画を作りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。制作内容を決めたい。",
+        "decision_power": "制作開始段階。効果的な採用動画を作りたい。",
+        "typical_questions": [
+          "どんな採用動画を作りますか？",
+          "スタッフに何を撮影してもらえばいいですか？",
+          "1日の仕事風景を撮ればいいですか？"
+        ],
+        "concerns": [
+          "スタッフの撮影協力",
+          "プライバシー保護",
+          "効果的な訴求ポイント"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。採用に成功して満足している。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。追加プランを検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やして応募をもっと増やせますか？",
+          "別の職種の採用動画も作れますか？",
+          "TikTokにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "複数職種の対応",
+          "効果の持続性"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "multi_store_restaurant",
+    "persona_name": "多店舗展開飲食店オーナー（自社制作、月8~16本）",
+    "base_profile": {
+      "business_type": "多店舗展開飲食店",
+      "location": "関東5店舗",
+      "business_detail": "居酒屋チェーンを関東で5店舗展開。各店舗で店長が月2-3本ずつ動画を作っているが、品質がバラバラで統一感がない。",
+      "current_video_status": "月8-16本（自社制作、各店舗でバラバラ）",
+      "sns_accounts": {
+        "instagram": "あり（各店舗のアカウント、フォロワー500-2,000人）",
+        "tiktok": "あり（本部アカウント、フォロワー3,000人）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "各店舗で品質がバラバラ",
+        "統一感がない",
+        "店長の負担が大きい",
+        "プロの品質にしたい"
+      ],
+      "budget_sense": "月10-15万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "真剣に課題を解決したい。現状の不満を強調。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作の経験あり。もっと品質を上げたい。",
+        "decision_power": "情報収集段階。効果次第で検討。",
+        "typical_questions": [
+          "各店舗の統一感を出せますか？",
+          "どのくらい品質が上がりますか？",
+          "多店舗の場合、料金はどうなりますか？"
+        ],
+        "concerns": [
+          "コストが高くならないか",
+          "各店舗の撮影負担",
+          "ブランドイメージの統一"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。具体的な運用方法を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。多店舗対応を確認したい。",
+        "decision_power": "比較検討段階。運用次第で決めたい。",
+        "typical_questions": [
+          "各店舗でどう撮影しますか？",
+          "本部で一括管理できますか？",
+          "飲食店の多店舗事例はありますか？"
+        ],
+        "concerns": [
+          "各店舗の撮影協力",
+          "管理の手間",
+          "効果測定の方法"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的なプランを相談したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。プラン内容を確認したい。",
+        "decision_power": "前向き検討段階。プラン次第で決めたい。",
+        "typical_questions": [
+          "5店舗で月何本作れますか？",
+          "各店舗均等に配分できますか？",
+          "繁閑に応じて調整できますか？"
+        ],
+        "concerns": [
+          "店舗間の公平性",
+          "繁忙期の対応",
+          "効果の差"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容と運用を確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい運用を確認。",
+        "typical_questions": [
+          "契約は本部一括ですか？",
+          "各店舗の担当者と直接やり取りしますか？",
+          "途中で店舗数が変わったらどうなりますか？"
+        ],
+        "concerns": [
+          "契約形態",
+          "店舗数変更時の対応",
+          "請求の一本化"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。早く統一感のある動画を作りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。運用を決めたい。",
+        "decision_power": "制作開始段階。各店舗の撮影方法を決めたい。",
+        "typical_questions": [
+          "各店舗でどんな素材を撮りますか？",
+          "統一フォーマットはありますか？",
+          "各店舗の特色も出せますか？"
+        ],
+        "concerns": [
+          "各店舗の撮影負担",
+          "統一感と個性のバランス",
+          "運用の継続性"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。効果に満足。さらに強化したい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。店舗拡大を見据えている。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "新店舗も追加できますか？",
+          "YouTubeショートにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "新店舗対応",
+          "管理の複雑化"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "ec_business_limited_assets",
+    "persona_name": "EC事業者（素材が少ない、コスト高）",
+    "base_profile": {
+      "business_type": "アパレルEC",
+      "location": "オンライン",
+      "business_detail": "アパレルECを運営。商品撮影の素材が少なく、外注で月10万円以上かかっている。もっと低コストで本数を増やしたい。",
+      "current_video_status": "月5本（外注中、月12-15万円）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー8,000人）",
+        "tiktok": "あり（フォロワー5,000人）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "撮影素材が少ない",
+        "外注コストが高すぎる",
+        "本数を増やせない",
+        "素材の使い回しに限界"
+      ],
+      "budget_sense": "月5-8万円程度（外注費の半分に抑えたい）"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "コスト削減に強い関心。慎重に比較検討。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作の経験あり。コスト重視。",
+        "decision_power": "情報収集段階。コスト次第で検討。",
+        "typical_questions": [
+          "今の外注より安くなりますか？",
+          "素材が少なくても作れますか？",
+          "アパレルの事例はありますか？"
+        ],
+        "concerns": [
+          "本当にコストが下がるか",
+          "品質が落ちないか",
+          "素材不足で作れるか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。素材の活用方法を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。素材活用を確認したい。",
+        "decision_power": "比較検討段階。素材活用次第で決めたい。",
+        "typical_questions": [
+          "限られた素材でどう作りますか？",
+          "過去の商品写真も使えますか？",
+          "追加撮影は必要ですか？"
+        ],
+        "concerns": [
+          "素材不足への対応",
+          "追加撮影のコスト",
+          "品質の維持"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的なコスト削減額を確認したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。コスト削減を確認したい。",
+        "decision_power": "前向き検討段階。コスト次第で決めたい。",
+        "typical_questions": [
+          "月いくらで何本作れますか？",
+          "今の外注と比べてどのくらい安くなりますか？",
+          "品質は同じくらいですか？"
+        ],
+        "concerns": [
+          "コスト削減の実現性",
+          "品質の担保",
+          "運用の手間"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容とコストを最終確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。コストを最終確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中で本数変更できますか？",
+          "追加料金はかかりませんか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "追加費用の有無",
+          "解約条件"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。低コストで本数を増やしたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。素材活用を決めたい。",
+        "decision_power": "制作開始段階。効率的な素材活用を決めたい。",
+        "typical_questions": [
+          "どんな素材を用意すればいいですか？",
+          "過去の商品写真はどう使えますか？",
+          "スマホ撮影でも大丈夫ですか？"
+        ],
+        "concerns": [
+          "素材準備の手間",
+          "品質の維持",
+          "撮影のノウハウ"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。コスト削減に満足。本数を増やしたい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに本数を増やしたい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他のSNSにも対応できますか？",
+          "料金はどのくらい上がりますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "素材不足",
+          "運用の手間"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "real_estate_local",
+    "persona_name": "不動産会社（地域に特化して集客したい）",
+    "base_profile": {
+      "business_type": "不動産仲介",
+      "location": "横浜",
+      "business_detail": "横浜で地域密着型の不動産仲介を経営。大手に負けないよう、地域特化のSNS発信で認知度を上げたい。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー400人）",
+        "tiktok": "なし",
+        "youtube": "あり（チャンネル登録者100人）"
+      },
+      "pain_points": [
+        "地域での認知度が低い",
+        "大手に負けている",
+        "若い世代にアピールできない",
+        "地域の魅力を発信できていない"
+      ],
+      "budget_sense": "月8-12万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "地域密着の強みを出したい。真剣に相談。",
+        "relationship": "初対面",
+        "knowledge_level": "動画未経験。地域特化の可能性を知りたい。",
+        "decision_power": "情報収集段階。効果があれば検討したい。",
+        "typical_questions": [
+          "地域特化の動画ってどんなものですか？",
+          "大手に勝てますか？",
+          "不動産の事例はありますか？"
+        ],
+        "concerns": [
+          "本当に効果があるか",
+          "大手との差別化",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。地域特化の具体例を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。地域特化を確認したい。",
+        "decision_power": "比較検討段階。事例次第で前向き。",
+        "typical_questions": [
+          "どんな地域コンテンツが効果的ですか？",
+          "物件紹介と地域紹介のバランスは？",
+          "若い世代に響くコンテンツは？"
+        ],
+        "concerns": [
+          "地域ネタの枯渇",
+          "物件紹介とのバランス",
+          "若い世代への訴求"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。地域密着戦略を具体化したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。戦略を相談したい。",
+        "decision_power": "前向き検討段階。戦略次第で決めたい。",
+        "typical_questions": [
+          "どんな地域情報を発信しますか？",
+          "物件紹介と地域紹介の配分は？",
+          "どのSNSが効果的ですか？"
+        ],
+        "concerns": [
+          "コンテンツの継続性",
+          "地域での反応",
+          "効果測定"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中で内容変更できますか？",
+          "地域イベントにも対応できますか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "内容変更の柔軟性",
+          "追加費用"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。地域密着の動画を作りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。内容を決めたい。",
+        "decision_power": "制作開始段階。地域特化の内容を決めたい。",
+        "typical_questions": [
+          "どんな地域情報を撮影しますか？",
+          "物件紹介はどのくらいの頻度ですか？",
+          "地域の魅力をどう伝えますか？"
+        ],
+        "concerns": [
+          "撮影の手間",
+          "地域ネタの発見",
+          "物件紹介とのバランス"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。地域認知度が上がって満足。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他の地域にも展開できますか？",
+          "YouTubeにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "他地域展開",
+          "運用の手間"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "matching_app",
+    "persona_name": "マッチングアプリ運営（インストール伸びない）",
+    "base_profile": {
+      "business_type": "マッチングアプリ運営",
+      "location": "オンライン",
+      "business_detail": "趣味特化型のマッチングアプリを運営。広告を出しているがインストール数が伸びず、認知度も低い。SNS動画で訴求力を高めたい。",
+      "current_video_status": "月3本（自社制作）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー2,500人）",
+        "tiktok": "あり（フォロワー1,200人）",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "インストール数が伸びない",
+        "認知度が低い",
+        "広告のCVRが低い",
+        "動画のクオリティが低い"
+      ],
+      "budget_sense": "月10-15万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "切実に悩んでいる。インストール増加を強く望む。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作経験あり。効果を出したい。",
+        "decision_power": "情報収集段階。効果次第で検討。",
+        "typical_questions": [
+          "インストール数を増やせますか？",
+          "アプリの訴求動画を作れますか？",
+          "アプリ業界の事例はありますか？"
+        ],
+        "concerns": [
+          "本当にインストールが増えるか",
+          "訴求力が上がるか",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。訴求動画の具体例を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。訴求方法を確認したい。",
+        "decision_power": "比較検討段階。訴求力次第で決めたい。",
+        "typical_questions": [
+          "どんな訴求が効果的ですか？",
+          "ユーザー体験談は使えますか？",
+          "TikTokとInstagramどちらが効果的ですか？"
+        ],
+        "concerns": [
+          "訴求の差別化",
+          "ユーザー体験談の確保",
+          "SNSの選定"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的なKPI改善を相談したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。KPI改善を確認したい。",
+        "decision_power": "前向き検討段階。効果次第で決めたい。",
+        "typical_questions": [
+          "インストール数はどのくらい増えますか？",
+          "CVRは改善しますか？",
+          "効果測定はどうしますか？"
+        ],
+        "concerns": [
+          "具体的な効果",
+          "CVR改善の確度",
+          "投資対効果"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "効果が出なかったらどうしますか？",
+          "途中で内容変更できますか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "効果保証の有無",
+          "内容変更の柔軟性"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。インストール増加に期待。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。訴求内容を決めたい。",
+        "decision_power": "制作開始段階。効果的な訴求を決めたい。",
+        "typical_questions": [
+          "どんな訴求動画を作りますか？",
+          "ユーザー体験談は必要ですか？",
+          "どんな素材を用意すればいいですか？"
+        ],
+        "concerns": [
+          "訴求の差別化",
+          "ユーザー体験談の確保",
+          "素材準備"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。インストールが増えて満足。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他のSNSにも対応できますか？",
+          "ユーザー事例動画も作れますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "ユーザー協力の確保",
+          "運用の手間"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "ad_agency_resources",
+    "persona_name": "広告代理店（制作のリソースが足りない）",
+    "base_profile": {
+      "business_type": "広告代理店",
+      "location": "東京",
+      "business_detail": "中小企業向けの広告代理店。クライアント案件が増えて、SNS動画制作のリソースが足りない。外注するとコストが高く、内製は限界。",
+      "current_video_status": "月10-15本（自社制作、限界）",
+      "sns_accounts": {
+        "instagram": "クライアント用",
+        "tiktok": "クライアント用",
+        "youtube": "クライアント用"
+      },
+      "pain_points": [
+        "制作リソースが足りない",
+        "クライアント案件が増えている",
+        "外注するとコストが高い",
+        "内製は限界に達している"
+      ],
+      "budget_sense": "月15-20万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "ビジネスライク。リソース不足を解決したい。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作は十分理解。外注先を探している。",
+        "decision_power": "情報収集段階。品質とコスト次第。",
+        "typical_questions": [
+          "どのくらいの本数を対応できますか？",
+          "品質はどのくらいですか？",
+          "納期はどのくらいですか？"
+        ],
+        "concerns": [
+          "品質の担保",
+          "納期の厳守",
+          "クライアント対応"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。具体的な対応範囲を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。対応範囲を確認したい。",
+        "decision_power": "比較検討段階。対応範囲次第で決めたい。",
+        "typical_questions": [
+          "クライアント別に対応できますか？",
+          "急ぎの案件にも対応できますか？",
+          "修正は何回まで可能ですか？"
+        ],
+        "concerns": [
+          "クライアント対応の柔軟性",
+          "急ぎ案件の対応",
+          "修正対応"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的な協業体制を相談したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。協業体制を確認したい。",
+        "decision_power": "前向き検討段階。体制次第で決めたい。",
+        "typical_questions": [
+          "クライアントとの直接やり取りは可能ですか？",
+          "納品フローはどうなりますか？",
+          "緊急対応は可能ですか？"
+        ],
+        "concerns": [
+          "クライアント対応",
+          "納品フロー",
+          "緊急対応"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容と体制を確認。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい体制を確認。",
+        "typical_questions": [
+          "契約形態はどうなりますか？",
+          "月の本数は固定ですか？",
+          "繁忙期の対応は可能ですか？"
+        ],
+        "concerns": [
+          "契約形態",
+          "本数の柔軟性",
+          "繁忙期対応"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。スムーズな協業を始めたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。協業体制を決めたい。",
+        "decision_power": "制作開始段階。効率的な協業を決めたい。",
+        "typical_questions": [
+          "クライアント情報はどう共有しますか？",
+          "素材の受け渡し方法は？",
+          "納品はどのように行いますか？"
+        ],
+        "concerns": [
+          "情報共有の方法",
+          "素材管理",
+          "納品フロー"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。協業に満足。本数を増やしたい。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに本数を増やしたい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他のクライアントも対応できますか？",
+          "長尺動画にも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "対応範囲の拡大",
+          "品質の維持"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "recruitment_agency_competition",
+    "persona_name": "人材紹介（競合に負けている）",
+    "base_profile": {
+      "business_type": "人材紹介会社",
+      "location": "大阪",
+      "business_detail": "大阪で人材紹介会社を経営。大手や他社に負けていて、求職者の認知度が低い。SNS動画で差別化したい。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー600人）",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "競合に負けている",
+        "求職者の認知度が低い",
+        "大手との差別化ができていない",
+        "若い求職者にアピールできない"
+      ],
+      "budget_sense": "月8-12万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "競合に負けている危機感。差別化を強く望む。",
+        "relationship": "初対面",
+        "knowledge_level": "動画未経験。差別化の可能性を知りたい。",
+        "decision_power": "情報収集段階。効果があれば検討したい。",
+        "typical_questions": [
+          "競合と差別化できますか？",
+          "求職者にアピールできますか？",
+          "人材業界の事例はありますか？"
+        ],
+        "concerns": [
+          "本当に差別化できるか",
+          "求職者に響くか",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。差別化の具体策を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。差別化を確認したい。",
+        "decision_power": "比較検討段階。差別化次第で決めたい。",
+        "typical_questions": [
+          "どんな差別化コンテンツが効果的ですか？",
+          "若い求職者に響くコンテンツは？",
+          "企業紹介と求人のバランスは？"
+        ],
+        "concerns": [
+          "差別化の実現性",
+          "若い求職者への訴求",
+          "コンテンツの継続性"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的な認知度向上を相談したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。認知度向上を確認したい。",
+        "decision_power": "前向き検討段階。効果次第で決めたい。",
+        "typical_questions": [
+          "認知度はどのくらい上がりますか？",
+          "どのSNSが効果的ですか？",
+          "効果測定はどうしますか？"
+        ],
+        "concerns": [
+          "認知度向上の実現性",
+          "SNSの選定",
+          "効果測定"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中で内容変更できますか？",
+          "追加料金はかかりませんか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "内容変更の柔軟性",
+          "追加費用"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。差別化コンテンツを作りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。内容を決めたい。",
+        "decision_power": "制作開始段階。差別化コンテンツを決めたい。",
+        "typical_questions": [
+          "どんな差別化コンテンツを作りますか？",
+          "企業インタビューは必要ですか？",
+          "求職者の声は使えますか？"
+        ],
+        "concerns": [
+          "差別化の実現",
+          "企業協力の確保",
+          "求職者の声の確保"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。認知度が上がって満足。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他の職種にも対応できますか？",
+          "YouTubeにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "職種拡大",
+          "運用の手間"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "driver_recruitment",
+    "persona_name": "運送会社（ドライバー採用、応募を増やしたい）",
+    "base_profile": {
+      "business_type": "運送会社",
+      "location": "埼玉",
+      "business_detail": "埼玉で運送会社を経営。ドライバー不足で応募者が全然来ない。若い世代にアピールして採用を強化したい。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "なし",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "ドライバーの応募が全然来ない",
+        "若い世代にアピールできない",
+        "採用サイトだけでは限界",
+        "運送業のイメージが悪い"
+      ],
+      "budget_sense": "月5-10万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "切実に悩んでいる。採用の緊急性を強調。",
+        "relationship": "初対面",
+        "knowledge_level": "動画未経験。採用動画の可能性を知りたい。",
+        "decision_power": "情報収集段階。効果があれば検討したい。",
+        "typical_questions": [
+          "動画でドライバー採用できますか？",
+          "若い世代にアピールできますか？",
+          "運送業の採用事例はありますか？"
+        ],
+        "concerns": [
+          "本当に応募が来るか",
+          "若い世代に響くか",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。採用動画の具体例を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "採用動画を理解。具体例を見たい。",
+        "decision_power": "比較検討段階。事例次第で前向き。",
+        "typical_questions": [
+          "どんなドライバー採用動画が効果的ですか？",
+          "現場の雰囲気を伝えられますか？",
+          "どのSNSが効果的ですか？"
+        ],
+        "concerns": [
+          "ドライバーの撮影協力",
+          "現場撮影の手間",
+          "SNSの選定"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。採用シーズンに合わせて開始したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。開始時期を相談したい。",
+        "decision_power": "前向き検討段階。タイミングを決めたい。",
+        "typical_questions": [
+          "来月から始められますか？",
+          "どのくらいで応募が来ますか？",
+          "効果測定はどうしますか？"
+        ],
+        "concerns": [
+          "開始時期",
+          "応募の時期",
+          "効果測定"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中解約できますか？",
+          "採用できたら本数減らせますか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "採用後の対応",
+          "追加費用"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。早く採用動画を作りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。内容を決めたい。",
+        "decision_power": "制作開始段階。効果的な採用動画を決めたい。",
+        "typical_questions": [
+          "どんな採用動画を作りますか？",
+          "ドライバーに何を撮影してもらえばいいですか？",
+          "1日の仕事風景を撮ればいいですか？"
+        ],
+        "concerns": [
+          "ドライバーの撮影協力",
+          "現場撮影の手間",
+          "効果的な訴求"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。応募が増えて満足。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他の職種の採用動画も作れますか？",
+          "TikTokにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "職種拡大",
+          "運用の手間"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "construction_recruitment_creative",
+    "persona_name": "建設会社（採用、面白い撮影をしたい）",
+    "base_profile": {
+      "business_type": "建設会社",
+      "location": "千葉",
+      "business_detail": "千葉で建設会社を経営。若手採用のため、建設業の硬いイメージを変えたい。面白くてかっこいい動画で若い世代にアピールしたい。",
+      "current_video_status": "月0本（未経験）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー300人）",
+        "tiktok": "なし",
+        "youtube": "なし"
+      },
+      "pain_points": [
+        "建設業のイメージが悪い",
+        "若い世代が応募してこない",
+        "面白いコンテンツが作れない",
+        "採用サイトだけでは響かない"
+      ],
+      "budget_sense": "月5-10万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "イメージを変えたい。面白い動画への期待。",
+        "relationship": "初対面",
+        "knowledge_level": "動画未経験。面白い動画の可能性を知りたい。",
+        "decision_power": "情報収集段階。面白ければ検討したい。",
+        "typical_questions": [
+          "建設業でも面白い動画作れますか？",
+          "若い世代に響くコンテンツは？",
+          "建設業の採用事例はありますか？"
+        ],
+        "concerns": [
+          "本当に面白くできるか",
+          "若い世代に響くか",
+          "建設業のイメージ"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。面白い動画の具体例を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "面白い採用動画を理解。具体例を見たい。",
+        "decision_power": "比較検討段階。事例次第で前向き。",
+        "typical_questions": [
+          "どんな面白い動画が作れますか？",
+          "現場でどう撮影しますか？",
+          "TikTokとInstagramどちらがいいですか？"
+        ],
+        "concerns": [
+          "撮影の手間",
+          "現場での撮影",
+          "面白さの実現"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。面白い採用動画を作りたい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。企画を相談したい。",
+        "decision_power": "前向き検討段階。企画次第で決めたい。",
+        "typical_questions": [
+          "どんな企画が効果的ですか？",
+          "現場のスタッフに協力してもらえますか？",
+          "どのくらいで応募が来ますか？"
+        ],
+        "concerns": [
+          "企画の実現性",
+          "スタッフの協力",
+          "応募の時期"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "途中で企画変更できますか？",
+          "追加料金はかかりませんか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "企画変更の柔軟性",
+          "追加費用"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。面白い採用動画を作りたい。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。企画を決めたい。",
+        "decision_power": "制作開始段階。面白い企画を決めたい。",
+        "typical_questions": [
+          "どんな面白い企画を作りますか？",
+          "現場でどう撮影しますか？",
+          "スタッフの協力はどのくらい必要ですか？"
+        ],
+        "concerns": [
+          "企画の実現",
+          "現場撮影の手間",
+          "スタッフの協力"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。応募が増えて満足。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他の職種の採用動画も作れますか？",
+          "YouTubeにも対応できますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "職種拡大",
+          "運用の手間"
+        ]
+      }
+    }
+  },
+  {
+    "persona_id": "btob_saas_ad_performance",
+    "persona_name": "BtoB SaaS企業（広告の訴求力を高めたい）",
+    "base_profile": {
+      "business_type": "BtoB SaaS企業",
+      "location": "東京",
+      "business_detail": "BtoB SaaS企業。広告を出しているがCVRが低く、訴求力が弱い。SNS動画で製品の魅力を分かりやすく伝えたい。",
+      "current_video_status": "月5本（外注中、月30万円）",
+      "sns_accounts": {
+        "instagram": "あり（フォロワー3,000人）",
+        "tiktok": "なし",
+        "youtube": "あり（チャンネル登録者1,500人）"
+      },
+      "pain_points": [
+        "広告のCVRが低い",
+        "訴求力が弱い",
+        "製品の魅力が伝わらない",
+        "外注コストが高い"
+      ],
+      "budget_sense": "月10-20万円程度"
+    },
+    "scene_variations": {
+      "meeting_1st": {
+        "tone": "ビジネスライク。CVR改善に強い関心。",
+        "relationship": "初対面",
+        "knowledge_level": "動画制作経験あり。CVR改善を重視。",
+        "decision_power": "情報収集段階。効果次第で検討。",
+        "typical_questions": [
+          "CVRを改善できますか？",
+          "BtoB SaaSの訴求動画を作れますか？",
+          "BtoB業界の事例はありますか？"
+        ],
+        "concerns": [
+          "本当にCVRが上がるか",
+          "訴求力が上がるか",
+          "コストに見合うか"
+        ]
+      },
+      "meeting_1_5th": {
+        "tone": "興味あり。訴求動画の具体例を知りたい。",
+        "relationship": "2回目の接触",
+        "knowledge_level": "サービスを理解。訴求方法を確認したい。",
+        "decision_power": "比較検討段階。訴求力次第で決めたい。",
+        "typical_questions": [
+          "どんな訴求が効果的ですか？",
+          "導入事例は使えますか？",
+          "LinkedInにも対応できますか？"
+        ],
+        "concerns": [
+          "訴求の差別化",
+          "導入事例の確保",
+          "SNSの選定"
+        ]
+      },
+      "meeting_2nd": {
+        "tone": "前向き。具体的なCVR改善を相談したい。",
+        "relationship": "3回目の接触",
+        "knowledge_level": "サービスを理解。CVR改善を確認したい。",
+        "decision_power": "前向き検討段階。効果次第で決めたい。",
+        "typical_questions": [
+          "CVRはどのくらい改善しますか？",
+          "効果測定はどうしますか？",
+          "どのくらいで効果が出ますか？"
+        ],
+        "concerns": [
+          "CVR改善の確度",
+          "効果測定",
+          "投資対効果"
+        ]
+      },
+      "meeting_3rd": {
+        "tone": "ほぼ決定。契約内容を確認したい。",
+        "relationship": "4回目の接触",
+        "knowledge_level": "サービスを十分理解。契約を決めたい。",
+        "decision_power": "最終確認段階。細かい条件を確認。",
+        "typical_questions": [
+          "契約期間は何ヶ月ですか？",
+          "効果が出なかったらどうしますか？",
+          "途中で内容変更できますか？"
+        ],
+        "concerns": [
+          "契約期間の縛り",
+          "効果保証の有無",
+          "内容変更の柔軟性"
+        ]
+      },
+      "kickoff_meeting": {
+        "tone": "契約済み。CVR改善に期待。",
+        "relationship": "契約後、初回ミーティング",
+        "knowledge_level": "サービスを契約済み。訴求内容を決めたい。",
+        "decision_power": "制作開始段階。効果的な訴求を決めたい。",
+        "typical_questions": [
+          "どんな訴求動画を作りますか？",
+          "導入事例は必要ですか？",
+          "どんな素材を用意すればいいですか？"
+        ],
+        "concerns": [
+          "訴求の差別化",
+          "導入事例の確保",
+          "素材準備"
+        ]
+      },
+      "upsell": {
+        "tone": "既存顧客。CVRが改善して満足。",
+        "relationship": "既存顧客（利用3ヶ月以上）",
+        "knowledge_level": "サービスを利用中。拡大を検討。",
+        "decision_power": "追加検討段階。さらに強化したい。",
+        "typical_questions": [
+          "本数を増やせますか？",
+          "他の製品の動画も作れますか？",
+          "長尺の解説動画も作れますか？"
+        ],
+        "concerns": [
+          "追加コスト",
+          "製品拡大",
+          "運用の手間"
+        ]
+      }
+    }
+  }
+]
