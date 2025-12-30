@@ -68,3 +68,8 @@ transcribe_log.txt
 flask.log
 
 logs/
+
+# Test coverage
+htmlcov/
+.coverage
+.pytest_cache/
