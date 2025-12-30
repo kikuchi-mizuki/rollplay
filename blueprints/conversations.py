@@ -30,6 +30,9 @@ get_mock_response = None
 load_evaluation_samples = None
 RUBRIC_DATA = None
 limiter = None  # レート制限機能
+MAX_MESSAGE_LENGTH = 2000  # デフォルト値
+MAX_HISTORY_LENGTH = 50
+MAX_EVALUATION_TEXT_LENGTH = 10000
 
 
 def init_blueprint(app):
@@ -43,6 +46,7 @@ def init_blueprint(app):
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
     global get_mock_response, load_evaluation_samples, RUBRIC_DATA
     global limiter
+    global MAX_MESSAGE_LENGTH, MAX_HISTORY_LENGTH, MAX_EVALUATION_TEXT_LENGTH
 
     supabase_client = app.config.get('supabase_client')
     openai_client = app.config.get('openai_client')
@@ -58,6 +62,9 @@ def init_blueprint(app):
     load_evaluation_samples = app.config.get('load_evaluation_samples')
     RUBRIC_DATA = app.config.get('RUBRIC_DATA')
     limiter = app.config.get('limiter')
+    MAX_MESSAGE_LENGTH = app.config.get('MAX_MESSAGE_LENGTH', 2000)
+    MAX_HISTORY_LENGTH = app.config.get('MAX_HISTORY_LENGTH', 50)
+    MAX_EVALUATION_TEXT_LENGTH = app.config.get('MAX_EVALUATION_TEXT_LENGTH', 10000)
 
 
 def apply_rate_limit(limit_string):
@@ -276,6 +283,20 @@ def chat():
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
+
+        # 入力値検証
+        if len(user_message) > MAX_MESSAGE_LENGTH:
+            logger.warning(f"メッセージ長超過: {len(user_message)}文字 (最大{MAX_MESSAGE_LENGTH}文字)")
+            return jsonify({
+                'success': False,
+                'error': f'メッセージが長すぎます（最大{MAX_MESSAGE_LENGTH}文字）'
+            }), 400
+
+        if len(conversation_history) > MAX_HISTORY_LENGTH:
+            logger.warning(f"会話履歴超過: {len(conversation_history)}件 (最大{MAX_HISTORY_LENGTH}件)")
+            # 最新のメッセージのみを保持
+            conversation_history = conversation_history[-MAX_HISTORY_LENGTH:]
+
         scenario_obj = load_scenario_object(scenario_id)
         
         # Whisper統一版: GPT-4を使用して対話生成
@@ -565,6 +586,18 @@ def chat_stream():
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
+
+        # 入力値検証
+        if len(user_message) > MAX_MESSAGE_LENGTH:
+            logger.warning(f"メッセージ長超過: {len(user_message)}文字 (最大{MAX_MESSAGE_LENGTH}文字)")
+            return jsonify({
+                'success': False,
+                'error': f'メッセージが長すぎます（最大{MAX_MESSAGE_LENGTH}文字）'
+            }), 400
+
+        if len(conversation_history) > MAX_HISTORY_LENGTH:
+            logger.warning(f"会話履歴超過: {len(conversation_history)}件 (最大{MAX_HISTORY_LENGTH}件)")
+            conversation_history = conversation_history[-MAX_HISTORY_LENGTH:]
         scenario_obj = load_scenario_object(scenario_id)
 
         def generate():
@@ -1044,6 +1077,14 @@ def evaluate_conversation():
         data = request.get_json()
         conversation = data.get('conversation', [])
         scenario_id = data.get('scenario_id')  # シナリオIDを取得
+
+        # 入力値検証
+        if len(conversation) > MAX_HISTORY_LENGTH:
+            logger.warning(f"評価対象会話が長すぎます: {len(conversation)}件 (最大{MAX_HISTORY_LENGTH}件)")
+            return jsonify({
+                'success': False,
+                'error': f'会話が長すぎます（最大{MAX_HISTORY_LENGTH}件）'
+            }), 400
 
         # 営業の発言のみを抽出
         sales_utterances = [msg['text'] for msg in conversation if msg['speaker'] == '営業']

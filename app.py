@@ -164,6 +164,16 @@ if supabase_url and supabase_key:
 else:
     logger.warning("Supabase設定が見つかりません（データ永続化は無効）")
 
+# ===== 入力値検証の定数 =====
+
+# メッセージと会話履歴の制限（セキュリティとコスト対策）
+MAX_MESSAGE_LENGTH = 2000  # ユーザーメッセージの最大文字数
+MAX_HISTORY_LENGTH = 50    # 会話履歴の最大メッセージ数
+MAX_SCENARIO_NAME_LENGTH = 100  # シナリオ名の最大文字数
+MAX_EVALUATION_TEXT_LENGTH = 10000  # 評価テキストの最大文字数
+
+logger.info(f"入力値検証設定: メッセージ最大{MAX_MESSAGE_LENGTH}文字, 履歴最大{MAX_HISTORY_LENGTH}件")
+
 # ===== 認証と権限制御（アプリケーション層） =====
 
 def get_current_user():
@@ -706,6 +716,9 @@ app.config['get_mock_response'] = get_mock_response
 app.config['load_evaluation_samples'] = load_evaluation_samples
 app.config['RUBRIC_DATA'] = RUBRIC_DATA
 app.config['limiter'] = limiter  # レート制限機能を渡す
+app.config['MAX_MESSAGE_LENGTH'] = MAX_MESSAGE_LENGTH  # 入力検証定数
+app.config['MAX_HISTORY_LENGTH'] = MAX_HISTORY_LENGTH
+app.config['MAX_EVALUATION_TEXT_LENGTH'] = MAX_EVALUATION_TEXT_LENGTH
 init_conversations_blueprint(app)
 
 # ===== ルート定義 =====
