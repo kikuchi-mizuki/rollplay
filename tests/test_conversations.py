@@ -238,14 +238,16 @@ class TestChatEndpoint:
         assert data['success'] is False
         assert 'メッセージが長すぎます' in data['error']
 
-    @pytest.mark.skip(reason="履歴長制限の実装詳細確認が必要")
     @patch('blueprints.conversations.openai_client')
     @patch('blueprints.conversations.load_scenario_object')
     @patch('blueprints.conversations.select_random_persona_for_scene')
     def test_chat_history_too_long(self, mock_persona, mock_scenario, mock_openai, client):
-        """履歴が長すぎる場合"""
+        """履歴が長すぎる場合 - 自動的に切り詰められる"""
         mock_scenario.return_value = {'scene_1': {'description': 'test'}}
         mock_persona.return_value = {'name': 'テスト顧客'}
+        mock_openai.chat.completions.create.return_value = Mock(
+            choices=[Mock(message=Mock(content='了解しました'))]
+        )
 
         # 51個の履歴（MAX_HISTORY_LENGTH=50を超える）
         long_history = [{'speaker': '営業', 'text': f'message {i}'} for i in range(51)]
@@ -256,17 +258,18 @@ class TestChatEndpoint:
             'scenario_id': 'meeting_1st'
         })
 
-        # 履歴長制限エラー
-        assert response.status_code in [400, 500]
+        # 履歴は自動的に切り詰められ、成功する
+        assert response.status_code == 200
         data = response.get_json()
-        assert data['success'] is False
+        assert data['success'] is True
+        assert 'response' in data
 
-    @pytest.mark.skip(reason="OpenAIクライアント未設定時の動作確認が必要")
     @patch('blueprints.conversations.openai_client', None)
+    @patch('blueprints.conversations.openai_api_key', None)
     @patch('blueprints.conversations.load_scenario_object')
     @patch('blueprints.conversations.select_random_persona_for_scene')
     def test_chat_no_openai_client(self, mock_persona, mock_scenario, client):
-        """OpenAIクライアント未設定エラー"""
+        """OpenAIクライアント未設定時 - モック応答を返す"""
         mock_scenario.return_value = {'scene_1': {'description': 'test'}}
         mock_persona.return_value = {'name': 'テスト顧客'}
 
@@ -276,7 +279,11 @@ class TestChatEndpoint:
             'scenario_id': 'meeting_1st'
         })
 
-        assert response.status_code in [200, 500]
+        # OpenAI未設定の場合はget_mock_response()が呼ばれ、成功する
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['success'] is True
+        assert 'response' in data
 
 
 class TestEvaluateEndpoint:
@@ -340,10 +347,9 @@ class TestEvaluateEndpoint:
         assert data['success'] is True
         assert 'evaluation' in data
 
-    @pytest.mark.skip(reason="空の会話の評価動作確認が必要")
     @patch('blueprints.conversations.openai_client')
     def test_evaluate_empty_conversation(self, mock_openai, client):
-        """空の会話の評価"""
+        """空の会話の評価 - 営業発話なしでエラー"""
         request_data = {
             'conversation': [],
             'scenario_id': 'meeting_1st'
@@ -351,18 +357,20 @@ class TestEvaluateEndpoint:
 
         response = client.post('/api/evaluate', json=request_data)
 
-        # 空の会話の扱いは実装依存
-        assert response.status_code in [200, 400]
+        # 空の会話（営業発話なし）は400エラー
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data['success'] is False
+        assert '営業の発言が見つかりません' in data['error']
 
-    @pytest.mark.skip(reason="会話長制限の実装詳細確認が必要")
     @patch('blueprints.conversations.openai_client')
     def test_evaluate_conversation_too_long(self, mock_openai, client):
-        """会話が長すぎる場合"""
-        # 非常に長い会話
-        long_conversation = [
-            {'speaker': '営業', 'text': 'a' * 5000},
-            {'speaker': '顧客', 'text': 'b' * 5001}
-        ]
+        """会話が長すぎる場合 - 会話件数制限"""
+        # 51件の会話（MAX_HISTORY_LENGTH=50を超える）
+        long_conversation = []
+        for i in range(51):
+            long_conversation.append({'speaker': '営業', 'text': f'営業メッセージ{i}'})
+            long_conversation.append({'speaker': '顧客', 'text': f'顧客メッセージ{i}'})
 
         request_data = {
             'conversation': long_conversation,
@@ -371,8 +379,11 @@ class TestEvaluateEndpoint:
 
         response = client.post('/api/evaluate', json=request_data)
 
-        # 長すぎる会話の扱いは実装依存
-        assert response.status_code in [200, 400, 500]
+        # 会話件数が多すぎる場合は400エラー
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data['success'] is False
+        assert '会話が長すぎます' in data['error']
 
 
 class TestHelperFunctions:
@@ -480,12 +491,11 @@ class TestErrorHandling:
         data = response.get_json()
         assert data['success'] is False
 
-    @pytest.mark.skip(reason="OpenAIエラー時のフォールバック動作確認が必要")
     @patch('blueprints.conversations.openai_client')
     @patch('blueprints.conversations.load_scenario_object')
     @patch('blueprints.conversations.select_random_persona_for_scene')
     def test_chat_openai_error(self, mock_persona, mock_scenario, mock_openai, client):
-        """チャット時のOpenAIエラー"""
+        """チャット時のOpenAIエラー - モック応答にフォールバック"""
         mock_scenario.return_value = {'scene_1': {'description': 'test'}}
         mock_persona.return_value = {'name': 'テスト顧客'}
         mock_openai.chat.completions.create.side_effect = Exception('OpenAI API error')
@@ -496,8 +506,11 @@ class TestErrorHandling:
             'scenario_id': 'meeting_1st'
         })
 
-        # エラー時はフォールバックまたはエラーレスポンス
-        assert response.status_code in [200, 500]
+        # エラー時はget_mock_response()にフォールバックして成功する
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['success'] is True
+        assert 'response' in data
 
     @patch('blueprints.conversations.openai_client')
     @patch('blueprints.conversations.load_evaluation_samples')
