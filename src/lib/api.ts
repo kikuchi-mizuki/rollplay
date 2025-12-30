@@ -1,4 +1,8 @@
 import { Message, Evaluation } from '../types';
+import { fetchWithErrorHandling, APIError } from './errors';
+
+// エラークラスを再エクスポート（他のコンポーネントで使用可能）
+export { APIError, NetworkError, TimeoutError, getErrorMessage } from './errors';
 
 // バックエンドAPIのベースURL
 // 本番環境: VITE_API_BASE_URL環境変数を使用
@@ -36,7 +40,7 @@ export async function sendMessage(message: string, history: Message[], scenarioI
       text: msg.text
     }));
 
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,14 +53,15 @@ export async function sendMessage(message: string, history: Message[], scenarioI
     });
 
     const result = await response.json();
-    
+
     if (result.success && result.response) {
       return result.response;
     } else {
-      throw new Error(result.error || 'API呼び出しに失敗しました');
+      throw new APIError(result.error || 'メッセージ送信に失敗しました', response.status);
     }
   } catch (error) {
     console.error('メッセージ送信エラー:', error);
+    // エラーを適切に再スロー
     throw error;
   }
 }
@@ -74,7 +79,7 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       text: msg.text
     }));
 
-    const response = await fetch(`${API_BASE_URL}/api/evaluate`, {
+    const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/evaluate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +88,7 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
         conversation: conversation,
         scenario_id: scenarioId  // Week 5: シナリオIDを送信
       })
-    });
+    }, 60000); // 評価生成は時間がかかるため60秒タイムアウト
 
     const result = await response.json();
     
@@ -133,10 +138,11 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
         },
       };
     } else {
-      throw new Error(result.error || '講評取得に失敗しました');
+      throw new APIError(result.error || '講評取得に失敗しました', response.status);
     }
   } catch (error) {
     console.error('講評取得エラー:', error);
+    // エラーを適切に再スロー
     throw error;
   }
 }
@@ -153,7 +159,7 @@ export async function saveConversation(params: {
   durationSeconds?: number;
 }): Promise<{ conversationId: string }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/conversations`, {
+    const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/conversations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -177,7 +183,7 @@ export async function saveConversation(params: {
     if (result.success && result.conversation_id) {
       return { conversationId: result.conversation_id };
     } else {
-      throw new Error(result.error || '会話履歴の保存に失敗しました');
+      throw new APIError(result.error || '会話履歴の保存に失敗しました', response.status);
     }
   } catch (error) {
     console.error('会話保存エラー:', error);
@@ -196,7 +202,7 @@ export async function saveEvaluation(params: {
   evaluation: Evaluation;
 }): Promise<{ evaluationId: string }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/evaluations`, {
+    const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/evaluations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -227,7 +233,7 @@ export async function saveEvaluation(params: {
     if (result.success && result.evaluation_id) {
       return { evaluationId: result.evaluation_id };
     } else {
-      throw new Error(result.error || '評価結果の保存に失敗しました');
+      throw new APIError(result.error || '評価結果の保存に失敗しました', response.status);
     }
   } catch (error) {
     console.error('評価保存エラー:', error);
