@@ -33,7 +33,7 @@ export class AudioRecorder {
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 700; // 最低録音時間（ミリ秒）※環境音を確実に排除
+  private minRecordingDuration: number = 1500; // 最低録音時間（ミリ秒）※Whisperの幻覚を防止するため1.5秒に延長
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
