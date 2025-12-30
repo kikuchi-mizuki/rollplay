@@ -722,25 +722,6 @@ init_conversations_blueprint(app)
 
 # ===== ルート定義 =====
 
-# 先頭バイトで実体コンテナを推定
-def sniff_suffix(path: str) -> str:
-    try:
-        with open(path, 'rb') as f:
-            head = f.read(16)
-    except Exception:
-        return '.bin'
-    if head.startswith(b"\x1A\x45\xDF\xA3"):
-        return '.webm'  # EBML
-    if head.startswith(b"OggS"):
-        return '.ogg'
-    if head.startswith(b"RIFF") and b"WAVE" in head[:12]:
-        return '.wav'
-    if b"ftyp" in head:
-        return '.mp4'  # mp4/m4a 兼用
-    if head.startswith(b"ID3") or head[:2] in (b"\xff\xfb", b"\xff\xf3"):
-        return '.mp3'
-    return '.bin'
-
 @app.route('/api/clear-cache', methods=['POST'])
 def clear_cache():
     """シナリオキャッシュをクリア（開発用）"""
