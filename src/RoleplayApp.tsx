@@ -307,6 +307,9 @@ function RoleplayApp() {
               console.log(`▶️ [デバッグ] 音声再生開始: "${chunkText}"`);
               await playAudioWithWebAudio(audioData);
               console.log(`✅ [デバッグ] 音声再生完了: "${chunkText}"`);
+
+              // チャンク間に自然な間隔を追加（100ms）
+              await new Promise(resolve => setTimeout(resolve, 100));
             } catch (error) {
               console.error(`❌ 音声再生失敗: "${chunkText}"`, error);
             } finally {
