@@ -661,16 +661,24 @@ def clear_cache():
         global SCENARIO_CACHE
         cache_size = len(SCENARIO_CACHE)
         SCENARIO_CACHE.clear()
-        print(f"✅ シナリオキャッシュをクリアしました（{cache_size}件）")
+        logger.info(f"シナリオキャッシュをクリアしました（{cache_size}件）")
         return jsonify({
             'success': True,
             'message': f'キャッシュをクリアしました（{cache_size}件）'
         })
-    except Exception as e:
-        print(f"❌ キャッシュクリアエラー: {e}")
+    except KeyError as e:
+        # キャッシュキーエラー（通常は発生しない）
+        logger.error(f"キャッシュクリア - キーエラー: {e}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': 'キャッシュの操作中にエラーが発生しました'
+        }), 500
+    except Exception as e:
+        # 予期しないエラー
+        logger.exception(f"キャッシュクリア - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'キャッシュのクリアに失敗しました'
         }), 500
 
 @app.route('/api/scenarios', methods=['GET'])
@@ -684,18 +692,49 @@ def get_scenarios():
             'scenarios': idx.get('scenarios', []),
             'default_id': idx.get('default_id')
         })
-    except Exception as e:
+    except FileNotFoundError:
+        # シナリオインデックスファイルが見つからない
+        logger.error(f"シナリオ一覧取得 - ファイルが見つかりません: {SCENARIOS_INDEX_PATH}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': 'シナリオデータが見つかりませんでした'
+        }), 404
+    except json.JSONDecodeError as e:
+        # JSON解析エラー
+        logger.error(f"シナリオ一覧取得 - JSON解析エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'シナリオデータの形式が不正です'
+        }), 500
+    except OSError as e:
+        # ファイル読み込みエラー
+        logger.error(f"シナリオ一覧取得 - ファイル読み込みエラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'シナリオデータの読み込みに失敗しました'
+        }), 500
+    except Exception as e:
+        # 予期しないエラー
+        logger.exception(f"シナリオ一覧取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'シナリオ一覧の取得に失敗しました'
         }), 500
 
 @app.route('/api/scenarios/<scenario_id>', methods=['GET'])
 def get_scenario(scenario_id):
     """シナリオ詳細を取得"""
     try:
+        if not scenario_id:
+            logger.warning("シナリオ詳細取得 - シナリオIDが空です")
+            return jsonify({
+                'success': False,
+                'error': 'シナリオIDを指定してください'
+            }), 400
+
         scenario_obj = load_scenario_object(scenario_id)
         if not scenario_obj:
+            logger.warning(f"シナリオ詳細取得 - シナリオが見つかりません: {scenario_id}")
             return jsonify({
                 'success': False,
                 'error': f'シナリオが見つかりません: {scenario_id}'
@@ -704,10 +743,33 @@ def get_scenario(scenario_id):
             'success': True,
             'scenario': scenario_obj
         })
-    except Exception as e:
+    except FileNotFoundError:
+        # シナリオファイルが見つからない
+        logger.error(f"シナリオ詳細取得 - ファイルが見つかりません: {scenario_id}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': f'シナリオ「{scenario_id}」が見つかりませんでした'
+        }), 404
+    except json.JSONDecodeError as e:
+        # JSON解析エラー
+        logger.error(f"シナリオ詳細取得 - JSON解析エラー ({scenario_id}): {e}")
+        return jsonify({
+            'success': False,
+            'error': 'シナリオデータの形式が不正です'
+        }), 500
+    except OSError as e:
+        # ファイル読み込みエラー
+        logger.error(f"シナリオ詳細取得 - ファイル読み込みエラー ({scenario_id}): {e}")
+        return jsonify({
+            'success': False,
+            'error': 'シナリオデータの読み込みに失敗しました'
+        }), 500
+    except Exception as e:
+        # 予期しないエラー
+        logger.exception(f"シナリオ詳細取得 - 予期しないエラー ({scenario_id}): {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'シナリオの取得に失敗しました'
         }), 500
 
 @app.route('/api/chat', methods=['POST'])
@@ -963,11 +1025,34 @@ def chat():
             'response': ai_response,
             'timestamp': datetime.now().isoformat()
         })
-        
-    except Exception as e:
+
+    except ValueError as e:
+        # 入力値エラー（不正なJSON、不正なパラメータなど）
+        logger.error(f"チャット応答 - 入力値が不正: {e}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': 'メッセージの形式が不正です'
+        }), 400
+    except KeyError as e:
+        # 必須フィールドが欠落
+        logger.error(f"チャット応答 - 必須フィールドが欠落: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'メッセージに必要な情報が含まれていません'
+        }), 400
+    except TimeoutError as e:
+        # OpenAI APIタイムアウト
+        logger.error(f"チャット応答 - タイムアウト: {e}")
+        return jsonify({
+            'success': False,
+            'error': '応答生成がタイムアウトしました。もう一度お試しください'
+        }), 500
+    except Exception as e:
+        # 予期しないエラー
+        logger.exception(f"チャット応答 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'チャット応答の生成に失敗しました。もう一度お試しください'
         }), 500
 
 
@@ -2552,13 +2637,34 @@ def ingest_videos():
             'output': output,
             'error': error
         })
-        
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
+
+    except FileNotFoundError as e:
+        # スクリプトファイルまたは依存ファイルが見つからない
+        logger.error(f"動画取り込み - ファイルが見つかりません: {e}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': '必要なファイルが見つかりませんでした'
+        }), 404
+    except OSError as e:
+        # サブプロセス実行エラー
+        logger.error(f"動画取り込み - プロセス実行エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'スクリプトの実行に失敗しました'
+        }), 500
+    except ValueError as e:
+        # 数値変換エラー（出力解析時）
+        logger.error(f"動画取り込み - 出力解析エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'スクリプトの出力形式が不正です'
+        }), 500
+    except Exception as e:
+        # 予期しないエラー
+        logger.exception(f"動画取り込み - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '動画取り込み処理中にエラーが発生しました'
         }), 500
 
 @app.route('/api/admin/stores/stats', methods=['GET'])
@@ -2598,10 +2704,20 @@ def get_stores_stats():
             }
         })
 
+    except ZeroDivisionError as e:
+        # スコア平均計算でゼロ除算
+        logger.error(f"店舗統計取得 - スコア計算エラー: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'スコアデータの計算中にエラーが発生しました'
+        }), 500
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # データベースエラーまたは予期しないエラー
+        logger.exception(f"店舗統計取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '店舗統計の取得に失敗しました'
+        }), 500
 
 
 @app.route('/api/admin/stores/rankings', methods=['GET'])
