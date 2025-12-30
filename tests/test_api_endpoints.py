@@ -104,8 +104,10 @@ class TestEvaluateEndpoint:
         data = response.get_json()
         assert data['success'] is True
         assert 'evaluation' in data
-        assert 'total_score' in data['evaluation']
-        assert 'dimensions' in data['evaluation']
+        # 新しいレスポンス形式に対応
+        assert 'scores' in data['evaluation']
+        assert 'total' in data['evaluation']['scores']
+        assert 'overall' in data['evaluation']
 
     def test_evaluate_missing_conversation(self, client):
         """会話データなしの場合はエラー"""
@@ -139,13 +141,19 @@ class TestEvaluateEndpoint:
 class TestTranscribeEndpoint:
     """音声認識エンドポイントのテスト"""
 
-    @patch('app.openai_client')
-    def test_transcribe_success(self, mock_openai, client):
+    @patch('blueprints.media.openai_client')
+    @patch('blueprints.media.AudioSegment')
+    def test_transcribe_success(self, mock_audio_segment, mock_openai, client):
         """音声認識を正常に実行"""
         # OpenAI Whisper APIのモック設定
         mock_response = Mock()
         mock_response.text = "こんにちは、お世話になっております。"
         mock_openai.audio.transcriptions.create.return_value = mock_response
+
+        # AudioSegmentのモック設定（ffmpegエラーを回避）
+        mock_audio = Mock()
+        mock_audio.set_frame_rate.return_value.set_channels.return_value.export.return_value = None
+        mock_audio_segment.from_file.return_value = mock_audio
 
         # ダミーの音声ファイルを作成（1KB以上のデータ）
         import io

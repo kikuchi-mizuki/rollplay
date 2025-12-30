@@ -716,21 +716,19 @@ init_conversations_blueprint(app)
 def clear_cache():
     """シナリオキャッシュをクリア（開発用）"""
     try:
-        global SCENARIO_CACHE
-        cache_size = len(SCENARIO_CACHE)
-        SCENARIO_CACHE.clear()
-        logger.info(f"シナリオキャッシュをクリアしました（{cache_size}件）")
+        # LRUキャッシュをクリア
+        scenario_info = load_scenario_object.cache_info()
+        evaluation_info = load_evaluation_samples.cache_info()
+
+        load_scenario_object.cache_clear()
+        load_evaluation_samples.cache_clear()
+
+        total_cleared = scenario_info.currsize + evaluation_info.currsize
+        logger.info(f"LRUキャッシュをクリアしました（シナリオ: {scenario_info.currsize}件, 評価サンプル: {evaluation_info.currsize}件）")
         return jsonify({
             'success': True,
-            'message': f'キャッシュをクリアしました（{cache_size}件）'
+            'message': f'キャッシュをクリアしました（{total_cleared}件）'
         })
-    except KeyError as e:
-        # キャッシュキーエラー（通常は発生しない）
-        logger.error(f"キャッシュクリア - キーエラー: {e}")
-        return jsonify({
-            'success': False,
-            'error': 'キャッシュの操作中にエラーが発生しました'
-        }), 500
     except Exception as e:
         # 予期しないエラー
         logger.exception(f"キャッシュクリア - 予期しないエラー: {type(e).__name__}: {e}")
