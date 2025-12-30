@@ -4,6 +4,7 @@ import os
 # Blueprintsのインポート
 from blueprints.scenarios import scenarios_bp, init_blueprint as init_scenarios_blueprint
 from blueprints.media import media_bp, init_blueprint as init_media_blueprint
+from blueprints.static import static_bp, init_blueprint as init_static_blueprint
 import json
 import re
 import subprocess
@@ -654,35 +655,6 @@ app.config['save_video_to_cache'] = save_video_to_cache
 init_media_blueprint(app)
 
 # ===== ルート定義 =====
-
-@app.route('/')
-def index():
-    """Reactアプリを配信（distディレクトリが存在する場合）"""
-    dist_path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
-    if os.path.exists(dist_path):
-        with open(dist_path, 'r', encoding='utf-8') as f:
-            return f.read()
-    # フォールバック: 従来のHTMLテンプレート
-    return render_template('index.html')
-
-@app.route('/favicon.ico')
-def favicon():
-    try:
-        from flask import send_from_directory
-        static_dir = os.path.join(app.root_path, 'static')
-        icon_file = 'favicon.ico'
-        icon_path = os.path.join(static_dir, icon_file)
-        if os.path.exists(icon_path):
-            return send_from_directory(static_dir, icon_file)
-        # アイコンが無い場合は 204 で黙って返す（コンソールエラー回避）
-        return ('', 204)
-    except Exception:
-        return ('', 204)
-
-# 一部ブラウザ/キャッシュが /static/favicon.ico を参照する場合のフォールバック
-@app.route('/static/favicon.ico')
-def static_favicon_fallback():
-    return ('', 204)
 
 # 先頭バイトで実体コンテナを推定
 def sniff_suffix(path: str) -> str:
@@ -2595,49 +2567,6 @@ def get_store_analytics(store_id):
 
 
 # 静的アセットを配信
-@app.route('/assets/<path:filename>')
-def serve_assets(filename):
-    """Viteでビルドされたアセットファイルを配信"""
-    from flask import send_from_directory
-    assets_path = os.path.join(os.path.dirname(__file__), 'dist', 'assets')
-    return send_from_directory(assets_path, filename)
-
-
-# キャッチオールルート: React Routerのクライアント側ルーティングをサポート
-@app.route('/<path:path>')
-def catch_all(path):
-    """
-    APIルート以外のすべてのパスでindex.htmlを返す
-    これによりReact Routerがクライアント側でルーティングを処理できる
-    """
-    from flask import send_from_directory
-    print(f"🔍 Catch-all route called with path: {path}")
-
-    # APIルートは除外
-    if path.startswith('api/'):
-        print(f"❌ API route, returning 404: {path}")
-        return jsonify({'error': 'Not found'}), 404
-
-    # メディアファイル（動画・画像）を配信
-    if path.endswith(('.mp4', '.webm', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico')):
-        dist_path = os.path.join(os.path.dirname(__file__), 'dist')
-        file_path = os.path.join(dist_path, path)
-        if os.path.exists(file_path):
-            print(f"📹 Serving media file: {path}")
-            return send_from_directory(dist_path, path)
-
-    # distディレクトリのindex.htmlを返す
-    dist_index = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
-    print(f"📁 Looking for index.html at: {dist_index}")
-    print(f"✅ File exists: {os.path.exists(dist_index)}")
-
-    if os.path.exists(dist_index):
-        print(f"✅ Serving index.html for path: {path}")
-        with open(dist_index, 'r', encoding='utf-8') as f:
-            return f.read()
-
-    print(f"❌ index.html not found at: {dist_index}")
-    return jsonify({'error': 'Frontend not built', 'path': path}), 404
 
 
 # ===== Week 6: CSV一括出力機能 =====
@@ -3046,6 +2975,11 @@ def calculate_accuracy_metrics(instructor_scores, ai_scores):
         'average_difference': round(avg_difference, 2),
         'total_comparisons': len(differences)
     }
+
+
+# ===== 静的ファイルBlueprint（最後に登録 - キャッチオールルートのため） =====
+app.register_blueprint(static_bp)
+init_static_blueprint(app)
 
 
 if __name__ == '__main__':
