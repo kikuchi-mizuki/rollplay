@@ -48,6 +48,16 @@ except ImportError as e:
     Limiter = None
     get_remote_address = None
 
+# flasggerのインポート（API仕様書自動生成用）
+try:
+    from flasgger import Swagger
+    FLASGGER_AVAILABLE = True
+    logging.info("flasgger利用可能")
+except ImportError as e:
+    logging.warning(f"flasggerインポートエラー: {e}")
+    FLASGGER_AVAILABLE = False
+    Swagger = None
+
 # pydubのインポート（エラーハンドリング付き）
 try:
     from pydub import AudioSegment
@@ -149,6 +159,60 @@ if LIMITER_AVAILABLE and Limiter:
     logger.info("レート制限有効化: デフォルト 200回/日, 50回/時間")
 else:
     logger.warning("flask-limiterが利用できません（レート制限は無効）")
+
+# Swagger設定（API仕様書自動生成）
+if FLASGGER_AVAILABLE and Swagger:
+    swagger_config = {
+        "headers": [],
+        "specs": [
+            {
+                "endpoint": 'apispec',
+                "route": '/apispec.json',
+                "rule_filter": lambda rule: True,
+                "model_filter": lambda tag: True,
+            }
+        ],
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/api/docs"
+    }
+    swagger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "営業ロープレ自動化システム API",
+            "description": "AIが顧客役を演じる営業トレーニングシステムのAPI仕様書",
+            "version": "1.0.0",
+            "contact": {
+                "name": "API Support"
+            }
+        },
+        "securityDefinitions": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "JWT認証トークン（形式: Bearer <token>）"
+            }
+        },
+        "security": [
+            {
+                "Bearer": []
+            }
+        ],
+        "tags": [
+            {"name": "認証", "description": "ユーザー認証関連"},
+            {"name": "シナリオ", "description": "シナリオ管理"},
+            {"name": "会話", "description": "チャット対話・会話履歴"},
+            {"name": "評価", "description": "AI評価・講師評価"},
+            {"name": "メディア", "description": "音声認識・TTS・動画生成"},
+            {"name": "管理者", "description": "管理者機能・統計"},
+            {"name": "静的ファイル", "description": "フロントエンド配信"}
+        ]
+    }
+    Swagger(app, config=swagger_config, template=swagger_template)
+    logger.info("Swagger UI有効化: /api/docs でAPI仕様書を参照可能")
+else:
+    logger.warning("flasggerが利用できません（API仕様書生成は無効）")
 
 # Supabase設定
 supabase_url = os.getenv('VITE_SUPABASE_URL')
