@@ -27,6 +27,7 @@ get_did_client = None
 download_video_to_storage = None
 save_video_to_cache = None
 limiter = None  # レート制限機能
+require_auth = None  # 認証デコレータ
 
 
 def init_blueprint(app):
@@ -38,7 +39,7 @@ def init_blueprint(app):
     global AudioSegment, sniff_suffix
     global generate_cache_key, get_cached_video, get_did_client
     global download_video_to_storage, save_video_to_cache
-    global limiter
+    global limiter, require_auth
 
     openai_client = app.config.get('openai_client')
     supabase_client = app.config.get('supabase_client')
@@ -52,6 +53,7 @@ def init_blueprint(app):
     download_video_to_storage = app.config.get('download_video_to_storage')
     save_video_to_cache = app.config.get('save_video_to_cache')
     limiter = app.config.get('limiter')
+    require_auth = app.config.get('require_auth')
 
 
 def apply_rate_limit(limit_string):
@@ -66,7 +68,18 @@ def apply_rate_limit(limit_string):
     return decorator
 
 
+def apply_auth(func):
+    """
+    認証デコレータを条件付きで適用するヘルパー
+    require_authが利用可能な場合のみ認証を適用
+    """
+    if require_auth:
+        return require_auth(func)
+    return func
+
+
 @media_bp.route('/tts', methods=['POST'])
+@apply_auth
 def text_to_speech():
     """OpenAI TTSを使用した音声合成"""
     try:
@@ -221,6 +234,7 @@ def generate_did_video():
 
 
 @media_bp.route('/transcribe', methods=['POST'])
+@apply_auth
 @apply_rate_limit("5 per minute")  # Whisper API使用のためレート制限
 def transcribe():
     try:

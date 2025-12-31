@@ -682,6 +682,7 @@ app.config['get_did_client'] = get_did_client
 app.config['download_video_to_storage'] = download_video_to_storage
 app.config['save_video_to_cache'] = save_video_to_cache
 app.config['limiter'] = limiter  # レート制限機能を渡す
+app.config['require_auth'] = require_auth  # 認証デコレータを渡す
 init_media_blueprint(app)
 
 # 管理者機能Blueprint
