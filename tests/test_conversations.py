@@ -750,3 +750,218 @@ class TestEvaluateAdditionalCases:
 
         response = client.post('/api/evaluate', json=request_data)
         assert response.status_code in [200, 500]
+
+
+class TestChatStreamPersonaDetailed:
+    """ストリーミングチャットのペルソナ詳細処理テスト"""
+
+    @patch('blueprints.conversations.openai_client')
+    @patch('blueprints.conversations.select_random_persona_for_scene')
+    @patch('blueprints.conversations.load_scenario_object')
+    def test_chat_stream_with_detailed_persona(self, mock_scenario, mock_persona, mock_openai, client):
+        """詳細なペルソナ情報を含むストリーミングチャットのテスト"""
+        # 詳細なペルソナ情報（全フィールドを含む）
+        detailed_persona = {
+            'business_type': 'IT企業',
+            'location': '東京都渋谷区',
+            'business_detail': 'SaaS開発・販売',
+            'current_video_status': '社内で簡易的な動画を作成',
+            'sns_accounts': {
+                'instagram': '@company_official',
+                'twitter': '@company_jp',
+                'youtube': 'なし'
+            },
+            'pain_points': [
+                '動画制作のコストが高い',
+                '制作に時間がかかる',
+                '社内にスキルがない'
+            ],
+            'budget_sense': '月額10-30万円',
+            'tone': 'ビジネスライク、効率重視',
+            'relationship': '初回接触',
+            'knowledge_level': '動画マーケティングについて基礎知識あり',
+            'decision_power': '決裁権あり（部長クラス）',
+            'typical_questions': [
+                '制作期間はどのくらいですか？',
+                '他社との違いは何ですか？',
+                'サポート体制はどうなっていますか？'
+            ],
+            'concerns': [
+                '費用対効果が不明',
+                '運用の手間が増えないか',
+                '品質が担保されるか'
+            ],
+            'example_dialogues': [
+                '動画マーケティングには興味がありますが、コストが心配です',
+                '具体的な効果を教えていただけますか？',
+                '他社の事例があれば知りたいです'
+            ]
+        }
+
+        mock_persona.return_value = detailed_persona
+        mock_scenario.return_value = {
+            'guidelines': ['顧客の課題をヒアリング', '具体的な提案を行う']
+        }
+
+        # OpenAI APIのモック（ストリーミング応答）
+        mock_stream_response = MagicMock()
+        mock_stream_response.__iter__ = lambda self: iter([
+            MagicMock(choices=[MagicMock(delta=MagicMock(content='こんにちは'))]),
+            MagicMock(choices=[MagicMock(delta=MagicMock(content='、'))]),
+            MagicMock(choices=[MagicMock(delta=MagicMock(content='お世話になります'))])
+        ])
+        mock_openai.chat.completions.create.return_value = mock_stream_response
+
+        # TTS APIのモック
+        mock_tts_response = MagicMock()
+        mock_tts_response.content = b'fake_audio_data'
+        mock_openai.audio.speech.create.return_value = mock_tts_response
+
+        request_data = {
+            'message': 'こんにちは',
+            'history': [],
+            'scenario_id': 'meeting_1st'
+        }
+
+        response = client.post('/api/chat-stream', json=request_data)
+
+        # ストリーミングレスポンスの検証
+        assert response.status_code == 200
+        # ペルソナ情報がシステムプロンプトに含まれていることを確認（モック呼び出しで検証）
+        assert mock_persona.called
+        assert mock_scenario.called
+
+    @patch('blueprints.conversations.openai_client')
+    @patch('blueprints.conversations.select_random_persona_for_scene')
+    @patch('blueprints.conversations.load_scenario_object')
+    def test_chat_stream_persona_partial_fields(self, mock_scenario, mock_persona, mock_openai, client):
+        """部分的なペルソナ情報（一部フィールドのみ）のテスト"""
+        # 一部のフィールドのみ含むペルソナ
+        partial_persona = {
+            'business_type': 'IT企業',
+            'pain_points': ['コストが高い'],
+            'sns_accounts': {
+                'instagram': '@company',
+                'twitter': 'なし'
+            }
+        }
+
+        mock_persona.return_value = partial_persona
+        mock_scenario.return_value = {'guidelines': []}
+
+        mock_stream_response = MagicMock()
+        mock_stream_response.__iter__ = lambda self: iter([
+            MagicMock(choices=[MagicMock(delta=MagicMock(content='了解しました'))])
+        ])
+        mock_openai.chat.completions.create.return_value = mock_stream_response
+
+        mock_tts_response = MagicMock()
+        mock_tts_response.content = b'fake_audio'
+        mock_openai.audio.speech.create.return_value = mock_tts_response
+
+        request_data = {
+            'message': 'こんにちは',
+            'history': [],
+            'scenario_id': 'meeting_1st'
+        }
+
+        response = client.post('/api/chat-stream', json=request_data)
+        assert response.status_code == 200
+
+    @patch('blueprints.conversations.openai_client')
+    @patch('blueprints.conversations.select_random_persona_for_scene')
+    @patch('blueprints.conversations.load_scenario_object')
+    def test_chat_stream_continuation_no_persona(self, mock_scenario, mock_persona, mock_openai, client):
+        """会話継続時（ペルソナ選択なし）のテスト"""
+        mock_persona.return_value = {}
+        mock_scenario.return_value = {'guidelines': []}
+
+        mock_stream_response = MagicMock()
+        mock_stream_response.__iter__ = lambda self: iter([
+            MagicMock(choices=[MagicMock(delta=MagicMock(content='はい、承知しました'))])
+        ])
+        mock_openai.chat.completions.create.return_value = mock_stream_response
+
+        mock_tts_response = MagicMock()
+        mock_tts_response.content = b'fake_audio'
+        mock_openai.audio.speech.create.return_value = mock_tts_response
+
+        # 会話履歴あり（継続）
+        request_data = {
+            'message': 'ありがとうございます',
+            'history': [
+                {'speaker': '営業', 'text': 'こんにちは'},
+                {'speaker': '顧客', 'text': 'こんにちは'}
+            ],
+            'scenario_id': 'meeting_1st'
+        }
+
+        response = client.post('/api/chat-stream', json=request_data)
+        assert response.status_code == 200
+        # 継続時はペルソナ選択しない
+        assert not mock_persona.called
+
+
+class TestChatErrorHandling:
+    """チャットエンドポイントのエラーハンドリングテスト"""
+
+    @patch('blueprints.conversations.openai_client')
+    @patch('blueprints.conversations.load_scenario_object')
+    def test_chat_value_error(self, mock_scenario, mock_openai, client):
+        """ValueError発生時のエラーハンドリング"""
+        mock_scenario.side_effect = ValueError("不正なシナリオID")
+
+        request_data = {
+            'message': 'テストメッセージ',
+            'history': [],
+            'scenario_id': 'invalid_scenario'
+        }
+
+        response = client.post('/api/chat', json=request_data)
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data['success'] is False
+        assert 'メッセージの形式が不正です' in data['error']
+
+    @patch('blueprints.conversations.openai_client')
+    @patch('blueprints.conversations.load_scenario_object')
+    @patch('blueprints.conversations.get_mock_response')
+    def test_chat_openai_api_error_with_fallback(self, mock_fallback, mock_scenario, mock_openai, client):
+        """OpenAI APIエラー時のフォールバック処理テスト"""
+        mock_scenario.return_value = {'guidelines': []}
+        mock_openai.chat.completions.create.side_effect = Exception("API Error")
+        mock_fallback.return_value = "フォールバック応答"
+
+        request_data = {
+            'message': 'テストメッセージ',
+            'history': [],
+            'scenario_id': 'meeting_1st'
+        }
+
+        response = client.post('/api/chat', json=request_data)
+
+        # APIエラーでもフォールバック処理により200を返す
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['success'] is True
+        assert 'フォールバック応答' in data['response']
+
+    @patch('blueprints.conversations.openai_client', None)
+    @patch('blueprints.conversations.get_mock_response')
+    def test_chat_no_openai_with_mock(self, mock_response, client):
+        """OpenAI未設定時のモック応答テスト"""
+        mock_response.return_value = "モック応答です"
+
+        request_data = {
+            'message': 'テストメッセージ',
+            'history': [],
+            'scenario_id': 'meeting_1st'
+        }
+
+        response = client.post('/api/chat', json=request_data)
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['success'] is True
+        assert 'モック応答です' in data['response']
