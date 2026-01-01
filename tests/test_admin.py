@@ -5,7 +5,7 @@ admin.py (管理者機能) のユニットテスト
 import pytest
 import io
 import csv
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch, MagicMock, PropertyMock
 from flask import Flask
 
 
@@ -255,7 +255,6 @@ class TestStoreMembers:
 class TestRegionsStats:
     """リージョン別統計テスト"""
 
-    @pytest.mark.skip(reason="Mock設定が複雑 - イテレート可能なモックが必要")
     @patch('blueprints.admin.supabase_client')
     def test_get_regions_stats_success(self, mock_supabase, client):
         """リージョン別統計取得の成功ケース"""
@@ -264,9 +263,9 @@ class TestRegionsStats:
             if table_name == 'stores':
                 mock_table.select.return_value.execute.return_value = Mock(
                     data=[
-                        {'id': 'store_1', 'store_name': '店舗A', 'region': '東京'},
-                        {'id': 'store_2', 'store_name': '店舗B', 'region': '東京'},
-                        {'id': 'store_3', 'store_name': '店舗C', 'region': '大阪'}
+                        {'id': 'store_1', 'store_code': 'S001', 'store_name': '店舗A', 'region': '東京'},
+                        {'id': 'store_2', 'store_code': 'S002', 'store_name': '店舗B', 'region': '東京'},
+                        {'id': 'store_3', 'store_code': 'S003', 'store_name': '店舗C', 'region': '大阪'}
                     ]
                 )
             elif table_name == 'profiles':
@@ -307,42 +306,33 @@ class TestRegionsStats:
 class TestStoreAnalytics:
     """店舗分析テスト"""
 
-    @pytest.mark.skip(reason="Mock設定が複雑 - subscriptableなモックが必要")
     @patch('blueprints.admin.supabase_client')
     def test_get_store_analytics_success(self, mock_supabase, client):
         """店舗分析取得の成功ケース"""
         store_id = 'store_123'
 
         def mock_table_response(table_name):
-            mock_table = Mock()
+            mock_table = MagicMock()
             if table_name == 'stores':
-                mock_chain = Mock()
-                mock_chain.single.return_value.execute.return_value = Mock(
-                    data={'id': store_id, 'store_name': '店舗A', 'region': '東京'}
-                )
-                mock_chain.eq.return_value = mock_chain
-                mock_table.select.return_value = mock_chain
+                # select().eq().execute()のチェーンをモック
+                execute_result = MagicMock()
+                execute_result.data = [{'id': store_id, 'store_code': 'S123', 'store_name': '店舗A', 'region': '東京'}]
+                mock_table.select.return_value.eq.return_value.execute.return_value = execute_result
             elif table_name == 'profiles':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(
-                    data=[{'id': 'user_1'}, {'id': 'user_2'}]
-                )
-                mock_table.select.return_value = mock_chain
+                execute_result = MagicMock()
+                execute_result.data = [{'id': 'user_1'}, {'id': 'user_2'}]
+                mock_table.select.return_value.eq.return_value.execute.return_value = execute_result
             elif table_name == 'conversations':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(
-                    data=[{'id': 'conv_1', 'created_at': '2025-12-01'}]
-                )
-                mock_table.select.return_value = mock_chain
+                execute_result = MagicMock()
+                execute_result.data = [{'id': 'conv_1', 'created_at': '2025-12-01'}]
+                mock_table.select.return_value.eq.return_value.execute.return_value = execute_result
             elif table_name == 'evaluations':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(
-                    data=[
-                        {'average_score': 8.5, 'created_at': '2025-12-01'},
-                        {'average_score': 7.0, 'created_at': '2025-12-02'}
-                    ]
-                )
-                mock_table.select.return_value = mock_chain
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'scenario_id': 'meeting_1st', 'average_score': 8.5, 'created_at': '2025-12-01'},
+                    {'scenario_id': 'meeting_2nd', 'average_score': 7.0, 'created_at': '2025-12-02'}
+                ]
+                mock_table.select.return_value.eq.return_value.execute.return_value = execute_result
             return mock_table
 
         mock_supabase.table.side_effect = mock_table_response
@@ -352,7 +342,9 @@ class TestStoreAnalytics:
         assert response.status_code == 200
         data = response.get_json()
         assert data['success'] is True
-        assert 'analytics' in data
+        assert 'scenario_analytics' in data
+        assert 'store' in data
+        assert 'total_evaluations' in data
 
     @patch('blueprints.admin.supabase_client', None)
     def test_get_store_analytics_no_database(self, client):
