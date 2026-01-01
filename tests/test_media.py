@@ -183,7 +183,6 @@ class TestRateLimitHelper:
 class TestErrorHandling:
     """エラーハンドリングテスト"""
 
-    @pytest.mark.skip(reason="OpenAIエラーハンドリングの確認が必要")
     @patch('blueprints.media.openai_client')
     @patch('blueprints.media.AudioSegment')
     def test_transcribe_openai_error(self, mock_audio_segment, mock_openai, client):
@@ -204,9 +203,11 @@ class TestErrorHandling:
             content_type='multipart/form-data'
         )
 
+        # Whisper APIエラー時はエラーレスポンスを返す
         assert response.status_code in [400, 500]
+        data = response.get_json()
+        assert data['success'] is False
 
-    @pytest.mark.skip(reason="音声変換エラーハンドリングの確認が必要")
     @patch('blueprints.media.openai_client')
     @patch('blueprints.media.AudioSegment')
     def test_transcribe_audio_conversion_error(self, mock_audio_segment, mock_openai, client):
@@ -222,4 +223,7 @@ class TestErrorHandling:
             content_type='multipart/form-data'
         )
 
+        # 音声変換エラー時はエラーレスポンスを返す
         assert response.status_code in [400, 500]
+        data = response.get_json()
+        assert data['success'] is False
