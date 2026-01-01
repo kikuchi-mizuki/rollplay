@@ -359,27 +359,57 @@ class TestStoreAnalytics:
 class TestExportEvaluations:
     """評価データCSVエクスポートテスト"""
 
-    @pytest.mark.skip(reason="Mock設定が複雑 - イテレート可能なモックが必要")
     @patch('blueprints.admin.supabase_client')
     def test_export_evaluations_success(self, mock_supabase, client):
         """評価データCSVエクスポートの成功ケース"""
-        # Supabaseモック
-        mock_evaluations_table = Mock()
-        mock_evaluations_chain = Mock()
-        mock_evaluations_chain.execute.return_value = Mock(
-            data=[
-                {
-                    'id': 'eval_1',
-                    'user_id': 'user_1',
-                    'store_id': 'store_1',
-                    'scenario_id': 'meeting_1st',
-                    'average_score': 8.5,
-                    'created_at': '2025-12-30T10:00:00'
-                }
-            ]
-        )
-        mock_evaluations_table.select.return_value = mock_evaluations_chain
-        mock_supabase.table.return_value = mock_evaluations_table
+        def mock_table_response(table_name):
+            mock_table = MagicMock()
+            if table_name == 'evaluations':
+                # evaluations: select().order().execute()のチェーン（パラメータなしのケース）
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {
+                        'id': 'eval_1',
+                        'user_id': 'user_1',
+                        'store_id': 'store_1',
+                        'scenario_id': 'meeting_1st',
+                        'total_score': 34,
+                        'average_score': 8.5,
+                        'scores': {
+                            'questioning_skill': 9,
+                            'listening_skill': 8,
+                            'proposal_skill': 9,
+                            'closing_skill': 8
+                        },
+                        'created_at': '2025-12-30T10:00:00'
+                    }
+                ]
+                # select()はクエリオブジェクトを返す
+                mock_query = MagicMock()
+                # eq()もクエリオブジェクトを返す（チェーン可能）
+                mock_query.eq.return_value = mock_query
+                # order()もクエリオブジェクトを返す
+                mock_query.order.return_value = mock_query
+                # execute()で最終結果を返す
+                mock_query.execute.return_value = execute_result
+                mock_table.select.return_value = mock_query
+            elif table_name == 'stores':
+                # stores: select().execute()
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'id': 'store_1', 'store_code': 'S001', 'store_name': '店舗A', 'region': '東京'}
+                ]
+                mock_table.select.return_value.execute.return_value = execute_result
+            elif table_name == 'profiles':
+                # profiles: select().execute()
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'id': 'user_1', 'display_name': '山田太郎'}
+                ]
+                mock_table.select.return_value.execute.return_value = execute_result
+            return mock_table
+
+        mock_supabase.table.side_effect = mock_table_response
 
         response = client.get('/api/admin/export/evaluations')
 
@@ -388,7 +418,8 @@ class TestExportEvaluations:
 
         # CSVデータ検証
         csv_data = response.data.decode('utf-8')
-        assert 'eval_1' in csv_data or 'user_id' in csv_data  # ヘッダーまたはデータが含まれる
+        assert 'eval_1' in csv_data or '評価ID' in csv_data  # データまたはヘッダーが含まれる
+        assert 'S001' in csv_data or '山田太郎' in csv_data  # 店舗コードまたはユーザー名
 
     @patch('blueprints.admin.supabase_client', None)
     def test_export_evaluations_no_database(self, client):
@@ -403,30 +434,43 @@ class TestExportEvaluations:
 class TestExportStores:
     """店舗データCSVエクスポートテスト"""
 
-    @pytest.mark.skip(reason="Mock設定が複雑 - イテレート可能なモックが必要")
     @patch('blueprints.admin.supabase_client')
     def test_export_stores_success(self, mock_supabase, client):
         """店舗データCSVエクスポートの成功ケース"""
         def mock_table_response(table_name):
-            mock_table = Mock()
+            mock_table = MagicMock()
             if table_name == 'stores':
-                mock_table.select.return_value.execute.return_value = Mock(
-                    data=[
-                        {'id': 'store_1', 'store_code': 'S001', 'store_name': '店舗A', 'region': '東京'}
-                    ]
-                )
+                # stores: select().order().execute()
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'id': 'store_1', 'store_code': 'S001', 'store_name': '店舗A', 'region': '東京', 'status': 'active', 'created_at': '2025-01-01'}
+                ]
+                mock_table.select.return_value.order.return_value.execute.return_value = execute_result
             elif table_name == 'profiles':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(data=[{'id': 'user_1'}])
-                mock_table.select.return_value = mock_chain
+                # profiles: select().in_().execute()
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'id': 'user_1', 'store_id': 'store_1'},
+                    {'id': 'user_2', 'store_id': 'store_1'}
+                ]
+                mock_table.select.return_value.in_.return_value.execute.return_value = execute_result
             elif table_name == 'conversations':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(data=[{'id': 'conv_1'}])
-                mock_table.select.return_value = mock_chain
+                # conversations: select().in_().execute()
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'id': 'conv_1', 'store_id': 'store_1'},
+                    {'id': 'conv_2', 'store_id': 'store_1'},
+                    {'id': 'conv_3', 'store_id': 'store_1'}
+                ]
+                mock_table.select.return_value.in_.return_value.execute.return_value = execute_result
             elif table_name == 'evaluations':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(data=[{'average_score': 8.5}])
-                mock_table.select.return_value = mock_chain
+                # evaluations: select().in_().execute()
+                execute_result = MagicMock()
+                execute_result.data = [
+                    {'average_score': 8.5, 'store_id': 'store_1'},
+                    {'average_score': 7.0, 'store_id': 'store_1'}
+                ]
+                mock_table.select.return_value.in_.return_value.execute.return_value = execute_result
             return mock_table
 
         mock_supabase.table.side_effect = mock_table_response
@@ -438,7 +482,8 @@ class TestExportStores:
 
         # CSVデータ検証
         csv_data = response.data.decode('utf-8')
-        assert 'store_id' in csv_data or 'S001' in csv_data
+        assert 'S001' in csv_data or '店舗コード' in csv_data  # データまたはヘッダー
+        assert '店舗A' in csv_data or '東京' in csv_data  # 店舗名またはリージョン
 
     @patch('blueprints.admin.supabase_client', None)
     def test_export_stores_no_database(self, client):

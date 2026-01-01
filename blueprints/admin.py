@@ -446,9 +446,12 @@ def export_all_evaluations():
         # BOM付きUTF-8で返却（Excel互換）
         csv_data = '\ufeff' + output.getvalue()
 
+        # ファイル名の日付部分を生成（最初の評価の日付、または"all"）
+        date_suffix = evaluations[0].get("created_at", "").split("T")[0] if evaluations else "all"
+
         return csv_data, 200, {
             'Content-Type': 'text/csv; charset=utf-8',
-            'Content-Disposition': f'attachment; filename=evaluations_export_{evaluation.get("created_at", "").split("T")[0] if evaluations else "all"}.csv'
+            'Content-Disposition': f'attachment; filename=evaluations_export_{date_suffix}.csv'
         }
 
     except KeyError as e:
