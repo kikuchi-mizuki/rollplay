@@ -87,11 +87,11 @@ class TestTranscribeEndpoint:
         assert data['success'] is True
         assert 'text' in data
 
-    @pytest.mark.skip(reason="OpenAIクライアント未設定時の動作確認が必要")
     @patch('blueprints.media.openai_client', None)
     def test_transcribe_no_openai_client(self, client):
         """OpenAIクライアント未設定エラー"""
-        audio_data = io.BytesIO(b'fake audio')
+        # 十分なサイズの音声データ
+        audio_data = io.BytesIO(b'fake audio data' * 100)
         audio_data.name = 'test.wav'
 
         response = client.post('/api/transcribe',
@@ -100,6 +100,8 @@ class TestTranscribeEndpoint:
         )
 
         assert response.status_code in [500, 400]
+        data = response.get_json()
+        assert data['success'] is False
 
     def test_transcribe_no_audio_file(self, client):
         """音声ファイルなしのリクエスト"""
@@ -125,42 +127,6 @@ class TestTranscribeEndpoint:
         assert response.status_code in [400, 500]
         data = response.get_json()
         assert data['success'] is False
-
-
-class TestDIDVideoEndpoint:
-    """D-ID動画生成エンドポイントのテスト"""
-
-    @pytest.mark.skip(reason="D-IDエンドポイント実装確認が必要")
-    @patch('requests.post')
-    @patch('requests.get')
-    def test_did_video_generation(self, mock_get, mock_post, client):
-        """D-ID動画生成の成功ケース"""
-        # D-ID API モック: 動画生成開始
-        mock_post_response = Mock()
-        mock_post_response.status_code = 201
-        mock_post_response.json.return_value = {
-            'id': 'video_123',
-            'status': 'created'
-        }
-        mock_post.return_value = mock_post_response
-
-        # D-ID API モック: ステータス確認
-        mock_get_response = Mock()
-        mock_get_response.status_code = 200
-        mock_get_response.json.return_value = {
-            'id': 'video_123',
-            'status': 'done',
-            'result_url': 'https://example.com/video.mp4'
-        }
-        mock_get.return_value = mock_get_response
-
-        response = client.post('/api/did-video', json={
-            'text': 'テスト動画',
-            'avatar_url': 'https://example.com/avatar.jpg'
-        })
-
-        # エンドポイントが実装されているかどうか
-        assert response.status_code in [200, 404, 405]
 
 
 class TestRateLimitHelper:
