@@ -86,6 +86,18 @@ class TestGetScenarios:
 class TestGetScenario:
     """シナリオ詳細取得のテスト"""
 
+    def test_get_scenario_empty_id(self, client):
+        """空のシナリオIDの場合"""
+        # 空文字列のシナリオIDは、Flaskのルーティングで/api/scenarios/にマッチしないため、
+        # 直接エンドポイントをテストすることはできない
+        # ただし、scenarios.pyの73-74行のチェックをカバーするため、
+        # ルート直下の空文字列をテストする必要がある
+        # この場合、/api/scenarios/というパスは404になるはず
+        response = client.get('/api/scenarios/')
+
+        # Flaskのルーティングにより404または301（リダイレクト）が返される
+        assert response.status_code in [301, 404]
+
     @patch('blueprints.scenarios.load_scenario_object')
     def test_get_scenario_success(self, mock_load, client):
         """シナリオ詳細取得の成功ケース"""

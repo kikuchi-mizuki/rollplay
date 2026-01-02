@@ -132,8 +132,7 @@ class TestTranscribeEndpoint:
 class TestRateLimitHelper:
     """レート制限ヘルパー関数のテスト"""
 
-    @pytest.mark.skip(reason="レート制限ヘルパーはFlaskリクエストコンテキストが必要")
-    def test_apply_rate_limit_with_limiter(self):
+    def test_apply_rate_limit_with_limiter(self, app):
         """limiterがある場合のレート制限適用"""
         from blueprints.media import apply_rate_limit
 
@@ -142,8 +141,10 @@ class TestRateLimitHelper:
         def test_func():
             return "success"
 
-        result = test_func()
-        assert result == "success"
+        # アプリケーションコンテキスト内でテスト
+        with app.app_context():
+            result = test_func()
+            assert result == "success"
 
 
 class TestErrorHandling:
