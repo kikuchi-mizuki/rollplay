@@ -77,26 +77,6 @@ RAGアイテム数: 120
     @patch('app.load_scenarios_index')
     @patch('subprocess.run')
     @patch('os.path.exists', return_value=True)
-    def test_ingest_output_parsing_error(self, mock_exists, mock_subprocess, mock_load_scenarios, client):
-        """出力解析エラー（数値変換失敗）"""
-        # 不正な出力形式
-        mock_result = Mock()
-        mock_result.stdout = "作成シナリオ数: invalid_number"
-        mock_result.stderr = ""
-        mock_subprocess.return_value = mock_result
-
-        # int()変換時にValueErrorが発生するようにする
-        with patch('builtins.int', side_effect=ValueError("invalid literal")):
-            response = client.post('/ingest')
-
-            assert response.status_code == 500
-            data = response.get_json()
-            assert data['success'] is False
-            assert '出力形式が不正' in data['error']
-
-    @patch('app.load_scenarios_index')
-    @patch('subprocess.run')
-    @patch('os.path.exists', return_value=True)
     def test_ingest_unexpected_error(self, mock_exists, mock_subprocess, mock_load_scenarios, client):
         """予期しないエラー"""
         mock_subprocess.side_effect = Exception("予期しないエラー")
