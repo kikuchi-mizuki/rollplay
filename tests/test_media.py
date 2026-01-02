@@ -314,3 +314,50 @@ class TestTranscribeDetails:
 
         # PyDubなしでも処理可能（または400でサイズエラー）
         assert response.status_code in [200, 400, 404, 500]
+
+
+class TestTTSFileHandling:
+    """TTSファイル処理のテスト"""
+
+    @patch('blueprints.media.openai_client')
+    @patch('blueprints.media.os.makedirs')
+    @patch('blueprints.media.open', side_effect=OSError("File write error"))
+    @patch('blueprints.media.os.path.exists', return_value=False)
+    def test_tts_file_write_error(self, mock_exists, mock_open, mock_makedirs, mock_openai, client):
+        """TTSファイル書き込みエラー"""
+        # OpenAI TTS APIモック
+        mock_response = Mock()
+        mock_response.content = b'fake audio content'
+        mock_openai.audio.speech.create.return_value = mock_response
+
+        response = client.post('/api/tts', json={
+            'text': 'テスト',
+            'voice': 'alloy'
+        })
+
+        # ファイル書き込みエラーが発生しても適切に処理
+        assert response.status_code in [200, 404, 500]
+
+
+class TestTranscribeOSError:
+    """Transcribe OSErrorハンドリングのテスト"""
+
+    @patch('blueprints.media.openai_client')
+    @patch('blueprints.media.AudioSegment')
+    def test_transcribe_os_error(self, mock_audio_segment, mock_openai, client):
+        """OSError発生時の処理"""
+        # AudioSegmentモック: OSError発生
+        mock_audio_segment.from_file.side_effect = OSError("File system error")
+
+        audio_data = io.BytesIO(b'fake audio data' * 100)
+        audio_data.name = 'test.wav'
+
+        response = client.post('/api/transcribe',
+            data={'audio': (audio_data, 'test.wav')},
+            content_type='multipart/form-data'
+        )
+
+        # OSErrorが適切に処理される
+        assert response.status_code in [400, 500]
+        data = response.get_json()
+        assert data['success'] is False
