@@ -2,8 +2,10 @@
 ユーティリティ関数・ヘルパー関数のテスト
 """
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch, MagicMock, mock_open
 import json
+import tempfile
+import os
 
 
 class TestLoadScenarioObject:
@@ -162,3 +164,99 @@ class TestJSONParsing:
         data = json.loads(json_str)
 
         assert data['message'] == 'こんにちは'
+
+
+class TestSniffSuffix:
+    """sniff_suffix関数のテスト"""
+
+    def test_sniff_webm_format(self):
+        """WebM形式を正しく判定"""
+        from app import sniff_suffix
+
+        # 一時ファイルを作成してWebMヘッダーを書き込む
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as f:
+            f.write(b"\x1A\x45\xDF\xA3" + b"\x00" * 12)  # EBML header
+            temp_path = f.name
+
+        try:
+            result = sniff_suffix(temp_path)
+            assert result == '.webm'
+        finally:
+            os.unlink(temp_path)
+
+    def test_sniff_ogg_format(self):
+        """Ogg形式を正しく判定"""
+        from app import sniff_suffix
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as f:
+            f.write(b"OggS" + b"\x00" * 12)
+            temp_path = f.name
+
+        try:
+            result = sniff_suffix(temp_path)
+            assert result == '.ogg'
+        finally:
+            os.unlink(temp_path)
+
+    def test_sniff_wav_format(self):
+        """WAV形式を正しく判定"""
+        from app import sniff_suffix
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as f:
+            f.write(b"RIFF\x00\x00\x00\x00WAVE")
+            temp_path = f.name
+
+        try:
+            result = sniff_suffix(temp_path)
+            assert result == '.wav'
+        finally:
+            os.unlink(temp_path)
+
+    def test_sniff_mp4_format(self):
+        """MP4形式を正しく判定"""
+        from app import sniff_suffix
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as f:
+            f.write(b"\x00\x00\x00\x18ftyp" + b"\x00" * 10)
+            temp_path = f.name
+
+        try:
+            result = sniff_suffix(temp_path)
+            assert result == '.mp4'
+        finally:
+            os.unlink(temp_path)
+
+    def test_sniff_mp3_format(self):
+        """MP3形式を正しく判定"""
+        from app import sniff_suffix
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as f:
+            f.write(b"ID3" + b"\x00" * 13)
+            temp_path = f.name
+
+        try:
+            result = sniff_suffix(temp_path)
+            assert result == '.mp3'
+        finally:
+            os.unlink(temp_path)
+
+    def test_sniff_unknown_format(self):
+        """不明な形式は.binを返す"""
+        from app import sniff_suffix
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as f:
+            f.write(b"UNKNOWN" + b"\x00" * 9)
+            temp_path = f.name
+
+        try:
+            result = sniff_suffix(temp_path)
+            assert result == '.bin'
+        finally:
+            os.unlink(temp_path)
+
+    def test_sniff_file_not_found(self):
+        """ファイルが見つからない場合は.binを返す"""
+        from app import sniff_suffix
+
+        result = sniff_suffix('/nonexistent/file/path.bin')
+        assert result == '.bin'

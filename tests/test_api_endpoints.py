@@ -184,3 +184,31 @@ class TestTranscribeEndpoint:
         data = response.get_json()
         assert data['success'] is False
         assert 'error' in data
+
+
+class TestClearCacheEndpoint:
+    """キャッシュクリアエンドポイントのテスト"""
+
+    def test_clear_cache_success(self, client):
+        """キャッシュクリアの成功ケース"""
+        response = client.post('/api/clear-cache')
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['success'] is True
+        assert 'message' in data
+        assert 'キャッシュをクリアしました' in data['message']
+
+    @patch('app.load_scenario_object')
+    def test_clear_cache_error(self, mock_load_scenario, client):
+        """キャッシュクリア時のエラーハンドリング"""
+        # cache_info()でエラーを発生させる
+        mock_load_scenario.cache_info.side_effect = Exception("Cache error")
+
+        response = client.post('/api/clear-cache')
+
+        assert response.status_code == 500
+        data = response.get_json()
+        assert data['success'] is False
+        assert 'error' in data
+        assert 'キャッシュのクリアに失敗しました' in data['error']
