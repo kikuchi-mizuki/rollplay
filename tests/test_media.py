@@ -141,8 +141,8 @@ class TestRateLimitHelper:
         def test_func():
             return "success"
 
-        # アプリケーションコンテキスト内でテスト
-        with app.app_context():
+        # リクエストコンテキスト内でテスト（flask_limiterがflask.requestを必要とするため）
+        with app.test_request_context():
             result = test_func()
             assert result == "success"
 
