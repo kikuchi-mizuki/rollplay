@@ -166,12 +166,12 @@ class TestDIDVideoEndpoint:
 class TestRateLimitHelper:
     """レート制限ヘルパー関数のテスト"""
 
-    @pytest.mark.skip(reason="レート制限ヘルパーのテスト方法調整が必要")
+    @pytest.mark.skip(reason="レート制限ヘルパーはFlaskリクエストコンテキストが必要")
     def test_apply_rate_limit_with_limiter(self):
         """limiterがある場合のレート制限適用"""
         from blueprints.media import apply_rate_limit
 
-        # limiterがNoneの場合、デコレータは何もしない
+        # limiterの有無に関わらず、デコレータは関数を返す
         @apply_rate_limit("10 per minute")
         def test_func():
             return "success"

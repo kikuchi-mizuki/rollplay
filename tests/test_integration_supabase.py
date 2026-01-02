@@ -144,32 +144,63 @@ class TestUserProfileFlow:
 class TestStoreManagementFlow:
     """店舗管理フロー統合テスト"""
 
-    @pytest.mark.skip(reason="認証が必要なエンドポイント - ステータスコード調整が必要")
     @patch('blueprints.admin.supabase_client')
     def test_get_store_rankings(self, mock_supabase, client):
         """店舗ランキング取得の統合フロー（N+1問題解決済み）"""
         # Supabaseモック: 店舗一覧取得
-        mock_supabase.table.return_value.select.return_value.execute.return_value = Mock(
-            data=[
-                {'id': 'store_1', 'name': '店舗A'},
-                {'id': 'store_2', 'name': '店舗B'},
-                {'id': 'store_3', 'name': '店舗C'}
-            ]
-        )
+        mock_table = MagicMock()
 
-        # Supabaseモック: profiles, conversations, evaluations一括取得
-        mock_supabase.table.return_value.select.return_value.in_.return_value.execute.return_value = Mock(
-            data=[
-                {'store_id': 'store_1', 'id': 'profile_1'},
-                {'store_id': 'store_1', 'id': 'profile_2'},
-                {'store_id': 'store_2', 'id': 'profile_3'}
-            ]
-        )
+        # stores.select('*').execute()
+        stores_execute = MagicMock()
+        stores_execute.data = [
+            {'id': 'store_1', 'store_code': 'S001', 'store_name': '店舗A', 'region': '東京'},
+            {'id': 'store_2', 'store_code': 'S002', 'store_name': '店舗B', 'region': '大阪'},
+            {'id': 'store_3', 'store_code': 'S003', 'store_name': '店舗C', 'region': '福岡'}
+        ]
+
+        # profiles.select('id').eq('store_id', X).execute()
+        profiles_execute = MagicMock()
+        profiles_execute.data = [
+            {'id': 'profile_1'},
+            {'id': 'profile_2'}
+        ]
+
+        # conversations.select('id').eq('store_id', X).execute()
+        conversations_execute = MagicMock()
+        conversations_execute.data = [
+            {'id': 'conv_1'},
+            {'id': 'conv_2'},
+            {'id': 'conv_3'}
+        ]
+
+        # evaluations.select('average_score').eq('store_id', X).execute()
+        evaluations_execute = MagicMock()
+        evaluations_execute.data = [
+            {'average_score': 8.5},
+            {'average_score': 7.5}
+        ]
+
+        def table_mock(table_name):
+            mock = MagicMock()
+            if table_name == 'stores':
+                mock.select.return_value.execute.return_value = stores_execute
+            elif table_name == 'profiles':
+                mock.select.return_value.eq.return_value.execute.return_value = profiles_execute
+            elif table_name == 'conversations':
+                mock.select.return_value.eq.return_value.execute.return_value = conversations_execute
+            elif table_name == 'evaluations':
+                mock.select.return_value.eq.return_value.execute.return_value = evaluations_execute
+            return mock
+
+        mock_supabase.table.side_effect = table_mock
 
         response = client.get('/api/admin/stores/rankings')
 
-        # Note: このエンドポイントは認証が必要な場合は401が返る可能性がある
-        assert response.status_code in [200, 401]
+        # エンドポイントは認証なしでも動作（現在の実装）
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['success'] is True
+        assert 'rankings' in data
 
 
 @pytest.mark.integration

@@ -34,15 +34,15 @@ class TestIndexRoute:
         assert response.status_code == 200
         assert b'html' in response.data.lower()
 
-    @pytest.mark.skip(reason="テンプレートファイルとurl_for()エンドポイント名に依存 - templates/index.html実装後に有効化")
     @patch('os.path.exists', return_value=False)
     def test_index_without_dist(self, mock_exists, client):
         """distがない場合はテンプレートにフォールバック"""
         response = client.get('/')
 
         # distが存在しない場合、render_template()が呼ばれる
-        # テンプレートファイルとurl_for()の正しいエンドポイント名が必要
-        assert response.status_code in [200, 500]
+        # templates/index.htmlが存在するため、200を返す
+        assert response.status_code == 200
+        assert b'html' in response.data.lower()
 
 
 class TestFaviconRoute:
