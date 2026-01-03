@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 /**
  * 画面共有のエラータイプ
@@ -138,6 +138,20 @@ export function useScreenShare() {
         return '不明なエラーが発生しました。';
     }
   }, [screenShareError]);
+
+  /**
+   * video要素のsrcObjectを設定
+   * DOMが準備できた後に実行される（React useEffect）
+   */
+  useEffect(() => {
+    if (isScreenSharing && screenStream && screenVideoRef.current) {
+      screenVideoRef.current.srcObject = screenStream;
+      console.log('✅ 画面共有プレビュー表示準備完了（useEffect）');
+    } else if (!isScreenSharing && screenVideoRef.current) {
+      screenVideoRef.current.srcObject = null;
+      console.log('🧹 画面共有プレビュークリア（useEffect）');
+    }
+  }, [isScreenSharing, screenStream]);
 
   return {
     screenStream,

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 /**
  * カメラアクセスのエラータイプ
@@ -129,6 +129,20 @@ export function useCamera() {
         return '不明なエラーが発生しました。';
     }
   }, [cameraError]);
+
+  /**
+   * video要素のsrcObjectを設定
+   * DOMが準備できた後に実行される（React useEffect）
+   */
+  useEffect(() => {
+    if (isCameraActive && cameraStream && cameraVideoRef.current) {
+      cameraVideoRef.current.srcObject = cameraStream;
+      console.log('✅ カメラプレビュー表示準備完了（useEffect）');
+    } else if (!isCameraActive && cameraVideoRef.current) {
+      cameraVideoRef.current.srcObject = null;
+      console.log('🧹 カメラプレビュークリア（useEffect）');
+    }
+  }, [isCameraActive, cameraStream]);
 
   return {
     cameraStream,
