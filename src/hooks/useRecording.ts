@@ -329,6 +329,52 @@ export function useRecording(streams: RecordingStreams) {
   }, []);
 
   /**
+   * 録画データをダウンロード
+   *
+   * Phase 2 Day 7: WebMファイルのダウンロード機能
+   * - Blob + URL.createObjectURL()
+   * - ファイル名: roleplay_YYYYMMDD_HHMMSS.webm
+   */
+  const downloadRecording = useCallback(() => {
+    if (!recordingData) {
+      console.warn('⚠️ ダウンロード: 録画データがありません');
+      return;
+    }
+
+    console.log('💾 録画データダウンロード開始...');
+
+    // ファイル名生成（roleplay_YYYYMMDD_HHMMSS.webm）
+    const now = recordingData.timestamp;
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const filename = `roleplay_${year}${month}${day}_${hours}${minutes}${seconds}.webm`;
+
+    // BlobからURLを作成
+    const url = URL.createObjectURL(recordingData.blob);
+
+    // <a>要素を作成してダウンロード
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // URLを解放
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 100);
+
+    console.log('✅ ダウンロード完了');
+    console.log(`  ファイル名: ${filename}`);
+    console.log(`  サイズ: ${(recordingData.blob.size / 1024 / 1024).toFixed(2)} MB`);
+  }, [recordingData]);
+
+  /**
    * エラーメッセージを取得
    */
   const getErrorMessage = useCallback((): string | null => {
@@ -363,6 +409,7 @@ export function useRecording(streams: RecordingStreams) {
     startRecording,
     stopRecording,
     clearRecording,
+    downloadRecording, // Phase 2 Day 7: ダウンロード機能
     getErrorMessage,
     formatRecordingTime,
   };

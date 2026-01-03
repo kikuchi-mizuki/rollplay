@@ -82,6 +82,7 @@ function RoleplayApp() {
 
   // Phase 2 Day 4: 録画機能（カメラストリームを録画）
   // Phase 2 Day 6: Canvas合成録画（画面共有+カメラ）
+  // Phase 2 Day 7: ダウンロード機能
   const {
     isRecording: isVideoRecording,
     recordingError: videoRecordingError,
@@ -89,7 +90,8 @@ function RoleplayApp() {
     recordingData: videoRecordingData,
     startRecording: startVideoRecording,
     stopRecording: stopVideoRecording,
-    clearRecording: _clearVideoRecording, // Day 7（ダウンロード機能）で使用予定
+    clearRecording: clearVideoRecording,
+    downloadRecording: downloadVideoRecording,
     getErrorMessage: getVideoRecordingErrorMessage,
     formatRecordingTime,
   } = useRecording({
@@ -1256,6 +1258,26 @@ function RoleplayApp() {
           <div className="bg-green-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
             ✅ 録画完了 ({(videoRecordingData.blob.size / 1024 / 1024).toFixed(2)} MB)
           </div>
+        )}
+
+        {/* Phase 2 Day 7: ダウンロード・クリアボタン */}
+        {videoRecordingData && !isVideoRecording && (
+          <>
+            <button
+              onClick={downloadVideoRecording}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all"
+              title="録画データをダウンロード"
+            >
+              💾 Download
+            </button>
+            <button
+              onClick={clearVideoRecording}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all"
+              title="録画データをクリア"
+            >
+              🗑️ Clear
+            </button>
+          </>
         )}
       </div>
 
