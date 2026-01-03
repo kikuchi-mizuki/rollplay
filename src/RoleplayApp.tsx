@@ -11,6 +11,7 @@ import { getEvaluation, getScenarios, saveConversation, saveEvaluation } from '.
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
 import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl } from './lib/expressionSelector';
+import { useCamera } from './hooks/useCamera'; // Phase 2: カメラアクセス
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -52,6 +53,18 @@ function RoleplayApp() {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
   const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
+
+  // Phase 2: カメラアクセス
+  const {
+    cameraStream: _cameraStream, // Day 4（録画機能）で使用予定
+    isCameraActive,
+    cameraError,
+    isLoading: isCameraLoading,
+    cameraVideoRef,
+    startCamera,
+    stopCamera,
+    getErrorMessage,
+  } = useCamera();
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -117,6 +130,29 @@ function RoleplayApp() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  // Phase 2: カメラエラーハンドリング
+  useEffect(() => {
+    if (cameraError) {
+      const errorMessage = getErrorMessage();
+      if (errorMessage) {
+        setToast({
+          message: errorMessage,
+          type: 'error',
+        });
+      }
+    }
+  }, [cameraError, getErrorMessage]);
+
+  // Phase 2: コンポーネントアンマウント時にカメラを停止
+  useEffect(() => {
+    return () => {
+      if (isCameraActive) {
+        console.log('🧹 コンポーネントアンマウント: カメラを停止します');
+        stopCamera();
+      }
+    };
+  }, [isCameraActive, stopCamera]);
 
   // シナリオ選択時に、会話をリセット（ユーザーが最初に話しかける形式）
   useEffect(() => {
@@ -1029,6 +1065,8 @@ function RoleplayApp() {
             subtitle={mediaSubtitle}
             videoSrc={videoSrc}
             imageSrc={imageSrc}
+            cameraVideoRef={cameraVideoRef} // Phase 2
+            isCameraActive={isCameraActive} // Phase 2
           />
         </section>
 
@@ -1040,6 +1078,33 @@ function RoleplayApp() {
           <ChatPanel messages={messages} />
         </section>
       </main>
+
+      {/* Phase 2 Day 1: カメラテストボタン（開発用） */}
+      <div className="fixed top-20 right-4 z-[60] flex flex-col gap-2">
+        {!isCameraActive ? (
+          <button
+            onClick={startCamera}
+            disabled={isCameraLoading}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            title="カメラをONにする"
+          >
+            {isCameraLoading ? '📷 起動中...' : '📷 Camera ON'}
+          </button>
+        ) : (
+          <button
+            onClick={stopCamera}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all"
+            title="カメラをOFFにする"
+          >
+            🛑 Camera OFF
+          </button>
+        )}
+        {cameraError && (
+          <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
+            {getErrorMessage()}
+          </div>
+        )}
+      </div>
 
       {/* フッター: 入力エリア */}
       <footer className="fixed bottom-4 inset-x-0 mx-auto w-[92%] max-w-3xl z-[50] safe-area-bottom">

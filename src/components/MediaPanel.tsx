@@ -9,6 +9,8 @@ import { formatDuration } from '../lib/audio';
  * @param videoSrc - 動画のソースURL（オプション）
  * @param imageSrc - 画像のソースURL（オプション）
  * @param subtitle - 字幕テキスト（オプション）
+ * @param cameraVideoRef - Phase 2: カメラプレビュー用のvideoRef（オプション）
+ * @param isCameraActive - Phase 2: カメラがアクティブかどうか（オプション）
  */
 interface MediaPanelProps {
   isRecording?: boolean;
@@ -16,6 +18,8 @@ interface MediaPanelProps {
   videoSrc?: string;
   imageSrc?: string;
   subtitle?: string;
+  cameraVideoRef?: React.RefObject<HTMLVideoElement>; // Phase 2
+  isCameraActive?: boolean; // Phase 2
 }
 
 export function MediaPanel({
@@ -24,6 +28,8 @@ export function MediaPanel({
   videoSrc,
   imageSrc,
   subtitle,
+  cameraVideoRef, // Phase 2
+  isCameraActive = false, // Phase 2
 }: MediaPanelProps) {
   // 録音中の波形バーを生成
   const renderWaveform = () => {
@@ -99,6 +105,23 @@ export function MediaPanel({
 
         {/* 録音中オーバーレイ */}
         {renderWaveform()}
+
+        {/* Phase 2: カメラプレビュー（Day 1 - 基本実装） */}
+        {isCameraActive && cameraVideoRef && (
+          <div className="absolute bottom-4 left-4 w-48 h-36 bg-black rounded-lg overflow-hidden border-2 border-white/20 shadow-lg z-20">
+            <video
+              ref={cameraVideoRef}
+              autoPlay
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              aria-label="カメラプレビュー"
+            />
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md">
+              📷 Camera
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
