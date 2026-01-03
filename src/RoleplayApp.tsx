@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Header } from './components/Header';
 import { ChatPanel } from './components/ChatPanel';
 import { MediaPanel } from './components/MediaPanel';
@@ -58,6 +58,9 @@ function RoleplayApp() {
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
 
+  // 録画開始時のWeb Audio API初期化フラグ
+  const recordingAudioInitializedRef = useRef(false);
+
   // Phase 2: カメラアクセス
   const {
     cameraStream, // Day 4（録画機能）で使用
@@ -90,7 +93,7 @@ function RoleplayApp() {
     recordingError: videoRecordingError,
     recordingTime: videoRecordingTime,
     recordingData: videoRecordingData,
-    startRecording: startVideoRecording,
+    startRecording: startVideoRecordingInternal,
     stopRecording: stopVideoRecording,
     clearRecording: clearVideoRecording,
     downloadRecording: downloadVideoRecording,
@@ -103,6 +106,20 @@ function RoleplayApp() {
     avatarImageSrcRef, // 録画中の表情変化に対応（Ref経由で最新値を参照）
     aiAudioStream, // AI音声出力のストリーム（Web Audio API）
   }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
+
+  // 録画開始のラッパー（Web Audio API初期化を確実に実行）
+  const startVideoRecording = useCallback(async () => {
+    // 録画開始前にWeb Audio APIを初期化（ユーザージェスチャーが必要なため）
+    if (!recordingAudioInitializedRef.current) {
+      console.log('🎵 録画開始: Web Audio APIを初期化します（ユーザージェスチャー）');
+      await initializeAudio();
+      recordingAudioInitializedRef.current = true;
+      // 初期化後、少し待機してaiAudioStreamが設定されるのを待つ
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    // 録画開始
+    startVideoRecordingInternal();
+  }, [startVideoRecordingInternal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -148,16 +165,9 @@ function RoleplayApp() {
     }
   }, []);
 
-  // Web Audio API 初期化（録画用にAI音声をキャプチャするため、アプリ起動時に初期化）
-  useEffect(() => {
-    const init = async () => {
-      if (!audioInitialized) {
-        console.log('🎵 アプリ起動時にWeb Audio APIを初期化します（録画用）');
-        await initializeAudio();
-      }
-    };
-    init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Web Audio API 初期化（録画用にAI音声をキャプチャするため）
+  // 注意: ブラウザのAutoplayポリシーにより、ユーザージェスチャー後に初期化する必要がある
+  // そのため、録画開始時またはVADモード開始時に初期化する
 
   // カメラON時（画面共有OFFの場合）にvideoタグにsrcObjectを設定
   useEffect(() => {
