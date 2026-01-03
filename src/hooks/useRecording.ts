@@ -27,6 +27,7 @@ export interface RecordingStreams {
   avatarImageSrc?: string; // アバター画像のパス（カメラのみモードでCanvas合成に使用）
   avatarImageSrcRef?: React.MutableRefObject<string | undefined>; // アバター画像のRef（録画中の表情変化に対応）
   aiAudioStream?: MediaStream | null; // AI音声出力のストリーム（Web Audio API）
+  audioDestinationRef?: React.MutableRefObject<MediaStreamAudioDestinationNode | null>; // AI音声Destinationのref（ステート更新タイミング問題を回避）
 }
 
 /**
@@ -44,7 +45,7 @@ export interface RecordingStreams {
  * @returns 録画状態、制御関数、録画データ
  */
 export function useRecording(streams: RecordingStreams) {
-  const { cameraStream, screenStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream } = streams;
+  const { cameraStream, screenStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -261,8 +262,10 @@ export function useRecording(streams: RecordingStreams) {
     }
 
     // AI音声トラック（Web Audio API出力）
-    if (aiAudioStream) {
-      const aiAudioTracks = aiAudioStream.getAudioTracks();
+    // ステート更新タイミング問題を回避するため、audioDestinationRefから直接取得
+    const aiStream = audioDestinationRef?.current?.stream || aiAudioStream;
+    if (aiStream) {
+      const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
         audioTracks.push(...aiAudioTracks);
         console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
@@ -271,10 +274,10 @@ export function useRecording(streams: RecordingStreams) {
           console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
         });
       } else {
-        console.warn(`  ⚠️ AI音声: トラックなし（aiAudioStreamは存在するがトラックが空）`);
+        console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
     } else {
-      console.warn(`  ⚠️ AI音声: aiAudioStreamがnull（Web Audio API未初期化の可能性）`);
+      console.warn(`  ⚠️ AI音声: aiStreamがnull（Web Audio API未初期化の可能性）`);
     }
 
     // 音声トラックを合成ストリームに追加
@@ -288,7 +291,7 @@ export function useRecording(streams: RecordingStreams) {
     console.log(`  音声トラック数: ${audioTracks.length} (カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
 
     return compositeStream;
-  }, [cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream]);
+  }, [cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
 
   /**
    * Canvas合成ストリームを作成
@@ -438,8 +441,10 @@ export function useRecording(streams: RecordingStreams) {
     }
 
     // AI音声トラック（Web Audio API出力）
-    if (aiAudioStream) {
-      const aiAudioTracks = aiAudioStream.getAudioTracks();
+    // ステート更新タイミング問題を回避するため、audioDestinationRefから直接取得
+    const aiStream = audioDestinationRef?.current?.stream || aiAudioStream;
+    if (aiStream) {
+      const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
         audioTracks.push(...aiAudioTracks);
         console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
@@ -448,10 +453,10 @@ export function useRecording(streams: RecordingStreams) {
           console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
         });
       } else {
-        console.warn(`  ⚠️ AI音声: トラックなし（aiAudioStreamは存在するがトラックが空）`);
+        console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
     } else {
-      console.warn(`  ⚠️ AI音声: aiAudioStreamがnull（Web Audio API未初期化の可能性）`);
+      console.warn(`  ⚠️ AI音声: aiStreamがnull（Web Audio API未初期化の可能性）`);
     }
 
     // 音声トラックを合成ストリームに追加
@@ -465,7 +470,7 @@ export function useRecording(streams: RecordingStreams) {
     console.log(`  音声トラック数: ${audioTracks.length} (画面共有${screenAudioTracks.length} + カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
 
     return compositeStream;
-  }, [screenStream, cameraStream, aiAudioStream]);
+  }, [screenStream, cameraStream, aiAudioStream, audioDestinationRef]);
 
   /**
    * 録画を開始

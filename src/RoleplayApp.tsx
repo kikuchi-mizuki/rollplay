@@ -105,6 +105,7 @@ function RoleplayApp() {
     avatarImageSrc: imageSrc, // カメラのみモードでCanvas合成に使用（初期値）
     avatarImageSrcRef, // 録画中の表情変化に対応（Ref経由で最新値を参照）
     aiAudioStream, // AI音声出力のストリーム（Web Audio API）
+    audioDestinationRef, // AI音声Destinationのref（ステート更新タイミング問題を回避）
   }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
 
   // 録画開始のラッパー（Web Audio API初期化を確実に実行）
