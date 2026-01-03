@@ -1208,11 +1208,11 @@ function RoleplayApp() {
       )}
 
       {/* 統合コントロールバー（音声中心UI） */}
-      <footer className="fixed bottom-4 inset-x-0 mx-auto w-[95%] max-w-5xl z-[50] safe-area-bottom">
-        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-6 py-4 transition-all duration-300 animate-floatIn">
-          <div className="flex items-center justify-center gap-6">
+      <footer className="fixed bottom-4 inset-x-0 mx-auto w-[96%] max-w-6xl z-[50] safe-area-bottom">
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-4 py-3 transition-all duration-300 animate-floatIn">
+          <div className="flex items-center justify-between gap-4">
             {/* 左側: Phase 2コントロール（録画系） */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-1">
               {/* カメラボタン */}
               <button
                 onClick={isCameraActive ? stopCamera : startCamera}
@@ -1315,7 +1315,7 @@ function RoleplayApp() {
               type="button"
               onClick={handleToggleVAD}
               className={`
-                w-18 h-18 rounded-full flex items-center justify-center
+                w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0
                 transition-all duration-200 hover:scale-110
                 ${isVADMode
                   ? 'bg-red-500/90 hover:bg-red-600 animate-pulse shadow-xl shadow-red-500/50'
@@ -1333,7 +1333,7 @@ function RoleplayApp() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-9 h-9 text-white"
+                className="w-8 h-8 text-white"
               >
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
@@ -1342,7 +1342,7 @@ function RoleplayApp() {
             </button>
 
             {/* 右側: アクションボタン */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-1 justify-end">
               <button
                 type="button"
                 onClick={handleShowEvaluation}
