@@ -142,9 +142,9 @@ export function MediaPanel({
         {/* Phase 2: 画面共有時のPinP表示（アバター + カメラ） - 右下配置 */}
         {isScreenSharing && (
           <>
-            {/* カメラPinP（右下） */}
+            {/* カメラPinP（右下、スマホではより上に配置） */}
             {isCameraActive && cameraVideoRef && (
-              <div className="absolute bottom-4 right-4 w-40 h-30 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl">
+              <div className="absolute bottom-20 md:bottom-4 right-4 w-40 h-30 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl">
                 <video
                   ref={cameraVideoRef}
                   autoPlay
@@ -166,9 +166,9 @@ export function MediaPanel({
               </div>
             )}
 
-            {/* アバターPinP（右下、カメラの左隣） */}
+            {/* アバターPinP（右下、カメラの左隣、スマホではより上に配置） */}
             {imageSrc && (
-              <div className="absolute bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+              <div className="absolute bottom-20 md:bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
                 <img
                   src={imageSrc}
                   alt="AI相談者のアバター"
