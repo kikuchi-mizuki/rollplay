@@ -1,6 +1,7 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { formatDuration } from '../lib/audio';
+import { CameraPip } from './CameraPip'; // Phase 2 Day 2
 
 /**
  * メディアパネルコンポーネント（映像プレビュー領域）
@@ -106,21 +107,13 @@ export function MediaPanel({
         {/* 録音中オーバーレイ */}
         {renderWaveform()}
 
-        {/* Phase 2: カメラプレビュー（Day 1 - 基本実装） */}
+        {/* Phase 2 Day 2: カメラPinP表示 */}
         {isCameraActive && cameraVideoRef && (
-          <div className="absolute bottom-4 left-4 w-48 h-36 bg-black rounded-lg overflow-hidden border-2 border-white/20 shadow-lg z-20">
-            <video
-              ref={cameraVideoRef}
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-              aria-label="カメラプレビュー"
-            />
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md">
-              📷 Camera
-            </div>
-          </div>
+          <CameraPip
+            cameraVideoRef={cameraVideoRef}
+            isRecording={isRecording}
+            recordingTime={recordingState?.duration || 0}
+          />
         )}
       </div>
     </div>
