@@ -85,15 +85,14 @@ export function MediaPanel({
   return (
     <div className="h-full w-full flex flex-col overflow-hidden relative">
       {/* メディアコンテンツ */}
-      <div className={`flex-1 relative bg-black/80 rounded-t-2xl flex items-center justify-center ${isScreenSharing ? 'pb-32 md:pb-8' : 'pb-2 md:pb-0'}`}>
-        {/* Phase 2 Day 3: 画面共有映像（最優先で表示、上部に配置） */}
+      <div className={`flex-1 relative bg-black/80 rounded-t-2xl flex items-center justify-center ${isScreenSharing ? 'pb-32 md:pb-0' : 'pb-2 md:pb-0'}`}>
+        {/* Phase 2 Day 3: 画面共有映像（スマホは上部配置、PCは中央配置） */}
         {isScreenSharing && screenVideoRef ? (
           <video
             ref={screenVideoRef}
             autoPlay
             playsInline
-            className="w-full h-full object-contain"
-            style={{ objectPosition: 'top' }}
+            className="w-full h-full object-contain object-top md:object-center"
             aria-label="画面共有プレビュー"
           />
         ) : videoSrc ? (
