@@ -1,6 +1,7 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { formatDuration } from '../lib/audio';
+import { useEffect } from 'react';
 
 /**
  * メディアパネルコンポーネント（映像プレビュー領域）
@@ -11,6 +12,7 @@ import { formatDuration } from '../lib/audio';
  * @param subtitle - 字幕テキスト（オプション）
  * @param cameraVideoRef - Phase 2: カメラプレビュー用のvideoRef（オプション）
  * @param isCameraActive - Phase 2: カメラがアクティブかどうか（オプション）
+ * @param cameraStream - Phase 2: カメラストリーム（オプション）
  * @param screenVideoRef - Phase 2 Day 3: 画面共有用のvideoRef（オプション）
  * @param isScreenSharing - Phase 2 Day 3: 画面共有中かどうか（オプション）
  * @param isVideoRecording - Phase 2 Day 4: ビデオ録画中かどうか（オプション）
@@ -24,6 +26,7 @@ interface MediaPanelProps {
   subtitle?: string;
   cameraVideoRef?: React.RefObject<HTMLVideoElement>; // Phase 2
   isCameraActive?: boolean; // Phase 2
+  cameraStream?: MediaStream | null; // Phase 2: カメラストリーム
   screenVideoRef?: React.RefObject<HTMLVideoElement>; // Phase 2 Day 3
   isScreenSharing?: boolean; // Phase 2 Day 3
   isVideoRecording?: boolean; // Phase 2 Day 4
@@ -38,11 +41,19 @@ export function MediaPanel({
   subtitle,
   cameraVideoRef, // Phase 2
   isCameraActive = false, // Phase 2
+  cameraStream = null, // Phase 2: カメラストリーム
   screenVideoRef, // Phase 2 Day 3
   isScreenSharing = false, // Phase 2 Day 3
   isVideoRecording = false, // Phase 2 Day 4
   videoRecordingTime = 0, // Phase 2 Day 4
 }: MediaPanelProps) {
+  // 画面共有時のカメラPinP用にsrcObjectを設定
+  useEffect(() => {
+    if (isScreenSharing && isCameraActive && cameraStream && cameraVideoRef?.current) {
+      cameraVideoRef.current.srcObject = cameraStream;
+      console.log('✅ MediaPanel: カメラPinPのsrcObject設定完了');
+    }
+  }, [isScreenSharing, isCameraActive, cameraStream, cameraVideoRef]);
   // 録音中の波形バーを生成
   const renderWaveform = () => {
     if (!isRecording || !recordingState) return null;

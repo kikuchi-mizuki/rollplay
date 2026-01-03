@@ -1215,6 +1215,7 @@ function RoleplayApp() {
               imageSrc={imageSrc}
               cameraVideoRef={cameraVideoRef}
               isCameraActive={isCameraActive}
+              cameraStream={_cameraStream}
               screenVideoRef={screenVideoRef}
               isScreenSharing={isScreenSharing}
               isVideoRecording={isVideoRecording}
