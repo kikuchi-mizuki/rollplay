@@ -1210,15 +1210,15 @@ function RoleplayApp() {
       {/* 統合コントロールバー（音声中心UI） */}
       <footer className="fixed bottom-4 inset-x-0 mx-auto w-[95%] max-w-5xl z-[50] safe-area-bottom">
         <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-6 py-4 transition-all duration-300 animate-floatIn">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-center gap-6">
             {/* 左側: Phase 2コントロール（録画系） */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {/* カメラボタン */}
               <button
                 onClick={isCameraActive ? stopCamera : startCamera}
                 disabled={isCameraLoading}
                 className={`
-                  relative w-12 h-12 rounded-full flex items-center justify-center text-xl
+                  relative w-14 h-14 rounded-full flex items-center justify-center text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   ${isCameraActive
                     ? 'bg-white/20 text-white hover:bg-white/30'
@@ -1230,7 +1230,7 @@ function RoleplayApp() {
                 {isCameraLoading ? '⏳' : '📷'}
                 {!isCameraActive && !isCameraLoading && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-0.5 h-12 bg-red-600 rotate-45"></div>
+                    <div className="w-0.5 h-14 bg-red-600 rotate-45"></div>
                   </div>
                 )}
               </button>
@@ -1240,7 +1240,7 @@ function RoleplayApp() {
                 onClick={isScreenSharing ? stopScreenShare : startScreenShare}
                 disabled={isScreenShareLoading}
                 className={`
-                  w-12 h-12 rounded-full flex items-center justify-center text-xl
+                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   ${isScreenSharing
                     ? 'bg-blue-500/90 text-white hover:bg-blue-600'
@@ -1257,7 +1257,7 @@ function RoleplayApp() {
                 onClick={isVideoRecording ? stopVideoRecording : startVideoRecording}
                 disabled={!isCameraActive && !isScreenSharing}
                 className={`
-                  w-12 h-12 rounded-full flex items-center justify-center text-xl
+                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   ${isVideoRecording
                     ? 'bg-red-500/90 text-white hover:bg-red-600 animate-pulse'
@@ -1280,14 +1280,14 @@ function RoleplayApp() {
                 <>
                   <button
                     onClick={downloadVideoRecording}
-                    className="w-10 h-10 rounded-full bg-green-500/90 text-white hover:bg-green-600 flex items-center justify-center text-lg transition-all duration-200 hover:scale-110"
+                    className="w-12 h-12 rounded-full bg-green-500/90 text-white hover:bg-green-600 flex items-center justify-center text-xl transition-all duration-200 hover:scale-110"
                     title="録画をダウンロード"
                   >
                     💾
                   </button>
                   <button
                     onClick={clearVideoRecording}
-                    className="w-10 h-10 rounded-full bg-gray-500/90 text-white hover:bg-gray-600 flex items-center justify-center text-base transition-all duration-200 hover:scale-110"
+                    className="w-12 h-12 rounded-full bg-gray-500/90 text-white hover:bg-gray-600 flex items-center justify-center text-lg transition-all duration-200 hover:scale-110"
                     title="録画データをクリア"
                   >
                     🗑️
@@ -1297,14 +1297,14 @@ function RoleplayApp() {
 
               {/* 録画時間表示 */}
               {isVideoRecording && (
-                <div className="text-white text-sm font-mono bg-red-500/90 px-3 py-1 rounded-full">
+                <div className="text-white text-sm font-mono bg-red-500/90 px-3 py-2 rounded-full">
                   {formatRecordingTime()}
                 </div>
               )}
 
               {/* 録画完了メッセージ */}
               {videoRecordingData && !isVideoRecording && (
-                <div className="text-white text-xs bg-green-500/90 px-3 py-1 rounded-full">
+                <div className="text-white text-xs bg-green-500/90 px-3 py-2 rounded-full">
                   ✅ {(videoRecordingData.blob.size / 1024 / 1024).toFixed(1)}MB
                 </div>
               )}
@@ -1315,11 +1315,11 @@ function RoleplayApp() {
               type="button"
               onClick={handleToggleVAD}
               className={`
-                w-16 h-16 rounded-full flex items-center justify-center
+                w-18 h-18 rounded-full flex items-center justify-center
                 transition-all duration-200 hover:scale-110
                 ${isVADMode
-                  ? 'bg-red-500/90 hover:bg-red-600 animate-pulse shadow-lg shadow-red-500/50'
-                  : 'bg-primary/90 hover:bg-primary shadow-lg shadow-primary/50'
+                  ? 'bg-red-500/90 hover:bg-red-600 animate-pulse shadow-xl shadow-red-500/50'
+                  : 'bg-primary/90 hover:bg-primary shadow-xl shadow-primary/50'
                 }
               `}
               aria-pressed={isVADMode}
@@ -1333,7 +1333,7 @@ function RoleplayApp() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-8 h-8 text-white"
+                className="w-9 h-9 text-white"
               >
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
@@ -1342,43 +1342,27 @@ function RoleplayApp() {
             </button>
 
             {/* 右側: アクションボタン */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={handleShowEvaluation}
                 disabled={isLoadingEvaluation}
-                className="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className={`
+                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
+                  transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+                  bg-white/20 hover:bg-white/30 text-white
+                `}
                 title="講評を表示"
               >
-                {isLoadingEvaluation ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    考え中
-                  </>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                    講評
-                  </>
-                )}
+                {isLoadingEvaluation ? '⏳' : '💬'}
               </button>
               <button
                 type="button"
                 onClick={handleClear}
-                className="px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2"
+                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-200 hover:scale-110 bg-white/20 hover:bg-white/30 text-white"
                 title="会話をクリア"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <path d="M3 6h18" />
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                </svg>
-                クリア
+                🗑️
               </button>
             </div>
           </div>
