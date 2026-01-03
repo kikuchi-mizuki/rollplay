@@ -52,22 +52,33 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
         canvas.width = results.image.width;
         canvas.height = results.image.height;
 
-        // 背景をぼかして描画
+        console.log('🎨 背景ぼかし処理中:', canvas.width, 'x', canvas.height);
+
         ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // ぼかした背景を描画
-        ctx.filter = 'blur(15px)';
+        // 1. ぼかした背景を描画
+        ctx.filter = 'blur(20px)';
         ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
-        // 人物部分をクリアに描画
+        // 2. 人物部分（マスクが白い部分）をくり抜く
         ctx.filter = 'none';
-        ctx.globalCompositeOperation = 'destination-atop';
+        ctx.globalCompositeOperation = 'destination-out';
         ctx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
 
+        // 3. 元画像から人物部分を上に描画
         ctx.globalCompositeOperation = 'source-over';
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-        ctx.globalCompositeOperation = 'destination-in';
-        ctx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
+        // 一時Canvasを作成して人物だけを抽出
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        if (tempCtx) {
+          tempCtx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+          tempCtx.globalCompositeOperation = 'destination-in';
+          tempCtx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(tempCanvas, 0, 0);
+        }
 
         ctx.restore();
       });
