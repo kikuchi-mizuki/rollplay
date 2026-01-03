@@ -1173,138 +1173,127 @@ function RoleplayApp() {
         </section>
       </main>
 
-      {/* Phase 2: カメラ・画面共有・録画コントロールパネル */}
-      <div className="fixed top-20 right-4 z-[60] flex flex-col gap-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-2xl max-w-xs">
-        {/* ヘッダー */}
-        <div className="text-white text-sm font-semibold border-b border-white/20 pb-2 mb-1">
-          📹 Phase 2 Controls
-        </div>
-
-        {/* メディアソースグループ */}
-        <div className="flex flex-col gap-2">
-          <div className="text-white/70 text-xs font-medium mb-1">Media Sources</div>
-
-          {/* カメラボタン */}
-          {!isCameraActive ? (
-            <button
-              onClick={startCamera}
-              disabled={isCameraLoading}
-              className="bg-blue-500/90 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
-              title="カメラをONにする"
-            >
-              {isCameraLoading ? '📷 起動中...' : '📷 Camera'}
-            </button>
-          ) : (
-            <button
-              onClick={stopCamera}
-              className="bg-green-500/90 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition-all text-sm font-medium flex items-center justify-between"
-              title="カメラをOFFにする"
-            >
-              <span>📷 Camera</span>
-              <span className="text-xs">✓ ON</span>
-            </button>
+      {/* Phase 2: Google Meet風コントロールバー（下部中央） */}
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-6 py-4 shadow-2xl">
+        {/* カメラボタン */}
+        <button
+          onClick={isCameraActive ? stopCamera : startCamera}
+          disabled={isCameraLoading}
+          className={`
+            relative w-14 h-14 rounded-full flex items-center justify-center text-2xl
+            transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+            ${isCameraActive
+              ? 'bg-white/20 text-white hover:bg-white/30'
+              : 'bg-red-500/90 text-white hover:bg-red-600'
+            }
+          `}
+          title={isCameraActive ? 'カメラをOFF' : 'カメラをON'}
+        >
+          {isCameraLoading ? '⏳' : isCameraActive ? '📷' : '📷'}
+          {!isCameraActive && !isCameraLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-0.5 h-16 bg-red-600 rotate-45"></div>
+            </div>
           )}
+        </button>
 
-          {/* 画面共有ボタン */}
-          {!isScreenSharing ? (
-            <button
-              onClick={startScreenShare}
-              disabled={isScreenShareLoading}
-              className="bg-indigo-500/90 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
-              title="画面共有を開始"
-            >
-              {isScreenShareLoading ? '🖥️ 起動中...' : '🖥️ Screen Share'}
-            </button>
-          ) : (
-            <button
-              onClick={stopScreenShare}
-              className="bg-green-500/90 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition-all text-sm font-medium flex items-center justify-between"
-              title="画面共有を停止"
-            >
-              <span>🖥️ Screen Share</span>
-              <span className="text-xs">✓ ON</span>
-            </button>
-          )}
+        {/* 画面共有ボタン */}
+        <button
+          onClick={isScreenSharing ? stopScreenShare : startScreenShare}
+          disabled={isScreenShareLoading}
+          className={`
+            w-14 h-14 rounded-full flex items-center justify-center text-2xl
+            transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+            ${isScreenSharing
+              ? 'bg-blue-500/90 text-white hover:bg-blue-600'
+              : 'bg-white/20 text-white hover:bg-white/30'
+            }
+          `}
+          title={isScreenSharing ? '画面共有を停止' : '画面共有を開始'}
+        >
+          {isScreenShareLoading ? '⏳' : '🖥️'}
+        </button>
 
-          {/* エラーメッセージ */}
+        {/* 録画ボタン */}
+        <button
+          onClick={isVideoRecording ? stopVideoRecording : startVideoRecording}
+          disabled={!isCameraActive && !isScreenSharing}
+          className={`
+            w-14 h-14 rounded-full flex items-center justify-center text-2xl
+            transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+            ${isVideoRecording
+              ? 'bg-red-500/90 text-white hover:bg-red-600 animate-pulse'
+              : 'bg-white/20 text-white hover:bg-white/30'
+            }
+          `}
+          title={
+            !isCameraActive && !isScreenSharing
+              ? "カメラまたは画面共有をONにしてください"
+              : isVideoRecording
+              ? "録画を停止"
+              : isScreenSharing && !isCameraActive
+              ? "録画を開始（画面共有のみ）"
+              : isScreenSharing && isCameraActive
+              ? "録画を開始（Canvas合成）"
+              : "録画を開始（カメラのみ）"
+          }
+        >
+          {isVideoRecording ? '⏺️' : '🎬'}
+        </button>
+
+        {/* ダウンロードボタン（録画完了時のみ表示） */}
+        {videoRecordingData && !isVideoRecording && (
+          <>
+            <button
+              onClick={downloadVideoRecording}
+              className="w-14 h-14 rounded-full bg-green-500/90 text-white hover:bg-green-600 flex items-center justify-center text-2xl transition-all duration-200 hover:scale-110"
+              title="録画をダウンロード"
+            >
+              💾
+            </button>
+            <button
+              onClick={clearVideoRecording}
+              className="w-12 h-12 rounded-full bg-gray-500/90 text-white hover:bg-gray-600 flex items-center justify-center text-xl transition-all duration-200 hover:scale-110"
+              title="録画データをクリア"
+            >
+              🗑️
+            </button>
+          </>
+        )}
+
+        {/* 録画時間表示（録画中のみ） */}
+        {isVideoRecording && (
+          <div className="ml-2 text-white text-sm font-mono bg-red-500/90 px-3 py-1 rounded-full">
+            {formatRecordingTime()}
+          </div>
+        )}
+      </div>
+
+      {/* エラー/状態メッセージ（下部中央上） */}
+      {(cameraError || screenShareError || videoRecordingError || videoRecordingData) && (
+        <div className="fixed bottom-44 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 items-center">
           {cameraError && (
-            <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg">
-              {getErrorMessage()}
+            <div className="bg-red-500/95 text-white text-sm px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
+              📷 {getErrorMessage()}
             </div>
           )}
           {screenShareError && getScreenShareErrorMessage() && (
-            <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg">
-              {getScreenShareErrorMessage()}
+            <div className="bg-red-500/95 text-white text-sm px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
+              🖥️ {getScreenShareErrorMessage()}
             </div>
           )}
-        </div>
-
-        {/* 録画グループ */}
-        <div className="flex flex-col gap-2 border-t border-white/20 pt-3">
-          <div className="text-white/70 text-xs font-medium mb-1">Recording</div>
-
-          {/* 録画ボタン */}
-          {!isVideoRecording ? (
-            <button
-              onClick={startVideoRecording}
-              disabled={!isCameraActive && !isScreenSharing}
-              className="bg-purple-500/90 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
-              title={
-                !isCameraActive && !isScreenSharing
-                  ? "カメラまたは画面共有をONにしてください"
-                  : isScreenSharing && !isCameraActive
-                  ? "録画を開始（画面共有のみ）\n💡「このタブ」を共有している場合、アプリ全体が録画されます"
-                  : isScreenSharing && isCameraActive
-                  ? "録画を開始（Canvas合成: 画面共有+カメラPinP）"
-                  : "録画を開始（カメラのみ）"
-              }
-            >
-              🎬 Start Recording
-            </button>
-          ) : (
-            <button
-              onClick={stopVideoRecording}
-              className="bg-red-500/90 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition-all animate-pulse text-sm font-medium flex items-center justify-between"
-              title="録画を停止"
-            >
-              <span>⏺️ Recording</span>
-              <span className="text-xs font-mono">{formatRecordingTime()}</span>
-            </button>
-          )}
-
-          {/* 録画状態メッセージ */}
           {videoRecordingError && getVideoRecordingErrorMessage() && (
-            <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg">
-              {getVideoRecordingErrorMessage()}
+            <div className="bg-red-500/95 text-white text-sm px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
+              🎬 {getVideoRecordingErrorMessage()}
             </div>
           )}
           {videoRecordingData && !isVideoRecording && (
-            <div className="bg-green-500/90 text-white text-xs px-3 py-2 rounded-lg">
+            <div className="bg-green-500/95 text-white text-sm px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm">
               ✅ 録画完了 ({(videoRecordingData.blob.size / 1024 / 1024).toFixed(2)} MB)
             </div>
           )}
-
-          {/* ダウンロード・クリアボタン */}
-          {videoRecordingData && !isVideoRecording && (
-            <div className="flex gap-2">
-              <button
-                onClick={downloadVideoRecording}
-                className="flex-1 bg-blue-500/90 hover:bg-blue-600 text-white px-3 py-2 rounded-lg shadow-md transition-all text-sm font-medium"
-                title="録画データをダウンロード"
-              >
-                💾 Download
-              </button>
-              <button
-                onClick={clearVideoRecording}
-                className="bg-gray-500/90 hover:bg-gray-600 text-white px-3 py-2 rounded-lg shadow-md transition-all text-sm font-medium"
-                title="録画データをクリア"
-              >
-                🗑️
-              </button>
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {/* フッター: 入力エリア */}
       <footer className="fixed bottom-4 inset-x-0 mx-auto w-[92%] max-w-3xl z-[50] safe-area-bottom">
