@@ -1138,19 +1138,89 @@ function RoleplayApp() {
           id="media-anchor"
           className="card flex flex-col justify-center items-center w-full max-w-[90vw] aspect-square mx-auto lg:max-w-none lg:max-h-[calc(100dvh-180px)] lg:min-h-[calc(100dvh-180px)] lg:aspect-auto overflow-hidden relative animate-floatIn mb-4 lg:mb-0 lg:order-2 flex-shrink-0 lg:sticky lg:top-4"
         >
-          <MediaPanel
-            isRecording={isRecording}
-            recordingState={recordingState}
-            subtitle={mediaSubtitle}
-            videoSrc={videoSrc}
-            imageSrc={imageSrc}
-            cameraVideoRef={cameraVideoRef} // Phase 2
-            isCameraActive={isCameraActive} // Phase 2
-            screenVideoRef={screenVideoRef} // Phase 2 Day 3
-            isScreenSharing={isScreenSharing} // Phase 2 Day 3
-            isVideoRecording={isVideoRecording} // Phase 2 Day 4
-            videoRecordingTime={videoRecordingTime} // Phase 2 Day 4
-          />
+          {/* カメラON && 画面共有OFF: アバターとカメラを横並び */}
+          {isCameraActive && !isScreenSharing ? (
+            <div className="h-full w-full flex gap-2">
+              {/* 左側: アバター */}
+              <div className="flex-1 relative bg-black/80 rounded-l-2xl flex items-center justify-center overflow-hidden">
+                {imageSrc ? (
+                  <img
+                    src={imageSrc}
+                    alt="AI相談者のアバター"
+                    className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out animate-fadeIn hover:scale-105"
+                    style={{
+                      animation: 'fadeIn 0.5s ease-in-out, breathe 3s ease-in-out infinite',
+                      objectPosition: 'center',
+                      margin: 'auto',
+                      display: 'block'
+                    }}
+                  />
+                ) : videoSrc ? (
+                  <video
+                    src={videoSrc}
+                    className="w-full h-full object-contain"
+                    style={{ objectPosition: 'center' }}
+                    controls={false}
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                    aria-label="プレビュー映像"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <p className="text-slate-400 text-sm">アバター</p>
+                  </div>
+                )}
+
+                {/* 字幕 */}
+                {mediaSubtitle && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm">
+                    <div className="line-clamp-2 transition-all duration-300">
+                      {mediaSubtitle}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 右側: カメラ */}
+              <div className="flex-1 relative bg-black/80 rounded-r-2xl flex items-center justify-center overflow-hidden">
+                {cameraVideoRef && (
+                  <video
+                    ref={cameraVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                    aria-label="カメラプレビュー"
+                  />
+                )}
+
+                {/* 録画インジケーター */}
+                {isVideoRecording && (
+                  <div className="absolute top-4 right-4 bg-red-500/90 text-white text-xs px-3 py-1 rounded-full flex items-center gap-2 animate-pulse">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    REC {Math.floor(videoRecordingTime / 60)}:{String(videoRecordingTime % 60).padStart(2, '0')}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* 通常表示（画面共有ON または カメラOFF） */
+            <MediaPanel
+              isRecording={isRecording}
+              recordingState={recordingState}
+              subtitle={mediaSubtitle}
+              videoSrc={videoSrc}
+              imageSrc={imageSrc}
+              cameraVideoRef={cameraVideoRef}
+              isCameraActive={isCameraActive}
+              screenVideoRef={screenVideoRef}
+              isScreenSharing={isScreenSharing}
+              isVideoRecording={isVideoRecording}
+              videoRecordingTime={videoRecordingTime}
+            />
+          )}
         </section>
 
         {/* モバイル: チャットを下部に表示（スクロール可能） */}

@@ -1,7 +1,6 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { formatDuration } from '../lib/audio';
-import { CameraPip } from './CameraPip'; // Phase 2 Day 2
 
 /**
  * メディアパネルコンポーネント（映像プレビュー領域）
@@ -129,13 +128,44 @@ export function MediaPanel({
         {/* 録音中オーバーレイ */}
         {renderWaveform()}
 
-        {/* Phase 2 Day 2: カメラPinP表示 */}
-        {isCameraActive && cameraVideoRef && (
-          <CameraPip
-            cameraVideoRef={cameraVideoRef}
-            isRecording={isVideoRecording} // Phase 2 Day 4: ビデオ録画中状態
-            recordingTime={videoRecordingTime} // Phase 2 Day 4: ビデオ録画時間
-          />
+        {/* Phase 2: 画面共有時のPinP表示（アバター + カメラ） */}
+        {isScreenSharing && (
+          <>
+            {/* アバターPinP（左上） */}
+            {imageSrc && (
+              <div className="absolute top-4 left-4 w-32 h-32 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+                <img
+                  src={imageSrc}
+                  alt="AI相談者のアバター"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            {/* カメラPinP（左上、アバターの右隣） */}
+            {isCameraActive && cameraVideoRef && (
+              <div className="absolute top-4 left-40 w-48 h-36 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl">
+                <video
+                  ref={cameraVideoRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                  aria-label="カメラプレビュー"
+                />
+
+                {/* 録画中インジケーター */}
+                {isVideoRecording && (
+                  <div className="absolute top-2 left-2 flex items-center gap-1 bg-red-500/90 backdrop-blur-sm text-white px-2 py-1 rounded-lg shadow-lg animate-pulse">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                    <span className="text-xs font-medium">
+                      REC {Math.floor(videoRecordingTime / 60)}:{String(videoRecordingTime % 60).padStart(2, '0')}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
