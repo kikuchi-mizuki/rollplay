@@ -146,6 +146,17 @@ function RoleplayApp() {
     }
   }, []);
 
+  // Web Audio API 初期化（録画用にAI音声をキャプチャするため、アプリ起動時に初期化）
+  useEffect(() => {
+    const init = async () => {
+      if (!audioInitialized) {
+        console.log('🎵 アプリ起動時にWeb Audio APIを初期化します（録画用）');
+        await initializeAudio();
+      }
+    };
+    init();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // カメラON時（画面共有OFFの場合）にvideoタグにsrcObjectを設定
   useEffect(() => {
     if (isCameraActive && cameraStream && cameraVideoRef?.current && !isScreenSharing) {
