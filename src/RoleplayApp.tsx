@@ -142,6 +142,14 @@ function RoleplayApp() {
     }
   }, []);
 
+  // カメラON時（画面共有OFFの場合）にvideoタグにsrcObjectを設定
+  useEffect(() => {
+    if (isCameraActive && cameraStream && cameraVideoRef?.current && !isScreenSharing) {
+      cameraVideoRef.current.srcObject = cameraStream;
+      console.log('✅ RoleplayApp: カメラメイン表示のsrcObject設定完了');
+    }
+  }, [isCameraActive, cameraStream, cameraVideoRef, isScreenSharing]);
+
   // シナリオ一覧を取得
   useEffect(() => {
     getScenarios()
