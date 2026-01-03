@@ -133,18 +133,39 @@ export function useRecording(streams: RecordingStreams) {
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
 
-    // 明示的に再生を開始（autoplayが機能しない場合の対策）
-    screenVideo.play().catch(err => console.warn('画面共有video再生エラー:', err));
-    cameraVideo.play().catch(err => console.warn('カメラvideo再生エラー:', err));
-
     console.log('🎥 video要素の準備中...');
+
+    // video要素の準備完了を待つ
+    let isScreenReady = false;
+    let isCameraReady = false;
+
+    screenVideo.onloadedmetadata = () => {
+      console.log('✅ 画面共有video準備完了', {
+        readyState: screenVideo.readyState,
+        videoWidth: screenVideo.videoWidth,
+        videoHeight: screenVideo.videoHeight,
+      });
+      isScreenReady = true;
+      screenVideo.play().catch(err => console.warn('画面共有video再生エラー:', err));
+    };
+
+    cameraVideo.onloadedmetadata = () => {
+      console.log('✅ カメラvideo準備完了', {
+        readyState: cameraVideo.readyState,
+        videoWidth: cameraVideo.videoWidth,
+        videoHeight: cameraVideo.videoHeight,
+      });
+      isCameraReady = true;
+      cameraVideo.play().catch(err => console.warn('カメラvideo再生エラー:', err));
+    };
 
     // 描画ループ（30fps）
     const drawFrame = () => {
       if (!canvasRef.current) return;
 
-      // video要素が準備できているかチェック
-      if (screenVideo.readyState >= 2 && cameraVideo.readyState >= 2) {
+      // video要素が準備できているかチェック（readyState >= 3 = HAVE_FUTURE_DATA）
+      if (isScreenReady && isCameraReady &&
+          screenVideo.readyState >= 3 && cameraVideo.readyState >= 3) {
         // 画面共有を全画面描画
         ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
 
@@ -164,6 +185,14 @@ export function useRecording(streams: RecordingStreams) {
         // video要素がまだ準備できていない場合は黒背景を描画
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // デバッグ情報を描画
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('準備中...', canvas.width / 2 - 50, canvas.height / 2);
+        ctx.font = '14px Arial';
+        ctx.fillText(`画面共有: ${isScreenReady} (${screenVideo.readyState})`, 20, 40);
+        ctx.fillText(`カメラ: ${isCameraReady} (${cameraVideo.readyState})`, 20, 60);
       }
 
       animationFrameRef.current = requestAnimationFrame(drawFrame);
