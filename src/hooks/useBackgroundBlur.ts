@@ -1,109 +1,73 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { SelfieSegmentation, Results } from '@mediapipe/selfie_segmentation';
+import * as bodySegmentation from '@tensorflow-models/body-segmentation';
+import '@tensorflow/tfjs-core';
+import '@tensorflow/tfjs-backend-webgl';
 
 /**
- * 背景ぼかしカスタムフック
+ * 背景効果のタイプ
+ */
+export type BackgroundEffect = 'none' | 'blur' | 'image';
+
+/**
+ * 背景置き換えカスタムフック
  *
- * MediaPipe Selfie Segmentationを使用して、人物を検出し背景をぼかします。
+ * TensorFlow.js BodySegmentationを使用して、人物を検出し背景を処理します。
  *
  * @param sourceStream - 元のカメラストリーム
- * @returns 背景ぼかし制御関数と状態
+ * @returns 背景処理制御関数と状態
  */
 export function useBackgroundBlur(sourceStream: MediaStream | null) {
-  const [isBlurEnabled, setIsBlurEnabled] = useState(false);
+  const [backgroundEffect, setBackgroundEffect] = useState<BackgroundEffect>('none');
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [processedStream, setProcessedStream] = useState<MediaStream | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const segmentationRef = useRef<SelfieSegmentation | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const segmenterRef = useRef<bodySegmentation.BodySegmenter | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const backgroundImageRef = useRef<HTMLImageElement | null>(null);
 
   /**
-   * MediaPipe Selfie Segmentationの初期化
+   * TensorFlow.js BodySegmentationの初期化
    */
   const initializeSegmentation = useCallback(async () => {
-    if (segmentationRef.current || isInitialized) return;
+    if (segmenterRef.current || isInitialized) return;
 
     try {
-      console.log('🎨 背景ぼかし機能を初期化中...');
+      console.log('🎨 背景処理機能を初期化中...');
 
-      const selfieSegmentation = new SelfieSegmentation({
-        locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
-        },
-      });
+      // BodySegmentationモデルを読み込み
+      const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
+      const segmenterConfig: bodySegmentation.MediaPipeSelfieSegmentationMediaPipeModelConfig = {
+        runtime: 'mediapipe',
+        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
+        modelType: 'general',
+      };
 
-      selfieSegmentation.setOptions({
-        modelSelection: 1, // 0: 一般モデル（軽量）, 1: 風景モデル（高精度）
-        selfieMode: true,
-      });
-
-      // onResultsコールバックを設定
-      selfieSegmentation.onResults((results: Results) => {
-        if (!outputCanvasRef.current) return;
-
-        const canvas = outputCanvasRef.current;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // Canvasサイズを設定
-        canvas.width = results.image.width;
-        canvas.height = results.image.height;
-
-        console.log('🎨 背景ぼかし処理中:', canvas.width, 'x', canvas.height);
-
-        ctx.save();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 1. ぼかした背景を描画
-        ctx.filter = 'blur(20px)';
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-
-        // 2. 人物部分（マスクが白い部分）をくり抜く
-        ctx.filter = 'none';
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
-
-        // 3. 元画像から人物部分を上に描画
-        ctx.globalCompositeOperation = 'source-over';
-        // 一時Canvasを作成して人物だけを抽出
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        if (tempCtx) {
-          tempCtx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-          tempCtx.globalCompositeOperation = 'destination-in';
-          tempCtx.drawImage(results.segmentationMask, 0, 0, canvas.width, canvas.height);
-          ctx.drawImage(tempCanvas, 0, 0);
-        }
-
-        ctx.restore();
-      });
-
-      segmentationRef.current = selfieSegmentation;
+      const segmenter = await bodySegmentation.createSegmenter(model, segmenterConfig);
+      segmenterRef.current = segmenter;
       setIsInitialized(true);
 
-      console.log('✅ 背景ぼかし機能の初期化完了');
+      console.log('✅ 背景処理機能の初期化完了');
     } catch (error) {
-      console.error('❌ 背景ぼかし機能の初期化失敗:', error);
+      console.error('❌ 背景処理機能の初期化失敗:', error);
     }
   }, [isInitialized]);
 
   /**
-   * 背景ぼかし処理を開始
+   * 背景処理を開始
    */
-  const startBlur = useCallback(async () => {
+  const startProcessing = useCallback(async () => {
     if (!sourceStream || isProcessing) return;
 
     setIsProcessing(true);
 
     try {
-      // MediaPipe初期化
+      // BodySegmentation初期化
       await initializeSegmentation();
-      if (!segmentationRef.current) throw new Error('Segmentation初期化失敗');
+      if (!segmenterRef.current) throw new Error('Segmentation初期化失敗');
 
       // ビデオ要素を作成
       const video = document.createElement('video');
@@ -113,9 +77,9 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
       video.playsInline = true;
       videoRef.current = video;
 
-      // 出力Canvas要素を作成
-      const outputCanvas = document.createElement('canvas');
-      outputCanvasRef.current = outputCanvas;
+      // Canvas要素を作成
+      const canvas = document.createElement('canvas');
+      canvasRef.current = canvas;
 
       await video.play();
 
@@ -123,8 +87,8 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
       await new Promise<void>((resolve) => {
         const checkVideo = () => {
           if (video.videoWidth > 0 && video.videoHeight > 0) {
-            outputCanvas.width = video.videoWidth;
-            outputCanvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
             resolve();
           } else {
             setTimeout(checkVideo, 100);
@@ -134,20 +98,87 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
       });
 
       // 処理済みストリームを取得
-      const stream = outputCanvas.captureStream(30); // 30fps
+      const stream = canvas.captureStream(30); // 30fps
       setProcessedStream(stream);
 
       // 処理ループ
       const processFrame = async () => {
-        if (!videoRef.current || !segmentationRef.current) {
+        if (!videoRef.current || !canvasRef.current || !segmenterRef.current) {
           return;
         }
 
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
         try {
           // セグメンテーション実行
-          await segmentationRef.current.send({ image: videoRef.current });
+          const segmentation = await segmenterRef.current.segmentPeople(video);
+
+          if (segmentation.length > 0) {
+            // 人物マスクを取得
+            const mask = await bodySegmentation.toBinaryMask(
+              segmentation,
+              { r: 0, g: 0, b: 0, a: 0 },
+              { r: 0, g: 0, b: 0, a: 255 }
+            );
+
+            // 背景効果を適用
+            if (backgroundEffect === 'blur') {
+              // 背景ぼかし
+              await bodySegmentation.drawBokehEffect(
+                canvas,
+                video,
+                segmentation,
+                5, // foregroundThreshold
+                15, // backgroundBlurAmount
+                5 // edgeBlurAmount
+              );
+            } else if (backgroundEffect === 'image' && backgroundImageRef.current) {
+              // 背景画像置き換え
+              ctx.save();
+
+              // 背景画像を描画
+              ctx.drawImage(backgroundImageRef.current, 0, 0, canvas.width, canvas.height);
+
+              // 人物マスクを使って人物部分だけを元映像から描画
+              ctx.globalCompositeOperation = 'source-over';
+
+              // 一時Canvasで人物だけを抽出
+              const tempCanvas = document.createElement('canvas');
+              tempCanvas.width = canvas.width;
+              tempCanvas.height = canvas.height;
+              const tempCtx = tempCanvas.getContext('2d');
+              if (tempCtx) {
+                tempCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // マスクを使って人物だけを抽出
+                const imageData = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                  const maskValue = mask.data[i + 3];
+                  if (maskValue === 0) {
+                    imageData.data[i + 3] = 0; // 背景部分を透明に
+                  }
+                }
+                tempCtx.putImageData(imageData, 0, 0);
+                ctx.drawImage(tempCanvas, 0, 0);
+              }
+
+              ctx.restore();
+            } else {
+              // 効果なし（元の映像）
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            }
+          } else {
+            // 人物が検出されない場合は元の映像
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          }
         } catch (error) {
           console.error('フレーム処理エラー:', error);
+          // エラー時は元の映像を表示
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          }
         }
 
         // 次のフレーム
@@ -157,17 +188,17 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
       // 処理開始
       processFrame();
 
-      console.log('✅ 背景ぼかし処理開始');
+      console.log('✅ 背景処理開始');
     } catch (error) {
-      console.error('❌ 背景ぼかし処理開始失敗:', error);
+      console.error('❌ 背景処理開始失敗:', error);
       setIsProcessing(false);
     }
-  }, [sourceStream, isProcessing, initializeSegmentation]);
+  }, [sourceStream, isProcessing, backgroundEffect, initializeSegmentation]);
 
   /**
-   * 背景ぼかし処理を停止
+   * 背景処理を停止
    */
-  const stopBlur = useCallback(() => {
+  const stopProcessing = useCallback(() => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
@@ -184,49 +215,70 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
     }
 
     setIsProcessing(false);
-    console.log('🛑 背景ぼかし処理停止');
+    console.log('🛑 背景処理停止');
   }, [processedStream]);
 
   /**
-   * 背景ぼかしのトグル
+   * 背景効果を設定
    */
-  const toggleBlur = useCallback(async () => {
-    if (isBlurEnabled) {
-      setIsBlurEnabled(false);
-      stopBlur();
+  const setEffect = useCallback(async (effect: BackgroundEffect, imageUrl?: string) => {
+    setBackgroundEffect(effect);
+
+    // 背景画像を設定
+    if (effect === 'image' && imageUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        backgroundImageRef.current = img;
+        console.log('✅ 背景画像読み込み完了');
+      };
+      img.onerror = () => {
+        console.error('❌ 背景画像読み込み失敗');
+      };
+      img.src = imageUrl;
+      setBackgroundImage(imageUrl);
     } else {
-      setIsBlurEnabled(true);
-      await startBlur();
+      backgroundImageRef.current = null;
+      setBackgroundImage(null);
     }
-  }, [isBlurEnabled, startBlur, stopBlur]);
+
+    // 処理を再起動
+    if (effect !== 'none' && sourceStream) {
+      stopProcessing();
+      await startProcessing();
+    } else if (effect === 'none') {
+      stopProcessing();
+    }
+  }, [sourceStream, startProcessing, stopProcessing]);
 
   /**
    * ソースストリームが変更されたときの処理
    */
   useEffect(() => {
-    if (isBlurEnabled && sourceStream) {
-      stopBlur();
-      startBlur();
+    if (backgroundEffect !== 'none' && sourceStream) {
+      stopProcessing();
+      startProcessing();
     }
-  }, [sourceStream, isBlurEnabled]);
+  }, [sourceStream, backgroundEffect]);
 
   /**
    * クリーンアップ
    */
   useEffect(() => {
     return () => {
-      stopBlur();
-      if (segmentationRef.current) {
-        segmentationRef.current.close();
-        segmentationRef.current = null;
+      stopProcessing();
+      if (segmenterRef.current) {
+        segmenterRef.current.dispose();
+        segmenterRef.current = null;
       }
     };
   }, []);
 
   return {
-    isBlurEnabled,
-    toggleBlur,
-    processedStream: isBlurEnabled ? processedStream : null,
+    backgroundEffect,
+    setEffect,
+    processedStream: backgroundEffect !== 'none' ? processedStream : null,
     isProcessing,
+    backgroundImage,
   };
 }

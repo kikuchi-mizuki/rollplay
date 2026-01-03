@@ -68,16 +68,16 @@ function RoleplayApp() {
     getErrorMessage,
   } = useCamera();
 
-  // Phase 2: 背景ぼかし
+  // Phase 2: 背景処理（ぼかし・置き換え）
   const {
-    isBlurEnabled,
-    toggleBlur,
-    processedStream: blurredStream,
-    isProcessing: isBlurProcessing,
+    backgroundEffect,
+    setEffect,
+    processedStream: processedCameraStream,
+    isProcessing: isBackgroundProcessing,
   } = useBackgroundBlur(_cameraStream);
 
-  // 背景ぼかしが有効な場合は処理済みストリームを使用、それ以外は元のストリームを使用
-  const cameraStream = blurredStream || _cameraStream;
+  // 背景処理が有効な場合は処理済みストリームを使用、それ以外は元のストリームを使用
+  const cameraStream = processedCameraStream || _cameraStream;
 
   // Phase 2 Day 3: 画面共有
   const {
@@ -1296,22 +1296,40 @@ function RoleplayApp() {
                 )}
               </button>
 
-              {/* 背景ぼかしボタン（カメラON時のみ表示） */}
+              {/* 背景効果ボタン（カメラON時のみ表示） */}
               {isCameraActive && (
                 <button
-                  onClick={toggleBlur}
-                  disabled={isBlurProcessing}
+                  onClick={() => {
+                    // 背景効果をサイクル: none → blur → image → none
+                    if (backgroundEffect === 'none') {
+                      setEffect('blur');
+                    } else if (backgroundEffect === 'blur') {
+                      // デフォルト背景画像を使用
+                      setEffect('image', 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1200');
+                    } else {
+                      setEffect('none');
+                    }
+                  }}
+                  disabled={isBackgroundProcessing}
                   className={`
                     w-12 h-12 rounded-full flex items-center justify-center text-xl
                     transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
-                    ${isBlurEnabled
+                    ${backgroundEffect === 'blur'
                       ? 'bg-purple-500/90 text-white hover:bg-purple-600'
+                      : backgroundEffect === 'image'
+                      ? 'bg-green-500/90 text-white hover:bg-green-600'
                       : 'bg-white/20 text-white hover:bg-white/30'
                     }
                   `}
-                  title={isBlurEnabled ? '背景ぼかしをOFF' : '背景ぼかしをON'}
+                  title={
+                    backgroundEffect === 'none'
+                      ? '背景ぼかしをON'
+                      : backgroundEffect === 'blur'
+                      ? '背景画像に切り替え'
+                      : '背景効果をOFF'
+                  }
                 >
-                  {isBlurProcessing ? '⏳' : '🎨'}
+                  {isBackgroundProcessing ? '⏳' : backgroundEffect === 'blur' ? '🌫️' : backgroundEffect === 'image' ? '🖼️' : '🎨'}
                 </button>
               )}
 
