@@ -146,6 +146,14 @@ export function useRecording(streams: RecordingStreams) {
         videoHeight: screenVideo.videoHeight,
       });
       isScreenReady = true;
+
+      // 実際のvideoサイズに合わせてCanvasをリサイズ
+      if (screenVideo.videoWidth > 0 && screenVideo.videoHeight > 0) {
+        canvas.width = screenVideo.videoWidth;
+        canvas.height = screenVideo.videoHeight;
+        console.log(`📐 Canvas解像度を実際のvideoサイズに調整: ${canvas.width}x${canvas.height}`);
+      }
+
       screenVideo.play().catch(err => console.warn('画面共有video再生エラー:', err));
     };
 
