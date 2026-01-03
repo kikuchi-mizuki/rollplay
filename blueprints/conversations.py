@@ -457,11 +457,11 @@ def chat():
                             logger.debug(f"[RAG文脈強化] 検出トピック: {', '.join(current_topics)}")
 
                         # 類似パターンを検索（シナリオIDでフィルタリング、より多くの実例を参照）
-                        rag_results = search_rag_patterns(search_query, top_k=10, scenario_id=scenario_id)
+                        rag_results = search_rag_patterns(search_query, top_k=15, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             pattern_count = 0
-                            similarity_threshold = 0.5  # 🎯 類似度閾値（高品質保証）
+                            similarity_threshold = 0.35  # 🎯 類似度閾値（高品質保証：0.5→0.35に厳格化）
 
                             for result in rag_results:
                                 # 類似度チェック（距離が小さいほど類似度が高い：L2距離）
@@ -500,11 +500,12 @@ def chat():
                         traceback.print_exc()
                         # RAG検索に失敗しても続行（通常の応答生成にフォールバック）
                 
-                # few-shot（シナリオのutterancesを先頭に織り込む）
+                # 🎯 Few-shot（シナリオのutterancesを先頭に織り込む）- 最優先で学習
+                # シナリオ固有の会話パターンを学習させるため、RAG検索よりも優先
                 if scenario_obj:
                     few = scenario_obj.get('utterances') or []
-                    # 過剰にならないよう最大4往復（8発話）
-                    for u in few[:8]:
+                    # 過剰にならないよう最大5往復（10発話）に拡大（8→10）
+                    for u in few[:10]:
                         sp = u.get('speaker')
                         tx = u.get('text', '')
                         if not tx:
@@ -790,12 +791,12 @@ def chat_stream():
 
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"]) + topic_emphasis
 
-                        # top_k=10（より多くのバリエーションを取得）
-                        rag_results = search_rag_patterns(search_query, top_k=10, scenario_id=scenario_id)
+                        # top_k=15（より多くのバリエーションを取得：10→15に拡大）
+                        rag_results = search_rag_patterns(search_query, top_k=15, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             pattern_count = 0
-                            similarity_threshold = 0.5  # 🎯 類似度閾値（0.5以上のみ使用：高品質保証）
+                            similarity_threshold = 0.35  # 🎯 類似度閾値（高品質保証：0.5→0.35に厳格化）
 
                             for result in rag_results:
                                 # 類似度チェック（距離が小さいほど類似度が高い：L2距離）
