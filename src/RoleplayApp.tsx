@@ -1138,53 +1138,11 @@ function RoleplayApp() {
           id="media-anchor"
           className="card flex flex-col justify-center items-center w-full max-w-[90vw] aspect-square mx-auto lg:max-w-none lg:max-h-[calc(100dvh-180px)] lg:min-h-[calc(100dvh-180px)] lg:aspect-auto overflow-hidden relative animate-floatIn mb-4 lg:mb-0 lg:order-2 flex-shrink-0 lg:sticky lg:top-4"
         >
-          {/* カメラON && 画面共有OFF: アバターとカメラを横並び */}
+          {/* カメラON && 画面共有OFF: カメラをメイン表示、アバターをPinP */}
           {isCameraActive && !isScreenSharing ? (
-            <div className="h-full w-full flex gap-2">
-              {/* 左側: アバター */}
-              <div className="flex-1 relative bg-black/80 rounded-l-2xl flex items-center justify-center overflow-hidden">
-                {imageSrc ? (
-                  <img
-                    src={imageSrc}
-                    alt="AI相談者のアバター"
-                    className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out animate-fadeIn hover:scale-105"
-                    style={{
-                      animation: 'fadeIn 0.5s ease-in-out, breathe 3s ease-in-out infinite',
-                      objectPosition: 'center',
-                      margin: 'auto',
-                      display: 'block'
-                    }}
-                  />
-                ) : videoSrc ? (
-                  <video
-                    src={videoSrc}
-                    className="w-full h-full object-contain"
-                    style={{ objectPosition: 'center' }}
-                    controls={false}
-                    muted
-                    playsInline
-                    loop
-                    autoPlay
-                    aria-label="プレビュー映像"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center gap-3">
-                    <p className="text-slate-400 text-sm">アバター</p>
-                  </div>
-                )}
-
-                {/* 字幕 */}
-                {mediaSubtitle && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm">
-                    <div className="line-clamp-2 transition-all duration-300">
-                      {mediaSubtitle}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* 右側: カメラ */}
-              <div className="flex-1 relative bg-black/80 rounded-r-2xl flex items-center justify-center overflow-hidden">
+            <div className="h-full w-full relative">
+              {/* メイン: カメラ映像 */}
+              <div className="h-full w-full relative bg-black/80 rounded-2xl flex items-center justify-center overflow-hidden">
                 {cameraVideoRef && (
                   <video
                     ref={cameraVideoRef}
@@ -1201,6 +1159,26 @@ function RoleplayApp() {
                   <div className="absolute top-4 right-4 bg-red-500/90 text-white text-xs px-3 py-1 rounded-full flex items-center gap-2 animate-pulse">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                     REC {Math.floor(videoRecordingTime / 60)}:{String(videoRecordingTime % 60).padStart(2, '0')}
+                  </div>
+                )}
+
+                {/* 字幕 */}
+                {mediaSubtitle && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm">
+                    <div className="line-clamp-2 transition-all duration-300">
+                      {mediaSubtitle}
+                    </div>
+                  </div>
+                )}
+
+                {/* PinP: アバター（左下） */}
+                {imageSrc && (
+                  <div className="absolute bottom-4 left-4 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+                    <img
+                      src={imageSrc}
+                      alt="AI相談者のアバター"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 )}
               </div>
