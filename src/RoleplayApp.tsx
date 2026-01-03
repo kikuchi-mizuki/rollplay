@@ -12,6 +12,7 @@ import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/
 import { useAuth } from './contexts/AuthContext';
 import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl } from './lib/expressionSelector';
 import { useCamera } from './hooks/useCamera'; // Phase 2: カメラアクセス
+import { useScreenShare } from './hooks/useScreenShare'; // Phase 2 Day 3: 画面共有
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -65,6 +66,18 @@ function RoleplayApp() {
     stopCamera,
     getErrorMessage,
   } = useCamera();
+
+  // Phase 2 Day 3: 画面共有
+  const {
+    screenStream: _screenStream, // Day 6（合成録画）で使用予定
+    isScreenSharing,
+    screenShareError,
+    isLoading: isScreenShareLoading,
+    screenVideoRef,
+    startScreenShare,
+    stopScreenShare,
+    getErrorMessage: getScreenShareErrorMessage,
+  } = useScreenShare();
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -153,6 +166,29 @@ function RoleplayApp() {
       }
     };
   }, [isCameraActive, stopCamera]);
+
+  // Phase 2 Day 3: 画面共有エラーハンドリング
+  useEffect(() => {
+    if (screenShareError) {
+      const errorMessage = getScreenShareErrorMessage();
+      if (errorMessage) {
+        setToast({
+          message: errorMessage,
+          type: 'error',
+        });
+      }
+    }
+  }, [screenShareError, getScreenShareErrorMessage]);
+
+  // Phase 2 Day 3: コンポーネントアンマウント時に画面共有を停止
+  useEffect(() => {
+    return () => {
+      if (isScreenSharing) {
+        console.log('🧹 コンポーネントアンマウント: 画面共有を停止します');
+        stopScreenShare();
+      }
+    };
+  }, [isScreenSharing, stopScreenShare]);
 
   // シナリオ選択時に、会話をリセット（ユーザーが最初に話しかける形式）
   useEffect(() => {
@@ -1067,6 +1103,8 @@ function RoleplayApp() {
             imageSrc={imageSrc}
             cameraVideoRef={cameraVideoRef} // Phase 2
             isCameraActive={isCameraActive} // Phase 2
+            screenVideoRef={screenVideoRef} // Phase 2 Day 3
+            isScreenSharing={isScreenSharing} // Phase 2 Day 3
           />
         </section>
 
@@ -1079,8 +1117,9 @@ function RoleplayApp() {
         </section>
       </main>
 
-      {/* Phase 2 Day 1: カメラテストボタン（開発用） */}
+      {/* Phase 2: カメラ・画面共有テストボタン（開発用） */}
       <div className="fixed top-20 right-4 z-[60] flex flex-col gap-2">
+        {/* カメラボタン */}
         {!isCameraActive ? (
           <button
             onClick={startCamera}
@@ -1102,6 +1141,31 @@ function RoleplayApp() {
         {cameraError && (
           <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
             {getErrorMessage()}
+          </div>
+        )}
+
+        {/* Phase 2 Day 3: 画面共有ボタン */}
+        {!isScreenSharing ? (
+          <button
+            onClick={startScreenShare}
+            disabled={isScreenShareLoading}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            title="画面共有を開始"
+          >
+            {isScreenShareLoading ? '🖥️ 起動中...' : '🖥️ Screen Share'}
+          </button>
+        ) : (
+          <button
+            onClick={stopScreenShare}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all"
+            title="画面共有を停止"
+          >
+            ⏹️ Stop Share
+          </button>
+        )}
+        {screenShareError && getScreenShareErrorMessage() && (
+          <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
+            {getScreenShareErrorMessage()}
           </div>
         )}
       </div>

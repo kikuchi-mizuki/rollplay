@@ -12,6 +12,8 @@ import { CameraPip } from './CameraPip'; // Phase 2 Day 2
  * @param subtitle - 字幕テキスト（オプション）
  * @param cameraVideoRef - Phase 2: カメラプレビュー用のvideoRef（オプション）
  * @param isCameraActive - Phase 2: カメラがアクティブかどうか（オプション）
+ * @param screenVideoRef - Phase 2 Day 3: 画面共有用のvideoRef（オプション）
+ * @param isScreenSharing - Phase 2 Day 3: 画面共有中かどうか（オプション）
  */
 interface MediaPanelProps {
   isRecording?: boolean;
@@ -21,6 +23,8 @@ interface MediaPanelProps {
   subtitle?: string;
   cameraVideoRef?: React.RefObject<HTMLVideoElement>; // Phase 2
   isCameraActive?: boolean; // Phase 2
+  screenVideoRef?: React.RefObject<HTMLVideoElement>; // Phase 2 Day 3
+  isScreenSharing?: boolean; // Phase 2 Day 3
 }
 
 export function MediaPanel({
@@ -31,6 +35,8 @@ export function MediaPanel({
   subtitle,
   cameraVideoRef, // Phase 2
   isCameraActive = false, // Phase 2
+  screenVideoRef, // Phase 2 Day 3
+  isScreenSharing = false, // Phase 2 Day 3
 }: MediaPanelProps) {
   // 録音中の波形バーを生成
   const renderWaveform = () => {
@@ -64,7 +70,17 @@ export function MediaPanel({
     <div className="h-full w-full flex flex-col overflow-hidden relative">
       {/* メディアコンテンツ */}
       <div className="flex-1 relative bg-black/80 rounded-t-2xl flex items-center justify-center pb-2 md:pb-0">
-        {videoSrc ? (
+        {/* Phase 2 Day 3: 画面共有映像（最優先で表示） */}
+        {isScreenSharing && screenVideoRef ? (
+          <video
+            ref={screenVideoRef}
+            autoPlay
+            playsInline
+            className="w-full h-full object-contain"
+            style={{ objectPosition: 'center' }}
+            aria-label="画面共有プレビュー"
+          />
+        ) : videoSrc ? (
           <video
             src={videoSrc}
             className="w-full h-full object-contain"
