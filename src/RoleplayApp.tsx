@@ -740,11 +740,14 @@ function RoleplayApp() {
       console.log('✅ AI音声出力ストリーム作成完了');
 
       // ダミーの無音バッファを再生して許可を得る
+      // MediaStreamDestinationもアクティブ化するため、両方に接続
       const buffer = audioContext.createBuffer(1, 1, 22050);
       const source = audioContext.createBufferSource();
       source.buffer = buffer;
-      source.connect(audioContext.destination);
+      source.connect(audioContext.destination); // スピーカー
+      source.connect(destination); // MediaStreamDestination（録画用）
       source.start(0);
+      console.log('🔇 MediaStreamDestinationをアクティブ化（無音再生）');
 
       setAudioInitialized(true);
       console.log('✅ Web Audio API初期化成功');
