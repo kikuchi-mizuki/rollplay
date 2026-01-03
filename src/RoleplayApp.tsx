@@ -1208,11 +1208,11 @@ function RoleplayApp() {
       )}
 
       {/* 統合コントロールバー（音声中心UI） */}
-      <footer className="fixed bottom-4 inset-x-0 mx-auto w-[96%] max-w-6xl z-[50] safe-area-bottom">
-        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-4 py-3 transition-all duration-300 animate-floatIn">
-          <div className="flex items-center justify-between gap-4">
+      <footer className="fixed bottom-4 inset-x-0 mx-auto z-[50] safe-area-bottom">
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-5 py-3 mx-auto w-fit transition-all duration-300 animate-floatIn">
+          <div className="flex items-center justify-center gap-3">
             {/* 左側: Phase 2コントロール（録画系） */}
-            <div className="flex items-center gap-3 flex-1">
+            <div className="flex items-center gap-2">
               {/* カメラボタン */}
               <button
                 onClick={isCameraActive ? stopCamera : startCamera}
@@ -1342,7 +1342,7 @@ function RoleplayApp() {
             </button>
 
             {/* 右側: アクションボタン */}
-            <div className="flex items-center gap-3 flex-1 justify-end">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleShowEvaluation}
