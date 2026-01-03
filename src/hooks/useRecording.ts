@@ -255,6 +255,27 @@ export function useRecording(streams: RecordingStreams) {
    * - カメラのみの場合、カメラストリームを録画
    */
   const startRecording = useCallback(async () => {
+    // ストリーム状態を詳細にログ出力
+    console.log('🎬 録画開始リクエスト...');
+    console.log('  screenStream:', screenStream ? '✅ あり' : '❌ なし');
+    console.log('  cameraStream:', cameraStream ? '✅ あり' : '❌ なし');
+    if (screenStream) {
+      const screenTracks = screenStream.getVideoTracks();
+      console.log('  画面共有videoトラック数:', screenTracks.length);
+      if (screenTracks.length > 0) {
+        const settings = screenTracks[0].getSettings();
+        console.log('  画面共有解像度:', `${settings.width}x${settings.height}`);
+      }
+    }
+    if (cameraStream) {
+      const cameraTracks = cameraStream.getVideoTracks();
+      console.log('  カメラvideoトラック数:', cameraTracks.length);
+      if (cameraTracks.length > 0) {
+        const settings = cameraTracks[0].getSettings();
+        console.log('  カメラ解像度:', `${settings.width}x${settings.height}`);
+      }
+    }
+
     // ストリームの優先順位:
     // 1. 画面共有のみ → 画面共有ストリームをそのまま録画（アプリ全体録画に最適）
     // 2. 画面共有+カメラ → Canvas合成（外部資料+カメラPinP）
@@ -264,19 +285,20 @@ export function useRecording(streams: RecordingStreams) {
 
     if (screenStream && !cameraStream) {
       // 画面共有のみ（「このタブ」を共有している場合、アプリ全体が録画される）
-      console.log('🎬 画面共有録画モード（アプリ全体録画）');
+      console.log('📹 録画モード: 画面共有のみ（アプリ全体録画）');
       recordingStream = screenStream;
     } else if (screenStream && cameraStream) {
       // Canvas合成（画面共有+カメラ）
-      console.log('🎬 Canvas合成録画モード（外部資料+カメラPinP）');
+      console.log('📹 録画モード: Canvas合成（画面共有+カメラPinP）');
       recordingStream = createCompositeStream();
       if (!recordingStream) {
+        console.error('❌ Canvas合成ストリーム作成失敗');
         setRecordingError('UnknownError');
         return;
       }
     } else if (cameraStream) {
       // カメラのみ
-      console.log('🎬 カメラ録画モード');
+      console.log('📹 録画モード: カメラのみ');
       recordingStream = cameraStream;
     } else {
       // ストリームなし
