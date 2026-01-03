@@ -115,32 +115,47 @@ export function useRecording(streams: RecordingStreams) {
     screenVideo.srcObject = screenStream;
     screenVideo.autoplay = true;
     screenVideo.muted = true;
+    screenVideo.playsInline = true;
 
     // video要素を作成（カメラ用）
     const cameraVideo = document.createElement('video');
     cameraVideo.srcObject = cameraStream;
     cameraVideo.autoplay = true;
     cameraVideo.muted = true;
+    cameraVideo.playsInline = true;
+
+    // 明示的に再生を開始（autoplayが機能しない場合の対策）
+    screenVideo.play().catch(err => console.warn('画面共有video再生エラー:', err));
+    cameraVideo.play().catch(err => console.warn('カメラvideo再生エラー:', err));
+
+    console.log('🎥 video要素の準備中...');
 
     // 描画ループ（30fps）
     const drawFrame = () => {
       if (!canvasRef.current) return;
 
-      // 画面共有を全画面描画
-      ctx.drawImage(screenVideo, 0, 0, 1920, 1080);
+      // video要素が準備できているかチェック
+      if (screenVideo.readyState >= 2 && cameraVideo.readyState >= 2) {
+        // 画面共有を全画面描画
+        ctx.drawImage(screenVideo, 0, 0, 1920, 1080);
 
-      // カメラを右下PinP描画（320×180）
-      const pipWidth = 320;
-      const pipHeight = 180;
-      const pipX = 1920 - pipWidth - 20; // 右から20px
-      const pipY = 1080 - pipHeight - 20; // 下から20px
+        // カメラを右下PinP描画（320×180）
+        const pipWidth = 320;
+        const pipHeight = 180;
+        const pipX = 1920 - pipWidth - 20; // 右から20px
+        const pipY = 1080 - pipHeight - 20; // 下から20px
 
-      // PinP背景（黒枠）
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.fillRect(pipX - 2, pipY - 2, pipWidth + 4, pipHeight + 4);
+        // PinP背景（黒枠）
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(pipX - 2, pipY - 2, pipWidth + 4, pipHeight + 4);
 
-      // カメラ映像
-      ctx.drawImage(cameraVideo, pipX, pipY, pipWidth, pipHeight);
+        // カメラ映像
+        ctx.drawImage(cameraVideo, pipX, pipY, pipWidth, pipHeight);
+      } else {
+        // video要素がまだ準備できていない場合は黒背景を描画
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, 1920, 1080);
+      }
 
       animationFrameRef.current = requestAnimationFrame(drawFrame);
     };
