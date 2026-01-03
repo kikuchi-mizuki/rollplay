@@ -85,15 +85,15 @@ export function MediaPanel({
   return (
     <div className="h-full w-full flex flex-col overflow-hidden relative">
       {/* メディアコンテンツ */}
-      <div className="flex-1 relative bg-black/80 rounded-t-2xl flex items-center justify-center pb-2 md:pb-0">
-        {/* Phase 2 Day 3: 画面共有映像（最優先で表示） */}
+      <div className={`flex-1 relative bg-black/80 rounded-t-2xl flex items-center justify-center ${isScreenSharing ? 'pb-32 md:pb-8' : 'pb-2 md:pb-0'}`}>
+        {/* Phase 2 Day 3: 画面共有映像（最優先で表示、上部に配置） */}
         {isScreenSharing && screenVideoRef ? (
           <video
             ref={screenVideoRef}
             autoPlay
             playsInline
             className="w-full h-full object-contain"
-            style={{ objectPosition: 'center' }}
+            style={{ objectPosition: 'top' }}
             aria-label="画面共有プレビュー"
           />
         ) : videoSrc ? (
@@ -142,9 +142,9 @@ export function MediaPanel({
         {/* Phase 2: 画面共有時のPinP表示（アバター + カメラ） - 右下配置 */}
         {isScreenSharing && (
           <>
-            {/* カメラPinP（右下、スマホではより上に配置） */}
+            {/* カメラPinP（右下） */}
             {isCameraActive && cameraVideoRef && (
-              <div className="absolute bottom-20 md:bottom-4 right-4 w-40 h-30 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl">
+              <div className="absolute bottom-4 right-4 w-40 h-30 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl">
                 <video
                   ref={cameraVideoRef}
                   autoPlay
@@ -166,9 +166,9 @@ export function MediaPanel({
               </div>
             )}
 
-            {/* アバターPinP（右下、カメラの左隣、スマホではより上に配置） */}
+            {/* アバターPinP（右下、カメラの左隣） */}
             {imageSrc && (
-              <div className="absolute bottom-20 md:bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+              <div className="absolute bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
                 <img
                   src={imageSrc}
                   alt="AI相談者のアバター"
