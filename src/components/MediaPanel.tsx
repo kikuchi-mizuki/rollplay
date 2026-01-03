@@ -14,6 +14,8 @@ import { CameraPip } from './CameraPip'; // Phase 2 Day 2
  * @param isCameraActive - Phase 2: カメラがアクティブかどうか（オプション）
  * @param screenVideoRef - Phase 2 Day 3: 画面共有用のvideoRef（オプション）
  * @param isScreenSharing - Phase 2 Day 3: 画面共有中かどうか（オプション）
+ * @param isVideoRecording - Phase 2 Day 4: ビデオ録画中かどうか（オプション）
+ * @param videoRecordingTime - Phase 2 Day 4: ビデオ録画時間（秒）（オプション）
  */
 interface MediaPanelProps {
   isRecording?: boolean;
@@ -25,6 +27,8 @@ interface MediaPanelProps {
   isCameraActive?: boolean; // Phase 2
   screenVideoRef?: React.RefObject<HTMLVideoElement>; // Phase 2 Day 3
   isScreenSharing?: boolean; // Phase 2 Day 3
+  isVideoRecording?: boolean; // Phase 2 Day 4
+  videoRecordingTime?: number; // Phase 2 Day 4
 }
 
 export function MediaPanel({
@@ -37,6 +41,8 @@ export function MediaPanel({
   isCameraActive = false, // Phase 2
   screenVideoRef, // Phase 2 Day 3
   isScreenSharing = false, // Phase 2 Day 3
+  isVideoRecording = false, // Phase 2 Day 4
+  videoRecordingTime = 0, // Phase 2 Day 4
 }: MediaPanelProps) {
   // 録音中の波形バーを生成
   const renderWaveform = () => {
@@ -127,8 +133,8 @@ export function MediaPanel({
         {isCameraActive && cameraVideoRef && (
           <CameraPip
             cameraVideoRef={cameraVideoRef}
-            isRecording={isRecording}
-            recordingTime={recordingState?.duration || 0}
+            isRecording={isVideoRecording} // Phase 2 Day 4: ビデオ録画中状態
+            recordingTime={videoRecordingTime} // Phase 2 Day 4: ビデオ録画時間
           />
         )}
       </div>

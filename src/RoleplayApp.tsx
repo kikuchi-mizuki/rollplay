@@ -13,6 +13,7 @@ import { useAuth } from './contexts/AuthContext';
 import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl } from './lib/expressionSelector';
 import { useCamera } from './hooks/useCamera'; // Phase 2: カメラアクセス
 import { useScreenShare } from './hooks/useScreenShare'; // Phase 2 Day 3: 画面共有
+import { useRecording } from './hooks/useRecording'; // Phase 2 Day 4: 録画機能
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -78,6 +79,19 @@ function RoleplayApp() {
     stopScreenShare,
     getErrorMessage: getScreenShareErrorMessage,
   } = useScreenShare();
+
+  // Phase 2 Day 4: 録画機能（カメラストリームを録画）
+  const {
+    isRecording: isVideoRecording,
+    recordingError: videoRecordingError,
+    recordingTime: videoRecordingTime,
+    recordingData: videoRecordingData,
+    startRecording: startVideoRecording,
+    stopRecording: stopVideoRecording,
+    clearRecording: _clearVideoRecording, // Day 7（ダウンロード機能）で使用予定
+    getErrorMessage: getVideoRecordingErrorMessage,
+    formatRecordingTime,
+  } = useRecording(_cameraStream); // カメラストリームを録画（Day 6で画面共有+カメラの合成録画に変更予定）
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -189,6 +203,40 @@ function RoleplayApp() {
       }
     };
   }, [isScreenSharing, stopScreenShare]);
+
+  // Phase 2 Day 4: 録画エラーハンドリング
+  useEffect(() => {
+    if (videoRecordingError) {
+      const errorMessage = getVideoRecordingErrorMessage();
+      if (errorMessage) {
+        setToast({
+          message: errorMessage,
+          type: 'error',
+        });
+      }
+    }
+  }, [videoRecordingError, getVideoRecordingErrorMessage]);
+
+  // Phase 2 Day 4: コンポーネントアンマウント時に録画を停止
+  useEffect(() => {
+    return () => {
+      if (isVideoRecording) {
+        console.log('🧹 コンポーネントアンマウント: 録画を停止します');
+        stopVideoRecording();
+      }
+    };
+  }, [isVideoRecording, stopVideoRecording]);
+
+  // Phase 2 Day 4: 録画完了時の通知
+  useEffect(() => {
+    if (videoRecordingData) {
+      const sizeInMB = (videoRecordingData.blob.size / 1024 / 1024).toFixed(2);
+      setToast({
+        message: `録画完了！ (${sizeInMB} MB, ${videoRecordingData.duration}秒)`,
+        type: 'success',
+      });
+    }
+  }, [videoRecordingData]);
 
   // シナリオ選択時に、会話をリセット（ユーザーが最初に話しかける形式）
   useEffect(() => {
@@ -1105,6 +1153,8 @@ function RoleplayApp() {
             isCameraActive={isCameraActive} // Phase 2
             screenVideoRef={screenVideoRef} // Phase 2 Day 3
             isScreenSharing={isScreenSharing} // Phase 2 Day 3
+            isVideoRecording={isVideoRecording} // Phase 2 Day 4
+            videoRecordingTime={videoRecordingTime} // Phase 2 Day 4
           />
         </section>
 
@@ -1166,6 +1216,36 @@ function RoleplayApp() {
         {screenShareError && getScreenShareErrorMessage() && (
           <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
             {getScreenShareErrorMessage()}
+          </div>
+        )}
+
+        {/* Phase 2 Day 4: 録画ボタン */}
+        {!isVideoRecording ? (
+          <button
+            onClick={startVideoRecording}
+            disabled={!isCameraActive}
+            className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            title={isCameraActive ? "録画を開始" : "カメラをONにしてください"}
+          >
+            🎬 Start Recording
+          </button>
+        ) : (
+          <button
+            onClick={stopVideoRecording}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all animate-pulse"
+            title="録画を停止"
+          >
+            ⏺️ Recording {formatRecordingTime()}
+          </button>
+        )}
+        {videoRecordingError && getVideoRecordingErrorMessage() && (
+          <div className="bg-red-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
+            {getVideoRecordingErrorMessage()}
+          </div>
+        )}
+        {videoRecordingData && (
+          <div className="bg-green-500/90 text-white text-xs px-3 py-2 rounded-lg shadow-lg max-w-xs">
+            ✅ 録画完了 ({(videoRecordingData.blob.size / 1024 / 1024).toFixed(2)} MB)
           </div>
         )}
       </div>
