@@ -96,7 +96,8 @@ function RoleplayApp() {
   } = useRecording({
     cameraStream,
     screenStream,
-  }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合はカメラ録画
+    avatarImageSrc: imageSrc, // カメラのみモードでCanvas合成に使用
+  }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター）
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);

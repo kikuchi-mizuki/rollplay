@@ -23,6 +23,7 @@ export interface RecordingData {
 export interface RecordingStreams {
   cameraStream: MediaStream | null;
   screenStream: MediaStream | null;
+  avatarImageSrc?: string; // アバター画像のパス（カメラのみモードでCanvas合成に使用）
 }
 
 /**
@@ -40,7 +41,7 @@ export interface RecordingStreams {
  * @returns 録画状態、制御関数、録画データ
  */
 export function useRecording(streams: RecordingStreams) {
-  const { cameraStream, screenStream } = streams;
+  const { cameraStream, screenStream, avatarImageSrc } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -81,6 +82,177 @@ export function useRecording(streams: RecordingStreams) {
       }
     };
   }, [isRecording]);
+
+  /**
+   * カメラのみの場合のCanvas合成ストリームを作成
+   *
+   * - カメラ映像を全画面表示（1920x1080）
+   * - アバター画像を左上にPinP表示
+   * - 30fpsで描画ループ
+   * - 音声トラックも含める
+   */
+  const createCameraOnlyCompositeStream = useCallback((): MediaStream | null => {
+    if (!cameraStream) {
+      console.log('⚠️ カメラCanvas合成スキップ: カメラが未起動');
+      return null;
+    }
+
+    console.log('🎨 カメラのみCanvas合成ストリーム作成開始...');
+
+    // Canvas解像度を1920x1080に固定（カメラのみの場合）
+    const canvasWidth = 1920;
+    const canvasHeight = 1080;
+
+    console.log(`  Canvas解像度: ${canvasWidth}x${canvasHeight}`);
+
+    // Canvasを作成
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    canvasRef.current = canvas;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('❌ Canvasコンテキスト取得失敗');
+      return null;
+    }
+
+    // video要素を作成（カメラ用）
+    const cameraVideo = document.createElement('video');
+    cameraVideo.srcObject = cameraStream;
+    cameraVideo.autoplay = true;
+    cameraVideo.muted = true;
+    cameraVideo.playsInline = true;
+
+    // アバター画像を読み込み（存在する場合）
+    let avatarImage: HTMLImageElement | null = null;
+    if (avatarImageSrc) {
+      avatarImage = new Image();
+      avatarImage.src = avatarImageSrc;
+      console.log(`  アバター画像読み込み: ${avatarImageSrc}`);
+    }
+
+    console.log('🎥 video要素の準備中...');
+
+    // video要素の準備完了を待つ
+    let isCameraReady = false;
+
+    cameraVideo.onloadedmetadata = () => {
+      console.log('✅ カメラvideo準備完了', {
+        readyState: cameraVideo.readyState,
+        videoWidth: cameraVideo.videoWidth,
+        videoHeight: cameraVideo.videoHeight,
+      });
+      isCameraReady = true;
+      cameraVideo.play().catch(err => console.warn('カメラvideo再生エラー:', err));
+    };
+
+    // 描画ループ（30fps）
+    const drawFrame = () => {
+      if (!canvasRef.current) return;
+
+      // video要素が準備できているかチェック（readyState >= 3 = HAVE_FUTURE_DATA）
+      if (isCameraReady && cameraVideo.readyState >= 3) {
+        // カメラ映像を全画面描画（aspect-fitで中央配置）
+        const videoAspect = cameraVideo.videoWidth / cameraVideo.videoHeight;
+        const canvasAspect = canvas.width / canvas.height;
+
+        let drawWidth = canvas.width;
+        let drawHeight = canvas.height;
+        let drawX = 0;
+        let drawY = 0;
+
+        if (videoAspect > canvasAspect) {
+          // ビデオが横長 → 幅を合わせる
+          drawHeight = canvas.width / videoAspect;
+          drawY = (canvas.height - drawHeight) / 2;
+        } else {
+          // ビデオが縦長 → 高さを合わせる
+          drawWidth = canvas.height * videoAspect;
+          drawX = (canvas.width - drawWidth) / 2;
+        }
+
+        // 背景を黒で塗りつぶし
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // カメラ映像を描画
+        ctx.drawImage(cameraVideo, drawX, drawY, drawWidth, drawHeight);
+
+        // アバターを左上PinP描画（画面の1/6サイズ）
+        if (avatarImage && avatarImage.complete) {
+          const pipWidth = Math.floor(canvas.width / 6);
+          const pipHeight = Math.floor(canvas.height / 6);
+          const pipX = 20; // 左から20px
+          const pipY = 20; // 上から20px
+
+          // PinP背景（黒枠）
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(pipX - 2, pipY - 2, pipWidth + 4, pipHeight + 4);
+
+          // アバター画像（aspect-fitで描画）
+          const avatarAspect = avatarImage.width / avatarImage.height;
+          const pipAspect = pipWidth / pipHeight;
+
+          let avatarDrawWidth = pipWidth;
+          let avatarDrawHeight = pipHeight;
+          let avatarDrawX = pipX;
+          let avatarDrawY = pipY;
+
+          if (avatarAspect > pipAspect) {
+            // 画像が横長 → 幅を合わせる
+            avatarDrawHeight = pipWidth / avatarAspect;
+            avatarDrawY = pipY + (pipHeight - avatarDrawHeight) / 2;
+          } else {
+            // 画像が縦長 → 高さを合わせる
+            avatarDrawWidth = pipHeight * avatarAspect;
+            avatarDrawX = pipX + (pipWidth - avatarDrawWidth) / 2;
+          }
+
+          ctx.drawImage(avatarImage, avatarDrawX, avatarDrawY, avatarDrawWidth, avatarDrawHeight);
+        }
+      } else {
+        // video要素がまだ準備できていない場合は黒背景を描画
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // デバッグ情報を描画
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('準備中...', canvas.width / 2 - 50, canvas.height / 2);
+        ctx.font = '14px Arial';
+        ctx.fillText(`カメラ: ${isCameraReady} (${cameraVideo.readyState})`, 20, 40);
+      }
+
+      animationFrameRef.current = requestAnimationFrame(drawFrame);
+    };
+
+    // 描画開始
+    drawFrame();
+
+    // Canvasからストリームを取得（30fps）
+    const compositeStream = canvas.captureStream(30);
+
+    // 音声トラックを追加（カメラの音声）
+    const audioTracks: MediaStreamTrack[] = [];
+    const cameraAudioTracks = cameraStream.getAudioTracks();
+    if (cameraAudioTracks.length > 0) {
+      audioTracks.push(...cameraAudioTracks);
+      console.log(`  カメラ音声: ${cameraAudioTracks.length}トラック追加`);
+    }
+
+    // 音声トラックを合成ストリームに追加
+    audioTracks.forEach(track => compositeStream.addTrack(track));
+
+    compositeStreamRef.current = compositeStream;
+
+    console.log('✅ カメラのみCanvas合成ストリーム作成完了');
+    console.log(`  解像度: ${canvas.width}×${canvas.height}`);
+    console.log(`  アバター: ${avatarImage ? 'あり（左上PinP）' : 'なし'}`);
+    console.log(`  音声トラック数: ${audioTracks.length}`);
+
+    return compositeStream;
+  }, [cameraStream, avatarImageSrc]);
 
   /**
    * Canvas合成ストリームを作成
@@ -297,9 +469,14 @@ export function useRecording(streams: RecordingStreams) {
         return;
       }
     } else if (cameraStream) {
-      // カメラのみ
-      console.log('📹 録画モード: カメラのみ');
-      recordingStream = cameraStream;
+      // カメラのみ（Canvas合成）
+      console.log('📹 録画モード: カメラのみ（Canvas合成 - カメラ+アバター）');
+      recordingStream = createCameraOnlyCompositeStream();
+      if (!recordingStream) {
+        console.error('❌ カメラのみCanvas合成ストリーム作成失敗');
+        setRecordingError('UnknownError');
+        return;
+      }
     } else {
       // ストリームなし
       console.error('❌ 録画エラー: ストリームが提供されていません');
@@ -399,7 +576,7 @@ export function useRecording(streams: RecordingStreams) {
       console.error('❌ 録画開始エラー:', error);
       setRecordingError('UnknownError');
     }
-  }, [cameraStream, screenStream, createCompositeStream]); // 依存配列を更新
+  }, [cameraStream, screenStream, createCompositeStream, createCameraOnlyCompositeStream]); // 依存配列を更新
 
   /**
    * 録画を停止
