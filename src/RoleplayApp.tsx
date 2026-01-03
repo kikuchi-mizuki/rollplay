@@ -115,8 +115,17 @@ function RoleplayApp() {
       console.log('🎵 録画開始: Web Audio APIを初期化します（ユーザージェスチャー）');
       await initializeAudio();
       recordingAudioInitializedRef.current = true;
-      // 初期化後、少し待機してaiAudioStreamが設定されるのを待つ
-      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // MediaStreamDestinationをアクティブにするため、無音を再生
+      if (audioContextRef.current && audioDestinationRef.current) {
+        console.log('🔇 AI音声ストリームをアクティブ化（無音再生）');
+        const silentBuffer = audioContextRef.current.createBuffer(1, 1, 22050);
+        const silentSource = audioContextRef.current.createBufferSource();
+        silentSource.buffer = silentBuffer;
+        silentSource.connect(audioDestinationRef.current);
+        silentSource.start(0);
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
     }
     // 録画開始
     startVideoRecordingInternal();
