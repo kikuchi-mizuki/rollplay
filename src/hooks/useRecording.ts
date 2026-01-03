@@ -37,6 +37,7 @@ export function useRecording(stream: MediaStream | null) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingTimeRef = useRef<number>(0); // クロージャー問題を回避するためのRef
 
   /**
    * 録画時間をカウントアップ（1秒ごと）
@@ -44,7 +45,11 @@ export function useRecording(stream: MediaStream | null) {
   useEffect(() => {
     if (isRecording) {
       timerRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime(prev => {
+          const newTime = prev + 1;
+          recordingTimeRef.current = newTime; // Refも同期
+          return newTime;
+        });
       }, 1000);
     } else {
       if (timerRef.current) {
@@ -89,6 +94,7 @@ export function useRecording(stream: MediaStream | null) {
       // 録画データをリセット
       chunksRef.current = [];
       setRecordingTime(0);
+      recordingTimeRef.current = 0; // Refもリセット
       setRecordingData(null);
       setRecordingError(null);
 
@@ -128,7 +134,7 @@ export function useRecording(stream: MediaStream | null) {
 
         // Blobを作成
         const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-        const duration = recordingTime;
+        const duration = recordingTimeRef.current; // Refを使用してクロージャー問題を回避
         const timestamp = new Date();
 
         setRecordingData({
@@ -161,7 +167,7 @@ export function useRecording(stream: MediaStream | null) {
       console.error('❌ 録画開始エラー:', error);
       setRecordingError('UnknownError');
     }
-  }, [stream, recordingTime]);
+  }, [stream]); // recordingTimeは依存配列から削除（Refを使用するため不要）
 
   /**
    * 録画を停止
@@ -180,6 +186,7 @@ export function useRecording(stream: MediaStream | null) {
   const clearRecording = useCallback(() => {
     setRecordingData(null);
     setRecordingTime(0);
+    recordingTimeRef.current = 0; // Refもリセット
     chunksRef.current = [];
     console.log('🗑️ 録画データをクリアしました');
   }, []);
