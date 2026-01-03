@@ -18,17 +18,29 @@ export interface RecordingData {
 }
 
 /**
+ * 録画ストリーム
+ */
+export interface RecordingStreams {
+  cameraStream: MediaStream | null;
+  screenStream: MediaStream | null;
+}
+
+/**
  * 録画カスタムフック
  *
  * Phase 2 Day 4: MediaRecorder APIによる録画機能の実装
+ * Phase 2 Day 6: Canvas合成録画の実装
  * - カメラストリームの録画
+ * - 画面共有ストリームの録画
+ * - Canvas合成録画（画面共有+カメラ）
  * - 録画時間のカウント
  * - Blob形式でのデータ保持
  *
- * @param stream - 録画対象のMediaStream（カメラストリーム）
+ * @param streams - 録画対象のストリーム（カメラ、画面共有）
  * @returns 録画状態、制御関数、録画データ
  */
-export function useRecording(stream: MediaStream | null) {
+export function useRecording(streams: RecordingStreams) {
+  const { cameraStream, screenStream } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -38,6 +50,11 @@ export function useRecording(stream: MediaStream | null) {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recordingTimeRef = useRef<number>(0); // クロージャー問題を回避するためのRef
+
+  // Phase 2 Day 6: Canvas合成用のRef
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const compositeStreamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   /**
    * 録画時間をカウントアップ（1秒ごと）
@@ -66,16 +83,115 @@ export function useRecording(stream: MediaStream | null) {
   }, [isRecording]);
 
   /**
+   * Canvas合成ストリームを作成
+   *
+   * Phase 2 Day 6: 画面共有+カメラの合成録画
+   * - 画面共有: 1920×1080（メイン）
+   * - カメラ: 320×180（右下PinP）
+   * - 30fpsで描画ループ
+   */
+  const createCompositeStream = useCallback((): MediaStream | null => {
+    if (!screenStream || !cameraStream) {
+      console.log('⚠️ Canvas合成スキップ: 画面共有またはカメラが未起動');
+      return null;
+    }
+
+    console.log('🎨 Canvas合成ストリーム作成開始...');
+
+    // Canvasを作成
+    const canvas = document.createElement('canvas');
+    canvas.width = 1920;
+    canvas.height = 1080;
+    canvasRef.current = canvas;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('❌ Canvasコンテキスト取得失敗');
+      return null;
+    }
+
+    // video要素を作成（画面共有用）
+    const screenVideo = document.createElement('video');
+    screenVideo.srcObject = screenStream;
+    screenVideo.autoplay = true;
+    screenVideo.muted = true;
+
+    // video要素を作成（カメラ用）
+    const cameraVideo = document.createElement('video');
+    cameraVideo.srcObject = cameraStream;
+    cameraVideo.autoplay = true;
+    cameraVideo.muted = true;
+
+    // 描画ループ（30fps）
+    const drawFrame = () => {
+      if (!canvasRef.current) return;
+
+      // 画面共有を全画面描画
+      ctx.drawImage(screenVideo, 0, 0, 1920, 1080);
+
+      // カメラを右下PinP描画（320×180）
+      const pipWidth = 320;
+      const pipHeight = 180;
+      const pipX = 1920 - pipWidth - 20; // 右から20px
+      const pipY = 1080 - pipHeight - 20; // 下から20px
+
+      // PinP背景（黒枠）
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(pipX - 2, pipY - 2, pipWidth + 4, pipHeight + 4);
+
+      // カメラ映像
+      ctx.drawImage(cameraVideo, pipX, pipY, pipWidth, pipHeight);
+
+      animationFrameRef.current = requestAnimationFrame(drawFrame);
+    };
+
+    // 描画開始
+    drawFrame();
+
+    // Canvasからストリームを取得（30fps）
+    const compositeStream = canvas.captureStream(30);
+    compositeStreamRef.current = compositeStream;
+
+    console.log('✅ Canvas合成ストリーム作成完了');
+    console.log(`  解像度: ${canvas.width}×${canvas.height}`);
+    console.log(`  PinP: ${320}×${180} (右下)`);
+
+    return compositeStream;
+  }, [screenStream, cameraStream]);
+
+  /**
    * 録画を開始
    *
    * 要件:
    * - 録画ボタンをクリックすると録画開始
    * - 録画中は「REC」インジケーターと時間が表示される
    * - 録画データはBlob形式で保持
+   *
+   * Phase 2 Day 6:
+   * - 画面共有+カメラの場合、Canvas合成ストリームを録画
+   * - カメラのみの場合、カメラストリームを録画
    */
   const startRecording = useCallback(async () => {
-    // ストリームが提供されていない場合はエラー
-    if (!stream) {
+    // ストリームの優先順位:
+    // 1. 画面共有+カメラ → Canvas合成
+    // 2. カメラのみ
+    // 3. ストリームなし → エラー
+    let recordingStream: MediaStream | null = null;
+
+    if (screenStream && cameraStream) {
+      // Canvas合成（画面共有+カメラ）
+      console.log('🎬 Canvas合成録画モード');
+      recordingStream = createCompositeStream();
+      if (!recordingStream) {
+        setRecordingError('UnknownError');
+        return;
+      }
+    } else if (cameraStream) {
+      // カメラのみ
+      console.log('🎬 カメラ録画モード');
+      recordingStream = cameraStream;
+    } else {
+      // ストリームなし
       console.error('❌ 録画エラー: ストリームが提供されていません');
       setRecordingError('NoStreamError');
       return;
@@ -116,7 +232,7 @@ export function useRecording(stream: MediaStream | null) {
         delete options.mimeType;
       }
 
-      const mediaRecorder = new MediaRecorder(stream, options);
+      const mediaRecorder = new MediaRecorder(recordingStream, options);
       mediaRecorderRef.current = mediaRecorder;
 
       // 録画データが利用可能になったら保存
@@ -161,22 +277,43 @@ export function useRecording(stream: MediaStream | null) {
 
       console.log('✅ 録画開始成功');
       console.log(`  MIMEタイプ: ${mediaRecorder.mimeType}`);
-      console.log(`  ビットレート: ${stream.getVideoTracks()[0].getSettings().width}x${stream.getVideoTracks()[0].getSettings().height}`);
+      const videoTrack = recordingStream.getVideoTracks()[0];
+      if (videoTrack) {
+        const settings = videoTrack.getSettings();
+        console.log(`  解像度: ${settings.width}x${settings.height}`);
+      }
 
     } catch (error: any) {
       console.error('❌ 録画開始エラー:', error);
       setRecordingError('UnknownError');
     }
-  }, [stream]); // recordingTimeは依存配列から削除（Refを使用するため不要）
+  }, [cameraStream, screenStream, createCompositeStream]); // 依存配列を更新
 
   /**
    * 録画を停止
+   *
+   * Phase 2 Day 6: Canvas合成のクリーンアップも実施
    */
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
       console.log('🛑 録画停止中...');
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+
+      // Canvas合成のクリーンアップ
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+        console.log('  Canvas描画ループ停止');
+      }
+
+      if (compositeStreamRef.current) {
+        compositeStreamRef.current.getTracks().forEach(track => track.stop());
+        compositeStreamRef.current = null;
+        console.log('  Canvas合成ストリーム停止');
+      }
+
+      canvasRef.current = null;
     }
   }, [isRecording]);
 

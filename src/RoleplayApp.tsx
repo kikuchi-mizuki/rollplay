@@ -81,6 +81,7 @@ function RoleplayApp() {
   } = useScreenShare();
 
   // Phase 2 Day 4: 録画機能（カメラストリームを録画）
+  // Phase 2 Day 6: Canvas合成録画（画面共有+カメラ）
   const {
     isRecording: isVideoRecording,
     recordingError: videoRecordingError,
@@ -91,7 +92,10 @@ function RoleplayApp() {
     clearRecording: _clearVideoRecording, // Day 7（ダウンロード機能）で使用予定
     getErrorMessage: getVideoRecordingErrorMessage,
     formatRecordingTime,
-  } = useRecording(_cameraStream); // カメラストリームを録画（Day 6で画面共有+カメラの合成録画に変更予定）
+  } = useRecording({
+    cameraStream: _cameraStream,
+    screenStream: _screenStream,
+  }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合はカメラ録画
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -1220,12 +1224,17 @@ function RoleplayApp() {
         )}
 
         {/* Phase 2 Day 4: 録画ボタン */}
+        {/* Phase 2 Day 6: 画面共有+カメラの合成録画対応 */}
         {!isVideoRecording ? (
           <button
             onClick={startVideoRecording}
-            disabled={!isCameraActive}
+            disabled={!isCameraActive && !isScreenSharing}
             className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            title={isCameraActive ? "録画を開始" : "カメラをONにしてください"}
+            title={
+              isCameraActive || isScreenSharing
+                ? (isCameraActive && isScreenSharing ? "録画を開始（Canvas合成）" : "録画を開始")
+                : "カメラまたは画面共有をONにしてください"
+            }
           >
             🎬 Start Recording
           </button>
