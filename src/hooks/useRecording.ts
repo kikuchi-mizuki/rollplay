@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import type React from 'react';
 
 /**
  * 録画のエラータイプ
@@ -24,6 +25,7 @@ export interface RecordingStreams {
   cameraStream: MediaStream | null;
   screenStream: MediaStream | null;
   avatarImageSrc?: string; // アバター画像のパス（カメラのみモードでCanvas合成に使用）
+  avatarImageSrcRef?: React.MutableRefObject<string | undefined>; // アバター画像のRef（録画中の表情変化に対応）
   aiAudioStream?: MediaStream | null; // AI音声出力のストリーム（Web Audio API）
 }
 
@@ -42,7 +44,7 @@ export interface RecordingStreams {
  * @returns 録画状態、制御関数、録画データ
  */
 export function useRecording(streams: RecordingStreams) {
-  const { cameraStream, screenStream, avatarImageSrc, aiAudioStream } = streams;
+  const { cameraStream, screenStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -127,10 +129,15 @@ export function useRecording(streams: RecordingStreams) {
 
     // アバター画像を読み込み（存在する場合）
     let avatarImage: HTMLImageElement | null = null;
-    if (avatarImageSrc) {
+    let lastAvatarImageSrc: string | undefined = undefined; // 前回のアバター画像URL
+
+    // 初期アバター画像を読み込み
+    const initialAvatarSrc = avatarImageSrcRef?.current || avatarImageSrc;
+    if (initialAvatarSrc) {
       avatarImage = new Image();
-      avatarImage.src = avatarImageSrc;
-      console.log(`  アバター画像読み込み: ${avatarImageSrc}`);
+      avatarImage.src = initialAvatarSrc;
+      lastAvatarImageSrc = initialAvatarSrc;
+      console.log(`  初期アバター画像読み込み: ${initialAvatarSrc}`);
     }
 
     console.log('🎥 video要素の準備中...');
@@ -151,6 +158,15 @@ export function useRecording(streams: RecordingStreams) {
     // 描画ループ（30fps）
     const drawFrame = () => {
       if (!canvasRef.current) return;
+
+      // アバター画像の変更をチェック（録画中の表情変化に対応）
+      const currentAvatarSrc = avatarImageSrcRef?.current;
+      if (currentAvatarSrc && currentAvatarSrc !== lastAvatarImageSrc) {
+        console.log(`🔄 アバター画像更新: ${lastAvatarImageSrc} → ${currentAvatarSrc}`);
+        avatarImage = new Image();
+        avatarImage.src = currentAvatarSrc;
+        lastAvatarImageSrc = currentAvatarSrc;
+      }
 
       // video要素が準備できているかチェック（readyState >= 3 = HAVE_FUTURE_DATA）
       if (isCameraReady && cameraVideo.readyState >= 3) {
@@ -250,7 +266,15 @@ export function useRecording(streams: RecordingStreams) {
       if (aiAudioTracks.length > 0) {
         audioTracks.push(...aiAudioTracks);
         console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
+        // AI音声トラックの状態を確認
+        aiAudioTracks.forEach((track, i) => {
+          console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+        });
+      } else {
+        console.warn(`  ⚠️ AI音声: トラックなし（aiAudioStreamは存在するがトラックが空）`);
       }
+    } else {
+      console.warn(`  ⚠️ AI音声: aiAudioStreamがnull（Web Audio API未初期化の可能性）`);
     }
 
     // 音声トラックを合成ストリームに追加
@@ -264,7 +288,7 @@ export function useRecording(streams: RecordingStreams) {
     console.log(`  音声トラック数: ${audioTracks.length} (カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
 
     return compositeStream;
-  }, [cameraStream, avatarImageSrc, aiAudioStream]);
+  }, [cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream]);
 
   /**
    * Canvas合成ストリームを作成
@@ -419,7 +443,15 @@ export function useRecording(streams: RecordingStreams) {
       if (aiAudioTracks.length > 0) {
         audioTracks.push(...aiAudioTracks);
         console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
+        // AI音声トラックの状態を確認
+        aiAudioTracks.forEach((track, i) => {
+          console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+        });
+      } else {
+        console.warn(`  ⚠️ AI音声: トラックなし（aiAudioStreamは存在するがトラックが空）`);
       }
+    } else {
+      console.warn(`  ⚠️ AI音声: aiAudioStreamがnull（Web Audio API未初期化の可能性）`);
     }
 
     // 音声トラックを合成ストリームに追加

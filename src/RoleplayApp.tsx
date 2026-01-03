@@ -56,6 +56,7 @@ function RoleplayApp() {
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
   const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null); // AI音声出力のキャプチャ用
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream
+  const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
 
   // Phase 2: カメラアクセス
   const {
@@ -98,7 +99,8 @@ function RoleplayApp() {
   } = useRecording({
     cameraStream,
     screenStream,
-    avatarImageSrc: imageSrc, // カメラのみモードでCanvas合成に使用
+    avatarImageSrc: imageSrc, // カメラのみモードでCanvas合成に使用（初期値）
+    avatarImageSrcRef, // 録画中の表情変化に対応（Ref経由で最新値を参照）
     aiAudioStream, // AI音声出力のストリーム（Web Audio API）
   }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
 
@@ -185,6 +187,11 @@ function RoleplayApp() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  // imageSrc（アバター表情）の変更をRefに同期（録画中の表情変化に対応）
+  useEffect(() => {
+    avatarImageSrcRef.current = imageSrc;
+  }, [imageSrc]);
 
   // Phase 2: カメラエラーハンドリング
   useEffect(() => {
