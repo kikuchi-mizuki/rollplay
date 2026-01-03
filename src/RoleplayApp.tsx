@@ -1310,7 +1310,32 @@ function RoleplayApp() {
               )}
             </div>
 
-            {/* 中央: マイクボタン（強調） */}
+            {/* アクションボタン */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleShowEvaluation}
+                disabled={isLoadingEvaluation}
+                className={`
+                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
+                  transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+                  bg-white/20 hover:bg-white/30 text-white
+                `}
+                title="講評を表示"
+              >
+                {isLoadingEvaluation ? '⏳' : '💬'}
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-200 hover:scale-110 bg-white/20 hover:bg-white/30 text-white"
+                title="会話をクリア"
+              >
+                🗑️
+              </button>
+            </div>
+
+            {/* 右端: マイクボタン（強調） */}
             <button
               type="button"
               onClick={handleToggleVAD}
@@ -1340,31 +1365,6 @@ function RoleplayApp() {
                 <line x1="12" x2="12" y1="19" y2="22" />
               </svg>
             </button>
-
-            {/* 右側: アクションボタン */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleShowEvaluation}
-                disabled={isLoadingEvaluation}
-                className={`
-                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
-                  transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
-                  bg-white/20 hover:bg-white/30 text-white
-                `}
-                title="講評を表示"
-              >
-                {isLoadingEvaluation ? '⏳' : '💬'}
-              </button>
-              <button
-                type="button"
-                onClick={handleClear}
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-200 hover:scale-110 bg-white/20 hover:bg-white/30 text-white"
-                title="会話をクリア"
-              >
-                🗑️
-              </button>
-            </div>
           </div>
         </div>
       </footer>
