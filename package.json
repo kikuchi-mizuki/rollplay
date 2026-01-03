@@ -9,6 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@mediapipe/selfie_segmentation": "^0.1.1675465747",
     "@supabase/supabase-js": "^2.81.0",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",

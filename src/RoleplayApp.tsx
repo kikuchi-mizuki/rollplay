@@ -13,6 +13,7 @@ import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl }
 import { useCamera } from './hooks/useCamera'; // Phase 2: カメラアクセス
 import { useScreenShare } from './hooks/useScreenShare'; // Phase 2 Day 3: 画面共有
 import { useRecording } from './hooks/useRecording'; // Phase 2 Day 4: 録画機能
+import { useBackgroundBlur } from './hooks/useBackgroundBlur'; // Phase 2: 背景ぼかし
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -66,6 +67,17 @@ function RoleplayApp() {
     stopCamera,
     getErrorMessage,
   } = useCamera();
+
+  // Phase 2: 背景ぼかし
+  const {
+    isBlurEnabled,
+    toggleBlur,
+    processedStream: blurredStream,
+    isProcessing: isBlurProcessing,
+  } = useBackgroundBlur(_cameraStream);
+
+  // 背景ぼかしが有効な場合は処理済みストリームを使用、それ以外は元のストリームを使用
+  const cameraStream = blurredStream || _cameraStream;
 
   // Phase 2 Day 3: 画面共有
   const {
@@ -1193,7 +1205,7 @@ function RoleplayApp() {
               imageSrc={imageSrc}
               cameraVideoRef={cameraVideoRef}
               isCameraActive={isCameraActive}
-              cameraStream={_cameraStream}
+              cameraStream={cameraStream}
               screenVideoRef={screenVideoRef}
               isScreenSharing={isScreenSharing}
               isVideoRecording={isVideoRecording}
@@ -1283,6 +1295,25 @@ function RoleplayApp() {
                   </div>
                 )}
               </button>
+
+              {/* 背景ぼかしボタン（カメラON時のみ表示） */}
+              {isCameraActive && (
+                <button
+                  onClick={toggleBlur}
+                  disabled={isBlurProcessing}
+                  className={`
+                    w-12 h-12 rounded-full flex items-center justify-center text-xl
+                    transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+                    ${isBlurEnabled
+                      ? 'bg-purple-500/90 text-white hover:bg-purple-600'
+                      : 'bg-white/20 text-white hover:bg-white/30'
+                    }
+                  `}
+                  title={isBlurEnabled ? '背景ぼかしをOFF' : '背景ぼかしをON'}
+                >
+                  {isBlurProcessing ? '⏳' : '🎨'}
+                </button>
+              )}
 
               {/* 画面共有ボタン */}
               <button
