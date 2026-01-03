@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import * as bodySegmentation from '@tensorflow-models/body-segmentation';
-import '@tensorflow/tfjs-core';
+import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 
 /**
@@ -38,11 +38,15 @@ export function useBackgroundBlur(sourceStream: MediaStream | null) {
     try {
       console.log('🎨 背景処理機能を初期化中...');
 
-      // BodySegmentationモデルを読み込み
+      // TensorFlow.jsバックエンドを設定
+      await tf.setBackend('webgl');
+      await tf.ready();
+      console.log('✅ TensorFlow.jsバックエンド準備完了');
+
+      // BodySegmentationモデルを読み込み（TensorFlow.jsネイティブ）
       const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
-      const segmenterConfig: bodySegmentation.MediaPipeSelfieSegmentationMediaPipeModelConfig = {
-        runtime: 'mediapipe',
-        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
+      const segmenterConfig: bodySegmentation.MediaPipeSelfieSegmentationTfjsModelConfig = {
+        runtime: 'tfjs',
         modelType: 'general',
       };
 
