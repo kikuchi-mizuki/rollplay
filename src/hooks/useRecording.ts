@@ -86,9 +86,10 @@ export function useRecording(streams: RecordingStreams) {
    * Canvas合成ストリームを作成
    *
    * Phase 2 Day 6: 画面共有+カメラの合成録画
-   * - 画面共有: 1920×1080（メイン）
-   * - カメラ: 320×180（右下PinP）
+   * - 画面共有: 実際の解像度を使用（メイン）
+   * - カメラ: 1/6サイズ（右下PinP）
    * - 30fpsで描画ループ
+   * - 音声トラックも含める
    */
   const createCompositeStream = useCallback((): MediaStream | null => {
     if (!screenStream || !cameraStream) {
@@ -98,10 +99,18 @@ export function useRecording(streams: RecordingStreams) {
 
     console.log('🎨 Canvas合成ストリーム作成開始...');
 
-    // Canvasを作成
+    // 画面共有の実際の解像度を取得
+    const screenVideoTrack = screenStream.getVideoTracks()[0];
+    const screenSettings = screenVideoTrack?.getSettings();
+    const screenWidth = screenSettings?.width || 1920;
+    const screenHeight = screenSettings?.height || 1080;
+
+    console.log(`  画面共有解像度: ${screenWidth}x${screenHeight}`);
+
+    // Canvasを作成（画面共有の解像度に合わせる）
     const canvas = document.createElement('canvas');
-    canvas.width = 1920;
-    canvas.height = 1080;
+    canvas.width = screenWidth;
+    canvas.height = screenHeight;
     canvasRef.current = canvas;
 
     const ctx = canvas.getContext('2d');
@@ -137,13 +146,13 @@ export function useRecording(streams: RecordingStreams) {
       // video要素が準備できているかチェック
       if (screenVideo.readyState >= 2 && cameraVideo.readyState >= 2) {
         // 画面共有を全画面描画
-        ctx.drawImage(screenVideo, 0, 0, 1920, 1080);
+        ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
 
-        // カメラを右下PinP描画（320×180）
-        const pipWidth = 320;
-        const pipHeight = 180;
-        const pipX = 1920 - pipWidth - 20; // 右から20px
-        const pipY = 1080 - pipHeight - 20; // 下から20px
+        // カメラを右下PinP描画（画面の1/6サイズ）
+        const pipWidth = Math.floor(canvas.width / 6);
+        const pipHeight = Math.floor(canvas.height / 6);
+        const pipX = canvas.width - pipWidth - 20; // 右から20px
+        const pipY = canvas.height - pipHeight - 20; // 下から20px
 
         // PinP背景（黒枠）
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -154,7 +163,7 @@ export function useRecording(streams: RecordingStreams) {
       } else {
         // video要素がまだ準備できていない場合は黒背景を描画
         ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, 1920, 1080);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
       animationFrameRef.current = requestAnimationFrame(drawFrame);
@@ -165,11 +174,33 @@ export function useRecording(streams: RecordingStreams) {
 
     // Canvasからストリームを取得（30fps）
     const compositeStream = canvas.captureStream(30);
+
+    // 音声トラックを追加（画面共有の音声 + カメラの音声）
+    const audioTracks: MediaStreamTrack[] = [];
+
+    // 画面共有の音声トラック
+    const screenAudioTracks = screenStream.getAudioTracks();
+    if (screenAudioTracks.length > 0) {
+      audioTracks.push(...screenAudioTracks);
+      console.log(`  画面共有音声: ${screenAudioTracks.length}トラック追加`);
+    }
+
+    // カメラの音声トラック
+    const cameraAudioTracks = cameraStream.getAudioTracks();
+    if (cameraAudioTracks.length > 0) {
+      audioTracks.push(...cameraAudioTracks);
+      console.log(`  カメラ音声: ${cameraAudioTracks.length}トラック追加`);
+    }
+
+    // 音声トラックを合成ストリームに追加
+    audioTracks.forEach(track => compositeStream.addTrack(track));
+
     compositeStreamRef.current = compositeStream;
 
     console.log('✅ Canvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
-    console.log(`  PinP: ${320}×${180} (右下)`);
+    console.log(`  PinPサイズ: ${Math.floor(canvas.width / 6)}×${Math.floor(canvas.height / 6)} (右下)`);
+    console.log(`  音声トラック数: ${audioTracks.length}`);
 
     return compositeStream;
   }, [screenStream, cameraStream]);
@@ -235,20 +266,22 @@ export function useRecording(streams: RecordingStreams) {
       setRecordingError(null);
 
       // MediaRecorderを作成
-      // WebM形式で録画（VP8/VP9コーデック、Chrome/Firefoxでサポート）
+      // WebM形式で録画（video+audio、VP8/VP9 + Opusコーデック、Chrome/Firefoxでサポート）
       const options: MediaRecorderOptions = {
-        mimeType: 'video/webm;codecs=vp9',
+        mimeType: 'video/webm;codecs=vp9,opus',
+        audioBitsPerSecond: 128000, // 128kbps
+        videoBitsPerSecond: 2500000, // 2.5Mbps
       };
 
-      // VP9がサポートされていない場合はVP8にフォールバック
+      // VP9+Opusがサポートされていない場合はVP8+Opusにフォールバック
       if (!MediaRecorder.isTypeSupported(options.mimeType!)) {
-        console.log('  VP9未対応、VP8を使用');
-        options.mimeType = 'video/webm;codecs=vp8';
+        console.log('  VP9+Opus未対応、VP8+Opusを使用');
+        options.mimeType = 'video/webm;codecs=vp8,opus';
       }
 
-      // VP8も未対応の場合はデフォルトのコーデックを使用
+      // VP8+Opusも未対応の場合はデフォルトのコーデックを使用
       if (!MediaRecorder.isTypeSupported(options.mimeType!)) {
-        console.log('  VP8も未対応、デフォルトコーデックを使用');
+        console.log('  VP8+Opus未対応、デフォルトコーデックを使用');
         delete options.mimeType;
       }
 
