@@ -188,14 +188,19 @@ export function useRecording(streams: RecordingStreams) {
    */
   const startRecording = useCallback(async () => {
     // ストリームの優先順位:
-    // 1. 画面共有+カメラ → Canvas合成
-    // 2. カメラのみ
-    // 3. ストリームなし → エラー
+    // 1. 画面共有のみ → 画面共有ストリームをそのまま録画（アプリ全体録画に最適）
+    // 2. 画面共有+カメラ → Canvas合成（外部資料+カメラPinP）
+    // 3. カメラのみ → カメラストリームを録画
+    // 4. ストリームなし → エラー
     let recordingStream: MediaStream | null = null;
 
-    if (screenStream && cameraStream) {
+    if (screenStream && !cameraStream) {
+      // 画面共有のみ（「このタブ」を共有している場合、アプリ全体が録画される）
+      console.log('🎬 画面共有録画モード（アプリ全体録画）');
+      recordingStream = screenStream;
+    } else if (screenStream && cameraStream) {
       // Canvas合成（画面共有+カメラ）
-      console.log('🎬 Canvas合成録画モード');
+      console.log('🎬 Canvas合成録画モード（外部資料+カメラPinP）');
       recordingStream = createCompositeStream();
       if (!recordingStream) {
         setRecordingError('UnknownError');

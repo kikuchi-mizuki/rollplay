@@ -1233,9 +1233,13 @@ function RoleplayApp() {
             disabled={!isCameraActive && !isScreenSharing}
             className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             title={
-              isCameraActive || isScreenSharing
-                ? (isCameraActive && isScreenSharing ? "録画を開始（Canvas合成）" : "録画を開始")
-                : "カメラまたは画面共有をONにしてください"
+              !isCameraActive && !isScreenSharing
+                ? "カメラまたは画面共有をONにしてください"
+                : isScreenSharing && !isCameraActive
+                ? "録画を開始（画面共有のみ）\n💡「このタブ」を共有している場合、アプリ全体が録画されます"
+                : isScreenSharing && isCameraActive
+                ? "録画を開始（Canvas合成: 画面共有+カメラPinP）"
+                : "録画を開始（カメラのみ）"
             }
           >
             🎬 Start Recording
