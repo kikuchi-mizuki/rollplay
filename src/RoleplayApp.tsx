@@ -54,6 +54,8 @@ function RoleplayApp() {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
   const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
+  const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null); // AI音声出力のキャプチャ用
+  const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream
 
   // Phase 2: カメラアクセス
   const {
@@ -97,7 +99,8 @@ function RoleplayApp() {
     cameraStream,
     screenStream,
     avatarImageSrc: imageSrc, // カメラのみモードでCanvas合成に使用
-  }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター）
+    aiAudioStream, // AI音声出力のストリーム（Web Audio API）
+  }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -692,6 +695,12 @@ function RoleplayApp() {
         await audioContext.resume();
       }
 
+      // MediaStreamDestinationを作成（録画用にAI音声をキャプチャ）
+      const destination = audioContext.createMediaStreamDestination();
+      audioDestinationRef.current = destination;
+      setAiAudioStream(destination.stream);
+      console.log('✅ AI音声出力ストリーム作成完了');
+
       // ダミーの無音バッファを再生して許可を得る
       const buffer = audioContext.createBuffer(1, 1, 22050);
       const source = audioContext.createBufferSource();
@@ -732,7 +741,13 @@ function RoleplayApp() {
         // AudioBufferSourceを作成
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(audioContext.destination);
+        source.connect(audioContext.destination); // スピーカーに出力
+
+        // 録画用にMediaStreamDestinationにも接続
+        if (audioDestinationRef.current) {
+          source.connect(audioDestinationRef.current);
+        }
+
         currentAudioSourceRef.current = source; // 停止用に保存
 
         // 再生終了時のコールバック（メモリクリーンアップ）

@@ -24,6 +24,7 @@ export interface RecordingStreams {
   cameraStream: MediaStream | null;
   screenStream: MediaStream | null;
   avatarImageSrc?: string; // アバター画像のパス（カメラのみモードでCanvas合成に使用）
+  aiAudioStream?: MediaStream | null; // AI音声出力のストリーム（Web Audio API）
 }
 
 /**
@@ -41,7 +42,7 @@ export interface RecordingStreams {
  * @returns 録画状態、制御関数、録画データ
  */
 export function useRecording(streams: RecordingStreams) {
-  const { cameraStream, screenStream, avatarImageSrc } = streams;
+  const { cameraStream, screenStream, avatarImageSrc, aiAudioStream } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -233,12 +234,23 @@ export function useRecording(streams: RecordingStreams) {
     // Canvasからストリームを取得（30fps）
     const compositeStream = canvas.captureStream(30);
 
-    // 音声トラックを追加（カメラの音声）
+    // 音声トラックを追加（カメラの音声 + AI音声）
     const audioTracks: MediaStreamTrack[] = [];
+
+    // カメラの音声トラック
     const cameraAudioTracks = cameraStream.getAudioTracks();
     if (cameraAudioTracks.length > 0) {
       audioTracks.push(...cameraAudioTracks);
       console.log(`  カメラ音声: ${cameraAudioTracks.length}トラック追加`);
+    }
+
+    // AI音声トラック（Web Audio API出力）
+    if (aiAudioStream) {
+      const aiAudioTracks = aiAudioStream.getAudioTracks();
+      if (aiAudioTracks.length > 0) {
+        audioTracks.push(...aiAudioTracks);
+        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
+      }
     }
 
     // 音声トラックを合成ストリームに追加
@@ -249,10 +261,10 @@ export function useRecording(streams: RecordingStreams) {
     console.log('✅ カメラのみCanvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
     console.log(`  アバター: ${avatarImage ? 'あり（左上PinP）' : 'なし'}`);
-    console.log(`  音声トラック数: ${audioTracks.length}`);
+    console.log(`  音声トラック数: ${audioTracks.length} (カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
 
     return compositeStream;
-  }, [cameraStream, avatarImageSrc]);
+  }, [cameraStream, avatarImageSrc, aiAudioStream]);
 
   /**
    * Canvas合成ストリームを作成
@@ -384,7 +396,7 @@ export function useRecording(streams: RecordingStreams) {
     // Canvasからストリームを取得（30fps）
     const compositeStream = canvas.captureStream(30);
 
-    // 音声トラックを追加（画面共有の音声 + カメラの音声）
+    // 音声トラックを追加（画面共有の音声 + カメラの音声 + AI音声）
     const audioTracks: MediaStreamTrack[] = [];
 
     // 画面共有の音声トラック
@@ -401,6 +413,15 @@ export function useRecording(streams: RecordingStreams) {
       console.log(`  カメラ音声: ${cameraAudioTracks.length}トラック追加`);
     }
 
+    // AI音声トラック（Web Audio API出力）
+    if (aiAudioStream) {
+      const aiAudioTracks = aiAudioStream.getAudioTracks();
+      if (aiAudioTracks.length > 0) {
+        audioTracks.push(...aiAudioTracks);
+        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
+      }
+    }
+
     // 音声トラックを合成ストリームに追加
     audioTracks.forEach(track => compositeStream.addTrack(track));
 
@@ -409,10 +430,10 @@ export function useRecording(streams: RecordingStreams) {
     console.log('✅ Canvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
     console.log(`  PinPサイズ: ${Math.floor(canvas.width / 6)}×${Math.floor(canvas.height / 6)} (右下)`);
-    console.log(`  音声トラック数: ${audioTracks.length}`);
+    console.log(`  音声トラック数: ${audioTracks.length} (画面共有${screenAudioTracks.length} + カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
 
     return compositeStream;
-  }, [screenStream, cameraStream]);
+  }, [screenStream, cameraStream, aiAudioStream]);
 
   /**
    * 録画を開始
