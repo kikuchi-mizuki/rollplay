@@ -941,13 +941,13 @@ def chat_stream():
                                 # 句点があり、3文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
-                            elif len(text_buffer) >= 12:
-                                # 12文字以上で接続助詞を探す（速度と自然さの両立）
-                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から', 'し', 'て']
+                            elif len(text_buffer) >= 15:
+                                # 15文字以上で接続助詞を探す（速度と自然さの両立）
+                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から']
                                 best_pos = -1
                                 for conn in connectives:
                                     pos = text_buffer.rfind(conn)
-                                    if pos > best_pos and pos >= 5:  # 最低5文字
+                                    if pos > best_pos and pos >= 8:  # 最低8文字
                                         best_pos = pos + len(conn)
                                 if best_pos > 0:
                                     should_send = True
@@ -958,13 +958,13 @@ def chat_stream():
                                 # 句点があり、3文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
-                            elif len(text_buffer) >= 18:
-                                # 18文字以上で接続助詞を探す
-                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から', 'し', 'て']
+                            elif len(text_buffer) >= 25:
+                                # 25文字以上で接続助詞を探す
+                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から']
                                 best_pos = -1
                                 for conn in connectives:
                                     pos = text_buffer.rfind(conn)
-                                    if pos > best_pos and pos >= 8:  # 最低8文字
+                                    if pos > best_pos and pos >= 12:  # 最低12文字
                                         best_pos = pos + len(conn)
                                 if best_pos > 0:
                                     should_send = True
@@ -973,11 +973,11 @@ def chat_stream():
                         if should_send:
                             if delimiter == 'connective':
                                 # 接続助詞の位置で切る（特殊処理）
-                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から', 'し', 'て']
+                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から']
                                 best_pos = -1
                                 for conn in connectives:
                                     pos = text_buffer.rfind(conn)
-                                    if pos > best_pos and pos >= 5:
+                                    if pos > best_pos and pos >= 8:
                                         best_pos = pos + len(conn)
 
                                 if best_pos > 0:
