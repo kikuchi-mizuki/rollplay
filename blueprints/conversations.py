@@ -436,9 +436,9 @@ def chat():
 
                 messages = [{"role": "system", "content": system_prompt}]
 
-                # 🎯 文脈理解改善: 会話履歴を拡張（10件→20件）
-                # より長い文脈を保持することで、過去の発言を参照した応答が可能に
-                for msg in conversation_history[-20:]:  # 最新20件まで（文脈拡張）
+                # 🎯 文脈理解改善: 会話履歴（応答速度とのバランス：20→15件）
+                # テンポの良い会話のため、トークン数を削減
+                for msg in conversation_history[-15:]:  # 最新15件まで（速度重視）
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -483,8 +483,8 @@ def chat():
                             search_query += f"\n重要トピック: {', '.join(current_topics)}"
                             logger.debug(f"[RAG文脈強化] 検出トピック: {', '.join(current_topics)}")
 
-                        # 類似パターンを検索（シナリオIDでフィルタリング、より多くの実例を参照）
-                        rag_results = search_rag_patterns(search_query, top_k=15, scenario_id=scenario_id)
+                        # 類似パターンを検索（シナリオIDでフィルタリング、応答速度重視で削減：15→5）
+                        rag_results = search_rag_patterns(search_query, top_k=5, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             pattern_count = 0
@@ -510,7 +510,7 @@ def chat():
                                     rag_patterns.append(f"- [{type_label}] {pattern_text[:300]}")
                                     pattern_count += 1
                                     logger.debug(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
-                                    if pattern_count >= 7:  # 最大7パターン
+                                    if pattern_count >= 3:  # 応答速度重視で削減（7→3）
                                         break
 
                             if rag_patterns:
@@ -549,7 +549,7 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=120,         # 文章を完結させるために増量（80→120）
+                    max_tokens=80,          # テンポ重視で簡潔に（120→80）
                     temperature=0.7,        # 応答速度優先（0.9→0.7に下げて高速化）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
@@ -840,8 +840,8 @@ def chat_stream():
 
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"]) + topic_emphasis
 
-                        # top_k=15（より多くのバリエーションを取得：10→15に拡大）
-                        rag_results = search_rag_patterns(search_query, top_k=15, scenario_id=scenario_id)
+                        # top_k=5（応答速度重視で削減：15→5）
+                        rag_results = search_rag_patterns(search_query, top_k=5, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             pattern_count = 0
@@ -867,7 +867,7 @@ def chat_stream():
                                         rag_patterns.append(f"- {customer_only_text[:300]}")  # 300文字まで（リアル感を保つ）
                                         pattern_count += 1
                                         logger.debug(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
-                                        if pattern_count >= 7:  # 最大7パターンまで（バリエーション重視）
+                                        if pattern_count >= 3:  # 応答速度重視で削減（7→3）
                                             break
 
                             if rag_patterns:
@@ -895,8 +895,8 @@ def chat_stream():
 
                 messages = [{"role": "system", "content": system_prompt}]
 
-                # 🎯 文脈理解改善: 会話履歴を拡張（10件→20件）
-                for msg in conversation_history[-20:]:  # 最新20件まで（文脈拡張）
+                # 🎯 文脈理解改善: 会話履歴（応答速度とのバランス：20→15件）
+                for msg in conversation_history[-15:]:  # 最新15件まで（速度重視）
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -910,7 +910,7 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=120,         # 文章を完結させるために増量（80→120）
+                    max_tokens=80,          # テンポ重視で簡潔に（120→80）
                     temperature=0.7,        # 応答速度優先（0.9→0.7に下げて高速化）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
