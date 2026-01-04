@@ -97,18 +97,18 @@ export function Composer({
       )}
 
       {/* 入力エリア */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* 会話モードボタン（VAD） */}
         <button
           type="button"
           onClick={onToggleVAD}
-          className={`btn-icon flex-shrink-0 ${
+          className={`btn-icon flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 ${
             isVADMode ? 'bg-danger hover:bg-danger/90 animate-pulse' : ''
           }`}
           aria-pressed={isVADMode}
           aria-label={isVADMode ? '会話モード停止' : '会話モード開始'}
         >
-          <Mic size={20} />
+          <Mic size={18} className="sm:w-5 sm:h-5" />
         </button>
 
         {/* テキスト入力 */}
@@ -117,8 +117,8 @@ export function Composer({
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="メッセージを入力... (Cmd/Ctrl + Enter で送信)"
-          className="flex-1 resize-none bg-transparent text-white placeholder:text-slate-400 leading-6 focus:outline-none min-h-[44px] max-h-32 overflow-y-auto"
+          placeholder="メッセージを入力..."
+          className="flex-1 resize-none bg-transparent text-white placeholder:text-slate-400 text-sm sm:text-base leading-6 focus:outline-none min-h-[40px] sm:min-h-[44px] max-h-32 overflow-y-auto px-1"
           rows={1}
           maxLength={2000}
           aria-label="メッセージ入力"
@@ -129,46 +129,49 @@ export function Composer({
           type="button"
           onClick={handleSend}
           disabled={!canSend}
-          className="btn-primary flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="送信"
         >
           {isSending ? (
-            <Loader2 size={20} className="animate-spin" />
+            <Loader2 size={18} className="animate-spin sm:w-5 sm:h-5" />
           ) : (
-            <Send size={20} />
+            <Send size={18} className="sm:w-5 sm:h-5" />
           )}
         </button>
       </div>
 
       {/* サブアクション */}
-      <div className="flex items-center gap-3 mt-3">
+      <div className="flex items-center gap-2 sm:gap-3 mt-3 flex-wrap">
         <button
           type="button"
           onClick={onShowEvaluation}
           disabled={isLoadingEvaluation}
-          className="btn btn-secondary text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-secondary text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none min-w-[120px]"
           aria-label="講評を表示"
         >
           {isLoadingEvaluation ? (
             <>
-              <Loader2 size={14} className="mr-1.5 animate-spin" />
-              考え中...
+              <Loader2 size={14} className="mr-1 sm:mr-1.5 animate-spin" />
+              <span className="hidden sm:inline">考え中...</span>
+              <span className="sm:hidden">考え中</span>
             </>
           ) : (
             <>
-              <MessageSquare size={14} className="mr-1.5" />
-              講評を見る
+              <MessageSquare size={14} className="mr-1 sm:mr-1.5" />
+              <span className="hidden sm:inline">講評を見る</span>
+              <span className="sm:hidden">講評</span>
             </>
           )}
         </button>
         <button
           type="button"
           onClick={onClear}
-          className="btn btn-secondary text-xs md:text-sm"
+          className="btn btn-secondary text-xs sm:text-sm flex-1 sm:flex-none min-w-[100px]"
           aria-label="会話をクリア"
         >
-          <Trash2 size={14} className="mr-1.5" />
-          会話をクリア
+          <Trash2 size={14} className="mr-1 sm:mr-1.5" />
+          <span className="hidden sm:inline">会話をクリア</span>
+          <span className="sm:hidden">クリア</span>
         </button>
       </div>
     </div>
