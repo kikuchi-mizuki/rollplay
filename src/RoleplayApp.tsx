@@ -795,13 +795,19 @@ function RoleplayApp() {
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
 
+        // AI音声専用のGainNodeを作成して音量を増幅（録音用に最適化）
+        const aiVolumeGain = audioContext.createGain();
+        aiVolumeGain.gain.value = 2.0; // AI音声を2倍に増幅（録音で聞こえやすくする）
+
         // AI音声ミキサーGainNodeに接続（常時接続されているので、ここに流すだけで録音される）
         if (aiMixerGainNodeRef.current) {
-          source.connect(aiMixerGainNodeRef.current);
-          console.log('🎙️ AI音声をミキサーGainNodeに接続しました（録音対応）');
+          source.connect(aiVolumeGain);
+          aiVolumeGain.connect(aiMixerGainNodeRef.current);
+          console.log('🎙️ AI音声をミキサーGainNodeに接続しました（音量2.0倍増幅・録音対応）');
         } else {
           // フォールバック：ミキサーがない場合は直接スピーカーに接続
-          source.connect(audioContext.destination);
+          source.connect(aiVolumeGain);
+          aiVolumeGain.connect(audioContext.destination);
           console.warn('⚠️ ミキサーGainNodeが未初期化、直接スピーカーに接続');
         }
 
