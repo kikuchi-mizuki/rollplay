@@ -750,13 +750,15 @@ function RoleplayApp() {
       setAiAudioStream(recordingDestination.stream);
       console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続）');
 
-      // ダミーの無音バッファを再生してMediaStreamDestinationをアクティブ化
-      const buffer = audioContext.createBuffer(1, 1, 22050);
-      const source = audioContext.createBufferSource();
-      source.buffer = buffer;
-      source.connect(mixerGain); // ミキサー経由で接続
-      source.start(0);
-      console.log('🔇 MediaStreamDestinationをアクティブ化（GainNodeミキサー経由 - 録画用）');
+      // 極めて低い音量の連続信号でMediaStreamDestinationを常時アクティブ化
+      // (OscillatorNodeは停止するまで永続的に動作する)
+      const oscillator = audioContext.createOscillator();
+      const silenceGain = audioContext.createGain();
+      silenceGain.gain.value = 0.00001; // ほぼ無音（完全な0だと効果がない）
+      oscillator.connect(silenceGain);
+      silenceGain.connect(mixerGain);
+      oscillator.start();
+      console.log('🔇 MediaStreamDestinationをアクティブ化（極小音量の連続信号）');
 
       setAudioInitialized(true);
       console.log('✅ Web Audio API初期化成功');
