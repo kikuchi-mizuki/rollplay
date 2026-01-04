@@ -33,6 +33,10 @@ MAX_MESSAGE_LENGTH = 2000  # デフォルト値
 MAX_HISTORY_LENGTH = 50
 MAX_EVALUATION_TEXT_LENGTH = 10000
 
+# ペルソナキャッシュ（セッション単位でペルソナを保持）
+# {scenario_id: {persona_data, created_at}}
+persona_cache = {}
+
 
 def init_blueprint(app):
     """

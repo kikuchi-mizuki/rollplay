@@ -779,14 +779,23 @@ function RoleplayApp() {
         // ArrayBufferをAudioBufferにデコード
         const audioBuffer = await audioContext.decodeAudioData(audioData.slice(0));
 
-        // AudioBufferSourceを作成
+        // AudioBufferSourceを作成（毎回新規作成が必要）
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(audioContext.destination); // スピーカーに出力
 
-        // 録画用にMediaStreamDestinationにも接続
+        // GainNodeを作成（音量調整と録音用の分岐に使用）
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 1.0; // 音量100%
+
+        // 接続順序: AudioBufferSource → GainNode → スピーカー
+        source.connect(gainNode);
+        gainNode.connect(audioContext.destination); // スピーカーに出力
+
+        // 録画用にMediaStreamDestinationにも接続（GainNodeから分岐）
+        // これにより、同じ音声が確実に録音される
         if (audioDestinationRef.current) {
-          source.connect(audioDestinationRef.current);
+          gainNode.connect(audioDestinationRef.current);
+          console.log('🎙️ AI音声をMediaStreamDestinationに接続しました');
         }
 
         currentAudioSourceRef.current = source; // 停止用に保存
@@ -796,6 +805,7 @@ function RoleplayApp() {
           // メモリリーク防止：明示的にdisconnectして参照をクリア
           try {
             source.disconnect();
+            gainNode.disconnect();
             source.buffer = null;
           } catch (e) {
             // 既にdisconnect済みの場合はエラーを無視
@@ -806,7 +816,7 @@ function RoleplayApp() {
 
         // 再生開始
         source.start(0);
-        console.log('🔊 Web Audio APIで音声再生開始');
+        console.log('🔊 Web Audio APIで音声再生開始（録音対応）');
       } catch (error) {
         console.error('❌ Web Audio API音声再生失敗:', error);
         currentAudioSourceRef.current = null;
