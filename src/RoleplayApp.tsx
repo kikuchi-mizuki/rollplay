@@ -736,7 +736,7 @@ function RoleplayApp() {
 
       // AI音声ミキサー用のGainNodeを作成（常時接続）
       const mixerGain = audioContext.createGain();
-      mixerGain.gain.value = 1.0;
+      mixerGain.gain.setValueAtTime(1.0, audioContext.currentTime); // 即座に適用
       aiMixerGainNodeRef.current = mixerGain;
 
       // GainNodeをスピーカーに接続
@@ -749,6 +749,9 @@ function RoleplayApp() {
 
       setAiAudioStream(recordingDestination.stream);
       console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続）');
+      console.log(`   - ミキサーGain値: ${mixerGain.gain.value}`);
+      console.log(`   - MediaStreamDestination作成: active=${recordingDestination.stream.active}`);
+      console.log(`   - 音声トラック数: ${recordingDestination.stream.getAudioTracks().length}`);
 
       // 極めて低い音量の連続信号でMediaStreamDestinationを常時アクティブ化
       // (OscillatorNodeは停止するまで永続的に動作する)
@@ -797,13 +800,25 @@ function RoleplayApp() {
 
         // AI音声専用のGainNodeを作成して音量を増幅（録音用に最適化）
         const aiVolumeGain = audioContext.createGain();
-        aiVolumeGain.gain.value = 2.0; // AI音声を2倍に増幅（録音で聞こえやすくする）
+
+        // 🔧 gain値を設定（即座に適用）
+        aiVolumeGain.gain.setValueAtTime(4.0, audioContext.currentTime); // AI音声を4倍に増幅
+
+        console.log(`🔊 [DEBUG] AI音声GainNode作成: gain=${aiVolumeGain.gain.value}`);
 
         // AI音声ミキサーGainNodeに接続（常時接続されているので、ここに流すだけで録音される）
         if (aiMixerGainNodeRef.current) {
           source.connect(aiVolumeGain);
           aiVolumeGain.connect(aiMixerGainNodeRef.current);
-          console.log('🎙️ AI音声をミキサーGainNodeに接続しました（音量2.0倍増幅・録音対応）');
+
+          // デバッグ: ミキサーとDestinationの状態確認
+          console.log('🎙️ AI音声をミキサーGainNodeに接続しました（音量4.0倍増幅・録音対応）');
+          console.log(`   - ミキサーGain値: ${aiMixerGainNodeRef.current.gain.value}`);
+          console.log(`   - Destination接続数: ${aiMixerGainNodeRef.current.numberOfOutputs}`);
+          if (audioDestinationRef.current) {
+            console.log(`   - MediaStreamDestination状態: ${audioDestinationRef.current.stream.active ? 'active' : 'inactive'}`);
+            console.log(`   - 音声トラック数: ${audioDestinationRef.current.stream.getAudioTracks().length}`);
+          }
         } else {
           // フォールバック：ミキサーがない場合は直接スピーカーに接続
           source.connect(aiVolumeGain);
