@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type React from 'react';
+import RecordRTC from 'recordrtc';
 
 /**
  * 録画のエラータイプ
@@ -52,9 +53,11 @@ export function useRecording(streams: RecordingStreams) {
   const [recordingData, setRecordingData] = useState<RecordingData | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordRTCRef = useRef<RecordRTC | null>(null); // RecordRTCレコーダー
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recordingTimeRef = useRef<number>(0); // クロージャー問題を回避するためのRef
+  const useRecordRTC = useRef<boolean>(true); // RecordRTCを使用するかどうか（AI音声録音問題の対策）
 
   // Phase 2 Day 6: Canvas合成用のRef
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -579,6 +582,52 @@ export function useRecording(streams: RecordingStreams) {
       setRecordingData(null);
       setRecordingError(null);
 
+      // RecordRTCを使用する場合（AI音声録音問題の対策）
+      if (useRecordRTC.current) {
+        console.log('🎬 [RecordRTC] 録画開始...');
+
+        const recorder = new RecordRTC(recordingStream, {
+          type: 'video',
+          mimeType: 'video/webm;codecs=vp9' as any, // RecordRTC型定義の制限を回避
+          recorderType: RecordRTC.MediaStreamRecorder,
+          audioBitsPerSecond: 128000,
+          videoBitsPerSecond: 2500000,
+          // RecordRTC特有のオプション
+          timeSlice: 1000, // 1秒ごとにondataavailableを発火
+          ondataavailable: (blob: Blob) => {
+            chunksRef.current.push(blob);
+            console.log(`📦 [RecordRTC] ondataavailable:`);
+            console.log(`   - データサイズ: ${blob.size} bytes (${(blob.size / 1024).toFixed(2)} KB)`);
+            console.log(`   - 累積チャンク数: ${chunksRef.current.length}`);
+          },
+        });
+
+        recordRTCRef.current = recorder;
+
+        recorder.startRecording();
+        setIsRecording(true);
+
+        console.log('✅ [RecordRTC] 録画開始成功');
+        console.log(`  MIMEタイプ: video/webm;codecs=vp9,opus`);
+
+        // 映像トラック情報
+        const videoTrack = recordingStream.getVideoTracks()[0];
+        if (videoTrack) {
+          const settings = videoTrack.getSettings();
+          console.log(`  映像解像度: ${settings.width}x${settings.height}`);
+        }
+
+        // 音声トラック情報
+        const audioTracksInStream = recordingStream.getAudioTracks();
+        console.log(`  音声トラック数: ${audioTracksInStream.length}`);
+        audioTracksInStream.forEach((track, i) => {
+          console.log(`    音声トラック[${i}]: label="${track.label}", enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+        });
+
+        return;
+      }
+
+      // 以下は従来のMediaRecorderを使用する場合
       // MediaRecorderを作成
       // WebM形式で録画（video+audio、VP8/VP9 + Opusコーデック、Chrome/Firefoxでサポート）
       const options: MediaRecorderOptions = {
@@ -704,6 +753,51 @@ export function useRecording(streams: RecordingStreams) {
    * Phase 2 Day 6: Canvas合成のクリーンアップも実施
    */
   const stopRecording = useCallback(() => {
+    // RecordRTCを使用している場合
+    if (recordRTCRef.current && isRecording) {
+      console.log('🛑 [RecordRTC] 録画停止中...');
+
+      recordRTCRef.current.stopRecording(() => {
+        const blob = recordRTCRef.current!.getBlob();
+        const duration = recordingTimeRef.current;
+        const timestamp = new Date();
+
+        console.log('✅ [RecordRTC] 録画停止完了');
+        console.log(`   - 録画時間: ${duration}秒`);
+        console.log(`   - Blobサイズ: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+        console.log(`   - Blobタイプ: ${blob.type}`);
+
+        setRecordingData({
+          blob,
+          duration,
+          timestamp,
+        });
+
+        // RecordRTCインスタンスを破棄
+        recordRTCRef.current!.destroy();
+        recordRTCRef.current = null;
+      });
+
+      setIsRecording(false);
+
+      // Canvas描画ループ停止
+      if (animationFrameRef.current) {
+        console.log('  Canvas描画ループ停止');
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+
+      // Canvas合成ストリーム停止
+      if (compositeStreamRef.current) {
+        console.log('  Canvas合成ストリーム停止');
+        compositeStreamRef.current.getTracks().forEach(track => track.stop());
+        compositeStreamRef.current = null;
+      }
+
+      return;
+    }
+
+    // 従来のMediaRecorderの場合
     if (mediaRecorderRef.current && isRecording) {
       console.log('🛑 録画停止中...');
       mediaRecorderRef.current.stop();
