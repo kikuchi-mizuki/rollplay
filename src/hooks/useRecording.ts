@@ -267,12 +267,13 @@ export function useRecording(streams: RecordingStreams) {
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        audioTracks.push(...aiAudioTracks);
-        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
-        // AI音声トラックの状態を確認
+        // AI音声トラックを有効化
         aiAudioTracks.forEach((track, i) => {
+          track.enabled = true; // 明示的に有効化
           console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
         });
+        audioTracks.push(...aiAudioTracks);
+        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（有効化済み）`);
       } else {
         console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
@@ -281,14 +282,20 @@ export function useRecording(streams: RecordingStreams) {
     }
 
     // 音声トラックを合成ストリームに追加
-    audioTracks.forEach(track => compositeStream.addTrack(track));
+    audioTracks.forEach(track => {
+      track.enabled = true; // 全トラックを確実に有効化
+      compositeStream.addTrack(track);
+    });
 
     compositeStreamRef.current = compositeStream;
+
+    // AI音声トラック数を正しく計算（実際に追加されたトラック数）
+    const actualAiAudioCount = audioTracks.length - cameraAudioTracks.length;
 
     console.log('✅ カメラのみCanvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
     console.log(`  アバター: ${avatarImage ? 'あり（左上PinP）' : 'なし'}`);
-    console.log(`  音声トラック数: ${audioTracks.length} (カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
+    console.log(`  音声トラック数: ${audioTracks.length} (カメラ${cameraAudioTracks.length} + AI${actualAiAudioCount})`);
 
     return compositeStream;
   }, [cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
@@ -446,12 +453,13 @@ export function useRecording(streams: RecordingStreams) {
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        audioTracks.push(...aiAudioTracks);
-        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加`);
-        // AI音声トラックの状態を確認
+        // AI音声トラックを有効化
         aiAudioTracks.forEach((track, i) => {
+          track.enabled = true; // 明示的に有効化
           console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
         });
+        audioTracks.push(...aiAudioTracks);
+        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（有効化済み）`);
       } else {
         console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
@@ -460,14 +468,20 @@ export function useRecording(streams: RecordingStreams) {
     }
 
     // 音声トラックを合成ストリームに追加
-    audioTracks.forEach(track => compositeStream.addTrack(track));
+    audioTracks.forEach(track => {
+      track.enabled = true; // 全トラックを確実に有効化
+      compositeStream.addTrack(track);
+    });
 
     compositeStreamRef.current = compositeStream;
+
+    // AI音声トラック数を正しく計算（実際に追加されたトラック数）
+    const actualAiAudioCount = audioTracks.length - screenAudioTracks.length - cameraAudioTracks.length;
 
     console.log('✅ Canvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
     console.log(`  PinPサイズ: ${Math.floor(canvas.width / 6)}×${Math.floor(canvas.height / 6)} (右下)`);
-    console.log(`  音声トラック数: ${audioTracks.length} (画面共有${screenAudioTracks.length} + カメラ${cameraAudioTracks.length} + AI${aiAudioStream?.getAudioTracks().length || 0})`);
+    console.log(`  音声トラック数: ${audioTracks.length} (画面共有${screenAudioTracks.length} + カメラ${cameraAudioTracks.length} + AI${actualAiAudioCount})`);
 
     return compositeStream;
   }, [screenStream, cameraStream, aiAudioStream, audioDestinationRef]);
@@ -624,11 +638,20 @@ export function useRecording(streams: RecordingStreams) {
 
       console.log('✅ 録画開始成功');
       console.log(`  MIMEタイプ: ${mediaRecorder.mimeType}`);
+
+      // 映像トラック情報
       const videoTrack = recordingStream.getVideoTracks()[0];
       if (videoTrack) {
         const settings = videoTrack.getSettings();
-        console.log(`  解像度: ${settings.width}x${settings.height}`);
+        console.log(`  映像解像度: ${settings.width}x${settings.height}`);
       }
+
+      // 音声トラック情報
+      const audioTracksInStream = recordingStream.getAudioTracks();
+      console.log(`  音声トラック数: ${audioTracksInStream.length}`);
+      audioTracksInStream.forEach((track, i) => {
+        console.log(`    音声トラック[${i}]: label="${track.label}", enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+      });
 
     } catch (error: any) {
       console.error('❌ 録画開始エラー:', error);
