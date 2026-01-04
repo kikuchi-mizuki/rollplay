@@ -902,6 +902,52 @@ def ingest_videos():
             'error': '動画取り込み処理中にエラーが発生しました'
         }), 500
 
+# ===== Swagger UI エンドポイント =====
+@app.route('/api/docs')
+def api_docs():
+    """Swagger UI for API documentation"""
+    return '''
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>API Documentation - 営業ロープレシステム</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+    <style>
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: '/api/openapi.yaml',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout"
+            });
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>
+    '''
+
+@app.route('/api/openapi.yaml')
+def openapi_spec():
+    """OpenAPI 3.0 specification file"""
+    from flask import send_file
+    import os
+    spec_path = os.path.join(os.path.dirname(__file__), 'docs', 'openapi.yaml')
+    return send_file(spec_path, mimetype='text/yaml')
+
 # ===== 静的ファイルBlueprint（最後に登録 - キャッチオールルートのため） =====
 app.register_blueprint(static_bp)
 init_static_blueprint(app)

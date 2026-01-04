@@ -1,0 +1,947 @@
+openapi: 3.0.3
+info:
+  title: 営業ロープレ自動化システム API
+  description: |
+    AIが顧客役を演じ、営業トレーニングを自動化するシステムのAPI仕様書。
+
+    ## 主な機能
+    - 音声認識（Whisper API）
+    - 対話生成（GPT-4）
+    - 音声合成（TTS）
+    - 会話履歴管理
+    - 評価・フィードバック生成
+    - RAG検索による応答最適化
+    - 店舗・メンバー管理
+    - 統計・分析機能
+
+  version: 1.0.0
+  contact:
+    name: Development Team
+servers:
+  - url: http://localhost:5001
+    description: ローカル開発環境
+  - url: https://api.roleplay.example.com
+    description: 本番環境（未設定）
+
+tags:
+  - name: Conversations
+    description: 会話管理API
+  - name: Evaluations
+    description: 評価管理API
+  - name: Media
+    description: メディア処理API（音声認識・TTS）
+  - name: Scenarios
+    description: シナリオ管理API
+  - name: Admin
+    description: 管理者機能API
+  - name: Static
+    description: 静的ファイル配信
+
+paths:
+  /api/chat:
+    post:
+      tags:
+        - Conversations
+      summary: AI会話応答（通常版）
+      description: ユーザーのメッセージに対してAIが応答を生成します（ストリーミングなし）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - scenario_id
+              properties:
+                message:
+                  type: string
+                  description: ユーザーのメッセージ
+                  example: "こんにちは、動画制作についてお聞きしたいです"
+                scenario_id:
+                  type: string
+                  description: シナリオID
+                  example: "meeting_1st"
+                history:
+                  type: array
+                  description: 会話履歴
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, bot]
+                      text:
+                        type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  response:
+                    type: string
+                    example: "はい、どういった内容でしょうか？"
+        '400':
+          description: リクエストエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/chat-stream:
+    post:
+      tags:
+        - Conversations
+      summary: AI会話応答（ストリーミング版）
+      description: ユーザーのメッセージに対してAIが応答をストリーミングで生成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - scenario_id
+              properties:
+                message:
+                  type: string
+                  description: ユーザーのメッセージ
+                scenario_id:
+                  type: string
+                  description: シナリオID
+                history:
+                  type: array
+                  description: 会話履歴
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, bot]
+                      text:
+                        type: string
+      responses:
+        '200':
+          description: 成功（Server-Sent Events）
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE形式でストリーミングデータを返します
+        '400':
+          description: リクエストエラー
+        '500':
+          description: サーバーエラー
+
+  /api/evaluate:
+    post:
+      tags:
+        - Conversations
+      summary: 会話を評価
+      description: 会話履歴に基づいて営業パフォーマンスを評価します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_id
+                - history
+              properties:
+                scenario_id:
+                  type: string
+                  description: シナリオID
+                history:
+                  type: array
+                  description: 会話履歴
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                      text:
+                        type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  evaluation:
+                    $ref: '#/components/schemas/Evaluation'
+        '400':
+          description: リクエストエラー
+        '500':
+          description: サーバーエラー
+
+  /api/conversations:
+    get:
+      tags:
+        - Conversations
+      summary: 会話履歴一覧取得
+      description: ユーザーの会話履歴一覧を取得します
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: string
+          description: ユーザーID
+        - name: store_id
+          in: query
+          schema:
+            type: string
+          description: 店舗ID
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+          description: 取得件数
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  conversations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversation'
+        '500':
+          description: サーバーエラー
+
+    post:
+      tags:
+        - Conversations
+      summary: 会話履歴を保存
+      description: 会話履歴をデータベースに保存します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  id:
+                    type: string
+                    description: 作成された会話ID
+        '400':
+          description: リクエストエラー
+        '500':
+          description: サーバーエラー
+
+  /api/evaluations:
+    get:
+      tags:
+        - Evaluations
+      summary: 評価履歴一覧取得
+      description: 評価履歴一覧を取得します
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: string
+        - name: store_id
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  evaluations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Evaluation'
+
+    post:
+      tags:
+        - Evaluations
+      summary: 評価を保存
+      description: 評価結果をデータベースに保存します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationCreate'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  id:
+                    type: string
+
+  /api/instructor-evaluations:
+    get:
+      tags:
+        - Evaluations
+      summary: 講師評価一覧取得
+      description: 講師による評価一覧を取得します
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  evaluations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InstructorEvaluation'
+
+    post:
+      tags:
+        - Evaluations
+      summary: 講師評価を保存
+      description: 講師による評価を保存します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstructorEvaluationCreate'
+      responses:
+        '200':
+          description: 成功
+
+  /api/evaluation-accuracy:
+    get:
+      tags:
+        - Evaluations
+      summary: 評価精度分析
+      description: AI評価と講師評価の精度を分析します
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  accuracy:
+                    type: object
+                    properties:
+                      correlation:
+                        type: number
+                        description: 相関係数
+                      average_difference:
+                        type: number
+                        description: 平均差分
+
+  /api/tts:
+    post:
+      tags:
+        - Media
+      summary: 音声合成（TTS）
+      description: テキストから音声を生成します（OpenAI TTS API使用）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: 音声合成するテキスト
+                  example: "こんにちは、AIアシスタントです"
+                voice:
+                  type: string
+                  description: 音声ID
+                  enum: [alloy, echo, fable, onyx, nova, shimmer]
+                  default: alloy
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  audio_url:
+                    type: string
+                    description: 生成された音声ファイルのURL
+        '400':
+          description: リクエストエラー
+        '500':
+          description: サーバーエラー
+
+  /api/transcribe:
+    post:
+      tags:
+        - Media
+      summary: 音声認識（Whisper）
+      description: 音声ファイルをテキストに変換します（OpenAI Whisper API使用）
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - audio
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                  description: 音声ファイル（WAV, MP3, M4A等）
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  text:
+                    type: string
+                    description: 認識されたテキスト
+        '400':
+          description: リクエストエラー
+        '500':
+          description: サーバーエラー
+
+  /api/scenarios:
+    get:
+      tags:
+        - Scenarios
+      summary: シナリオ一覧取得
+      description: 利用可能なシナリオの一覧を取得します
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  scenarios:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ScenarioSummary'
+
+  /api/scenarios/{scenario_id}:
+    get:
+      tags:
+        - Scenarios
+      summary: シナリオ詳細取得
+      description: 指定されたシナリオの詳細情報を取得します
+      parameters:
+        - name: scenario_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: シナリオID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  scenario:
+                    $ref: '#/components/schemas/Scenario'
+        '404':
+          description: シナリオが見つかりません
+
+  /api/admin/stores/stats:
+    get:
+      tags:
+        - Admin
+      summary: 店舗統計取得
+      description: 全店舗の統計情報を取得します
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  stats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreStats'
+
+  /api/admin/stores/rankings:
+    get:
+      tags:
+        - Admin
+      summary: 店舗ランキング取得
+      description: 店舗別のランキングを取得します
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  rankings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreRanking'
+
+  /api/stores/{store_id}/members:
+    get:
+      tags:
+        - Admin
+      summary: 店舗メンバー一覧取得
+      description: 指定店舗のメンバー一覧を取得します
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  members:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Member'
+
+  /api/admin/regions/stats:
+    get:
+      tags:
+        - Admin
+      summary: 地域別統計取得
+      description: 地域別の統計情報を取得します
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  stats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegionStats'
+
+  /api/stores/{store_id}/analytics:
+    get:
+      tags:
+        - Admin
+      summary: 店舗分析データ取得
+      description: 指定店舗の詳細分析データを取得します
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  analytics:
+                    $ref: '#/components/schemas/StoreAnalytics'
+
+  /api/admin/export/evaluations:
+    get:
+      tags:
+        - Admin
+      summary: 評価データCSVエクスポート
+      description: 評価データをCSV形式でエクスポートします
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /api/admin/export/stores:
+    get:
+      tags:
+        - Admin
+      summary: 店舗データCSVエクスポート
+      description: 店舗データをCSV形式でエクスポートします
+      responses:
+        '200':
+          description: 成功
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /api/clear-cache:
+    post:
+      tags:
+        - Admin
+      summary: キャッシュクリア
+      description: システムキャッシュをクリアします
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "エラーメッセージ"
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        store_id:
+          type: string
+        scenario_id:
+          type: string
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              text:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    ConversationCreate:
+      type: object
+      required:
+        - user_id
+        - scenario_id
+        - messages
+      properties:
+        user_id:
+          type: string
+        store_id:
+          type: string
+        scenario_id:
+          type: string
+        messages:
+          type: array
+          items:
+            type: object
+
+    Evaluation:
+      type: object
+      properties:
+        id:
+          type: string
+        conversation_id:
+          type: string
+        user_id:
+          type: string
+        scenario_id:
+          type: string
+        total_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        criteria_scores:
+          type: object
+          additionalProperties:
+            type: number
+        feedback:
+          type: string
+        strengths:
+          type: array
+          items:
+            type: string
+        improvements:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+
+    EvaluationCreate:
+      type: object
+      required:
+        - conversation_id
+        - user_id
+        - scenario_id
+        - total_score
+      properties:
+        conversation_id:
+          type: string
+        user_id:
+          type: string
+        scenario_id:
+          type: string
+        total_score:
+          type: number
+        criteria_scores:
+          type: object
+        feedback:
+          type: string
+
+    InstructorEvaluation:
+      type: object
+      properties:
+        id:
+          type: string
+        conversation_id:
+          type: string
+        instructor_id:
+          type: string
+        score:
+          type: number
+        comments:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    InstructorEvaluationCreate:
+      type: object
+      required:
+        - conversation_id
+        - instructor_id
+        - score
+      properties:
+        conversation_id:
+          type: string
+        instructor_id:
+          type: string
+        score:
+          type: number
+        comments:
+          type: string
+
+    Scenario:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        customer_persona:
+          type: object
+        evaluation_criteria:
+          type: object
+
+    ScenarioSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+
+    StoreStats:
+      type: object
+      properties:
+        store_id:
+          type: string
+        store_name:
+          type: string
+        total_conversations:
+          type: integer
+        average_score:
+          type: number
+        member_count:
+          type: integer
+
+    StoreRanking:
+      type: object
+      properties:
+        rank:
+          type: integer
+        store_id:
+          type: string
+        store_name:
+          type: string
+        average_score:
+          type: number
+        total_conversations:
+          type: integer
+
+    Member:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        total_conversations:
+          type: integer
+        average_score:
+          type: number
+
+    RegionStats:
+      type: object
+      properties:
+        region:
+          type: string
+        store_count:
+          type: integer
+        total_conversations:
+          type: integer
+        average_score:
+          type: number
+
+    StoreAnalytics:
+      type: object
+      properties:
+        store_id:
+          type: string
+        performance_trend:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              average_score:
+                type: number
+        scenario_breakdown:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              count:
+                type: integer
+              average_score:
+                type: number
