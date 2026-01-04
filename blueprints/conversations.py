@@ -300,7 +300,7 @@ def chat():
             conversation_history = conversation_history[-MAX_HISTORY_LENGTH:]
 
         scenario_obj = load_scenario_object(scenario_id)
-        
+
         # Whisper統一版: GPT-4を使用して対話生成
         if openai_api_key and openai_client:
             try:
@@ -397,6 +397,9 @@ def chat():
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
                 elif not is_first_message:
+                    # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
+                    conversation_turn = len(conversation_history) // 2  # 往復数を計算
+
                     # 会話継続中も、ペルソナの重要情報を含める（一貫性を保つため）
                     # 会話履歴から最初のメッセージでどのペルソナが選ばれたかを推測
                     # または、セッション情報からペルソナを取得する必要がある
@@ -412,10 +415,30 @@ def chat():
                     system_prompt += "- 例: 「外注している」と言った場合、「外注を検討している」と言ってはいけません\n"
                     system_prompt += "- 例: 「月10本外注中」と言った場合、「本数が増えない」と矛盾することは言わないでください\n"
 
+                    # 🎯 会話進行度に応じた態度変化（段階的な信頼構築）
+                    system_prompt += f"\n【会話の進行度: {conversation_turn}往復目】\n"
+                    if conversation_turn <= 2:
+                        system_prompt += "- 態度: まだ警戒的で慎重（初対面の段階）\n"
+                        system_prompt += "- 具体的な情報開示は控えめに\n"
+                        system_prompt += "- 営業の質問には簡潔に答える\n"
+                    elif conversation_turn <= 5:
+                        system_prompt += "- 態度: 少しずつ心を開き始める（信頼構築の段階）\n"
+                        system_prompt += "- 営業が良い質問をした場合は、より詳細に答える\n"
+                        system_prompt += "- 自社の課題について少しずつ話す\n"
+                    elif conversation_turn <= 8:
+                        system_prompt += "- 態度: 興味を持ち始め、積極的に質問する（検討段階）\n"
+                        system_prompt += "- サービスの具体的な内容や効果について質問する\n"
+                        system_prompt += "- 自社の課題と営業の提案の関連性を確認する\n"
+                    else:
+                        system_prompt += "- 態度: 前向きに検討、具体的な条件を確認（決断段階）\n"
+                        system_prompt += "- 予算、期間、サポート体制などの具体的な条件を質問\n"
+                        system_prompt += "- 営業の提案が良ければ前向きなサインを出す\n"
+
                 messages = [{"role": "system", "content": system_prompt}]
-                
-                # 会話履歴を追加
-                for msg in conversation_history[-10:]:  # 最新10件まで
+
+                # 🎯 文脈理解改善: 会話履歴を拡張（10件→20件）
+                # より長い文脈を保持することで、過去の発言を参照した応答が可能に
+                for msg in conversation_history[-20:]:  # 最新20件まで（文脈拡張）
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -742,6 +765,9 @@ def chat_stream():
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
                 elif not is_first_message:
+                    # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
+                    conversation_turn = len(conversation_history) // 2  # 往復数を計算
+
                     # 会話継続中も、ペルソナの重要情報を含める（一貫性を保つため）
                     # 会話履歴から最初のメッセージでどのペルソナが選ばれたかを推測
                     # または、セッション情報からペルソナを取得する必要がある
@@ -756,6 +782,25 @@ def chat_stream():
                     system_prompt += "- 【過去の実例パターン】の業種は無視し、あなたが最初に話した設定を使い続けてください\n"
                     system_prompt += "- 例: 「外注している」と言った場合、「外注を検討している」と言ってはいけません\n"
                     system_prompt += "- 例: 「月10本外注中」と言った場合、「本数が増えない」と矛盾することは言わないでください\n"
+
+                    # 🎯 会話進行度に応じた態度変化（段階的な信頼構築）
+                    system_prompt += f"\n【会話の進行度: {conversation_turn}往復目】\n"
+                    if conversation_turn <= 2:
+                        system_prompt += "- 態度: まだ警戒的で慎重（初対面の段階）\n"
+                        system_prompt += "- 具体的な情報開示は控えめに\n"
+                        system_prompt += "- 営業の質問には簡潔に答える\n"
+                    elif conversation_turn <= 5:
+                        system_prompt += "- 態度: 少しずつ心を開き始める（信頼構築の段階）\n"
+                        system_prompt += "- 営業が良い質問をした場合は、より詳細に答える\n"
+                        system_prompt += "- 自社の課題について少しずつ話す\n"
+                    elif conversation_turn <= 8:
+                        system_prompt += "- 態度: 興味を持ち始め、積極的に質問する（検討段階）\n"
+                        system_prompt += "- サービスの具体的な内容や効果について質問する\n"
+                        system_prompt += "- 自社の課題と営業の提案の関連性を確認する\n"
+                    else:
+                        system_prompt += "- 態度: 前向きに検討、具体的な条件を確認（決断段階）\n"
+                        system_prompt += "- 予算、期間、サポート体制などの具体的な条件を質問\n"
+                        system_prompt += "- 営業の提案が良ければ前向きなサインを出す\n"
 
                 # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため）
                 try:
@@ -849,7 +894,9 @@ def chat_stream():
                     logger.debug(f"  履歴[{i}] {msg.get('speaker', '不明')}: {msg.get('text', '')[:50]}...")
 
                 messages = [{"role": "system", "content": system_prompt}]
-                for msg in conversation_history[-10:]:
+
+                # 🎯 文脈理解改善: 会話履歴を拡張（10件→20件）
+                for msg in conversation_history[-20:]:  # 最新20件まで（文脈拡張）
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
