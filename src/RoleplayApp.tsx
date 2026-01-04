@@ -1421,9 +1421,9 @@ function RoleplayApp() {
       )}
 
       {/* 統合コントロールバー（音声中心UI） */}
-      <footer className="fixed bottom-4 inset-x-0 mx-auto z-[50] safe-area-bottom">
-        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-5 py-3 mx-auto w-fit transition-all duration-300 animate-floatIn">
-          <div className="flex items-center justify-center gap-3">
+      <footer className="fixed bottom-2 sm:bottom-4 inset-x-0 mx-auto z-[50] safe-area-bottom px-2 sm:px-0">
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full px-3 sm:px-5 py-2 sm:py-3 mx-auto w-fit max-w-[calc(100vw-1rem)] transition-all duration-300 animate-floatIn overflow-x-auto">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 min-w-max">
             {/* 左側: Phase 2コントロール（録画系） */}
             <div className="flex items-center gap-2">
               {/* カメラボタン */}
@@ -1431,7 +1431,7 @@ function RoleplayApp() {
                 onClick={isCameraActive ? stopCamera : startCamera}
                 disabled={isCameraLoading}
                 className={`
-                  relative w-14 h-14 rounded-full flex items-center justify-center text-2xl
+                  relative w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   ${isCameraActive
                     ? 'bg-white/20 text-white hover:bg-white/30'
@@ -1443,7 +1443,7 @@ function RoleplayApp() {
                 {isCameraLoading ? '⏳' : '📷'}
                 {!isCameraActive && !isCameraLoading && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-0.5 h-14 bg-red-600 rotate-45"></div>
+                    <div className="w-0.5 h-11 sm:h-14 bg-red-600 rotate-45"></div>
                   </div>
                 )}
               </button>
@@ -1453,7 +1453,7 @@ function RoleplayApp() {
                 onClick={isScreenSharing ? stopScreenShare : startScreenShare}
                 disabled={isScreenShareLoading}
                 className={`
-                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
+                  w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   ${isScreenSharing
                     ? 'bg-blue-500/90 text-white hover:bg-blue-600'
@@ -1470,7 +1470,7 @@ function RoleplayApp() {
                 onClick={isVideoRecording ? stopVideoRecording : startVideoRecording}
                 disabled={!isCameraActive && !isScreenSharing}
                 className={`
-                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
+                  w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   ${isVideoRecording
                     ? 'bg-red-500/90 text-white hover:bg-red-600 animate-pulse'
@@ -1493,14 +1493,14 @@ function RoleplayApp() {
                 <>
                   <button
                     onClick={downloadVideoRecording}
-                    className="w-12 h-12 rounded-full bg-green-500/90 text-white hover:bg-green-600 flex items-center justify-center text-xl transition-all duration-200 hover:scale-110"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-500/90 text-white hover:bg-green-600 flex items-center justify-center text-base sm:text-xl transition-all duration-200 hover:scale-110"
                     title="録画をダウンロード"
                   >
                     💾
                   </button>
                   <button
                     onClick={clearVideoRecording}
-                    className="w-12 h-12 rounded-full bg-gray-500/90 text-white hover:bg-gray-600 flex items-center justify-center text-lg transition-all duration-200 hover:scale-110"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-500/90 text-white hover:bg-gray-600 flex items-center justify-center text-base sm:text-lg transition-all duration-200 hover:scale-110"
                     title="録画データをクリア"
                   >
                     🗑️
@@ -1530,7 +1530,7 @@ function RoleplayApp() {
                 onClick={handleShowEvaluation}
                 disabled={isLoadingEvaluation}
                 className={`
-                  w-14 h-14 rounded-full flex items-center justify-center text-2xl
+                  w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
                   bg-white/20 hover:bg-white/30 text-white
                 `}
@@ -1541,7 +1541,7 @@ function RoleplayApp() {
               <button
                 type="button"
                 onClick={handleClear}
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-200 hover:scale-110 bg-white/20 hover:bg-white/30 text-white"
+                className="w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl transition-all duration-200 hover:scale-110 bg-white/20 hover:bg-white/30 text-white"
                 title="会話をクリア"
               >
                 🗑️
@@ -1553,7 +1553,7 @@ function RoleplayApp() {
               type="button"
               onClick={handleToggleVAD}
               className={`
-                w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0
+                w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0
                 transition-all duration-200 hover:scale-110
                 ${isVADMode
                   ? 'bg-red-500/90 hover:bg-red-600 animate-pulse shadow-xl shadow-red-500/50'
@@ -1571,7 +1571,7 @@ function RoleplayApp() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-8 h-8 text-white"
+                className="w-7 h-7 sm:w-8 sm:h-8 text-white"
               >
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
