@@ -526,7 +526,7 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # ビジネスシーンらしく簡潔に（100→80）
+                    max_tokens=120,         # 文章を完結させるために増量（80→120）
                     temperature=0.9,        # よりスムーズな会話（0.8→0.9）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
@@ -863,7 +863,7 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # ビジネスシーンらしく簡潔に（100→80）
+                    max_tokens=120,         # 文章を完結させるために増量（80→120）
                     temperature=0.9,        # よりスムーズな会話（0.8→0.9）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす

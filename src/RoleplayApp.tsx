@@ -783,19 +783,14 @@ function RoleplayApp() {
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
 
-        // GainNodeを作成（音量調整と録音用の分岐に使用）
-        const gainNode = audioContext.createGain();
-        gainNode.gain.value = 1.0; // 音量100%
+        // スピーカーに直接接続
+        source.connect(audioContext.destination);
 
-        // 接続順序: AudioBufferSource → GainNode → スピーカー
-        source.connect(gainNode);
-        gainNode.connect(audioContext.destination); // スピーカーに出力
-
-        // 録画用にMediaStreamDestinationにも接続（GainNodeから分岐）
-        // これにより、同じ音声が確実に録音される
+        // 録画用にMediaStreamDestinationにも直接接続
+        // 重要: 両方に接続することで、同じ音声が確実に録音される
         if (audioDestinationRef.current) {
-          gainNode.connect(audioDestinationRef.current);
-          console.log('🎙️ AI音声をMediaStreamDestinationに接続しました');
+          source.connect(audioDestinationRef.current);
+          console.log('🎙️ AI音声をMediaStreamDestinationに直接接続しました');
         }
 
         currentAudioSourceRef.current = source; // 停止用に保存
@@ -805,7 +800,6 @@ function RoleplayApp() {
           // メモリリーク防止：明示的にdisconnectして参照をクリア
           try {
             source.disconnect();
-            gainNode.disconnect();
             source.buffer = null;
           } catch (e) {
             // 既にdisconnect済みの場合はエラーを無視
