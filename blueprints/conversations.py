@@ -550,7 +550,7 @@ def chat():
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
                     max_tokens=120,         # 文章を完結させるために増量（80→120）
-                    temperature=0.9,        # よりスムーズな会話（0.8→0.9）
+                    temperature=0.7,        # 応答速度優先（0.9→0.7に下げて高速化）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
                 )
@@ -911,7 +911,7 @@ def chat_stream():
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
                     max_tokens=120,         # 文章を完結させるために増量（80→120）
-                    temperature=0.9,        # よりスムーズな会話（0.8→0.9）
+                    temperature=0.7,        # 応答速度優先（0.9→0.7に下げて高速化）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
                     stream=True  # ストリーミング有効化

@@ -155,9 +155,10 @@ def transcribe():
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
 
-        # Whisperで音声認識（promptなしで無音時の誤認識を防止）
-        # promptを削除：無音時に「ご視聴ありがとうございます」などの定型句を生成するのを防ぐ
-        logger.debug(f"[Whisper設定] prompt: なし, temperature: 0")
+        # Whisperで音声認識（ビジネス用語認識精度向上）
+        # promptに営業・ビジネス用語を追加して認識精度を向上
+        business_prompt = "御社、弊社、貴社、事業概要、サービス内容、費用、予算、導入事例、実績、課題、ニーズ、提案、ご提案、検討、ご検討、ROI、KPI"
+        logger.debug(f"[Whisper設定] prompt: ビジネス用語ヒント, temperature: 0")
 
         try:
             with open(new_path, 'rb') as f:
@@ -165,7 +166,8 @@ def transcribe():
                     model='whisper-1',
                     file=f,
                     language='ja',
-                    temperature=0
+                    temperature=0,
+                    prompt=business_prompt
                 )
             text = (getattr(r, 'text', '') or '').strip()
             logger.debug(f"[Whisper成功] 認識結果: {text}")
@@ -182,7 +184,8 @@ def transcribe():
                         model='whisper-1',
                         file=f,
                         language='ja',
-                        temperature=0
+                        temperature=0,
+                        prompt=business_prompt
                     )
                 text = (getattr(r, 'text', '') or '').strip()
                 return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())

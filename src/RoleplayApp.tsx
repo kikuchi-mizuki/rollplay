@@ -485,8 +485,8 @@ function RoleplayApp() {
               await playAudioWithWebAudio(audioData);
               console.log(`✅ [デバッグ] 音声再生完了: "${chunkText}"`);
 
-              // チャンク間に自然な間隔を追加（100ms）
-              await new Promise(resolve => setTimeout(resolve, 100));
+              // チャンク間に自然な間隔を追加（200ms→300msに延長して被りを防止）
+              await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
               console.error(`❌ 音声再生失敗: "${chunkText}"`, error);
             } finally {
