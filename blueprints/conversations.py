@@ -936,40 +936,13 @@ def chat_stream():
                         delimiter = ''
 
                         if not first_chunk_sent:
-                            # 最初のチャンクは早めに送信（レスポンス体感速度向上）
+                            # 最初のチャンクは句点のみで送信（自然な区切り）
                             if '。' in text_buffer and len(text_buffer) >= 3:
-                                # 句点があり、3文字以上なら即送信
+                                # 句点があり、3文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 8:
-                                # 読点は8文字以上で送信
-                                should_send = True
-                                delimiter = '、'
-                            elif len(text_buffer) >= 15:
-                                # 句読点なしでも15文字で送信（適度な初動速度）
-                                # 助詞の位置で切る
-                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
-                                best_pos = -1
-                                for particle in particles:
-                                    pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 5:  # 最低5文字
-                                        best_pos = pos + len(particle)
-                                if best_pos > 0:
-                                    should_send = True
-                                    delimiter = 'particle'  # 助詞で切ることを示す特殊フラグ
-                        else:
-                            # 2チャンク目以降も適度に分割
-                            if '。' in text_buffer and len(text_buffer) >= 5:
-                                # 句点があり、5文字以上なら送信
-                                should_send = True
-                                delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 10:
-                                # 読点でも10文字以上溜まったら送信
-                                should_send = True
-                                delimiter = '、'
-                            elif len(text_buffer) >= 50:
-                                # 句読点なしの場合は50文字まで待つ
-                                # 助詞の位置で切る
+                            elif len(text_buffer) >= 30:
+                                # 句点なしで30文字以上なら助詞位置で切る
                                 particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
                                 best_pos = -1
                                 for particle in particles:
@@ -978,7 +951,24 @@ def chat_stream():
                                         best_pos = pos + len(particle)
                                 if best_pos > 0:
                                     should_send = True
-                                    delimiter = 'particle'  # 助詞で切ることを示す特殊フラグ
+                                    delimiter = 'particle'
+                        else:
+                            # 2チャンク目以降も句点のみで送信
+                            if '。' in text_buffer and len(text_buffer) >= 3:
+                                # 句点があり、3文字以上なら送信
+                                should_send = True
+                                delimiter = '。'
+                            elif len(text_buffer) >= 40:
+                                # 句点なしで40文字以上なら助詞位置で切る
+                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
+                                best_pos = -1
+                                for particle in particles:
+                                    pos = text_buffer.rfind(particle)
+                                    if pos > best_pos and pos >= 15:  # 最低15文字
+                                        best_pos = pos + len(particle)
+                                if best_pos > 0:
+                                    should_send = True
+                                    delimiter = 'particle'
 
                         if should_send:
                             if delimiter == 'particle':
@@ -987,7 +977,7 @@ def chat_stream():
                                 best_pos = -1
                                 for particle in particles:
                                     pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 5:  # 最低5文字
+                                    if pos > best_pos and pos >= 10:  # 最低10文字
                                         best_pos = pos + len(particle)
 
                                 if best_pos > 0:
