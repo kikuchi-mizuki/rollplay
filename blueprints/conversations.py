@@ -549,8 +549,8 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # テンポ重視で簡潔に（120→80）
-                    temperature=0.7,        # 応答速度優先（0.9→0.7に下げて高速化）
+                    max_tokens=60,          # 超高速化: 80→60に削減（25%高速化）
+                    temperature=0.5,        # 超高速化: 0.7→0.5（処理時間短縮）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
                 )
@@ -910,8 +910,8 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # テンポ重視で簡潔に（120→80）
-                    temperature=0.7,        # 応答速度優先（0.9→0.7に下げて高速化）
+                    max_tokens=60,          # 超高速化: 80→60に削減（25%高速化）
+                    temperature=0.5,        # 超高速化: 0.7→0.5（処理時間短縮）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
                     stream=True  # ストリーミング有効化
@@ -937,44 +937,44 @@ def chat_stream():
 
                         if not first_chunk_sent:
                             # 最初のチャンクは超早めに送信（レスポンス体感速度向上）
-                            if '。' in text_buffer and len(text_buffer) >= 3:
-                                # 句点があり、3文字以上なら即送信
+                            if '。' in text_buffer and len(text_buffer) >= 2:
+                                # 句点があり、2文字以上なら即送信（3→2に緩和）
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 8:
-                                # 読点は8文字以上で送信
+                            elif '、' in text_buffer and len(text_buffer) >= 5:
+                                # 読点は5文字以上で送信（8→5に緩和）
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 60:
-                                # 句読点なしの場合は60文字まで待つ（単語の途中で切らないため）
+                            elif len(text_buffer) >= 8:
+                                # 句読点なしでも8文字で送信（60→8に大幅緩和、初動速度重視）
                                 # 助詞の位置で切る
                                 particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
                                 best_pos = -1
                                 for particle in particles:
                                     pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 15:  # 最低15文字は必要
+                                    if pos > best_pos and pos >= 2:  # 最低2文字（15→2に緩和）
                                         best_pos = pos + len(particle)
                                 if best_pos > 0:
                                     should_send = True
                                     delimiter = 'particle'  # 助詞で切ることを示す特殊フラグ
                         else:
                             # 2チャンク目以降も細かく分割
-                            if '。' in text_buffer and len(text_buffer) >= 5:
-                                # 句点があり、5文字以上なら送信
+                            if '。' in text_buffer and len(text_buffer) >= 3:
+                                # 句点があり、3文字以上なら送信（5→3に緩和）
                                 should_send = True
                                 delimiter = '。'
-                            elif '、' in text_buffer and len(text_buffer) >= 12:
-                                # 読点でも12文字以上溜まったら送信
+                            elif '、' in text_buffer and len(text_buffer) >= 8:
+                                # 読点でも8文字以上溜まったら送信（12→8に緩和）
                                 should_send = True
                                 delimiter = '、'
-                            elif len(text_buffer) >= 60:
-                                # 句読点なしの場合は60文字まで待つ（単語の途中で切らないため）
+                            elif len(text_buffer) >= 40:
+                                # 句読点なしの場合は40文字まで待つ（60→40に緩和）
                                 # 助詞の位置で切る
                                 particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
                                 best_pos = -1
                                 for particle in particles:
                                     pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 15:  # 最低15文字は必要
+                                    if pos > best_pos and pos >= 8:  # 最低8文字（15→8に緩和）
                                         best_pos = pos + len(particle)
                                 if best_pos > 0:
                                     should_send = True
@@ -987,7 +987,7 @@ def chat_stream():
                                 best_pos = -1
                                 for particle in particles:
                                     pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 15:
+                                    if pos > best_pos and pos >= 2:  # 最低2文字（15→2に緩和、超高速化）
                                         best_pos = pos + len(particle)
 
                                 if best_pos > 0:
