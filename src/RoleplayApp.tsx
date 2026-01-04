@@ -54,9 +54,9 @@ function RoleplayApp() {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
   const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
-  const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null); // AI音声出力のキャプチャ用
+  const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null); // AI音声出力のキャプチャ用（録画用）
   const aiMixerGainNodeRef = useRef<GainNode | null>(null); // AI音声ミキサー用GainNode（常時接続）
-  const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream
+  const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream（録画用）
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
 
   // 録画開始時のWeb Audio API初期化フラグ
@@ -734,19 +734,21 @@ function RoleplayApp() {
         await audioContext.resume();
       }
 
-      // MediaStreamDestinationを作成（録画用にAI音声をキャプチャ）
-      const destination = audioContext.createMediaStreamDestination();
-      audioDestinationRef.current = destination;
-
       // AI音声ミキサー用のGainNodeを作成（常時接続）
       const mixerGain = audioContext.createGain();
       mixerGain.gain.value = 1.0;
-      mixerGain.connect(destination); // MediaStreamDestinationに常時接続
-      mixerGain.connect(audioContext.destination); // スピーカーにも常時接続
       aiMixerGainNodeRef.current = mixerGain;
 
-      setAiAudioStream(destination.stream);
-      console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式）');
+      // GainNodeをスピーカーに接続
+      mixerGain.connect(audioContext.destination);
+
+      // 録画用のMediaStreamDestinationを作成してGainNodeに接続
+      const recordingDestination = audioContext.createMediaStreamDestination();
+      mixerGain.connect(recordingDestination); // 録画用にGainNodeを接続
+      audioDestinationRef.current = recordingDestination;
+
+      setAiAudioStream(recordingDestination.stream);
+      console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続）');
 
       // ダミーの無音バッファを再生してMediaStreamDestinationをアクティブ化
       const buffer = audioContext.createBuffer(1, 1, 22050);
@@ -754,7 +756,7 @@ function RoleplayApp() {
       source.buffer = buffer;
       source.connect(mixerGain); // ミキサー経由で接続
       source.start(0);
-      console.log('🔇 MediaStreamDestinationをアクティブ化（GainNodeミキサー経由）');
+      console.log('🔇 MediaStreamDestinationをアクティブ化（GainNodeミキサー経由 - 録画用）');
 
       setAudioInitialized(true);
       console.log('✅ Web Audio API初期化成功');

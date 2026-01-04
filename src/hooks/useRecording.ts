@@ -263,21 +263,19 @@ export function useRecording(streams: RecordingStreams) {
       console.log(`  カメラ音声: ${clonedTracks.length}トラッククローン追加`);
     }
 
-    // AI音声トラック（Web Audio API出力）
+    // AI音声トラック（Web Audio API出力 - MediaStreamDestinationから直接取得）
     // ステート更新タイミング問題を回避するため、audioDestinationRefから直接取得
     const aiStream = audioDestinationRef?.current?.stream || aiAudioStream;
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        // AI音声トラックをクローンして追加（元のトラックは再生のたびに新規作成される）
-        const clonedAiTracks = aiAudioTracks.map(track => {
-          const cloned = track.clone();
-          cloned.enabled = true; // 明示的に有効化
-          console.log(`    AI音声トラック[クローン]: enabled=${cloned.enabled}, muted=${cloned.muted}, readyState=${cloned.readyState}`);
-          return cloned;
+        // AI音声トラックを直接追加（クローン不要 - GainNodeからMediaStreamDestinationに直接流れる）
+        aiAudioTracks.forEach(track => {
+          track.enabled = true; // 明示的に有効化
+          console.log(`    AI音声トラック[直接]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
         });
-        audioTracks.push(...clonedAiTracks);
-        console.log(`  AI音声: ${clonedAiTracks.length}トラッククローン追加（有効化済み）`);
+        audioTracks.push(...aiAudioTracks);
+        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（GainNode→MediaStreamDestination直接接続）`);
       } else {
         console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
@@ -454,21 +452,19 @@ export function useRecording(streams: RecordingStreams) {
       console.log(`  カメラ音声: ${clonedTracks.length}トラッククローン追加`);
     }
 
-    // AI音声トラック（Web Audio API出力）
+    // AI音声トラック（Web Audio API出力 - MediaStreamDestinationから直接取得）
     // ステート更新タイミング問題を回避するため、audioDestinationRefから直接取得
     const aiStream = audioDestinationRef?.current?.stream || aiAudioStream;
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        // AI音声トラックをクローンして追加（元のトラックは再生のたびに新規作成される）
-        const clonedAiTracks = aiAudioTracks.map(track => {
-          const cloned = track.clone();
-          cloned.enabled = true; // 明示的に有効化
-          console.log(`    AI音声トラック[クローン]: enabled=${cloned.enabled}, muted=${cloned.muted}, readyState=${cloned.readyState}`);
-          return cloned;
+        // AI音声トラックを直接追加（クローン不要 - GainNodeからMediaStreamDestinationに直接流れる）
+        aiAudioTracks.forEach(track => {
+          track.enabled = true; // 明示的に有効化
+          console.log(`    AI音声トラック[直接]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
         });
-        audioTracks.push(...clonedAiTracks);
-        console.log(`  AI音声: ${clonedAiTracks.length}トラッククローン追加（有効化済み）`);
+        audioTracks.push(...aiAudioTracks);
+        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（GainNode→MediaStreamDestination直接接続）`);
       } else {
         console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
