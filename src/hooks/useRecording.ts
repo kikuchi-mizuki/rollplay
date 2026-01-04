@@ -254,11 +254,13 @@ export function useRecording(streams: RecordingStreams) {
     // 音声トラックを追加（カメラの音声 + AI音声）
     const audioTracks: MediaStreamTrack[] = [];
 
-    // カメラの音声トラック
+    // カメラの音声トラック（VADレコーダーと競合しないようにクローン）
     const cameraAudioTracks = cameraStream.getAudioTracks();
     if (cameraAudioTracks.length > 0) {
-      audioTracks.push(...cameraAudioTracks);
-      console.log(`  カメラ音声: ${cameraAudioTracks.length}トラック追加`);
+      // トラックをクローンして追加（元のトラックはVADレコーダーで使用中）
+      const clonedTracks = cameraAudioTracks.map(track => track.clone());
+      audioTracks.push(...clonedTracks);
+      console.log(`  カメラ音声: ${clonedTracks.length}トラッククローン追加`);
     }
 
     // AI音声トラック（Web Audio API出力）
@@ -267,13 +269,15 @@ export function useRecording(streams: RecordingStreams) {
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        // AI音声トラックを有効化
-        aiAudioTracks.forEach((track, i) => {
-          track.enabled = true; // 明示的に有効化
-          console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+        // AI音声トラックをクローンして追加（元のトラックは再生のたびに新規作成される）
+        const clonedAiTracks = aiAudioTracks.map(track => {
+          const cloned = track.clone();
+          cloned.enabled = true; // 明示的に有効化
+          console.log(`    AI音声トラック[クローン]: enabled=${cloned.enabled}, muted=${cloned.muted}, readyState=${cloned.readyState}`);
+          return cloned;
         });
-        audioTracks.push(...aiAudioTracks);
-        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（有効化済み）`);
+        audioTracks.push(...clonedAiTracks);
+        console.log(`  AI音声: ${clonedAiTracks.length}トラッククローン追加（有効化済み）`);
       } else {
         console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
@@ -290,7 +294,8 @@ export function useRecording(streams: RecordingStreams) {
     compositeStreamRef.current = compositeStream;
 
     // AI音声トラック数を正しく計算（実際に追加されたトラック数）
-    const actualAiAudioCount = audioTracks.length - cameraAudioTracks.length;
+    // クローンを使うようになったので、元のトラック数ではなく、実際に追加された数を計算
+    const actualAiAudioCount = audioTracks.length - (cameraAudioTracks.length > 0 ? cameraAudioTracks.length : 0);
 
     console.log('✅ カメラのみCanvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
@@ -440,11 +445,13 @@ export function useRecording(streams: RecordingStreams) {
       console.log(`  画面共有音声: ${screenAudioTracks.length}トラック追加`);
     }
 
-    // カメラの音声トラック
+    // カメラの音声トラック（VADレコーダーと競合しないようにクローン）
     const cameraAudioTracks = cameraStream.getAudioTracks();
     if (cameraAudioTracks.length > 0) {
-      audioTracks.push(...cameraAudioTracks);
-      console.log(`  カメラ音声: ${cameraAudioTracks.length}トラック追加`);
+      // トラックをクローンして追加（元のトラックはVADレコーダーで使用中）
+      const clonedTracks = cameraAudioTracks.map(track => track.clone());
+      audioTracks.push(...clonedTracks);
+      console.log(`  カメラ音声: ${clonedTracks.length}トラッククローン追加`);
     }
 
     // AI音声トラック（Web Audio API出力）
@@ -453,13 +460,15 @@ export function useRecording(streams: RecordingStreams) {
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        // AI音声トラックを有効化
-        aiAudioTracks.forEach((track, i) => {
-          track.enabled = true; // 明示的に有効化
-          console.log(`    AI音声トラック[${i}]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+        // AI音声トラックをクローンして追加（元のトラックは再生のたびに新規作成される）
+        const clonedAiTracks = aiAudioTracks.map(track => {
+          const cloned = track.clone();
+          cloned.enabled = true; // 明示的に有効化
+          console.log(`    AI音声トラック[クローン]: enabled=${cloned.enabled}, muted=${cloned.muted}, readyState=${cloned.readyState}`);
+          return cloned;
         });
-        audioTracks.push(...aiAudioTracks);
-        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（有効化済み）`);
+        audioTracks.push(...clonedAiTracks);
+        console.log(`  AI音声: ${clonedAiTracks.length}トラッククローン追加（有効化済み）`);
       } else {
         console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
       }
@@ -476,7 +485,8 @@ export function useRecording(streams: RecordingStreams) {
     compositeStreamRef.current = compositeStream;
 
     // AI音声トラック数を正しく計算（実際に追加されたトラック数）
-    const actualAiAudioCount = audioTracks.length - screenAudioTracks.length - cameraAudioTracks.length;
+    // クローンを使うようになったので、元のトラック数ではなく、実際に追加された数を計算
+    const actualAiAudioCount = audioTracks.length - screenAudioTracks.length - (cameraAudioTracks.length > 0 ? cameraAudioTracks.length : 0);
 
     console.log('✅ Canvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
