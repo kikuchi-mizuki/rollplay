@@ -736,7 +736,7 @@ function RoleplayApp() {
 
       // AI音声ミキサー用のGainNodeを作成（常時接続）
       const mixerGain = audioContext.createGain();
-      mixerGain.gain.setValueAtTime(1.0, audioContext.currentTime); // 即座に適用
+      mixerGain.gain.value = 1.0; // 直接代入
       aiMixerGainNodeRef.current = mixerGain;
 
       // GainNodeをスピーカーに接続
@@ -801,8 +801,8 @@ function RoleplayApp() {
         // AI音声専用のGainNodeを作成して音量を増幅（録音用に最適化）
         const aiVolumeGain = audioContext.createGain();
 
-        // 🔧 gain値を設定（即座に適用）
-        aiVolumeGain.gain.setValueAtTime(4.0, audioContext.currentTime); // AI音声を4倍に増幅
+        // 🔧 gain値を直接代入（即座に適用）
+        aiVolumeGain.gain.value = 4.0; // AI音声を4倍に増幅
 
         console.log(`🔊 [DEBUG] AI音声GainNode作成: gain=${aiVolumeGain.gain.value}`);
 
