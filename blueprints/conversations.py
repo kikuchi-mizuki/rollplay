@@ -936,42 +936,62 @@ def chat_stream():
                         delimiter = ''
 
                         if not first_chunk_sent:
-                            # 最初のチャンクは句点のみで送信（自然な区切り）
+                            # 最初のチャンクは句点 or 接続助詞で送信
                             if '。' in text_buffer and len(text_buffer) >= 3:
                                 # 句点があり、3文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
-                            elif len(text_buffer) >= 30:
-                                # 句点なしで30文字以上なら助詞位置で切る
-                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
+                            elif len(text_buffer) >= 12:
+                                # 12文字以上で接続助詞を探す（速度と自然さの両立）
+                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から', 'し', 'て']
                                 best_pos = -1
-                                for particle in particles:
-                                    pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 10:  # 最低10文字
-                                        best_pos = pos + len(particle)
+                                for conn in connectives:
+                                    pos = text_buffer.rfind(conn)
+                                    if pos > best_pos and pos >= 5:  # 最低5文字
+                                        best_pos = pos + len(conn)
                                 if best_pos > 0:
                                     should_send = True
-                                    delimiter = 'particle'
+                                    delimiter = 'connective'
                         else:
-                            # 2チャンク目以降も句点のみで送信
+                            # 2チャンク目以降も句点 or 接続助詞で送信
                             if '。' in text_buffer and len(text_buffer) >= 3:
                                 # 句点があり、3文字以上なら送信
                                 should_send = True
                                 delimiter = '。'
-                            elif len(text_buffer) >= 40:
-                                # 句点なしで40文字以上なら助詞位置で切る
-                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
+                            elif len(text_buffer) >= 18:
+                                # 18文字以上で接続助詞を探す
+                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から', 'し', 'て']
                                 best_pos = -1
-                                for particle in particles:
-                                    pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 15:  # 最低15文字
-                                        best_pos = pos + len(particle)
+                                for conn in connectives:
+                                    pos = text_buffer.rfind(conn)
+                                    if pos > best_pos and pos >= 8:  # 最低8文字
+                                        best_pos = pos + len(conn)
                                 if best_pos > 0:
                                     should_send = True
-                                    delimiter = 'particle'
+                                    delimiter = 'connective'
 
                         if should_send:
-                            if delimiter == 'particle':
+                            if delimiter == 'connective':
+                                # 接続助詞の位置で切る（特殊処理）
+                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から', 'し', 'て']
+                                best_pos = -1
+                                for conn in connectives:
+                                    pos = text_buffer.rfind(conn)
+                                    if pos > best_pos and pos >= 5:
+                                        best_pos = pos + len(conn)
+
+                                if best_pos > 0:
+                                    chunk_text = text_buffer[:best_pos].strip()
+                                    chunk_count += 1
+                                    logger.debug(f"[チャンク{chunk_count}] {chunk_text} （接続助詞で分割・TTS並列生成開始）")
+
+                                    # TTS生成を並列実行（ブロックしない）
+                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                    tts_futures[chunk_count] = future
+
+                                    text_buffer = text_buffer[best_pos:]
+                                    first_chunk_sent = True
+                            elif delimiter == 'particle':
                                 # 助詞の位置で切る（特殊処理）
                                 particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
                                 best_pos = -1
