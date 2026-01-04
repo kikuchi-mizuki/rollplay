@@ -56,6 +56,7 @@ function RoleplayApp() {
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
   const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null); // AI音声出力のキャプチャ用（録画用）
   const aiMixerGainNodeRef = useRef<GainNode | null>(null); // AI音声ミキサー用GainNode（常時接続）
+  const analyserNodeRef = useRef<AnalyserNode | null>(null); // AnalyserNode（音声波形確認用）
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream（録画用）
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
 
@@ -747,11 +748,22 @@ function RoleplayApp() {
       mixerGain.connect(recordingDestination); // 録画用にGainNodeを接続
       audioDestinationRef.current = recordingDestination;
 
+      // AnalyserNodeを作成してMediaStreamDestinationの前に挿入（音声波形確認用）
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.8;
+      analyserNodeRef.current = analyser;
+
+      // ミキサー → AnalyserNode → MediaStreamDestination の順に接続
+      mixerGain.connect(analyser);
+      analyser.connect(recordingDestination);
+
       setAiAudioStream(recordingDestination.stream);
-      console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続）');
+      console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続 + AnalyserNode）');
       console.log(`   - ミキサーGain値: ${mixerGain.gain.value}`);
       console.log(`   - MediaStreamDestination作成: active=${recordingDestination.stream.active}`);
       console.log(`   - 音声トラック数: ${recordingDestination.stream.getAudioTracks().length}`);
+      console.log(`   - AnalyserNode追加: fftSize=${analyser.fftSize}`);
 
       // 極めて低い音量の連続信号でMediaStreamDestinationを常時アクティブ化
       // (OscillatorNodeは停止するまで永続的に動作する)
@@ -844,6 +856,56 @@ function RoleplayApp() {
         // 再生開始
         source.start(0);
         console.log('🔊 Web Audio APIで音声再生開始（録音対応）');
+
+        // AnalyserNodeで音声波形を確認（デバッグ用）
+        if (analyserNodeRef.current) {
+          const analyser = analyserNodeRef.current;
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+
+          // 音声再生開始から100ms後に波形データを取得
+          setTimeout(() => {
+            analyser.getByteTimeDomainData(dataArray);
+
+            // 波形データの統計情報を計算
+            let min = 255, max = 0, sum = 0;
+            for (let i = 0; i < bufferLength; i++) {
+              const value = dataArray[i];
+              if (value < min) min = value;
+              if (value > max) max = value;
+              sum += value;
+            }
+            const avg = sum / bufferLength;
+            const amplitude = max - min;
+
+            console.log('📊 [AnalyserNode] AI音声波形データ (100ms後):');
+            console.log(`   - 振幅: ${amplitude} (最小=${min}, 最大=${max})`);
+            console.log(`   - 平均値: ${avg.toFixed(2)}`);
+            console.log(`   - データ判定: ${amplitude > 10 ? '✅ 音声データあり' : '❌ 音声データなし（無音）'}`);
+
+            // 周波数データも確認
+            const freqData = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(freqData);
+            let freqMax = 0;
+            for (let i = 0; i < bufferLength; i++) {
+              if (freqData[i] > freqMax) freqMax = freqData[i];
+            }
+            console.log(`   - 周波数最大値: ${freqMax}`);
+          }, 100);
+
+          // 500ms後にも確認（音声が継続しているか）
+          setTimeout(() => {
+            analyser.getByteTimeDomainData(dataArray);
+            let min = 255, max = 0;
+            for (let i = 0; i < bufferLength; i++) {
+              const value = dataArray[i];
+              if (value < min) min = value;
+              if (value > max) max = value;
+            }
+            const amplitude = max - min;
+            console.log(`📊 [AnalyserNode] AI音声波形データ (500ms後): 振幅=${amplitude} ${amplitude > 10 ? '✅ 継続中' : '❌ 停止または無音'}`);
+          }, 500);
+        }
       } catch (error) {
         console.error('❌ Web Audio API音声再生失敗:', error);
         currentAudioSourceRef.current = null;

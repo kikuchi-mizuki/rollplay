@@ -603,17 +603,34 @@ export function useRecording(streams: RecordingStreams) {
       mediaRecorderRef.current = mediaRecorder;
 
       // 録画データが利用可能になったら保存
+      let dataEventCount = 0;
       mediaRecorder.ondataavailable = (event: BlobEvent) => {
+        dataEventCount++;
         if (event.data && event.data.size > 0) {
           chunksRef.current.push(event.data);
-          console.log(`  録画データ受信: ${event.data.size} bytes`);
+          console.log(`📦 [MediaRecorder] ondataavailable #${dataEventCount}:`);
+          console.log(`   - データサイズ: ${event.data.size} bytes (${(event.data.size / 1024).toFixed(2)} KB)`);
+          console.log(`   - データタイプ: ${event.data.type}`);
+          console.log(`   - 累積チャンク数: ${chunksRef.current.length}`);
+          console.log(`   - 累積データサイズ: ${chunksRef.current.reduce((sum, chunk) => sum + chunk.size, 0)} bytes`);
+        } else {
+          console.warn(`⚠️ [MediaRecorder] ondataavailable #${dataEventCount}: データなし (size=${event.data?.size || 0})`);
         }
       };
 
       // 録画停止時の処理
       mediaRecorder.onstop = () => {
-        console.log('✅ 録画停止');
-        console.log(`  総データサイズ: ${chunksRef.current.reduce((sum, chunk) => sum + chunk.size, 0)} bytes`);
+        console.log('🛑 [MediaRecorder] onstop - 録画停止');
+
+        // チャンクごとのサイズを表示
+        console.log(`📊 [MediaRecorder] チャンク詳細:`);
+        console.log(`   - チャンク数: ${chunksRef.current.length}`);
+        chunksRef.current.forEach((chunk, index) => {
+          console.log(`   - チャンク[${index}]: ${chunk.size} bytes (${chunk.type})`);
+        });
+
+        const totalSize = chunksRef.current.reduce((sum, chunk) => sum + chunk.size, 0);
+        console.log(`   - 総データサイズ: ${totalSize} bytes (${(totalSize / 1024).toFixed(2)} KB)`);
 
         // Blobを作成
         const blob = new Blob(chunksRef.current, { type: 'video/webm' });
@@ -626,19 +643,35 @@ export function useRecording(streams: RecordingStreams) {
           timestamp,
         });
 
-        console.log('✅ 録画データ保存完了');
-        console.log(`  時間: ${duration}秒`);
-        console.log(`  サイズ: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+        console.log('✅ [MediaRecorder] 録画データ保存完了');
+        console.log(`   - 録画時間: ${duration}秒`);
+        console.log(`   - Blobサイズ: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+        console.log(`   - Blobタイプ: ${blob.type}`);
       };
 
       // 録画エラー時の処理
       mediaRecorder.onerror = (event: Event) => {
-        console.error('❌ 録画エラー:', event);
+        console.error('❌ [MediaRecorder] onerror:', event);
         setRecordingError('UnknownError');
         setIsRecording(false);
       };
 
+      // 状態変化のログ
+      mediaRecorder.onstart = () => {
+        console.log('▶️ [MediaRecorder] onstart - 録画開始イベント');
+        console.log(`   - state: ${mediaRecorder.state}`);
+      };
+
+      mediaRecorder.onpause = () => {
+        console.log('⏸️ [MediaRecorder] onpause - 録画一時停止');
+      };
+
+      mediaRecorder.onresume = () => {
+        console.log('▶️ [MediaRecorder] onresume - 録画再開');
+      };
+
       // 録画開始（1秒ごとにデータを取得）
+      console.log('🎬 [MediaRecorder] start()を呼び出し（timeslice=1000ms）');
       mediaRecorder.start(1000);
       setIsRecording(true);
 
