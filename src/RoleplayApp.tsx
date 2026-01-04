@@ -753,12 +753,13 @@ function RoleplayApp() {
       // 極めて低い音量の連続信号でMediaStreamDestinationを常時アクティブ化
       // (OscillatorNodeは停止するまで永続的に動作する)
       const oscillator = audioContext.createOscillator();
+      oscillator.frequency.value = 20; // 20Hz（人間の可聴域下限、ほぼ聞こえない）
       const silenceGain = audioContext.createGain();
-      silenceGain.gain.value = 0.00001; // ほぼ無音（完全な0だと効果がない）
+      silenceGain.gain.value = 0.001; // 極小音量（0.00001→0.001に増加、それでも-60dB以下）
       oscillator.connect(silenceGain);
       silenceGain.connect(mixerGain);
       oscillator.start();
-      console.log('🔇 MediaStreamDestinationをアクティブ化（極小音量の連続信号）');
+      console.log('🔇 MediaStreamDestinationをアクティブ化（20Hz/0.001音量の連続信号）');
 
       setAudioInitialized(true);
       console.log('✅ Web Audio API初期化成功');
