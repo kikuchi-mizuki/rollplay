@@ -6,7 +6,7 @@ import { EvaluationSheet } from './components/EvaluationSheet';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { Toast } from './components/Toast';
 import { Message, Evaluation, RecordingState } from './types';
-import { getEvaluation, getScenarios, saveConversation, saveEvaluation } from './lib/api';
+import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
 import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl } from './lib/expressionSelector';
@@ -1260,10 +1260,45 @@ function RoleplayApp() {
             });
             console.log('✅ 評価結果を保存しました');
 
-            setToast({
-              message: '会話と評価を保存しました',
-              type: 'success',
-            });
+            // 録画データがある場合はアップロード
+            if (videoRecordingData) {
+              try {
+                console.log('📤 録画データをアップロード中...');
+                const filename = `recording_${newConversationId}_${Date.now()}.webm`;
+                const uploadResult = await uploadRecording(
+                  newConversationId,
+                  videoRecordingData.blob,
+                  filename,
+                  videoRecordingData.duration
+                );
+
+                if (uploadResult.success) {
+                  console.log('✅ 録画データをアップロードしました');
+                  setToast({
+                    message: '会話・評価・録画を保存しました',
+                    type: 'success',
+                  });
+                } else {
+                  console.error('録画アップロードエラー:', uploadResult.error);
+                  setToast({
+                    message: '会話と評価を保存しましたが、録画のアップロードに失敗しました',
+                    type: 'error',
+                  });
+                }
+              } catch (uploadError) {
+                console.error('録画アップロードエラー:', uploadError);
+                // 録画アップロードエラーは警告のみ（会話と評価は保存済み）
+                setToast({
+                  message: '会話と評価を保存しましたが、録画のアップロードに失敗しました',
+                  type: 'error',
+                });
+              }
+            } else {
+              setToast({
+                message: '会話と評価を保存しました',
+                type: 'success',
+              });
+            }
           }
         } catch (saveError) {
           console.error('保存エラー:', saveError);
