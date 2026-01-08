@@ -82,13 +82,9 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     """
     ペルソナ・シナリオに応じた音声と話速を選択
 
-    音声の特徴:
+    音声の特徴（すべて女性声）:
     - nova: 明るく元気な女性声（30代前半、スタートアップ代表）
     - shimmer: 柔らかく落ち着いた女性声（40代、大手企業担当者）
-    - alloy: バランスの取れた中性的な声（若手経営者）
-    - fable: 表現豊かな声（クリエイティブ系）
-    - echo: 落ち着いた男性声（ベテラン経営者）
-    - onyx: 深みのある男性声（重役クラス）
 
     Args:
         persona_type: ペルソナタイプ（'young', 'mid', 'senior', 'creative', 'tech', 'traditional'等）
@@ -140,16 +136,17 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     }
 
     # ペルソナタイプに応じた設定（シナリオ設定を上書き）
+    # すべて女性声（nova, shimmer）でバリエーション
     persona_voice_map = {
         'young_entrepreneur': ('nova', 1.15),  # 若手起業家：明るく快活
         'mid_manager': ('shimmer', 1.1),  # 中堅管理職：落ち着いて丁寧
-        'senior_executive': ('echo', 1.0),  # ベテラン経営者：落ち着いて重厚
-        'creative_director': ('fable', 1.1),  # クリエイティブ系：表現豊か
-        'tech_founder': ('alloy', 1.15),  # テック系創業者：中性的でスマート
+        'senior_executive': ('shimmer', 0.95),  # ベテラン経営者：落ち着いて丁寧
+        'creative_director': ('nova', 1.1),  # クリエイティブ系：明るく表現豊か
+        'tech_founder': ('nova', 1.15),  # テック系創業者：明るくスマート
         'traditional_owner': ('shimmer', 0.95),  # 伝統的な事業主：ゆっくり丁寧
         'cautious': ('shimmer', 0.95),  # 慎重なタイプ：ゆっくり
         'confident': ('nova', 1.2),  # 自信家タイプ：テキパキ
-        'analytical': ('alloy', 1.0),  # 分析的タイプ：落ち着いて論理的
+        'analytical': ('shimmer', 1.0),  # 分析的タイプ：落ち着いて論理的
     }
 
     # ペルソナタイプから選択
