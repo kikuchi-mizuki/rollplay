@@ -78,6 +78,58 @@ def apply_auth(func):
     return func
 
 
+def normalize_text_for_japanese_tts(text):
+    """
+    日本語TTS用にテキストを正規化
+    英語略語をカタカナに変換して、TTSが英語発音するのを防ぐ
+
+    Args:
+        text: 正規化前のテキスト
+
+    Returns:
+        正規化後のテキスト
+    """
+    import re
+
+    # 英語略語 → カタカナ読み変換マップ
+    # ビジネス用語はそのままだが、TTSが日本語として発音するようにカタカナ表記に変換
+    replacements = {
+        'SNS': 'エスエヌエス',
+        'CVR': 'シーブイアール',
+        'CPA': 'シーピーエー',
+        'ROI': 'アールオーアイ',
+        'KPI': 'ケーピーアイ',
+        'CEO': 'シーイーオー',
+        'CTO': 'シーティーオー',
+        'SEO': 'エスイーオー',
+        'UI': 'ユーアイ',
+        'UX': 'ユーエックス',
+        'API': 'エーピーアイ',
+        'DX': 'ディーエックス',
+        'IT': 'アイティー',
+        'PR': 'ピーアール',
+        'BtoB': 'ビートゥービー',
+        'BtoC': 'ビートゥーシー',
+        'AI': 'エーアイ',
+        'ML': 'エムエル',
+        'SaaS': 'サース',
+        'PaaS': 'パース',
+        'IaaS': 'イアース',
+        'LP': 'エルピー',
+        'CRM': 'シーアールエム',
+        'EC': 'イーシー',
+    }
+
+    # 単語境界を考慮して置換（大文字小文字を区別）
+    result = text
+    for eng, jpn in replacements.items():
+        # 単語境界で置換（前後にアルファベット・数字がない場合のみ）
+        pattern = r'\b' + re.escape(eng) + r'\b'
+        result = re.sub(pattern, jpn, result)
+
+    return result
+
+
 def select_voice_for_persona(persona_type='default', scenario_id='', override_voice=None):
     """
     ペルソナ・シナリオに応じた音声と話速を選択
@@ -193,13 +245,18 @@ def text_to_speech():
             override_voice=voice
         )
 
+        # テキストを正規化（英語略語をカタカナに変換）
+        normalized_text = normalize_text_for_japanese_tts(text)
+
         logger.info(f"🎤 TTS生成: voice={selected_voice}, speed={selected_speed}, persona={persona_type}, scenario={scenario_id}")
+        if normalized_text != text:
+            logger.debug(f"📝 テキスト正規化: 「{text}」 → 「{normalized_text}」")
 
         # OpenAI TTSで音声生成（高品質モデル + 自然な会話スピード）
         response = openai_client.audio.speech.create(
             model="tts-1-hd",  # 高品質モデル（より自然で流暢な発音）
             voice=selected_voice,
-            input=text,
+            input=normalized_text,  # 正規化後のテキストを使用
             speed=selected_speed  # ペルソナに応じた話速
         )
 

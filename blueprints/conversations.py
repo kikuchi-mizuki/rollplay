@@ -636,7 +636,7 @@ def chat_stream():
                 def generate_tts_task(chunk_text, chunk_index):
                     """TTS生成タスク（スレッドプールで実行、リトライ対応）"""
                     import time
-                    from blueprints.media import select_voice_for_persona
+                    from blueprints.media import select_voice_for_persona, normalize_text_for_japanese_tts
                     tts_start = time.time()
 
                     # ペルソナに応じた音声と話速を選択
@@ -666,12 +666,15 @@ def chat_stream():
                     max_retries = 3
                     retry_delay = 0.1  # 初期遅延100ms
 
+                    # テキストを正規化（英語略語をカタカナ読みに変換）
+                    normalized_chunk_text = normalize_text_for_japanese_tts(chunk_text)
+
                     for attempt in range(max_retries):
                         try:
                             tts_response = openai_client.audio.speech.create(
                                 model="tts-1-hd",  # 高品質モデル（より自然で流暢）
                                 voice=selected_voice,  # ペルソナに応じた音声
-                                input=chunk_text,
+                                input=normalized_chunk_text,  # 正規化後のテキストを使用
                                 speed=selected_speed  # ペルソナに応じた話速
                             )
                             audio_data = tts_response.content
