@@ -110,25 +110,8 @@ function RoleplayApp() {
     audioDestinationRef, // AI音声Destinationのref（ステート更新タイミング問題を回避）
   }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
 
-  // 録画開始のラッパー（Web Audio API初期化 + 画面共有自動開始）
+  // 録画開始のラッパー（Web Audio API初期化を確実に実行）
   const startVideoRecording = useCallback(async () => {
-    // 画面共有が未起動の場合は自動的に開始
-    if (!isScreenSharing) {
-      console.log('🖥️ 録画開始: 画面共有を自動的に開始します');
-      try {
-        await startScreenShare();
-        // 画面共有開始後、少し待つ（stateの更新を待つ）
-        await new Promise(resolve => setTimeout(resolve, 500));
-      } catch (error) {
-        console.error('❌ 画面共有の開始に失敗しました:', error);
-        setToast({
-          message: '画面共有の開始に失敗しました。もう一度お試しください。',
-          type: 'error',
-        });
-        return;
-      }
-    }
-
     // 録画開始前にWeb Audio APIを初期化（ユーザージェスチャーが必要なため）
     if (!recordingAudioInitializedRef.current) {
       console.log('🎵 録画開始: Web Audio APIを初期化します（ユーザージェスチャー）');
@@ -148,7 +131,7 @@ function RoleplayApp() {
     }
     // 録画開始
     startVideoRecordingInternal();
-  }, [isScreenSharing, startScreenShare, startVideoRecordingInternal, setToast]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startVideoRecordingInternal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // アバター管理（将来実装予定）
   // const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -1485,7 +1468,7 @@ function RoleplayApp() {
               {/* 録画ボタン */}
               <button
                 onClick={isVideoRecording ? stopVideoRecording : startVideoRecording}
-                disabled={isVideoRecording && false}
+                disabled={!isCameraActive && !isScreenSharing}
                 className={`
                   w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
@@ -1495,11 +1478,13 @@ function RoleplayApp() {
                   }
                 `}
                 title={
-                  isVideoRecording
+                  !isCameraActive && !isScreenSharing
+                    ? "カメラまたは画面共有をONにしてから録画してください"
+                    : isVideoRecording
                     ? "録画を停止"
                     : isScreenSharing
-                    ? "録画を開始（画面共有+カメラが録画されます）"
-                    : "録画を開始（画面共有を自動的に開始します）"
+                    ? "画面全体を録画（画面共有+カメラ）"
+                    : "カメラのみ録画（アバターと合成）"
                 }
               >
                 {isVideoRecording ? '⏺️' : '🎬'}
