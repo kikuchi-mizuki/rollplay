@@ -43,19 +43,46 @@ export function useScreenShare() {
       console.log('🖥️ 画面共有開始...');
 
       // 画面共有要求
+      // preferCurrentTab: ユーザーが現在のタブを選択しやすくする（Chrome 94+）
+      // surfaceSwitching: 共有中に別の画面に切り替え可能（Chrome 107+）
+      // selfBrowserSurface: 自分自身のタブを選択肢に含める（Chrome 107+）
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          // displaySurface: 'monitor', // TypeScriptの型定義にないため削除
-          width: { max: 1920 },
-          height: { max: 1080 },
-          frameRate: { max: 30 },
-          // cursor: 'always', // TypeScriptの型定義にないため削除（ブラウザは自動的にカーソルを含める）
+          width: { ideal: 1920, max: 3840 },  // 4K対応
+          height: { ideal: 1080, max: 2160 },
+          frameRate: { ideal: 30, max: 60 },
         },
         audio: false, // 画面共有の音声は不要（カメラのマイク音声を使用）
-      });
+        // @ts-ignore - Chrome拡張プロパティ（TypeScript型定義に未対応）
+        preferCurrentTab: true,      // このタブを優先的に提示
+        // @ts-ignore
+        surfaceSwitching: 'include', // 共有中に他の画面に切り替え可能
+        // @ts-ignore
+        selfBrowserSurface: 'include', // 自分自身のタブも選択可能
+      } as any);
+
+      // 画面共有の詳細情報を取得
+      const videoTrack = stream.getVideoTracks()[0];
+      const settings = videoTrack.getSettings();
 
       console.log('✅ 画面共有開始成功');
-      console.log('  解像度:', stream.getVideoTracks()[0].getSettings());
+      console.log('  解像度:', `${settings.width}x${settings.height}`);
+      console.log('  フレームレート:', settings.frameRate);
+      console.log('  デバイスID:', videoTrack.id);
+      console.log('  ラベル:', videoTrack.label);
+
+      // displaySurface情報があれば表示（どの種類の画面か）
+      // @ts-ignore - Chrome拡張プロパティ
+      if (settings.displaySurface) {
+        // @ts-ignore
+        console.log('  表示タイプ:', settings.displaySurface); // 'monitor' | 'window' | 'browser'
+      }
+
+      // @ts-ignore - Chrome拡張プロパティ
+      if (settings.logicalSurface !== undefined) {
+        // @ts-ignore
+        console.log('  論理サーフェス:', settings.logicalSurface);
+      }
 
       setScreenStream(stream);
       setIsScreenSharing(true);
