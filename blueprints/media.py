@@ -78,14 +78,110 @@ def apply_auth(func):
     return func
 
 
+def select_voice_for_persona(persona_type='default', scenario_id='', override_voice=None):
+    """
+    ペルソナ・シナリオに応じた音声と話速を選択
+
+    音声の特徴:
+    - nova: 明るく元気な女性声（30代前半、スタートアップ代表）
+    - shimmer: 柔らかく落ち着いた女性声（40代、大手企業担当者）
+    - alloy: バランスの取れた中性的な声（若手経営者）
+    - fable: 表現豊かな声（クリエイティブ系）
+    - echo: 落ち着いた男性声（ベテラン経営者）
+    - onyx: 深みのある男性声（重役クラス）
+
+    Args:
+        persona_type: ペルソナタイプ（'young', 'mid', 'senior', 'creative', 'tech', 'traditional'等）
+        scenario_id: シナリオID（'meeting_1st', 'meeting_2nd'等）
+        override_voice: フロントエンドから明示的に指定された音声（優先）
+
+    Returns:
+        (voice_id, speed): 音声IDと話速のタプル
+    """
+    # フロントエンドからの明示的な指定がある場合は優先
+    if override_voice:
+        valid_voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+        if override_voice in valid_voices:
+            # デフォルトの話速を返す
+            return (override_voice, 1.15)
+
+    # シナリオに応じたデフォルト設定
+    scenario_voice_map = {
+        'meeting_1st': {
+            'voice': 'shimmer',  # 初回は慎重・落ち着いた印象
+            'speed': 1.0,  # ゆっくり丁寧に（警戒心あり）
+            'description': '初回面談 - 慎重で落ち着いた女性声'
+        },
+        'meeting_1_5th': {
+            'voice': 'shimmer',
+            'speed': 1.05,  # 少し打ち解けてきた
+            'description': '1.5次面談 - やや打ち解けた女性声'
+        },
+        'meeting_2nd': {
+            'voice': 'nova',  # 関係構築が進み、明るい印象
+            'speed': 1.1,  # 自然な会話ペース
+            'description': '2次面談 - 明るく前向きな女性声'
+        },
+        'meeting_3rd': {
+            'voice': 'nova',
+            'speed': 1.15,  # 親しみのある速度
+            'description': '3次面談 - 親しみのある女性声'
+        },
+        'kickoff_meeting': {
+            'voice': 'nova',  # ビジネスパートナーとして
+            'speed': 1.2,  # テキパキとした話し方
+            'description': 'キックオフMTG - テキパキとした女性声'
+        },
+        'upsell': {
+            'voice': 'nova',  # 既存顧客への追加提案
+            'speed': 1.15,  # フランクに
+            'description': '追加営業 - フランクな女性声'
+        }
+    }
+
+    # ペルソナタイプに応じた設定（シナリオ設定を上書き）
+    persona_voice_map = {
+        'young_entrepreneur': ('nova', 1.15),  # 若手起業家：明るく快活
+        'mid_manager': ('shimmer', 1.1),  # 中堅管理職：落ち着いて丁寧
+        'senior_executive': ('echo', 1.0),  # ベテラン経営者：落ち着いて重厚
+        'creative_director': ('fable', 1.1),  # クリエイティブ系：表現豊か
+        'tech_founder': ('alloy', 1.15),  # テック系創業者：中性的でスマート
+        'traditional_owner': ('shimmer', 0.95),  # 伝統的な事業主：ゆっくり丁寧
+        'cautious': ('shimmer', 0.95),  # 慎重なタイプ：ゆっくり
+        'confident': ('nova', 1.2),  # 自信家タイプ：テキパキ
+        'analytical': ('alloy', 1.0),  # 分析的タイプ：落ち着いて論理的
+    }
+
+    # ペルソナタイプから選択
+    if persona_type and persona_type in persona_voice_map:
+        voice, speed = persona_voice_map[persona_type]
+        logger.debug(f"  ペルソナ優先選択: {persona_type} → voice={voice}, speed={speed}")
+        return (voice, speed)
+
+    # シナリオIDから選択
+    if scenario_id and scenario_id in scenario_voice_map:
+        config = scenario_voice_map[scenario_id]
+        logger.debug(f"  シナリオ選択: {scenario_id} → {config['description']}")
+        return (config['voice'], config['speed'])
+
+    # デフォルト：明るく自然な女性声
+    logger.debug(f"  デフォルト選択: nova, 1.15")
+    return ('nova', 1.15)
+
+
 @media_bp.route('/tts', methods=['POST'])
 @apply_auth
 def text_to_speech():
-    """OpenAI TTSを使用した音声合成"""
+    """
+    OpenAI TTSを使用した音声合成
+    ペルソナに合わせて声と話し方を変化させる
+    """
     try:
         data = request.get_json()
         text = data.get('text', '')
-        voice = data.get('voice', 'nova')  # アバターに応じた音声ID（日本語に適した女性声）
+        voice = data.get('voice', None)  # フロントエンドから指定された音声
+        persona_type = data.get('persona_type', 'default')  # ペルソナタイプ
+        scenario_id = data.get('scenario_id', '')  # シナリオID
 
         if not text:
             return jsonify(success=False, error='テキストが空です'), 400
@@ -93,17 +189,21 @@ def text_to_speech():
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
 
-        # 有効な音声IDのチェック
-        valid_voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
-        if voice not in valid_voices:
-            voice = 'alloy'  # デフォルトにフォールバック
+        # ペルソナ・シナリオに応じた音声を自動選択
+        selected_voice, selected_speed = select_voice_for_persona(
+            persona_type=persona_type,
+            scenario_id=scenario_id,
+            override_voice=voice
+        )
 
-        # OpenAI TTSで音声生成（高品質モデル + リアルな会話スピード）
+        logger.info(f"🎤 TTS生成: voice={selected_voice}, speed={selected_speed}, persona={persona_type}, scenario={scenario_id}")
+
+        # OpenAI TTSで音声生成（高品質モデル + 自然な会話スピード）
         response = openai_client.audio.speech.create(
-            model="tts-1",  # 高速モデル（レスポンス重視）  # 高品質モデル（より自然な発音）
-            voice=voice,       # アバターに応じた音声（alloy, echo, fable, onyx, nova, shimmer）
+            model="tts-1-hd",  # 高品質モデル（より自然で流暢な発音）
+            voice=selected_voice,
             input=text,
-            speed=1.3          # リアルな営業ロープレのペース（1-2秒で返答開始）
+            speed=selected_speed  # ペルソナに応じた話速
         )
 
         # 音声データを返す

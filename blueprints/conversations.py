@@ -636,7 +636,31 @@ def chat_stream():
                 def generate_tts_task(chunk_text, chunk_index):
                     """TTS生成タスク（スレッドプールで実行、リトライ対応）"""
                     import time
+                    from blueprints.media import select_voice_for_persona
                     tts_start = time.time()
+
+                    # ペルソナに応じた音声と話速を選択
+                    # ペルソナタイプを推測（会話の最初でペルソナ情報がある場合）
+                    persona_type = None
+                    if persona and is_first_message:
+                        # ペルソナから音声タイプを推測
+                        business_type = persona.get('business_type', '')
+                        if '飲食' in business_type or 'レストラン' in business_type:
+                            persona_type = 'traditional_owner'  # 伝統的な事業主
+                        elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type:
+                            persona_type = 'tech_founder'  # テック系創業者
+                        elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type:
+                            persona_type = 'creative_director'  # クリエイティブ系
+                        elif '企業' in business_type or '会社' in business_type:
+                            persona_type = 'mid_manager'  # 中堅管理職
+                        else:
+                            persona_type = 'default'
+
+                    # 音声と話速を選択
+                    selected_voice, selected_speed = select_voice_for_persona(
+                        persona_type=persona_type or 'default',
+                        scenario_id=scenario_id
+                    )
 
                     # リトライ設定（最大3回、指数バックオフ）
                     max_retries = 3
@@ -645,10 +669,10 @@ def chat_stream():
                     for attempt in range(max_retries):
                         try:
                             tts_response = openai_client.audio.speech.create(
-                                model="tts-1",
-                                voice="nova",
+                                model="tts-1-hd",  # 高品質モデル（より自然で流暢）
+                                voice=selected_voice,  # ペルソナに応じた音声
                                 input=chunk_text,
-                                speed=1.0  # 自然な速度に変更（1.1→1.0）
+                                speed=selected_speed  # ペルソナに応じた話速
                             )
                             audio_data = tts_response.content
                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
@@ -656,7 +680,7 @@ def chat_stream():
                             # TTS生成時間を計測
                             tts_duration = (time.time() - tts_start) * 1000  # ms
                             retry_info = f" (リトライ{attempt}回)" if attempt > 0 else ""
-                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字){retry_info}")
+                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字, voice={selected_voice}, speed={selected_speed}){retry_info}")
 
                             return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
                         except Exception as e:
