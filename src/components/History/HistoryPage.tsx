@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getConversations, getEvaluations, getScenarios } from '../../lib/api';
 import { downloadEvaluationsCSV } from '../../lib/csv';
-import { History, BarChart3, TrendingUp, Calendar, Download } from 'lucide-react';
+import { History, BarChart3, TrendingUp, Calendar, Download, Video, FileVideo } from 'lucide-react';
 
 interface Conversation {
   id: string;
@@ -10,6 +10,11 @@ interface Conversation {
   messages: any[];
   duration_seconds: number;
   created_at: string;
+  has_recording?: boolean;
+  recording_url?: string;
+  recording_filename?: string;
+  recording_size_bytes?: number;
+  recording_duration_seconds?: number;
 }
 
 interface EvaluationRecord {
@@ -100,6 +105,38 @@ export function HistoryPage() {
     if (score >= 4) return 'text-green-400';
     if (score >= 3) return 'text-yellow-400';
     return 'text-red-400';
+  };
+
+  const handleDownloadRecording = (conversation: Conversation) => {
+    if (!conversation.recording_url) {
+      alert('録画がありません');
+      return;
+    }
+
+    console.log('📥 録画ダウンロード:', conversation.recording_filename);
+
+    // 新しいタブで開く（ダウンロードが始まる）
+    const a = document.createElement('a');
+    a.href = conversation.recording_url;
+    a.download = conversation.recording_filename || 'recording.webm';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const formatFileSize = (bytes: number | undefined) => {
+    if (!bytes) return '不明';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  };
+
+  const formatDuration = (seconds: number | undefined) => {
+    if (!seconds) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -231,6 +268,85 @@ export function HistoryPage() {
                         {evaluation.scores.closing_skill.toFixed(1)}
                       </p>
                     </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 会話履歴セクション */}
+        <div className="glass-card p-6 mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Video size={24} />
+              会話履歴・録画
+            </h2>
+          </div>
+
+          {conversations.length === 0 ? (
+            <div className="text-center py-12 text-white/60">
+              <Video size={48} className="mx-auto mb-4 opacity-30" />
+              <p>会話履歴がありません</p>
+              <p className="text-sm mt-2">練習を開始すると自動的に保存されます</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {conversations.map((conversation) => (
+                <div
+                  key={conversation.id}
+                  className="p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="text-white font-semibold">{getScenarioTitle(conversation.scenario_id)}</h3>
+                      <p className="text-white/60 text-sm">{formatDate(conversation.created_at)}</p>
+                    </div>
+                    <div className="text-right">
+                      {conversation.has_recording ? (
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="flex items-center gap-1 text-green-400 text-sm">
+                            <FileVideo size={16} />
+                            <span>録画あり</span>
+                          </div>
+                          <button
+                            onClick={() => handleDownloadRecording(conversation)}
+                            className="btn btn-secondary text-sm flex items-center gap-2"
+                          >
+                            <Download size={16} />
+                            ダウンロード
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="text-white/40 text-sm flex items-center gap-1">
+                          <FileVideo size={16} />
+                          <span>録画なし</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                    <div className="bg-white/5 rounded p-2">
+                      <p className="text-white/60 text-xs mb-1">会話時間</p>
+                      <p className="text-white font-semibold">
+                        {formatDuration(conversation.duration_seconds)}
+                      </p>
+                    </div>
+                    <div className="bg-white/5 rounded p-2">
+                      <p className="text-white/60 text-xs mb-1">メッセージ数</p>
+                      <p className="text-white font-semibold">
+                        {conversation.messages?.length || 0}件
+                      </p>
+                    </div>
+                    {conversation.has_recording && (
+                      <div className="bg-white/5 rounded p-2">
+                        <p className="text-white/60 text-xs mb-1">録画サイズ</p>
+                        <p className="text-white font-semibold">
+                          {formatFileSize(conversation.recording_size_bytes)}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

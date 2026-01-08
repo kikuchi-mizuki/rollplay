@@ -1620,8 +1620,143 @@ def generate_improvement_suggestions(questioning, listening, proposing, closing,
     
     if flow == 'greeting':
         suggestions.append("🔄 会話の流れ: 挨拶の後は相手の課題やニーズを聞く質問から始めましょう")
-    
+
     return suggestions
+
+
+# ========================================
+# 録画アップロード・ダウンロード機能
+# セッション32: 練習履歴から録画ダウンロード
+# ========================================
+
+@conversations_bp.route('/api/conversations/<conversation_id>/recording', methods=['POST'])
+def upload_recording(conversation_id):
+    """
+    録画ファイルをSupabase Storageにアップロードし、conversationsテーブルを更新
+
+    リクエスト:
+    - multipart/form-data
+    - file: 録画ファイル（WebM形式）
+    - filename: ファイル名
+    - duration: 録画時間（秒）
+
+    レスポンス:
+    - success: true/false
+    - recording_url: アップロードされたファイルのURL
+    """
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Supabaseが設定されていません'}), 500
+
+        # ファイルを取得
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'error': 'ファイルがありません'}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'ファイルが選択されていません'}), 400
+
+        # ファイル名とメタデータを取得
+        filename = request.form.get('filename', file.filename)
+        duration = request.form.get('duration', 0)
+
+        # ファイルサイズを取得
+        file.seek(0, 2)  # ファイルの最後に移動
+        file_size = file.tell()
+        file.seek(0)  # ファイルの先頭に戻る
+
+        # ファイルサイズ制限（500MB）
+        MAX_FILE_SIZE = 500 * 1024 * 1024
+        if file_size > MAX_FILE_SIZE:
+            return jsonify({'success': False, 'error': 'ファイルサイズが大きすぎます（最大500MB）'}), 400
+
+        # Supabase Storageにアップロード
+        # バケット名: recordings
+        # パス: {conversation_id}/{filename}
+        storage_path = f"{conversation_id}/{filename}"
+
+        logger.info(f"録画アップロード開始: conversation_id={conversation_id}, filename={filename}, size={file_size}")
+
+        # Supabase Storageにアップロード
+        upload_result = supabase_client.storage.from_('recordings').upload(
+            path=storage_path,
+            file=file.read(),
+            file_options={"content-type": "video/webm"}
+        )
+
+        # 公開URLを取得
+        public_url = supabase_client.storage.from_('recordings').get_public_url(storage_path)
+
+        logger.info(f"録画アップロード成功: url={public_url}")
+
+        # conversationsテーブルを更新
+        update_result = supabase_client.table('conversations').update({
+            'recording_url': public_url,
+            'recording_filename': filename,
+            'recording_size_bytes': file_size,
+            'recording_duration_seconds': int(duration),
+            'has_recording': True
+        }).eq('id', conversation_id).execute()
+
+        logger.info(f"会話レコード更新成功: conversation_id={conversation_id}")
+
+        return jsonify({
+            'success': True,
+            'recording_url': public_url,
+            'conversation_id': conversation_id,
+            'file_size': file_size,
+            'duration': duration
+        })
+
+    except Exception as e:
+        logger.error(f"録画アップロードエラー: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': '録画のアップロードに失敗しました'}), 500
+
+
+@conversations_bp.route('/api/conversations/<conversation_id>/recording', methods=['GET'])
+def get_recording_url(conversation_id):
+    """
+    録画ファイルのURLを取得
+
+    レスポンス:
+    - success: true/false
+    - recording_url: 録画ファイルのURL
+    - recording_filename: ファイル名
+    - recording_size_bytes: ファイルサイズ（バイト）
+    - recording_duration_seconds: 録画時間（秒）
+    """
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Supabaseが設定されていません'}), 500
+
+        # conversationsテーブルから録画情報を取得
+        result = supabase_client.table('conversations').select(
+            'recording_url, recording_filename, recording_size_bytes, recording_duration_seconds, has_recording'
+        ).eq('id', conversation_id).execute()
+
+        if not result.data or len(result.data) == 0:
+            return jsonify({'success': False, 'error': '会話が見つかりません'}), 404
+
+        conversation = result.data[0]
+
+        if not conversation.get('has_recording'):
+            return jsonify({'success': False, 'error': '録画がありません'}), 404
+
+        return jsonify({
+            'success': True,
+            'recording_url': conversation.get('recording_url'),
+            'recording_filename': conversation.get('recording_filename'),
+            'recording_size_bytes': conversation.get('recording_size_bytes'),
+            'recording_duration_seconds': conversation.get('recording_duration_seconds')
+        })
+
+    except Exception as e:
+        logger.error(f"録画URL取得エラー: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': '録画情報の取得に失敗しました'}), 500
 
 # ===== Week 3: データ永続化機能 =====
 # （/api/conversations, /api/evaluationsはBlueprint化済み - blueprints/conversations.py参照）

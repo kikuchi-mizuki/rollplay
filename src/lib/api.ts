@@ -379,3 +379,108 @@ export async function getStoreAnalytics(storeId: string): Promise<any> {
   }
 }
 
+/**
+ * 録画ファイルをアップロード
+ * セッション32: 練習履歴から録画ダウンロード機能
+ *
+ * @param conversationId - 会話ID
+ * @param blob - 録画ファイル（Blob）
+ * @param filename - ファイル名
+ * @param duration - 録画時間（秒）
+ */
+export async function uploadRecording(
+  conversationId: string,
+  blob: Blob,
+  filename: string,
+  duration: number
+): Promise<{ success: boolean; recording_url?: string; error?: string }> {
+  try {
+    const formData = new FormData();
+    formData.append('file', blob, filename);
+    formData.append('filename', filename);
+    formData.append('duration', duration.toString());
+
+    console.log(`📤 録画アップロード開始: conversation_id=${conversationId}, filename=${filename}, size=${blob.size}`);
+
+    const response = await fetchWithErrorHandling(
+      `${API_BASE_URL}/api/conversations/${conversationId}/recording`,
+      {
+        method: 'POST',
+        body: formData
+      },
+      120000 // 120秒タイムアウト（大きなファイルのため）
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log(`✅ 録画アップロード成功: url=${result.recording_url}`);
+      return {
+        success: true,
+        recording_url: result.recording_url
+      };
+    } else {
+      console.error(`❌ 録画アップロード失敗: ${result.error}`);
+      return {
+        success: false,
+        error: result.error || '録画のアップロードに失敗しました'
+      };
+    }
+  } catch (error) {
+    console.error('録画アップロードエラー:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '録画のアップロードに失敗しました'
+    };
+  }
+}
+
+/**
+ * 録画ファイルのURLを取得
+ * セッション32: 練習履歴から録画ダウンロード機能
+ *
+ * @param conversationId - 会話ID
+ */
+export async function getRecordingUrl(
+  conversationId: string
+): Promise<{
+  success: boolean;
+  recording_url?: string;
+  recording_filename?: string;
+  recording_size_bytes?: number;
+  recording_duration_seconds?: number;
+  error?: string;
+}> {
+  try {
+    const response = await fetchWithErrorHandling(
+      `${API_BASE_URL}/api/conversations/${conversationId}/recording`,
+      {
+        method: 'GET'
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      return {
+        success: true,
+        recording_url: result.recording_url,
+        recording_filename: result.recording_filename,
+        recording_size_bytes: result.recording_size_bytes,
+        recording_duration_seconds: result.recording_duration_seconds
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error || '録画情報の取得に失敗しました'
+      };
+    }
+  } catch (error) {
+    console.error('録画URL取得エラー:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '録画情報の取得に失敗しました'
+    };
+  }
+}
+
