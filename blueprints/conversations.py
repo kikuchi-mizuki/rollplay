@@ -933,6 +933,12 @@ def chat_stream():
                 logger.debug(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
 
                 # GPT-4o-miniストリーミング応答（超高速＋自然な会話）
+                # 日本語での応答を強制するため、messagesに追加の指示を挿入
+                messages.append({
+                    "role": "system",
+                    "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。"
+                })
+
                 logger.debug("[ストリーミング] GPT-4o-mini応答生成開始（超高速＋自然モード）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
