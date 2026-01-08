@@ -1468,7 +1468,7 @@ function RoleplayApp() {
               {/* 録画ボタン */}
               <button
                 onClick={isVideoRecording ? stopVideoRecording : startVideoRecording}
-                disabled={!isCameraActive && !isScreenSharing}
+                disabled={!isScreenSharing}
                 className={`
                   w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-2xl
                   transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
@@ -1478,11 +1478,11 @@ function RoleplayApp() {
                   }
                 `}
                 title={
-                  !isCameraActive && !isScreenSharing
-                    ? "カメラまたは画面共有をONにしてください"
+                  !isScreenSharing
+                    ? "画面共有をONにしてから録画してください（画面全体が録画されます）"
                     : isVideoRecording
                     ? "録画を停止"
-                    : "録画を開始"
+                    : "録画を開始（画面共有+カメラが録画されます）"
                 }
               >
                 {isVideoRecording ? '⏺️' : '🎬'}
