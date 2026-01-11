@@ -154,51 +154,53 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
             return (override_voice, 1.15)
 
     # シナリオに応じたデフォルト設定
+    # 話速を全体的に少し遅く調整（聞き取りやすさ重視）
     scenario_voice_map = {
         'meeting_1st': {
             'voice': 'shimmer',  # 初回は慎重・落ち着いた印象
-            'speed': 1.0,  # ゆっくり丁寧に（警戒心あり）
+            'speed': 0.95,  # ゆっくり丁寧に（警戒心あり）聞き取りやすく
             'description': '初回面談 - 慎重で落ち着いた女性声'
         },
         'meeting_1_5th': {
             'voice': 'shimmer',
-            'speed': 1.05,  # 少し打ち解けてきた
+            'speed': 1.0,  # 少し打ち解けてきた、自然なペース
             'description': '1.5次面談 - やや打ち解けた女性声'
         },
         'meeting_2nd': {
             'voice': 'nova',  # 関係構築が進み、明るい印象
-            'speed': 1.1,  # 自然な会話ペース
+            'speed': 1.05,  # 自然な会話ペース、聞き取りやすく
             'description': '2次面談 - 明るく前向きな女性声'
         },
         'meeting_3rd': {
             'voice': 'nova',
-            'speed': 1.15,  # 親しみのある速度
+            'speed': 1.1,  # 親しみのある速度、明瞭に
             'description': '3次面談 - 親しみのある女性声'
         },
         'kickoff_meeting': {
             'voice': 'nova',  # ビジネスパートナーとして
-            'speed': 1.2,  # テキパキとした話し方
+            'speed': 1.1,  # テキパキだが聞き取りやすく（1.2→1.1）
             'description': 'キックオフMTG - テキパキとした女性声'
         },
         'upsell': {
             'voice': 'nova',  # 既存顧客への追加提案
-            'speed': 1.15,  # フランクに
+            'speed': 1.05,  # フランクだが明瞭に（1.15→1.05）
             'description': '追加営業 - フランクな女性声'
         }
     }
 
     # ペルソナタイプに応じた設定（シナリオ設定を上書き）
     # すべて女性声（nova, shimmer）でバリエーション
+    # 話速を全体的に調整（聞き取りやすさ重視）
     persona_voice_map = {
-        'young_entrepreneur': ('nova', 1.15),  # 若手起業家：明るく快活
-        'mid_manager': ('shimmer', 1.1),  # 中堅管理職：落ち着いて丁寧
-        'senior_executive': ('shimmer', 0.95),  # ベテラン経営者：落ち着いて丁寧
-        'creative_director': ('nova', 1.1),  # クリエイティブ系：明るく表現豊か
-        'tech_founder': ('nova', 1.15),  # テック系創業者：明るくスマート
-        'traditional_owner': ('shimmer', 0.95),  # 伝統的な事業主：ゆっくり丁寧
-        'cautious': ('shimmer', 0.95),  # 慎重なタイプ：ゆっくり
-        'confident': ('nova', 1.2),  # 自信家タイプ：テキパキ
-        'analytical': ('shimmer', 1.0),  # 分析的タイプ：落ち着いて論理的
+        'young_entrepreneur': ('nova', 1.05),  # 若手起業家：明るく快活（1.15→1.05）
+        'mid_manager': ('shimmer', 1.0),  # 中堅管理職：落ち着いて丁寧（1.1→1.0）
+        'senior_executive': ('shimmer', 0.9),  # ベテラン経営者：落ち着いてゆっくり（0.95→0.9）
+        'creative_director': ('nova', 1.05),  # クリエイティブ系：明るく表現豊か（1.1→1.05）
+        'tech_founder': ('nova', 1.05),  # テック系創業者：明るくスマート（1.15→1.05）
+        'traditional_owner': ('shimmer', 0.9),  # 伝統的な事業主：ゆっくり丁寧（0.95→0.9）
+        'cautious': ('shimmer', 0.9),  # 慎重なタイプ：ゆっくり（0.95→0.9）
+        'confident': ('nova', 1.1),  # 自信家タイプ：テキパキだが明瞭（1.2→1.1）
+        'analytical': ('shimmer', 0.95),  # 分析的タイプ：落ち着いて論理的（1.0→0.95）
     }
 
     # ペルソナタイプから選択
@@ -213,9 +215,9 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
         logger.debug(f"  シナリオ選択: {scenario_id} → {config['description']}")
         return (config['voice'], config['speed'])
 
-    # デフォルト：明るく自然な女性声
-    logger.debug(f"  デフォルト選択: nova, 1.15")
-    return ('nova', 1.15)
+    # デフォルト：明るく自然な女性声（話速を少し遅く調整）
+    logger.debug(f"  デフォルト選択: nova, 1.05")
+    return ('nova', 1.05)
 
 
 @media_bp.route('/tts', methods=['POST'])
