@@ -666,6 +666,12 @@ def chat_stream():
                     # テキストを正規化（英語略語をカタカナ読みに変換）
                     normalized_chunk_text = normalize_text_for_japanese_tts(chunk_text)
 
+                    # デバッグ: TTS送信テキストをログ出力
+                    if chunk_text != normalized_chunk_text:
+                        logger.debug(f"[TTS正規化] チャンク{chunk_index}: '{chunk_text}' → '{normalized_chunk_text}'")
+                    else:
+                        logger.debug(f"[TTS送信] チャンク{chunk_index}: '{normalized_chunk_text}'")
+
                     for attempt in range(max_retries):
                         try:
                             tts_response = openai_client.audio.speech.create(

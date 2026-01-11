@@ -127,6 +127,10 @@ def normalize_text_for_japanese_tts(text):
         pattern = r'\b' + re.escape(eng) + r'\b'
         result = re.sub(pattern, jpn, result)
 
+    # 読点の後にスペースを追加（TTS音声品質向上）
+    # 「、」の後にスペースがない場合のみ追加
+    result = re.sub(r'、(?!\s)', '、 ', result)
+
     return result
 
 
