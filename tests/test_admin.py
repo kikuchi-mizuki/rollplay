@@ -130,10 +130,11 @@ class TestStoresRankings:
 
     @patch('blueprints.admin.supabase_client')
     def test_get_stores_rankings_success(self, mock_supabase, client):
-        """店舗ランキング取得の成功ケース"""
+        """店舗ランキング取得の成功ケース（N+1クエリ修正後）"""
         def mock_table_response(table_name):
             mock_table = Mock()
             if table_name == 'stores':
+                # 全店舗データ
                 mock_table.select.return_value.execute.return_value = Mock(
                     data=[
                         {'id': 'store_1', 'store_code': 'S001', 'store_name': '店舗A', 'region': '東京'},
@@ -141,28 +142,32 @@ class TestStoresRankings:
                     ]
                 )
             elif table_name == 'profiles':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(data=[{'id': 'user_1'}])
-                mock_table.select.return_value = mock_chain
+                # 全プロファイルデータ（一括取得）
+                mock_table.select.return_value.execute.return_value = Mock(
+                    data=[
+                        {'id': 'user_1', 'store_id': 'store_1'},
+                        {'id': 'user_2', 'store_id': 'store_2'},
+                        {'id': 'user_3', 'store_id': 'store_2'}
+                    ]
+                )
             elif table_name == 'conversations':
-                mock_chain = Mock()
-                mock_chain.eq.return_value.execute.return_value = Mock(data=[{'id': 'conv_1'}, {'id': 'conv_2'}])
-                mock_table.select.return_value = mock_chain
+                # 全会話データ（一括取得）
+                mock_table.select.return_value.execute.return_value = Mock(
+                    data=[
+                        {'id': 'conv_1', 'store_id': 'store_1'},
+                        {'id': 'conv_2', 'store_id': 'store_1'},
+                        {'id': 'conv_3', 'store_id': 'store_2'}
+                    ]
+                )
             elif table_name == 'evaluations':
-                mock_chain = Mock()
-                # 店舗1: 平均8.0, 店舗2: 平均9.0
-                def mock_eq(field, value):
-                    if value == 'store_1':
-                        mock_result = Mock()
-                        mock_result.execute.return_value = Mock(data=[{'average_score': 8.0}])
-                        return mock_result
-                    elif value == 'store_2':
-                        mock_result = Mock()
-                        mock_result.execute.return_value = Mock(data=[{'average_score': 9.0}])
-                        return mock_result
-                    return Mock(execute=Mock(return_value=Mock(data=[])))
-                mock_chain.eq = mock_eq
-                mock_table.select.return_value = mock_chain
+                # 全評価データ（一括取得）
+                mock_table.select.return_value.execute.return_value = Mock(
+                    data=[
+                        {'store_id': 'store_1', 'average_score': 7.0},
+                        {'store_id': 'store_1', 'average_score': 9.0},  # 店舗1平均: 8.0
+                        {'store_id': 'store_2', 'average_score': 9.0}   # 店舗2平均: 9.0
+                    ]
+                )
             return mock_table
 
         mock_supabase.table.side_effect = mock_table_response
