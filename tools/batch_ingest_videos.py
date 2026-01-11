@@ -9,6 +9,7 @@ import sys
 import json
 import re
 import tempfile
+import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 import tiktoken
@@ -555,9 +556,9 @@ def process_video(video_path: Path) -> Optional[Dict[str, Any]]:
         }
         
     except Exception as e:
-        print(f"[エラー] {video_path.name}: {e}")
-        import traceback
-        traceback.print_exc()
+        logger = logging.getLogger(__name__)
+        logger.error(f"[エラー] {video_path.name}: {e}", exc_info=True)
+        print(f"[エラー] {video_path.name}: {e}")  # コンソール出力も維持
         return None
 
 
