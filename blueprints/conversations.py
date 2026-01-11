@@ -546,7 +546,7 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=100,         # バランス調整: 60→100（自然な長さ）
+                    max_tokens=80,          # 1-2文に制限（音声品質向上のため）
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
@@ -940,7 +940,7 @@ def chat_stream():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=100,         # バランス調整: 60→100（自然な長さ）
+                    max_tokens=80,          # 1-2文に制限（音声品質向上のため）
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
@@ -961,114 +961,26 @@ def chat_stream():
                         content = chunk.choices[0].delta.content
                         text_buffer += content
 
-                        # ChatGPT風：最初のチャンクは即座に送信、2チャンク目以降は通常ルール
+                        # 句点（。）でのみ分割（音声品質向上のため）
                         should_send = False
-                        delimiter = ''
 
-                        if not first_chunk_sent:
-                            # 最初のチャンクは句点 or 接続助詞で送信
-                            if '。' in text_buffer and len(text_buffer) >= 3:
-                                # 句点があり、3文字以上なら送信
-                                should_send = True
-                                delimiter = '。'
-                            elif len(text_buffer) >= 15:
-                                # 15文字以上で接続助詞を探す（速度と自然さの両立）
-                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から']
-                                best_pos = -1
-                                for conn in connectives:
-                                    pos = text_buffer.rfind(conn)
-                                    if pos > best_pos and pos >= 8:  # 最低8文字
-                                        best_pos = pos + len(conn)
-                                if best_pos > 0:
-                                    should_send = True
-                                    delimiter = 'connective'
-                        else:
-                            # 2チャンク目以降も句点 or 接続助詞で送信
-                            if '。' in text_buffer and len(text_buffer) >= 3:
-                                # 句点があり、3文字以上なら送信
-                                should_send = True
-                                delimiter = '。'
-                            elif len(text_buffer) >= 25:
-                                # 25文字以上で接続助詞を探す
-                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から']
-                                best_pos = -1
-                                for conn in connectives:
-                                    pos = text_buffer.rfind(conn)
-                                    if pos > best_pos and pos >= 12:  # 最低12文字
-                                        best_pos = pos + len(conn)
-                                if best_pos > 0:
-                                    should_send = True
-                                    delimiter = 'connective'
+                        if '。' in text_buffer and len(text_buffer) >= 3:
+                            # 句点があり、3文字以上なら送信
+                            should_send = True
 
                         if should_send:
-                            if delimiter == 'connective':
-                                # 接続助詞の位置で切る（特殊処理）
-                                connectives = ['ですが', 'ますが', 'けど', 'けれど', 'ので', 'から']
-                                best_pos = -1
-                                for conn in connectives:
-                                    pos = text_buffer.rfind(conn)
-                                    if pos > best_pos and pos >= 8:
-                                        best_pos = pos + len(conn)
-
-                                if best_pos > 0:
-                                    chunk_text = text_buffer[:best_pos].strip()
-                                    chunk_count += 1
-                                    logger.debug(f"[チャンク{chunk_count}] {chunk_text} （接続助詞で分割・TTS並列生成開始）")
-
-                                    # TTS生成を並列実行（ブロックしない）
-                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
-                                    tts_futures[chunk_count] = future
-
-                                    text_buffer = text_buffer[best_pos:]
-                                    first_chunk_sent = True
-                            elif delimiter == 'particle':
-                                # 助詞の位置で切る（特殊処理）
-                                particles = ['って', 'けど', 'から', 'ので', 'んで', 'が', 'で', 'を', 'に', 'は', 'も', 'と', 'や', 'て']
-                                best_pos = -1
-                                for particle in particles:
-                                    pos = text_buffer.rfind(particle)
-                                    if pos > best_pos and pos >= 10:  # 最低10文字
-                                        best_pos = pos + len(particle)
-
-                                if best_pos > 0:
-                                    chunk_text = text_buffer[:best_pos].strip()
-                                    chunk_count += 1
-                                    logger.debug(f"[チャンク{chunk_count}] {chunk_text} （助詞で分割・TTS並列生成開始）")
-
-                                    # TTS生成を並列実行（ブロックしない）
-                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
-                                    tts_futures[chunk_count] = future
-
-                                    text_buffer = text_buffer[best_pos:]
-                                    first_chunk_sent = True
-                            elif delimiter:
-                                # 句読点で分割
-                                chunks = text_buffer.split(delimiter)
-                                # 最後の要素（未完成の文）を除いて処理
-                                for part in chunks[:-1]:
-                                    if part.strip():
-                                        chunk_text = part.strip() + delimiter
-                                        chunk_count += 1
-                                        logger.debug(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
-
-                                        # TTS生成を並列実行（ブロックしない）
-                                        future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
-                                        tts_futures[chunk_count] = future
-
-                                # 未完成の文をバッファに残す
-                                text_buffer = chunks[-1]
-                                first_chunk_sent = True
-                            else:
-                                # delimiter が None の場合（このケースはもう発生しないはず）
-                                chunk_text = text_buffer.strip()
+                            # 句点の位置で切る
+                            pos = text_buffer.rfind('。')
+                            if pos >= 0:
+                                chunk_text = text_buffer[:pos+1].strip()
                                 chunk_count += 1
-                                logger.debug(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
+                                logger.debug(f"[チャンク{chunk_count}] {chunk_text} （句点で分割・TTS並列生成開始）")
 
                                 # TTS生成を並列実行（ブロックしない）
                                 future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
                                 tts_futures[chunk_count] = future
 
-                                text_buffer = ""
+                                text_buffer = text_buffer[pos+1:].strip()
                                 first_chunk_sent = True
 
                     # 完成したTTSから順序通りにyield（GPTストリーム受信と並列実行）
