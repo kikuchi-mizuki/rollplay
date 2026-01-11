@@ -138,13 +138,27 @@ if CORS_AVAILABLE and CORS:
     allowed_origins = [
         'http://localhost:3000',      # React開発環境
         'http://localhost:5173',      # Vite開発環境
-        os.getenv('FRONTEND_URL', '')  # 本番環境フロントエンドURL
     ]
+
+    # 本番環境のFRONTEND_URLを追加
+    frontend_url = os.getenv('FRONTEND_URL', '').strip()
+    if frontend_url:
+        allowed_origins.append(frontend_url)
+        logger.info(f"✅ 本番フロントエンドURL追加: {frontend_url}")
+    else:
+        logger.warning("⚠️ FRONTEND_URLが設定されていません（開発環境のみ対応）")
+
     # 空文字列を除外
     allowed_origins = [origin for origin in allowed_origins if origin]
 
-    CORS(app, origins=allowed_origins if allowed_origins else '*')
-    logger.info(f"CORS有効化: {allowed_origins if allowed_origins else 'すべてのオリジン'}")
+    CORS(app,
+         origins=allowed_origins if allowed_origins else '*',
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         max_age=3600  # プリフライトリクエストのキャッシュ時間（1時間）
+    )
+    logger.info(f"✅ CORS有効化: {allowed_origins if allowed_origins else 'すべてのオリジン'}")
 
 # レート制限の設定（APIコスト爆発を防ぐ）
 limiter = None
@@ -771,6 +785,52 @@ SALES_ROLEPLAY_PROMPT = """あなたは【シナリオ設定】で指定され�
 
 # ===== ヘルパー関数 =====
 
+# APIレスポンス標準化ヘルパー
+def success_response(data=None, message=None, status_code=200):
+    """
+    成功レスポンスの標準形式
+
+    Args:
+        data: レスポンスデータ（dict, list, etc.）
+        message: オプションのメッセージ
+        status_code: HTTPステータスコード（デフォルト200）
+
+    Returns:
+        JSON形式のレスポンス
+    """
+    response = {
+        'success': True,
+        'timestamp': datetime.now().isoformat()
+    }
+    if data is not None:
+        response['data'] = data
+    if message:
+        response['message'] = message
+    return jsonify(response), status_code
+
+
+def error_response(error, code=None, status_code=500):
+    """
+    エラーレスポンスの標準形式
+
+    Args:
+        error: エラーメッセージ（str）
+        code: エラーコード（オプション）
+        status_code: HTTPステータスコード（デフォルト500）
+
+    Returns:
+        JSON形式のレスポンス
+    """
+    response = {
+        'success': False,
+        'error': error,
+        'timestamp': datetime.now().isoformat()
+    }
+    if code:
+        response['code'] = code
+    return jsonify(response), status_code
+
+
 # 先頭バイトで実体コンテナを推定
 def sniff_suffix(path: str) -> str:
     try:
@@ -826,6 +886,8 @@ init_evaluations_blueprint(app)
 # 会話機能Blueprint
 app.register_blueprint(conversations_bp)
 app.config['openai_api_key'] = openai_api_key
+app.config['success_response'] = success_response  # APIレスポンスヘルパー
+app.config['error_response'] = error_response  # APIレスポンスヘルパー
 app.config['DEFAULT_SCENARIO_ID'] = DEFAULT_SCENARIO_ID
 app.config['SALES_ROLEPLAY_PROMPT'] = SALES_ROLEPLAY_PROMPT
 app.config['load_scenario_object'] = load_scenario_object

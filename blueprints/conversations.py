@@ -278,7 +278,7 @@ def handle_evaluations():
 # ===== チャット応答エンドポイント =====
 
 @conversations_bp.route('/api/chat', methods=['POST'])
-@apply_rate_limit("10 per minute")  # GPT-4使用のためレート制限
+@apply_rate_limit("10 per minute")  # GPT-4o-mini使用のためレート制限
 def chat():
     try:
         data = request.get_json()
@@ -601,7 +601,7 @@ def chat():
 
 
 @conversations_bp.route('/api/chat-stream', methods=['POST'])
-@apply_rate_limit("10 per minute")  # GPT-4+TTS使用のためレート制限
+@apply_rate_limit("5 per minute")  # GPT-4o-mini+TTS使用（CPU集約的）のためレート制限
 def chat_stream():
     """
     ストリーミング対応のチャットエンドポイント
@@ -1164,7 +1164,7 @@ def get_mock_response(user_message):
         return mock_responses[1]
 
 @conversations_bp.route('/api/evaluate', methods=['POST'])
-@apply_rate_limit("5 per minute")  # GPT-4評価生成のためレート制限
+@apply_rate_limit("3 per minute")  # GPT-4評価生成（コスト高）のためレート制限
 def evaluate_conversation():
     try:
         data = request.get_json()
