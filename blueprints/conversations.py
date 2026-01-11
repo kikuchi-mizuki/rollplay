@@ -64,6 +64,8 @@ def init_blueprint(app):
     load_evaluation_samples = app.config.get('load_evaluation_samples')
     RUBRIC_DATA = app.config.get('RUBRIC_DATA')
     limiter = app.config.get('limiter')
+    validate_integer_param = app.config.get('validate_integer_param')
+    validate_required_string = app.config.get('validate_required_string')
     MAX_MESSAGE_LENGTH = app.config.get('MAX_MESSAGE_LENGTH', 2000)
     MAX_HISTORY_LENGTH = app.config.get('MAX_HISTORY_LENGTH', 50)
     MAX_EVALUATION_TEXT_LENGTH = app.config.get('MAX_EVALUATION_TEXT_LENGTH', 10000)
@@ -77,6 +79,11 @@ def apply_rate_limit(limit_string):
     def decorator(func):
         if limiter:
             return limiter.limit(limit_string)(func)
+        else:
+            # レート制限が無効な場合は警告ログを出力
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"⚠️ レート制限が無効です: {func.__name__} (flask-limiterが未インストール)")
         return func
     return decorator
 
@@ -124,9 +131,7 @@ def save_conversation():
         return jsonify({'success': False, 'error': '必要な情報が含まれていません'}), 400
     except Exception as e:
         # データベースエラーまたは予期しないエラー
-        logger.error(f"会話保存 - 予期しないエラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"会話保存 - 予期しないエラー: {type(e).__name__}: {e}", exc_info=True)
         return jsonify({'success': False, 'error': '会話の保存中にエラーが発生しました'}), 500
 
 
@@ -165,8 +170,6 @@ def get_conversations():
     except Exception as e:
         # データベースエラーまたは予期しないエラー
         logger.error(f"会話取得 - 予期しないエラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'success': False, 'error': '会話履歴の取得中にエラーが発生しました'}), 500
 
 
@@ -207,8 +210,6 @@ def handle_evaluations():
         except Exception as e:
             # データベースエラーまたは予期しないエラー
             logger.error(f"評価取得 - 予期しないエラー: {type(e).__name__}: {e}")
-            import traceback
-            traceback.print_exc()
             return jsonify({'success': False, 'error': '評価履歴の取得中にエラーが発生しました'}), 500
 
     else:  # POST
@@ -270,8 +271,6 @@ def handle_evaluations():
         except Exception as e:
             # データベースエラーまたは予期しないエラー
             logger.error(f"評価保存 - 予期しないエラー: {type(e).__name__}: {e}")
-            import traceback
-            traceback.print_exc()
             return jsonify({'success': False, 'error': '評価の保存中にエラーが発生しました'}), 500
 
 
@@ -523,8 +522,6 @@ def chat():
                                 logger.debug("[RAG検索] 類似パターンが見つかりませんでした")
                     except Exception as e:
                         logger.error(f"RAG検索エラー（フォールバック）: {e}")
-                        import traceback
-                        traceback.print_exc()
                         # RAG検索に失敗しても続行（通常の応答生成にフォールバック）
                 
                 # 🎯 Few-shot（シナリオのutterancesを先頭に織り込む）- 最優先で学習
@@ -1139,8 +1136,6 @@ def chat_stream():
     except Exception as e:
         # エンドポイント全体での予期しないエラー
         logger.error(f"チャットストリーム初期化 - 予期しないエラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'success': False, 'error': 'サーバーエラーが発生しました。もう一度お試しください'}), 500
 
 
@@ -1230,8 +1225,6 @@ def evaluate_conversation():
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
         logger.error(f"評価生成 - 予期しないエラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': '評価生成中にエラーが発生しました。もう一度お試しください'
@@ -1743,8 +1736,6 @@ def upload_recording(conversation_id):
 
     except Exception as e:
         logger.error(f"録画アップロードエラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'success': False, 'error': '録画のアップロードに失敗しました'}), 500
 
 
@@ -1787,8 +1778,6 @@ def get_recording_url(conversation_id):
 
     except Exception as e:
         logger.error(f"録画URL取得エラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'success': False, 'error': '録画情報の取得に失敗しました'}), 500
 
 # ===== Week 3: データ永続化機能 =====

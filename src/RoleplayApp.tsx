@@ -17,6 +17,21 @@ import { useRecording } from './hooks/useRecording'; // Phase 2 Day 4: 録画機
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
 
+// 本番環境ではconsole.logを無効化
+const isDevelopment = import.meta.env.DEV;
+const debug = isDevelopment ? console.log : () => {};
+const debugWarn = isDevelopment ? console.warn : () => {};
+const debugError = console.error; // エラーは常に表示
+
+/**
+ * デバッグログガイドライン:
+ * - 開発時のみのログ: debug() を使用
+ * - 警告: debugWarn() を使用
+ * - エラー: debugError() または console.error() を使用（本番でも表示）
+ *
+ * 今後の改善: 既存のconsole.logをdebug()に段階的に置換
+ */
+
 /**
  * ロープレメインアプリケーションコンポーネント
  */

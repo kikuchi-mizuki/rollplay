@@ -277,8 +277,6 @@ def text_to_speech():
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
         logger.error(f"TTS生成 - 予期しないエラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify(success=False, error='音声生成中にエラーが発生しました。もう一度お試しください'), 500
 
 
@@ -353,12 +351,10 @@ def transcribe():
         return jsonify(success=False, error='音声ファイルの形式が不正です'), 400
     except OSError as e:
         logger.error(f"ファイルI/O: {e}")
-        import traceback; traceback.print_exc()
         return jsonify(success=False, error='音声ファイルの処理中にエラーが発生しました'), 500
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
         logger.error(f"予期しないエラー: {type(e).__name__}: {e}")
-        import traceback; traceback.print_exc()
         return jsonify(success=False, error='音声認識中にエラーが発生しました。もう一度お試しください。'), 500
     finally:
         try:
@@ -434,8 +430,6 @@ def transcribe_with_whisper(audio_bytes):
 
     except Exception as e:
         logger.error(f"Whisper音声認識エラー詳細: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': f'Whisper音声認識エラー: {str(e)}'

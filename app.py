@@ -151,14 +151,19 @@ if CORS_AVAILABLE and CORS:
     # 空文字列を除外
     allowed_origins = [origin for origin in allowed_origins if origin]
 
+    # 本番環境ではオリジンを必ず指定（セキュリティ強化）
+    if not allowed_origins:
+        logger.error("❌ CORS設定エラー: 許可するオリジンが1つも設定されていません")
+        raise ValueError("CORS origins must be configured. Set FRONTEND_URL in production.")
+
     CORS(app,
-         origins=allowed_origins if allowed_origins else '*',
+         origins=allowed_origins,
          supports_credentials=True,
          allow_headers=["Content-Type", "Authorization"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          max_age=3600  # プリフライトリクエストのキャッシュ時間（1時間）
     )
-    logger.info(f"✅ CORS有効化: {allowed_origins if allowed_origins else 'すべてのオリジン'}")
+    logger.info(f"✅ CORS有効化: {allowed_origins}")
 
 # レート制限の設定（APIコスト爆発を防ぐ）
 limiter = None
@@ -238,9 +243,7 @@ if supabase_url and supabase_key:
         supabase_client = create_client(supabase_url, supabase_key)
         logger.info(f"✅ Supabase接続成功: {supabase_url}")
     except Exception as e:
-        logger.error(f"❌ Supabase接続エラー: URL={supabase_url}, Error={type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"❌ Supabase接続エラー: URL={supabase_url}, Error={type(e).__name__}: {e}", exc_info=True)
         supabase_client = None
 else:
     if not supabase_url:
@@ -397,9 +400,7 @@ else:
         openai_client = OpenAI(api_key=openai_api_key)
         logger.info("✅ OpenAI API初期化成功")
     except Exception as e:
-        logger.error(f"❌ OpenAI API初期化エラー: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"❌ OpenAI API初期化エラー: {type(e).__name__}: {e}", exc_info=True)
         openai_client = None
 
 # Whisper統一版ではOpenAIのGPTモデルを使用
@@ -831,6 +832,56 @@ def error_response(error, code=None, status_code=500):
     return jsonify(response), status_code
 
 
+def validate_integer_param(value, param_name, default=50, min_value=1, max_value=1000):
+    """
+    クエリパラメータの整数値をバリデーション
+
+    Args:
+        value: 検証する値
+        param_name: パラメータ名（エラーメッセージ用）
+        default: デフォルト値
+        min_value: 最小値
+        max_value: 最大値
+
+    Returns:
+        検証済みの整数値
+    """
+    if value is None:
+        return default
+
+    try:
+        int_value = int(value)
+        if int_value < min_value:
+            logger.warning(f"{param_name}が最小値未満: {int_value} < {min_value}、最小値を使用")
+            return min_value
+        if int_value > max_value:
+            logger.warning(f"{param_name}が最大値超過: {int_value} > {max_value}、最大値を使用")
+            return max_value
+        return int_value
+    except (ValueError, TypeError):
+        logger.warning(f"{param_name}の変換エラー: {value}、デフォルト値{default}を使用")
+        return default
+
+
+def validate_required_string(value, param_name):
+    """
+    必須文字列パラメータのバリデーション
+
+    Args:
+        value: 検証する値
+        param_name: パラメータ名（エラーメッセージ用）
+
+    Returns:
+        検証済みの文字列、またはNone
+
+    Raises:
+        ValueError: 値が空の場合
+    """
+    if not value or not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{param_name}は必須です")
+    return value.strip()
+
+
 # 先頭バイトで実体コンテナを推定
 def sniff_suffix(path: str) -> str:
     try:
@@ -888,6 +939,8 @@ app.register_blueprint(conversations_bp)
 app.config['openai_api_key'] = openai_api_key
 app.config['success_response'] = success_response  # APIレスポンスヘルパー
 app.config['error_response'] = error_response  # APIレスポンスヘルパー
+app.config['validate_integer_param'] = validate_integer_param  # パラメータバリデーション
+app.config['validate_required_string'] = validate_required_string  # パラメータバリデーション
 app.config['DEFAULT_SCENARIO_ID'] = DEFAULT_SCENARIO_ID
 app.config['SALES_ROLEPLAY_PROMPT'] = SALES_ROLEPLAY_PROMPT
 app.config['load_scenario_object'] = load_scenario_object
@@ -1055,6 +1108,22 @@ def openapi_spec():
     import os
     spec_path = os.path.join(os.path.dirname(__file__), 'docs', 'openapi.yaml')
     return send_file(spec_path, mimetype='text/yaml')
+
+# ===== セキュリティヘッダーの追加 =====
+@app.after_request
+def add_security_headers(response):
+    """セキュリティヘッダーを追加してXSS、クリックジャッキング等を防止"""
+    # HTTPS強制（本番環境）
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # MIMEタイプスニッフィング防止
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # クリックジャッキング防止
+    response.headers['X-Frame-Options'] = 'DENY'
+    # XSS保護
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Content Security Policy（段階的に強化）
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.openai.com;"
+    return response
 
 # ===== 静的ファイルBlueprint（最後に登録 - キャッチオールルートのため） =====
 app.register_blueprint(static_bp)
