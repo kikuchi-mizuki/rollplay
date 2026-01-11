@@ -91,22 +91,42 @@ def get_stores_rankings():
         stores_result = supabase_client.table('stores').select('*').execute()
         stores = stores_result.data if stores_result.data else []
 
+        # 全店舗のプロファイル、会話、評価を一括取得（N+1クエリを回避）
+        all_profiles = supabase_client.table('profiles').select('id, store_id').execute()
+        all_conversations = supabase_client.table('conversations').select('id, store_id').execute()
+        all_evaluations = supabase_client.table('evaluations').select('store_id, average_score').execute()
+
+        # 店舗IDごとに集計
+        profiles_by_store = {}
+        conversations_by_store = {}
+        evaluations_by_store = {}
+
+        for profile in (all_profiles.data or []):
+            store_id = profile.get('store_id')
+            if store_id:
+                profiles_by_store[store_id] = profiles_by_store.get(store_id, 0) + 1
+
+        for conversation in (all_conversations.data or []):
+            store_id = conversation.get('store_id')
+            if store_id:
+                conversations_by_store[store_id] = conversations_by_store.get(store_id, 0) + 1
+
+        for evaluation in (all_evaluations.data or []):
+            store_id = evaluation.get('store_id')
+            if store_id:
+                if store_id not in evaluations_by_store:
+                    evaluations_by_store[store_id] = []
+                evaluations_by_store[store_id].append(evaluation['average_score'])
+
         rankings = []
         for store in stores:
             store_id = store['id']
 
-            # 店舗のユーザー数
-            profiles_result = supabase_client.table('profiles').select('id').eq('store_id', store_id).execute()
-            user_count = len(profiles_result.data) if profiles_result.data else 0
-
-            # 店舗の会話数
-            conversations_result = supabase_client.table('conversations').select('id').eq('store_id', store_id).execute()
-            conversation_count = len(conversations_result.data) if conversations_result.data else 0
-
-            # 店舗の評価平均スコア
-            evaluations_result = supabase_client.table('evaluations').select('average_score').eq('store_id', store_id).execute()
-            evaluations = evaluations_result.data if evaluations_result.data else []
-            avg_score = sum(e['average_score'] for e in evaluations) / len(evaluations) if evaluations else 0
+            # 集計データから取得
+            user_count = profiles_by_store.get(store_id, 0)
+            conversation_count = conversations_by_store.get(store_id, 0)
+            evaluations = evaluations_by_store.get(store_id, [])
+            avg_score = sum(evaluations) / len(evaluations) if evaluations else 0
 
             rankings.append({
                 'store_id': store_id,

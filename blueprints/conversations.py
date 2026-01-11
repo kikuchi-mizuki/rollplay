@@ -633,7 +633,7 @@ def chat_stream():
                 executor = ThreadPoolExecutor(max_workers=3)
                 tts_futures = {}  # {chunk_index: Future}
 
-                def generate_tts_task(chunk_text, chunk_index):
+                def generate_tts_task(chunk_text, chunk_index, persona_info=None, is_first=False, current_scenario_id=None):
                     """TTS生成タスク（スレッドプールで実行、リトライ対応）"""
                     import time
                     from blueprints.media import select_voice_for_persona, normalize_text_for_japanese_tts
@@ -642,9 +642,9 @@ def chat_stream():
                     # ペルソナに応じた音声と話速を選択
                     # ペルソナタイプを推測（会話の最初でペルソナ情報がある場合）
                     persona_type = None
-                    if persona and is_first_message:
+                    if persona_info and is_first:
                         # ペルソナから音声タイプを推測
-                        business_type = persona.get('business_type', '')
+                        business_type = persona_info.get('business_type', '')
                         if '飲食' in business_type or 'レストラン' in business_type:
                             persona_type = 'traditional_owner'  # 伝統的な事業主
                         elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type:
@@ -659,7 +659,7 @@ def chat_stream():
                     # 音声と話速を選択
                     selected_voice, selected_speed = select_voice_for_persona(
                         persona_type=persona_type or 'default',
-                        scenario_id=scenario_id
+                        scenario_id=current_scenario_id
                     )
 
                     # リトライ設定（最大3回、指数バックオフ）
@@ -1019,7 +1019,7 @@ def chat_stream():
                                     logger.debug(f"[チャンク{chunk_count}] {chunk_text} （接続助詞で分割・TTS並列生成開始）")
 
                                     # TTS生成を並列実行（ブロックしない）
-                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
                                     tts_futures[chunk_count] = future
 
                                     text_buffer = text_buffer[best_pos:]
@@ -1039,7 +1039,7 @@ def chat_stream():
                                     logger.debug(f"[チャンク{chunk_count}] {chunk_text} （助詞で分割・TTS並列生成開始）")
 
                                     # TTS生成を並列実行（ブロックしない）
-                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                    future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
                                     tts_futures[chunk_count] = future
 
                                     text_buffer = text_buffer[best_pos:]
@@ -1055,7 +1055,7 @@ def chat_stream():
                                         logger.debug(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
 
                                         # TTS生成を並列実行（ブロックしない）
-                                        future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                        future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
                                         tts_futures[chunk_count] = future
 
                                 # 未完成の文をバッファに残す
@@ -1068,7 +1068,7 @@ def chat_stream():
                                 logger.debug(f"[チャンク{chunk_count}] {chunk_text} （TTS並列生成開始）")
 
                                 # TTS生成を並列実行（ブロックしない）
-                                future = executor.submit(generate_tts_task, chunk_text, chunk_count)
+                                future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
                                 tts_futures[chunk_count] = future
 
                                 text_buffer = ""
@@ -1093,7 +1093,7 @@ def chat_stream():
                 if text_buffer.strip():
                     chunk_count += 1
                     logger.debug(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
-                    future = executor.submit(generate_tts_task, text_buffer.strip(), chunk_count)
+                    future = executor.submit(generate_tts_task, text_buffer.strip(), chunk_count, persona, is_first_message, scenario_id)
                     tts_futures[chunk_count] = future
 
                 # 全てのTTS生成完了を待ち、順序通りにyield

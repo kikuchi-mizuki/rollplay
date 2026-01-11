@@ -222,11 +222,18 @@ supabase_client: Client = None
 if supabase_url and supabase_key:
     try:
         supabase_client = create_client(supabase_url, supabase_key)
-        logger.info("Supabase接続成功")
+        logger.info(f"✅ Supabase接続成功: {supabase_url}")
     except Exception as e:
-        logger.error(f"Supabase接続エラー: {e}")
+        logger.error(f"❌ Supabase接続エラー: URL={supabase_url}, Error={type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        supabase_client = None
 else:
-    logger.warning("Supabase設定が見つかりません（データ永続化は無効）")
+    if not supabase_url:
+        logger.warning("⚠️ VITE_SUPABASE_URLが設定されていません")
+    if not supabase_key:
+        logger.warning("⚠️ SUPABASE_SERVICE_ROLE_KEYまたはVITE_SUPABASE_ANON_KEYが設定されていません")
+    logger.warning("Supabaseなしで起動します（データ永続化機能は無効）")
 
 # ===== 入力値検証の定数 =====
 
@@ -366,16 +373,19 @@ def can_access_data(current_user, data_user_id=None, data_store_id=None):
 # OpenAI API設定（Whisper統一版）
 openai_api_key = os.getenv('OPENAI_API_KEY')
 if not openai_api_key:
-    logger.warning("警告: OPENAI_API_KEYが設定されていません")
+    logger.warning("⚠️ OPENAI_API_KEYが設定されていません")
     logger.warning("テストモードで実行します（モック応答を使用）")
+    logger.warning("本番環境では.envファイルにOPENAI_API_KEYを設定してください")
     openai_client = None
 else:
     try:
-        os.environ['OPENAI_API_KEY'] = openai_api_key
-        openai_client = OpenAI()  # 以降は必ずこのクライアントを使用
-        logger.info("OpenAIモジュールAPIを使用します")
+        # OpenAI APIクライアント初期化
+        openai_client = OpenAI(api_key=openai_api_key)
+        logger.info("✅ OpenAI API初期化成功")
     except Exception as e:
-        logger.error(f"OpenAIモジュールAPI初期化に失敗: {e}")
+        logger.error(f"❌ OpenAI API初期化エラー: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
         openai_client = None
 
 # Whisper統一版ではOpenAIのGPTモデルを使用
