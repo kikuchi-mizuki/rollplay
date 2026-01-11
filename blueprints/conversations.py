@@ -625,10 +625,12 @@ def chat_stream():
 
         def generate():
             """SSE (Server-Sent Events) でストリーミング送信（TTS並列生成対応）"""
+            print("[DEBUG-GENERATE] generate()関数が呼ばれました", flush=True)
             try:
                 # TTS生成用スレッドプール（最大3並列でTTS生成）
                 executor = ThreadPoolExecutor(max_workers=3)
                 tts_futures = {}  # {chunk_index: Future}
+                print("[DEBUG-GENERATE] ThreadPoolExecutor初期化完了", flush=True)
 
                 def generate_tts_task(chunk_text, chunk_index, persona_info=None, is_first=False, current_scenario_id=None):
                     """TTS生成タスク（スレッドプールで実行、リトライ対応）"""
@@ -668,8 +670,10 @@ def chat_stream():
 
                     # デバッグ: TTS送信テキストをログ出力（本番確認のため一時的にINFO）
                     if chunk_text != normalized_chunk_text:
+                        print(f"[DEBUG-TTS] チャンク{chunk_index}正規化: '{chunk_text}' → '{normalized_chunk_text}'", flush=True)
                         logger.info(f"[TTS正規化] チャンク{chunk_index}: '{chunk_text}' → '{normalized_chunk_text}'")
                     else:
+                        print(f"[DEBUG-TTS] チャンク{chunk_index}送信: '{normalized_chunk_text}'", flush=True)
                         logger.info(f"[TTS送信] チャンク{chunk_index}: '{normalized_chunk_text}'")
 
                     for attempt in range(max_retries):
@@ -942,6 +946,7 @@ def chat_stream():
                     "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。"
                 })
 
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=80）", flush=True)
                 logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=80）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
@@ -952,6 +957,7 @@ def chat_stream():
                     frequency_penalty=0.3,  # 繰り返しを減らす
                     stream=True  # ストリーミング有効化
                 )
+                print("[DEBUG-GENERATE] GPT-4o-mini応答オブジェクト取得完了", flush=True)
 
                 # チャンクバッファ
                 text_buffer = ""
@@ -962,6 +968,7 @@ def chat_stream():
                 sentence_count = 0  # 文数カウント
                 next_yield_index = 1  # 次にyieldすべきチャンクのインデックス
 
+                print("[DEBUG-GENERATE] GPTレスポンス受信ループ開始", flush=True)
                 logger.info("[ストリーミング] GPTレスポンス受信開始")
                 token_count = 0  # デバッグ用トークンカウント
                 for chunk in response:
@@ -983,6 +990,7 @@ def chat_stream():
                             if pos >= 0:
                                 chunk_text = text_buffer[:pos+1].strip()
                                 chunk_count += 1
+                                print(f"[DEBUG-GENERATE] チャンク{chunk_count}分割: '{chunk_text}'", flush=True)
                                 logger.info(f"[チャンク{chunk_count}] {chunk_text} （句点で分割・TTS並列生成開始）")
 
                                 # TTS生成を並列実行（ブロックしない）
@@ -1030,6 +1038,7 @@ def chat_stream():
                 # スレッドプールをクリーンアップ
                 executor.shutdown(wait=False)
 
+                print(f"[DEBUG-GENERATE] ストリーミング完了: token_count={token_count}, chunk_count={chunk_count}, 最終バッファ='{text_buffer}'", flush=True)
                 logger.info(f"[ストリーミング完了] 受信トークン数: {token_count}, 合計{chunk_count}チャンク送信、最終バッファ: '{text_buffer}'")
 
             except ValueError as e:
