@@ -1018,9 +1018,11 @@ def chat_stream():
                 # 残りのテキストを処理
                 if text_buffer.strip():
                     chunk_count += 1
+                    print(f"[DEBUG-GENERATE] 最終チャンク{chunk_count}処理: '{text_buffer.strip()}'", flush=True)
                     logger.info(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
                     future = executor.submit(generate_tts_task, text_buffer.strip(), chunk_count, persona, is_first_message, scenario_id)
                     tts_futures[chunk_count] = future
+                    text_buffer = ""  # バッファをクリア
 
                 # 全てのTTS生成完了を待ち、順序通りにyield
                 while next_yield_index <= chunk_count:
