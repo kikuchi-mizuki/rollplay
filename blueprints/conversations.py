@@ -666,11 +666,11 @@ def chat_stream():
                     # テキストを正規化（英語略語をカタカナ読みに変換）
                     normalized_chunk_text = normalize_text_for_japanese_tts(chunk_text)
 
-                    # デバッグ: TTS送信テキストをログ出力
+                    # デバッグ: TTS送信テキストをログ出力（本番確認のため一時的にINFO）
                     if chunk_text != normalized_chunk_text:
-                        logger.debug(f"[TTS正規化] チャンク{chunk_index}: '{chunk_text}' → '{normalized_chunk_text}'")
+                        logger.info(f"[TTS正規化] チャンク{chunk_index}: '{chunk_text}' → '{normalized_chunk_text}'")
                     else:
-                        logger.debug(f"[TTS送信] チャンク{chunk_index}: '{normalized_chunk_text}'")
+                        logger.info(f"[TTS送信] チャンク{chunk_index}: '{normalized_chunk_text}'")
 
                     for attempt in range(max_retries):
                         try:
