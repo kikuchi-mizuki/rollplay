@@ -19,13 +19,13 @@ import { useRecording } from './hooks/useRecording'; // Phase 2 Day 4: 録画機
 
 // 本番環境ではconsole.logを無効化するユーティリティ
 // 使用例: debug('メッセージ') は開発環境でのみ出力
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore - 将来使用するためのユーティリティ関数
 const isDevelopment = import.meta.env.DEV;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore - 将来使用するためのユーティリティ関数
 const debug = isDevelopment ? console.log : () => {};
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore - 将来使用するためのユーティリティ関数
 const debugWarn = isDevelopment ? console.warn : () => {};
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore - 将来使用するためのユーティリティ関数
 const debugError = console.error; // エラーは常に表示
 
 /**
