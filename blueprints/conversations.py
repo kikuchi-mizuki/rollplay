@@ -980,7 +980,7 @@ def chat_stream():
                             if pos >= 0:
                                 chunk_text = text_buffer[:pos+1].strip()
                                 chunk_count += 1
-                                logger.debug(f"[チャンク{chunk_count}] {chunk_text} （句点で分割・TTS並列生成開始）")
+                                logger.info(f"[チャンク{chunk_count}] {chunk_text} （句点で分割・TTS並列生成開始）")
 
                                 # TTS生成を並列実行（ブロックしない）
                                 future = executor.submit(generate_tts_task, chunk_text, chunk_count, persona, is_first_message, scenario_id)
@@ -1007,7 +1007,7 @@ def chat_stream():
                 # 残りのテキストを処理
                 if text_buffer.strip():
                     chunk_count += 1
-                    logger.debug(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
+                    logger.info(f"[最終チャンク{chunk_count}] {text_buffer} （TTS並列生成開始）")
                     future = executor.submit(generate_tts_task, text_buffer.strip(), chunk_count, persona, is_first_message, scenario_id)
                     tts_futures[chunk_count] = future
 
