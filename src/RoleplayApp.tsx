@@ -17,10 +17,15 @@ import { useRecording } from './hooks/useRecording'; // Phase 2 Day 4: 録画機
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
 
-// 本番環境ではconsole.logを無効化
+// 本番環境ではconsole.logを無効化するユーティリティ
+// 使用例: debug('メッセージ') は開発環境でのみ出力
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isDevelopment = import.meta.env.DEV;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const debug = isDevelopment ? console.log : () => {};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const debugWarn = isDevelopment ? console.warn : () => {};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const debugError = console.error; // エラーは常に表示
 
 /**
