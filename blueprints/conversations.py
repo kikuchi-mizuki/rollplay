@@ -942,7 +942,7 @@ def chat_stream():
                     "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。"
                 })
 
-                logger.debug("[ストリーミング] GPT-4o-mini応答生成開始（超高速＋自然モード）")
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=80）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
@@ -962,10 +962,13 @@ def chat_stream():
                 sentence_count = 0  # 文数カウント
                 next_yield_index = 1  # 次にyieldすべきチャンクのインデックス
 
+                logger.info("[ストリーミング] GPTレスポンス受信開始")
+                token_count = 0  # デバッグ用トークンカウント
                 for chunk in response:
                     if chunk.choices[0].delta.content:
                         content = chunk.choices[0].delta.content
                         text_buffer += content
+                        token_count += 1
 
                         # 句点（。）でのみ分割（音声品質向上のため）
                         should_send = False
@@ -1027,7 +1030,7 @@ def chat_stream():
                 # スレッドプールをクリーンアップ
                 executor.shutdown(wait=False)
 
-                logger.debug(f"[ストリーミング完了] 合計{chunk_count}チャンク送信")
+                logger.info(f"[ストリーミング完了] 受信トークン数: {token_count}, 合計{chunk_count}チャンク送信、最終バッファ: '{text_buffer}'")
 
             except ValueError as e:
                 # 入力値エラー（JSON解析、不正な値など）
