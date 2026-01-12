@@ -203,9 +203,27 @@ export function useRecording(streams: RecordingStreams) {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 画面共有を全画面描画
+        // 画面共有を全画面描画（aspect-fitで中央配置）
         try {
-          ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+          const screenAspect = screenVideo.videoWidth / screenVideo.videoHeight;
+          const canvasAspect = canvas.width / canvas.height;
+
+          let drawWidth = canvas.width;
+          let drawHeight = canvas.height;
+          let drawX = 0;
+          let drawY = 0;
+
+          if (screenAspect > canvasAspect) {
+            // 画面共有が横長 → 幅を合わせる
+            drawHeight = canvas.width / screenAspect;
+            drawY = (canvas.height - drawHeight) / 2;
+          } else {
+            // 画面共有が縦長 → 高さを合わせる
+            drawWidth = canvas.height * screenAspect;
+            drawX = (canvas.width - drawWidth) / 2;
+          }
+
+          ctx.drawImage(screenVideo, drawX, drawY, drawWidth, drawHeight);
         } catch (err) {
           console.error('❌ 画面共有描画エラー:', err);
         }
@@ -551,9 +569,31 @@ export function useRecording(streams: RecordingStreams) {
       // readyState >= 2であれば現在のフレームが利用可能
       if (isScreenReady && isCameraReady &&
           screenVideo.readyState >= 2 && cameraVideo.readyState >= 2) {
-        // 画面共有を全画面描画
+        // 背景を黒で塗りつぶし
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 画面共有を全画面描画（aspect-fitで中央配置）
         try {
-          ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+          const screenAspect = screenVideo.videoWidth / screenVideo.videoHeight;
+          const canvasAspect = canvas.width / canvas.height;
+
+          let drawWidth = canvas.width;
+          let drawHeight = canvas.height;
+          let drawX = 0;
+          let drawY = 0;
+
+          if (screenAspect > canvasAspect) {
+            // 画面共有が横長 → 幅を合わせる
+            drawHeight = canvas.width / screenAspect;
+            drawY = (canvas.height - drawHeight) / 2;
+          } else {
+            // 画面共有が縦長 → 高さを合わせる
+            drawWidth = canvas.height * screenAspect;
+            drawX = (canvas.width - drawWidth) / 2;
+          }
+
+          ctx.drawImage(screenVideo, drawX, drawY, drawWidth, drawHeight);
         } catch (err) {
           console.error('❌ 画面共有描画エラー:', err);
         }
