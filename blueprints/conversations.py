@@ -567,7 +567,7 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=150,         # 会話が途中で切れないように十分な長さを確保
+                    max_tokens=80,          # テンポ重視: 150→80（簡潔な応答）
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
@@ -1129,15 +1129,15 @@ def chat_stream():
                 # 日本語での応答を強制するため、messagesに追加の指示を挿入
                 messages.append({
                     "role": "system",
-                    "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。"
+                    "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。\n\n⏱️ テンポ重視: 応答は1-2文で完結してください。ビジネス会話は簡潔に。長い説明は避け、要点だけを伝えてください。"
                 })
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=150）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=150）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=80）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=80）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=150,         # 会話が途中で切れないように十分な長さを確保
+                    max_tokens=80,          # テンポ重視: 150→80（簡潔な応答）
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
