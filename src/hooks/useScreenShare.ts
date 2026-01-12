@@ -43,9 +43,8 @@ export function useScreenShare() {
       console.log('🖥️ 画面共有開始...');
 
       // 画面共有要求
-      // preferCurrentTab: ユーザーが現在のタブを選択しやすくする（Chrome 94+）
       // surfaceSwitching: 共有中に別の画面に切り替え可能（Chrome 107+）
-      // selfBrowserSurface: 自分自身のタブを選択肢に含める（Chrome 107+）
+      // selfBrowserSurface: 'exclude'で自分自身のタブを除外（資料共有用途）
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
           width: { ideal: 1920, max: 3840 },  // 4K対応
@@ -54,11 +53,9 @@ export function useScreenShare() {
         },
         audio: false, // 画面共有の音声は不要（カメラのマイク音声を使用）
         // @ts-ignore - Chrome拡張プロパティ（TypeScript型定義に未対応）
-        preferCurrentTab: true,      // このタブを優先的に提示
-        // @ts-ignore
         surfaceSwitching: 'include', // 共有中に他の画面に切り替え可能
         // @ts-ignore
-        selfBrowserSurface: 'include', // 自分自身のタブも選択可能
+        selfBrowserSurface: 'exclude', // 自分自身のタブを選択肢から除外（資料共有用）
       } as any);
 
       // 画面共有の詳細情報を取得
