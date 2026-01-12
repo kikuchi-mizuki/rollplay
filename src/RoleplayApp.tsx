@@ -244,6 +244,15 @@ function RoleplayApp() {
     console.log(`[録画中] ストリーム状態: 画面共有=${!!screenStream}, カメラ=${!!cameraStream}`);
   }, [screenStream, cameraStream]);
 
+  // currentPersona（ペルソナ情報）の変更を監視（デバッグ用）
+  useEffect(() => {
+    console.log('[ペルソナ監視] currentPersonaが更新されました:', currentPersona ? {
+      name: currentPersona.name,
+      voice_name: currentPersona.voice_name,
+      speaking_rate: currentPersona.speaking_rate
+    } : null);
+  }, [currentPersona]);
+
   // Phase 2: カメラエラーハンドリング
   useEffect(() => {
     if (cameraError) {
@@ -612,6 +621,7 @@ function RoleplayApp() {
                 console.log('[ペルソナ受信] 新規会話のペルソナ情報を取得:', data.persona);
                 console.log('[ペルソナ受信] voice_name:', data.persona.voice_name, 'speaking_rate:', data.persona.speaking_rate);
                 setCurrentPersona(data.persona);
+                console.log('[ペルソナ更新] setCurrentPersonaを呼び出しました');
               }
 
               if (data.audio) {

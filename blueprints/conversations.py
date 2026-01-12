@@ -638,6 +638,9 @@ def chat_stream():
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
         conversation_id = data.get('conversation_id')  # 会話IDを取得
         request_persona = data.get('persona')  # フロントエンドから送信されたペルソナ（会話継続時のフォールバック）
+        logger.info(f"[リクエスト受信] conversation_id={conversation_id}, request_persona={'あり' if request_persona else 'なし'}")
+        if request_persona:
+            logger.info(f"[リクエスト受信] request_persona.voice_name={request_persona.get('voice_name')}, speaking_rate={request_persona.get('speaking_rate')}")
 
         # 入力値検証
         if len(user_message) > MAX_MESSAGE_LENGTH:
