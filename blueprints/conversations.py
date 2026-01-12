@@ -689,6 +689,8 @@ def chat_stream():
                             if credentials_json:
                                 # JSONを辞書としてパースしてから一時ファイルに書き込む
                                 import tempfile
+                                print(f"[DEBUG-GOOGLE-TTS] 環境変数の最初の200文字: {credentials_json[:200]}", flush=True)
+                                print(f"[DEBUG-GOOGLE-TTS] 環境変数の109文字目付近: {repr(credentials_json[100:120])}", flush=True)
                                 credentials_dict = json_module.loads(credentials_json)
                                 with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
                                     json_module.dump(credentials_dict, f, indent=2)
