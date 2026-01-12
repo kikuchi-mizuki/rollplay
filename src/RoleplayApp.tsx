@@ -57,7 +57,8 @@ function RoleplayApp() {
   const [imageSrc, setImageSrc] = useState<string | undefined>(getDefaultExpression('avatar_03')); // アバター画像（デフォルト表情）
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
-  const [_conversationId, setConversationId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null); // 会話ID（ペルソナ固定用）
+  const [currentPersona, setCurrentPersona] = useState<any>(null); // 現在のペルソナ情報（会話内固定）
   const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
   const lastExpressionRef = useRef<string>(getDefaultExpression('avatar_03')); // 前回の表情を記憶（不要な切り替え防止）
@@ -324,6 +325,7 @@ function RoleplayApp() {
       setEvaluation(null);
       setShowEvaluation(false);
       setConversationId(null);
+      setCurrentPersona(null); // ペルソナ情報もリセット
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
 
       // デフォルト表情（listening）の静止画を表示（avatar_03固定）
@@ -553,7 +555,8 @@ function RoleplayApp() {
         body: JSON.stringify({
           message: text,
           history: historyToSend,
-          scenario_id: selectedScenarioId
+          scenario_id: selectedScenarioId,
+          conversation_id: conversationId // 会話IDを送信（ペルソナ固定用）
         }),
       });
 
@@ -589,6 +592,12 @@ function RoleplayApp() {
                 console.error('ストリーミングエラー:', data.error);
                 setToast({ message: 'エラーが発生しました', type: 'error' });
                 continue;
+              }
+
+              // 最終チャンクでペルソナ情報を受信（新規会話時のみ）
+              if (data.final && data.persona) {
+                console.log('[ペルソナ受信] 新規会話のペルソナ情報を取得:', data.persona);
+                setCurrentPersona(data.persona);
               }
 
               if (data.audio) {
@@ -1220,6 +1229,8 @@ function RoleplayApp() {
     messagesRef.current = []; // Refも同期
     setShowClearConfirm(false);
     setMediaSubtitle('');
+    setConversationId(null); // 会話IDをリセット
+    setCurrentPersona(null); // ペルソナ情報もリセット
     // 動画はクリアせず、初期状態に戻す（ループ再生を維持）
     // キャッシュを回避するためにタイムスタンプを追加
     setVideoSrc('/video.mp4?v=' + Date.now());
@@ -1265,6 +1276,7 @@ function RoleplayApp() {
             scenarioTitle,
             messages,
             durationSeconds,
+            persona: currentPersona, // ペルソナ情報を保存
           });
 
           setConversationId(newConversationId);

@@ -157,6 +157,7 @@ export async function saveConversation(params: {
   scenarioTitle: string;
   messages: Message[];
   durationSeconds?: number;
+  persona?: any; // ペルソナ情報（会話内固定用）
 }): Promise<{ conversationId: string }> {
   try {
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/conversations`, {
@@ -174,7 +175,8 @@ export async function saveConversation(params: {
           text: msg.text,
           timestamp: msg.timestamp
         })),
-        duration_seconds: params.durationSeconds
+        duration_seconds: params.durationSeconds,
+        persona: params.persona // ペルソナ情報を送信
       })
     });
 
