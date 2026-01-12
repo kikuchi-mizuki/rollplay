@@ -343,8 +343,9 @@ export function useRecording(streams: RecordingStreams) {
    * Phase 2 Day 6: 画面共有+カメラの合成録画
    * - 画面共有: 実際の解像度を使用（メイン）
    * - カメラ: 1/6サイズ（右下PinP）
+   * - アバター: 1/6サイズ（左下PinP） - 追加
    * - 30fpsで描画ループ
-   * - 音声トラックも含める
+   * - 音声トラックも含める（カメラ + AI音声ミキシング）
    */
   const createCompositeStream = useCallback((): MediaStream | null => {
     if (!screenStream || !cameraStream) {
@@ -388,6 +389,18 @@ export function useRecording(streams: RecordingStreams) {
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
 
+    // アバター画像を読み込み（存在する場合）
+    let avatarImage: HTMLImageElement | null = null;
+    let lastAvatarImageSrc: string | undefined = undefined;
+
+    const initialAvatarSrc = avatarImageSrcRef?.current || avatarImageSrc;
+    if (initialAvatarSrc) {
+      avatarImage = new Image();
+      avatarImage.src = initialAvatarSrc;
+      lastAvatarImageSrc = initialAvatarSrc;
+      console.log(`  アバター画像読み込み: ${initialAvatarSrc}`);
+    }
+
     console.log('🎥 video要素の準備中...');
 
     // video要素の準備完了を待つ
@@ -426,6 +439,15 @@ export function useRecording(streams: RecordingStreams) {
     const drawFrame = () => {
       if (!canvasRef.current) return;
 
+      // アバター画像の変更をチェック（録画中の表情変化に対応）
+      const currentAvatarSrc = avatarImageSrcRef?.current;
+      if (currentAvatarSrc && currentAvatarSrc !== lastAvatarImageSrc) {
+        console.log(`🔄 アバター画像更新: ${lastAvatarImageSrc} → ${currentAvatarSrc}`);
+        avatarImage = new Image();
+        avatarImage.src = currentAvatarSrc;
+        lastAvatarImageSrc = currentAvatarSrc;
+      }
+
       // video要素が準備できているかチェック（readyState >= 3 = HAVE_FUTURE_DATA）
       if (isScreenReady && isCameraReady &&
           screenVideo.readyState >= 3 && cameraVideo.readyState >= 3) {
@@ -435,15 +457,63 @@ export function useRecording(streams: RecordingStreams) {
         // カメラを右下PinP描画（画面の1/6サイズ）
         const pipWidth = Math.floor(canvas.width / 6);
         const pipHeight = Math.floor(canvas.height / 6);
-        const pipX = canvas.width - pipWidth - 20; // 右から20px
-        const pipY = canvas.height - pipHeight - 20; // 下から20px
+        const cameraPipX = canvas.width - pipWidth - 20; // 右から20px
+        const cameraPipY = canvas.height - pipHeight - 20; // 下から20px
 
-        // PinP背景（黒枠）
+        // カメラPinP背景（黒枠）
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(pipX - 2, pipY - 2, pipWidth + 4, pipHeight + 4);
+        ctx.fillRect(cameraPipX - 2, cameraPipY - 2, pipWidth + 4, pipHeight + 4);
 
-        // カメラ映像
-        ctx.drawImage(cameraVideo, pipX, pipY, pipWidth, pipHeight);
+        // カメラ映像（aspect-fitで描画）
+        const cameraAspect = cameraVideo.videoWidth / cameraVideo.videoHeight;
+        const pipAspect = pipWidth / pipHeight;
+
+        let cameraDrawWidth = pipWidth;
+        let cameraDrawHeight = pipHeight;
+        let cameraDrawX = cameraPipX;
+        let cameraDrawY = cameraPipY;
+
+        if (cameraAspect > pipAspect) {
+          // カメラが横長 → 幅を合わせる
+          cameraDrawHeight = pipWidth / cameraAspect;
+          cameraDrawY = cameraPipY + (pipHeight - cameraDrawHeight) / 2;
+        } else {
+          // カメラが縦長 → 高さを合わせる
+          cameraDrawWidth = pipHeight * cameraAspect;
+          cameraDrawX = cameraPipX + (pipWidth - cameraDrawWidth) / 2;
+        }
+
+        ctx.drawImage(cameraVideo, cameraDrawX, cameraDrawY, cameraDrawWidth, cameraDrawHeight);
+
+        // アバターを左下PinP描画（画面の1/6サイズ）
+        if (avatarImage && avatarImage.complete) {
+          const avatarPipX = 20; // 左から20px
+          const avatarPipY = canvas.height - pipHeight - 20; // 下から20px
+
+          // アバターPinP背景（黒枠）
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(avatarPipX - 2, avatarPipY - 2, pipWidth + 4, pipHeight + 4);
+
+          // アバター画像（aspect-fitで描画）
+          const avatarAspect = avatarImage.width / avatarImage.height;
+
+          let avatarDrawWidth = pipWidth;
+          let avatarDrawHeight = pipHeight;
+          let avatarDrawX = avatarPipX;
+          let avatarDrawY = avatarPipY;
+
+          if (avatarAspect > pipAspect) {
+            // 画像が横長 → 幅を合わせる
+            avatarDrawHeight = pipWidth / avatarAspect;
+            avatarDrawY = avatarPipY + (pipHeight - avatarDrawHeight) / 2;
+          } else {
+            // 画像が縦長 → 高さを合わせる
+            avatarDrawWidth = pipHeight * avatarAspect;
+            avatarDrawX = avatarPipX + (pipWidth - avatarDrawWidth) / 2;
+          }
+
+          ctx.drawImage(avatarImage, avatarDrawX, avatarDrawY, avatarDrawWidth, avatarDrawHeight);
+        }
       } else {
         // video要素がまだ準備できていない場合は黒背景を描画
         ctx.fillStyle = 'black';
@@ -467,64 +537,98 @@ export function useRecording(streams: RecordingStreams) {
     // Canvasからストリームを取得（30fps）
     const compositeStream = canvas.captureStream(30);
 
-    // 音声トラックを追加（画面共有の音声 + カメラの音声 + AI音声）
-    const audioTracks: MediaStreamTrack[] = [];
+    // ========================================
+    // 音声トラックの手動ミキシング（AI音声録音問題の根本対策）
+    // ========================================
+    console.log('🎵 音声トラックの手動ミキシング開始...');
 
-    // 画面共有の音声トラック
+    // AudioContextを作成（音声ミキシング用）
+    const mixerContext = new AudioContext();
+
+    // ミキサーGainNodeを作成
+    const mixerGain = mixerContext.createGain();
+    mixerGain.gain.value = 1.0;
+
+    // MediaStreamDestinationを作成（ミックス後の音声出力先）
+    const mixedDestination = mixerContext.createMediaStreamDestination();
+    mixerGain.connect(mixedDestination);
+
+    let screenSourceConnected = false;
+    let cameraSourceConnected = false;
+    let aiSourceConnected = false;
+
+    // 画面共有の音声をミキサーに接続
     const screenAudioTracks = screenStream.getAudioTracks();
     if (screenAudioTracks.length > 0) {
-      audioTracks.push(...screenAudioTracks);
-      console.log(`  画面共有音声: ${screenAudioTracks.length}トラック追加`);
+      try {
+        const screenAudioStream = new MediaStream(screenAudioTracks.map(t => t.clone()));
+        const screenSource = mixerContext.createMediaStreamSource(screenAudioStream);
+        screenSource.connect(mixerGain);
+        screenSourceConnected = true;
+        console.log('  ✅ 画面共有音声をミキサーに接続');
+      } catch (err) {
+        console.warn('  ⚠️ 画面共有音声のミキサー接続失敗:', err);
+      }
     }
 
-    // カメラの音声トラック（VADレコーダーと競合しないようにクローン）
+    // カメラの音声をミキサーに接続
     const cameraAudioTracks = cameraStream.getAudioTracks();
     if (cameraAudioTracks.length > 0) {
-      // トラックをクローンして追加（元のトラックはVADレコーダーで使用中）
-      const clonedTracks = cameraAudioTracks.map(track => track.clone());
-      audioTracks.push(...clonedTracks);
-      console.log(`  カメラ音声: ${clonedTracks.length}トラッククローン追加`);
+      try {
+        const cameraAudioStream = new MediaStream(cameraAudioTracks.map(t => t.clone()));
+        const cameraSource = mixerContext.createMediaStreamSource(cameraAudioStream);
+        cameraSource.connect(mixerGain);
+        cameraSourceConnected = true;
+        console.log('  ✅ カメラ音声をミキサーに接続');
+      } catch (err) {
+        console.warn('  ⚠️ カメラ音声のミキサー接続失敗:', err);
+      }
     }
 
-    // AI音声トラック（Web Audio API出力 - MediaStreamDestinationから直接取得）
-    // ステート更新タイミング問題を回避するため、audioDestinationRefから直接取得
+    // AI音声をミキサーに接続
     const aiStream = audioDestinationRef?.current?.stream || aiAudioStream;
     if (aiStream) {
       const aiAudioTracks = aiStream.getAudioTracks();
       if (aiAudioTracks.length > 0) {
-        // AI音声トラックを直接追加（クローン不要 - GainNodeからMediaStreamDestinationに直接流れる）
-        aiAudioTracks.forEach(track => {
-          track.enabled = true; // 明示的に有効化
-          console.log(`    AI音声トラック[直接]: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
-        });
-        audioTracks.push(...aiAudioTracks);
-        console.log(`  AI音声: ${aiAudioTracks.length}トラック追加（GainNode→MediaStreamDestination直接接続）`);
+        try {
+          const aiSource = mixerContext.createMediaStreamSource(aiStream);
+          aiSource.connect(mixerGain);
+          aiSourceConnected = true;
+          console.log('  ✅ AI音声をミキサーに接続');
+        } catch (err) {
+          console.warn('  ⚠️ AI音声のミキサー接続失敗:', err);
+        }
       } else {
-        console.warn(`  ⚠️ AI音声: トラックなし（aiStreamは存在するがトラックが空）`);
+        console.warn('  ⚠️ AI音声: トラックなし');
       }
     } else {
-      console.warn(`  ⚠️ AI音声: aiStreamがnull（Web Audio API未初期化の可能性）`);
+      console.warn('  ⚠️ AI音声: aiStreamがnull');
     }
 
-    // 音声トラックを合成ストリームに追加
-    audioTracks.forEach(track => {
-      track.enabled = true; // 全トラックを確実に有効化
+    console.log(`🎵 音声ミキシング完了:`);
+    console.log(`   - 画面共有音声: ${screenSourceConnected ? '✅' : '❌'}`);
+    console.log(`   - カメラ音声: ${cameraSourceConnected ? '✅' : '❌'}`);
+    console.log(`   - AI音声: ${aiSourceConnected ? '✅' : '❌'}`);
+    console.log(`   - ミックス後の音声トラック数: ${mixedDestination.stream.getAudioTracks().length}`);
+
+    // ミックス後の音声トラックを合成ストリームに追加
+    const mixedAudioTracks = mixedDestination.stream.getAudioTracks();
+    mixedAudioTracks.forEach(track => {
+      track.enabled = true;
       compositeStream.addTrack(track);
+      console.log(`  🎵 ミックス済み音声トラック追加: enabled=${track.enabled}, readyState=${track.readyState}`);
     });
 
     compositeStreamRef.current = compositeStream;
 
-    // AI音声トラック数を正しく計算（実際に追加されたトラック数）
-    // クローンを使うようになったので、元のトラック数ではなく、実際に追加された数を計算
-    const actualAiAudioCount = audioTracks.length - screenAudioTracks.length - (cameraAudioTracks.length > 0 ? cameraAudioTracks.length : 0);
-
     console.log('✅ Canvas合成ストリーム作成完了');
     console.log(`  解像度: ${canvas.width}×${canvas.height}`);
-    console.log(`  PinPサイズ: ${Math.floor(canvas.width / 6)}×${Math.floor(canvas.height / 6)} (右下)`);
-    console.log(`  音声トラック数: ${audioTracks.length} (画面共有${screenAudioTracks.length} + カメラ${cameraAudioTracks.length} + AI${actualAiAudioCount})`);
+    console.log(`  カメラPinPサイズ: ${Math.floor(canvas.width / 6)}×${Math.floor(canvas.height / 6)} (右下)`);
+    console.log(`  アバターPinPサイズ: ${Math.floor(canvas.width / 6)}×${Math.floor(canvas.height / 6)} (左下)`);
+    console.log(`  音声トラック数: ${mixedAudioTracks.length} (画面共有 + カメラ + AI音声をミキシング)`);
 
     return compositeStream;
-  }, [screenStream, cameraStream, aiAudioStream, audioDestinationRef]);
+  }, [screenStream, cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
 
   /**
    * 録画を開始
