@@ -564,7 +564,8 @@ function RoleplayApp() {
           message: text,
           history: historyToSend,
           scenario_id: selectedScenarioId,
-          conversation_id: conversationId // 会話IDを送信（ペルソナ固定用）
+          conversation_id: conversationId, // 会話IDを送信（ペルソナ固定用）
+          persona: currentPersona // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
         }),
       });
 

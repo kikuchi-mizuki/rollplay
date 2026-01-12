@@ -637,6 +637,7 @@ def chat_stream():
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
         conversation_id = data.get('conversation_id')  # 会話IDを取得
+        request_persona = data.get('persona')  # フロントエンドから送信されたペルソナ（会話継続時のフォールバック）
 
         # 入力値検証
         if len(user_message) > MAX_MESSAGE_LENGTH:
@@ -857,11 +858,23 @@ def chat_stream():
                             logger.info(f"[ペルソナ選択/ストリーミング] 会話継続: DBから取得 - {persona.get('name', 'Unknown')}")
                         else:
                             logger.warning(f"[ペルソナ選択/ストリーミング] 会話継続: DBにペルソナなし (conversation_id={conversation_id})")
+                            # フォールバック: フロントエンドから送信されたpersonaを使用
+                            if request_persona:
+                                persona = request_persona
+                                logger.info(f"[ペルソナ選択/ストリーミング] フロントエンドから取得（フォールバック） - {persona.get('name', 'Unknown')}")
                     except Exception as e:
                         logger.error(f"[ペルソナ取得エラー/ストリーミング] conversation_id={conversation_id}: {e}")
+                        # フォールバック: フロントエンドから送信されたpersonaを使用
+                        if request_persona:
+                            persona = request_persona
+                            logger.info(f"[ペルソナ選択/ストリーミング] フロントエンドから取得（エラー時フォールバック） - {persona.get('name', 'Unknown')}")
                 else:
-                    # conversation_idがない会話継続（後方互換）
-                    logger.warning("[ペルソナ選択/ストリーミング] 会話継続だがconversation_idなし: ペルソナなしで継続")
+                    # conversation_idがない会話継続: フロントエンドから送信されたpersonaを使用
+                    if request_persona:
+                        persona = request_persona
+                        logger.info(f"[ペルソナ選択/ストリーミング] 会話継続: フロントエンドから取得 - {persona.get('name', 'Unknown')}")
+                    else:
+                        logger.warning("[ペルソナ選択/ストリーミング] 会話継続だがconversation_id・personaなし: ペルソナなしで継続")
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
