@@ -174,27 +174,27 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     scenario_voice_map = {
         'meeting_1st': {
             'voice': 'shimmer',  # 初回は慎重・落ち着いた印象
-            'speed': 0.95,  # ゆっくり丁寧に（警戒心あり）聞き取りやすく
+            'speed': 1.2,  # テンポ良く（0.95→1.2）
             'description': '初回面談 - 慎重で落ち着いた女性声'
         },
         'meeting_1_5th': {
             'voice': 'shimmer',
-            'speed': 1.0,  # 少し打ち解けてきた、自然なペース
+            'speed': 1.2,  # テンポ良く（1.0→1.2）
             'description': '1.5次面談 - やや打ち解けた女性声'
         },
         'meeting_2nd': {
             'voice': 'nova',  # 関係構築が進み、明るい印象
-            'speed': 1.05,  # 自然な会話ペース、聞き取りやすく
+            'speed': 1.2,  # テンポ良く（1.05→1.2）
             'description': '2次面談 - 明るく前向きな女性声'
         },
         'meeting_3rd': {
             'voice': 'nova',
-            'speed': 1.1,  # 親しみのある速度、明瞭に
+            'speed': 1.2,  # テンポ良く（1.1→1.2）
             'description': '3次面談 - 親しみのある女性声'
         },
         'kickoff_meeting': {
             'voice': 'nova',  # ビジネスパートナーとして
-            'speed': 1.1,  # テキパキだが聞き取りやすく（1.2→1.1）
+            'speed': 1.2,  # テンポ良く（1.1→1.2）
             'description': 'キックオフMTG - テキパキとした女性声'
         },
         'upsell': {
