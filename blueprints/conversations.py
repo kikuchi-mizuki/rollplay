@@ -991,12 +991,12 @@ def chat_stream():
                     "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。"
                 })
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=50）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=50）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=60）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=60）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=50,          # 短く簡潔に（テンポ重視）
+                    max_tokens=60,          # 1-2文（テンポと完結性のバランス）
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
