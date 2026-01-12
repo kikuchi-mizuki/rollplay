@@ -59,6 +59,7 @@ function RoleplayApp() {
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [conversationId, setConversationId] = useState<string | null>(null); // 会話ID（ペルソナ固定用）
   const [currentPersona, setCurrentPersona] = useState<any>(null); // 現在のペルソナ情報（会話内固定）
+  const currentPersonaRef = useRef<any>(null); // currentPersonaのRef（クロージャー問題を回避）
   const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
   const lastExpressionRef = useRef<string>(getDefaultExpression('avatar_03')); // 前回の表情を記憶（不要な切り替え防止）
@@ -244,8 +245,9 @@ function RoleplayApp() {
     console.log(`[録画中] ストリーム状態: 画面共有=${!!screenStream}, カメラ=${!!cameraStream}`);
   }, [screenStream, cameraStream]);
 
-  // currentPersona（ペルソナ情報）の変更を監視（デバッグ用）
+  // currentPersona（ペルソナ情報）の変更を監視してRefに同期（デバッグ用）
   useEffect(() => {
+    currentPersonaRef.current = currentPersona;
     console.log('[ペルソナ監視] currentPersonaが更新されました:', currentPersona ? {
       name: currentPersona.name,
       voice_name: currentPersona.voice_name,
@@ -558,10 +560,11 @@ function RoleplayApp() {
 
       // 🔍 デバッグ: 送信する会話履歴を確認（プレースホルダーを含めないhistoryBeforeBotを使用）
       const historyToSend = historyBeforeBot.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text }));
+      const personaToSend = currentPersonaRef.current; // Refから最新値を取得（クロージャー問題を回避）
       console.log(`[会話履歴送信] 件数: ${historyToSend.length}`);
-      console.log(`[API送信] conversation_id: ${conversationId}, persona: ${currentPersona ? 'あり' : 'なし'}`);
-      if (currentPersona) {
-        console.log(`[API送信] persona.voice_name: ${currentPersona.voice_name}, persona.speaking_rate: ${currentPersona.speaking_rate}`);
+      console.log(`[API送信] conversation_id: ${conversationId}, persona: ${personaToSend ? 'あり' : 'なし'}`);
+      if (personaToSend) {
+        console.log(`[API送信] persona.voice_name: ${personaToSend.voice_name}, persona.speaking_rate: ${personaToSend.speaking_rate}`);
       }
       historyToSend.slice(-5).forEach((h, i) => {
         console.log(`  [${i}] ${h.speaker}: ${h.text.substring(0, 50)}...`);
@@ -578,7 +581,7 @@ function RoleplayApp() {
           history: historyToSend,
           scenario_id: selectedScenarioId,
           conversation_id: conversationId, // 会話IDを送信（ペルソナ固定用）
-          persona: currentPersona // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
+          persona: personaToSend // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
         }),
       });
 
@@ -1300,7 +1303,7 @@ function RoleplayApp() {
             scenarioTitle,
             messages,
             durationSeconds,
-            persona: currentPersona, // ペルソナ情報を保存
+            persona: currentPersonaRef.current, // ペルソナ情報を保存（Refから最新値）
           });
 
           setConversationId(newConversationId);
