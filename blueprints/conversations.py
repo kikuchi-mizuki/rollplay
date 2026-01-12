@@ -692,26 +692,28 @@ def chat_stream():
                             business_type = base_profile.get('business_type', '')
 
                             # ペルソナ名やIDから音声タイプを判定
+                            # 🎯 判定順序重要: より具体的な条件を先に判定
+
+                            # 美容/アパレル → young_entrepreneur (明るく快活) ⚠️ 「アパレルEC」を先に判定
+                            if '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id or 'apparel' in persona_id:
+                                persona_type = 'young_entrepreneur'
                             # IT/テック/SaaS系 → tech_founder (明るく前向き)
-                            if 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id or 'saas' in persona_id:
+                            elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id or 'saas' in persona_id:
                                 persona_type = 'tech_founder'
                             # クリエイティブ/広告/マッチングアプリ → creative_director (やや速め)
                             elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or '広告' in business_type or 'マッチングアプリ' in business_type or 'creative' in persona_id or 'ad_agency' in persona_id or 'matching' in persona_id:
                                 persona_type = 'creative_director'
-                            # 美容/アパレル → young_entrepreneur (明るく快活)
-                            elif '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id or 'apparel' in persona_id:
-                                persona_type = 'young_entrepreneur'
                             # 飲食/伝統/建設/運送 → traditional_owner (落ち着いて慎重)
                             elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or '建設' in business_type or '運送' in business_type or 'restaurant' in persona_id or 'construction' in persona_id or 'driver' in persona_id:
                                 persona_type = 'traditional_owner'
-                            # EC/オンライン → mid_manager (標準的)
-                            elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
-                                persona_type = 'mid_manager'
                             # 教育 → confident (自信家)
                             elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
                                 persona_type = 'confident'
                             # 不動産/人材紹介 → mid_manager (標準的で丁寧)
                             elif '不動産' in business_type or '人材紹介' in business_type or 'real_estate' in persona_id or 'recruitment' in persona_id:
+                                persona_type = 'mid_manager'
+                            # EC/オンライン → mid_manager (標準的) ⚠️ より一般的な条件は最後に
+                            elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
                                 persona_type = 'mid_manager'
                             # デフォルト
                             else:
@@ -840,26 +842,28 @@ def chat_stream():
                         business_type = base_profile.get('business_type', '')
 
                         persona_type = None
+                        # 🎯 判定順序重要: より具体的な条件を先に判定
+
+                        # 美容/アパレル → young_entrepreneur (明るく快活) ⚠️ 「アパレルEC」を先に判定
+                        if '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id or 'apparel' in persona_id:
+                            persona_type = 'young_entrepreneur'
                         # IT/テック/SaaS系 → tech_founder (明るく前向き)
-                        if 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id or 'saas' in persona_id:
+                        elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id or 'saas' in persona_id:
                             persona_type = 'tech_founder'
                         # クリエイティブ/広告/マッチングアプリ → creative_director (やや速め)
                         elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or '広告' in business_type or 'マッチングアプリ' in business_type or 'creative' in persona_id or 'ad_agency' in persona_id or 'matching' in persona_id:
                             persona_type = 'creative_director'
-                        # 美容/アパレル → young_entrepreneur (明るく快活)
-                        elif '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id or 'apparel' in persona_id:
-                            persona_type = 'young_entrepreneur'
                         # 飲食/伝統/建設/運送 → traditional_owner (落ち着いて慎重)
                         elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or '建設' in business_type or '運送' in business_type or 'restaurant' in persona_id or 'construction' in persona_id or 'driver' in persona_id:
                             persona_type = 'traditional_owner'
-                        # EC/オンライン → mid_manager (標準的)
-                        elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
-                            persona_type = 'mid_manager'
                         # 教育 → confident (自信家)
                         elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
                             persona_type = 'confident'
                         # 不動産/人材紹介 → mid_manager (標準的で丁寧)
                         elif '不動産' in business_type or '人材紹介' in business_type or 'real_estate' in persona_id or 'recruitment' in persona_id:
+                            persona_type = 'mid_manager'
+                        # EC/オンライン → mid_manager (標準的) ⚠️ より一般的な条件は最後に
+                        elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
                             persona_type = 'mid_manager'
                         # デフォルト
                         else:
