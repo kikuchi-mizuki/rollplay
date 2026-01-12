@@ -668,38 +668,48 @@ def chat_stream():
 
                     # ペルソナに応じた音声と話速を選択
                     persona_type = None
+                    selected_voice = None
+                    selected_speed = None
+
                     if persona_info:
-                        # ペルソナ構造から音声タイプを推測
-                        persona_name = persona_info.get('persona_name', '')
-                        persona_id = persona_info.get('persona_id', '')
-
-                        # base_profileから業種・年齢等を取得
-                        base_profile = persona_info.get('base_profile', {})
-                        business_type = base_profile.get('business_type', '')
-
-                        # ペルソナ名やIDから音声タイプを判定
-                        if 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'tech' in persona_id:
-                            persona_type = 'tech_founder'
-                        elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or 'creative' in persona_id:
-                            persona_type = 'creative_director'
-                        elif '美容' in business_type or 'サロン' in business_type or 'beauty' in persona_id:
-                            persona_type = 'young_entrepreneur'  # 美容サロン：明るく快活
-                        elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or 'restaurant' in persona_id:
-                            persona_type = 'traditional_owner'
-                        elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
-                            persona_type = 'mid_manager'  # EC：標準的
-                        elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
-                            persona_type = 'confident'  # 教育：自信家
+                        # 🎯 優先順位1: ペルソナに保存された音声設定を使用（会話内で一貫性を保つ）
+                        if 'voice_name' in persona_info and 'speaking_rate' in persona_info:
+                            selected_voice = persona_info['voice_name']
+                            selected_speed = persona_info['speaking_rate']
+                            logger.info(f"[音声選択] ペルソナから直接取得: voice={selected_voice}, speed={selected_speed}")
                         else:
-                            persona_type = 'mid_manager'  # デフォルト
+                            # 🎯 優先順位2: ペルソナ構造から音声タイプを推測（初回のみ）
+                            persona_name = persona_info.get('persona_name', '')
+                            persona_id = persona_info.get('persona_id', '')
 
-                        logger.info(f"[音声選択] ペルソナ: {persona_name} → タイプ: {persona_type}, 業種: {business_type}")
+                            # base_profileから業種・年齢等を取得
+                            base_profile = persona_info.get('base_profile', {})
+                            business_type = base_profile.get('business_type', '')
 
-                    # 音声と話速を選択（ペルソナ優先）
-                    selected_voice, selected_speed = select_voice_for_persona(
-                        persona_type=persona_type or 'mid_manager',
-                        scenario_id=None
-                    )
+                            # ペルソナ名やIDから音声タイプを判定
+                            if 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'tech' in persona_id:
+                                persona_type = 'tech_founder'
+                            elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or 'creative' in persona_id:
+                                persona_type = 'creative_director'
+                            elif '美容' in business_type or 'サロン' in business_type or 'beauty' in persona_id:
+                                persona_type = 'young_entrepreneur'  # 美容サロン：明るく快活
+                            elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or 'restaurant' in persona_id:
+                                persona_type = 'traditional_owner'
+                            elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
+                                persona_type = 'mid_manager'  # EC：標準的
+                            elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
+                                persona_type = 'confident'  # 教育：自信家
+                            else:
+                                persona_type = 'mid_manager'  # デフォルト
+
+                            logger.info(f"[音声選択] ペルソナ: {persona_name} → タイプ: {persona_type}, 業種: {business_type}")
+
+                    # 音声と話速を選択（まだ決まっていない場合のみ）
+                    if not selected_voice or not selected_speed:
+                        selected_voice, selected_speed = select_voice_for_persona(
+                            persona_type=persona_type or 'mid_manager',
+                            scenario_id=None
+                        )
 
                     # リトライ設定（最大3回、指数バックオフ）
                     max_retries = 3
@@ -803,6 +813,41 @@ def chat_stream():
                     # 会話開始時: ペルソナをランダムに選択
                     persona = select_random_persona_for_scene(scenario_id)
                     logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ランダム選択 - {persona.get('name', 'Unknown') if persona else 'None'}")
+
+                    # 音声設定をpersonaに追加（会話内で一貫性を保つため）
+                    if persona:
+                        from blueprints.media import select_voice_for_persona
+
+                        # ペルソナ構造から音声タイプを判定
+                        persona_name = persona.get('persona_name', '')
+                        persona_id = persona.get('persona_id', '')
+                        base_profile = persona.get('base_profile', {})
+                        business_type = base_profile.get('business_type', '')
+
+                        persona_type = None
+                        if 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'tech' in persona_id:
+                            persona_type = 'tech_founder'
+                        elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or 'creative' in persona_id:
+                            persona_type = 'creative_director'
+                        elif '美容' in business_type or 'サロン' in business_type or 'beauty' in persona_id:
+                            persona_type = 'young_entrepreneur'
+                        elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or 'restaurant' in persona_id:
+                            persona_type = 'traditional_owner'
+                        elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
+                            persona_type = 'mid_manager'
+                        elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
+                            persona_type = 'confident'
+                        else:
+                            persona_type = 'mid_manager'
+
+                        # 音声と話速を選択してpersonaに保存
+                        voice_name, speaking_rate = select_voice_for_persona(
+                            persona_type=persona_type,
+                            scenario_id=None
+                        )
+                        persona['voice_name'] = voice_name
+                        persona['speaking_rate'] = speaking_rate
+                        logger.info(f"[音声設定保存] ペルソナに音声設定を追加: voice={voice_name}, speed={speaking_rate}, type={persona_type}")
                 elif conversation_id and supabase_client:
                     # 会話継続中: DBから既存のペルソナを取得
                     try:
