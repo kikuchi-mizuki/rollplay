@@ -101,19 +101,26 @@ def save_conversation():
         scenario_id = data.get('scenario_id')
         messages = data.get('messages', [])
         duration = data.get('duration_seconds', 0)
+        persona = data.get('persona')  # ペルソナ情報を取得
 
         if not user_id or not scenario_id:
             return jsonify({'success': False, 'error': 'user_idとscenario_idは必須です'}), 400
 
         # conversationsテーブルに保存
-        result = supabase_client.table('conversations').insert({
+        conversation_data = {
             'user_id': user_id,
             'store_id': store_id,
             'scenario_id': scenario_id,
             'scenario_title': data.get('scenario_title', scenario_id),
             'messages': messages,
             'duration_seconds': duration
-        }).execute()
+        }
+
+        # ペルソナ情報がある場合は保存
+        if persona:
+            conversation_data['persona'] = persona
+
+        result = supabase_client.table('conversations').insert(conversation_data).execute()
 
         return jsonify({
             'success': True,
@@ -284,6 +291,7 @@ def chat():
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
+        conversation_id = data.get('conversation_id')  # 会話IDを取得
 
         # 入力値検証
         if len(user_message) > MAX_MESSAGE_LENGTH:
@@ -300,21 +308,34 @@ def chat():
 
         scenario_obj = load_scenario_object(scenario_id)
 
+        # ペルソナ選択ロジック（例外処理の外で定義）
+        is_first_message = len(conversation_history) == 0
+        persona = None
+
+        if is_first_message:
+            # 会話開始時: ペルソナをランダムに選択
+            persona = select_random_persona_for_scene(scenario_id)
+            logger.info(f"[ペルソナ選択] 新規会話: ランダム選択 - {persona.get('name', 'Unknown') if persona else 'None'}")
+        elif conversation_id and supabase_client:
+            # 会話継続中: DBから既存のペルソナを取得
+            try:
+                result = supabase_client.table('conversations').select('persona').eq('id', conversation_id).limit(1).execute()
+                if result.data and result.data[0].get('persona'):
+                    persona = result.data[0]['persona']
+                    logger.info(f"[ペルソナ選択] 会話継続: DBから取得 - {persona.get('name', 'Unknown')}")
+                else:
+                    logger.warning(f"[ペルソナ選択] 会話継続: DBにペルソナなし (conversation_id={conversation_id})")
+            except Exception as e:
+                logger.error(f"[ペルソナ取得エラー] conversation_id={conversation_id}: {e}")
+        else:
+            # conversation_idがない会話継続（後方互換）
+            logger.warning("[ペルソナ選択] 会話継続だがconversation_idなし: ペルソナなしで継続")
+
         # Whisper統一版: GPT-4を使用して対話生成
         if openai_api_key and openai_client:
             try:
                 # 会話履歴を構築
                 system_prompt = SALES_ROLEPLAY_PROMPT
-
-                # ペルソナ選択: 会話の最初のみランダム選択、2回目以降は選択しない（一貫性を保つ）
-                is_first_message = len(conversation_history) == 0
-                if is_first_message:
-                    # 会話開始時のみ、ペルソナをランダムに選択
-                    persona = select_random_persona_for_scene(scenario_id)
-                else:
-                    # 会話継続中はペルソナを選択しない（GPTが過去の会話から一貫性を保つ）
-                    logger.debug("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
-                    persona = None
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
@@ -546,13 +567,13 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # 1-2文に制限（音声品質向上のため）
+                    max_tokens=150,         # 会話が途中で切れないように十分な長さを確保
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
                 )
                 ai_response = response.choices[0].message.content.strip()
-                
+
             except Exception as e:
                 logger.error(f"GPT-4 API エラー: {e}")
                 # フォールバック: モック応答
@@ -561,11 +582,17 @@ def chat():
             # テストモード: モック応答
             ai_response = get_mock_response(user_message)
 
-        return jsonify({
+        response_data = {
             'success': True,
             'response': ai_response,
             'timestamp': datetime.now().isoformat()
-        })
+        }
+
+        # 新規会話の場合、ペルソナ情報を返す（フロントエンドで保存するため）
+        if is_first_message and persona:
+            response_data['persona'] = persona
+
+        return jsonify(response_data)
 
     except ValueError as e:
         # 入力値エラー（不正なJSON、不正なパラメータなど）
@@ -609,6 +636,7 @@ def chat_stream():
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
+        conversation_id = data.get('conversation_id')  # 会話IDを取得
 
         # 入力値検証
         if len(user_message) > MAX_MESSAGE_LENGTH:
@@ -763,15 +791,28 @@ def chat_stream():
                 # システムプロンプト構築（共有ペルソナを使用）
                 system_prompt = SALES_ROLEPLAY_PROMPT
 
-                # ペルソナ選択: 会話の最初のみランダム選択、2回目以降は選択しない（一貫性を保つ）
+                # ペルソナ選択ロジック
                 is_first_message = len(conversation_history) == 0
+                persona = None
+
                 if is_first_message:
-                    # 会話開始時のみ、ペルソナをランダムに選択
+                    # 会話開始時: ペルソナをランダムに選択
                     persona = select_random_persona_for_scene(scenario_id)
+                    logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ランダム選択 - {persona.get('name', 'Unknown') if persona else 'None'}")
+                elif conversation_id and supabase_client:
+                    # 会話継続中: DBから既存のペルソナを取得
+                    try:
+                        result = supabase_client.table('conversations').select('persona').eq('id', conversation_id).limit(1).execute()
+                        if result.data and result.data[0].get('persona'):
+                            persona = result.data[0]['persona']
+                            logger.info(f"[ペルソナ選択/ストリーミング] 会話継続: DBから取得 - {persona.get('name', 'Unknown')}")
+                        else:
+                            logger.warning(f"[ペルソナ選択/ストリーミング] 会話継続: DBにペルソナなし (conversation_id={conversation_id})")
+                    except Exception as e:
+                        logger.error(f"[ペルソナ取得エラー/ストリーミング] conversation_id={conversation_id}: {e}")
                 else:
-                    # 会話継続中はペルソナを選択しない（GPTが過去の会話から一貫性を保つ）
-                    logger.debug("[ペルソナ選択] 会話継続中のため、ペルソナ選択をスキップ（一貫性を保つ）")
-                    persona = None
+                    # conversation_idがない会話継続（後方互換）
+                    logger.warning("[ペルソナ選択/ストリーミング] 会話継続だがconversation_idなし: ペルソナなしで継続")
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
@@ -1000,12 +1041,12 @@ def chat_stream():
                     "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。"
                 })
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=60）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=60）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=150）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=150）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=60,          # 1-2文（テンポと完結性のバランス）
+                    max_tokens=150,         # 会話が途中で切れないように十分な長さを確保
                     temperature=0.6,        # バランス調整: 0.5→0.6（自然さ維持）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
@@ -1086,6 +1127,10 @@ def chat_stream():
                         if result:
                             if next_yield_index == chunk_count:
                                 result['final'] = True  # 最終チャンクマーク
+                                # 新規会話の場合、最終チャンクでペルソナ情報を送信
+                                if is_first_message and persona:
+                                    result['persona'] = persona
+                                    logger.info(f"[ペルソナ送信] 新規会話のペルソナ情報を最終チャンクに含めて送信")
                             yield f"data: {json.dumps(result)}\n\n"
                             logger.debug(f"[チャンク{next_yield_index}] 送信完了（最終処理）")
                         del tts_futures[next_yield_index]
