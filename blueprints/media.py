@@ -150,9 +150,10 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     """
     ペルソナ・シナリオに応じた音声と話速を選択
 
-    音声の特徴（すべて女性声）:
-    - nova: 明るく元気な女性声（30代前半、スタートアップ代表）
-    - shimmer: 柔らかく落ち着いた女性声（40代、大手企業担当者）
+    Google Cloud TTS 日本語女性声の特徴:
+    - ja-JP-Neural2-B: 標準的な女性声（30代、バランスが良い）
+    - ja-JP-Neural2-C: 若々しく明るい女性声（20-30代、スタートアップ向き）
+    - ja-JP-Neural2-D: 落ち着いた低めの女性声（40代以上、信頼感）
 
     Args:
         persona_type: ペルソナタイプ（'young', 'mid', 'senior', 'creative', 'tech', 'traditional'等）
@@ -164,59 +165,57 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     """
     # フロントエンドからの明示的な指定がある場合は優先
     if override_voice:
-        valid_voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+        valid_voices = ['ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D']
         if override_voice in valid_voices:
             # デフォルトの話速を返す
-            return (override_voice, 1.15)
+            return (override_voice, 1.2)
 
-    # シナリオに応じたデフォルト設定
-    # 話速を全体的に少し遅く調整（聞き取りやすさ重視）
+    # シナリオに応じたデフォルト設定（Google Cloud TTS）
     scenario_voice_map = {
         'meeting_1st': {
-            'voice': 'shimmer',  # 初回は慎重・落ち着いた印象
-            'speed': 1.2,  # テンポ良く（0.95→1.2）
+            'voice': 'ja-JP-Neural2-D',  # 初回は慎重・落ち着いた印象（低め）
+            'speed': 1.2,
             'description': '初回面談 - 慎重で落ち着いた女性声'
         },
         'meeting_1_5th': {
-            'voice': 'shimmer',
-            'speed': 1.2,  # テンポ良く（1.0→1.2）
+            'voice': 'ja-JP-Neural2-B',  # 少し打ち解けた標準的な声
+            'speed': 1.2,
             'description': '1.5次面談 - やや打ち解けた女性声'
         },
         'meeting_2nd': {
-            'voice': 'nova',  # 関係構築が進み、明るい印象
-            'speed': 1.2,  # テンポ良く（1.05→1.2）
+            'voice': 'ja-JP-Neural2-C',  # 関係構築が進み、明るい印象（若々しい）
+            'speed': 1.2,
             'description': '2次面談 - 明るく前向きな女性声'
         },
         'meeting_3rd': {
-            'voice': 'nova',
-            'speed': 1.2,  # テンポ良く（1.1→1.2）
+            'voice': 'ja-JP-Neural2-C',  # 親しみのある明るい声
+            'speed': 1.2,
             'description': '3次面談 - 親しみのある女性声'
         },
         'kickoff_meeting': {
-            'voice': 'nova',  # ビジネスパートナーとして
-            'speed': 1.2,  # テンポ良く（1.1→1.2）
+            'voice': 'ja-JP-Neural2-C',  # ビジネスパートナーとして明るく
+            'speed': 1.2,
             'description': 'キックオフMTG - テキパキとした女性声'
         },
         'upsell': {
-            'voice': 'nova',  # 既存顧客への追加提案
-            'speed': 1.05,  # フランクだが明瞭に（1.15→1.05）
+            'voice': 'ja-JP-Neural2-C',  # 既存顧客への追加提案は明るく
+            'speed': 1.2,
             'description': '追加営業 - フランクな女性声'
         }
     }
 
     # ペルソナタイプに応じた設定（シナリオ設定を上書き）
-    # すべて女性声（nova, shimmer）でバリエーション
-    # 話速を全体的に調整（聞き取りやすさ重視）
+    # Google Cloud TTS日本語女性声でバリエーション
     persona_voice_map = {
-        'young_entrepreneur': ('nova', 1.05),  # 若手起業家：明るく快活（1.15→1.05）
-        'mid_manager': ('shimmer', 1.0),  # 中堅管理職：落ち着いて丁寧（1.1→1.0）
-        'senior_executive': ('shimmer', 0.9),  # ベテラン経営者：落ち着いてゆっくり（0.95→0.9）
-        'creative_director': ('nova', 1.05),  # クリエイティブ系：明るく表現豊か（1.1→1.05）
-        'tech_founder': ('nova', 1.05),  # テック系創業者：明るくスマート（1.15→1.05）
-        'traditional_owner': ('shimmer', 0.9),  # 伝統的な事業主：ゆっくり丁寧（0.95→0.9）
-        'cautious': ('shimmer', 0.9),  # 慎重なタイプ：ゆっくり（0.95→0.9）
-        'confident': ('nova', 1.1),  # 自信家タイプ：テキパキだが明瞭（1.2→1.1）
-        'analytical': ('shimmer', 0.95),  # 分析的タイプ：落ち着いて論理的（1.0→0.95）
+        'young_entrepreneur': ('ja-JP-Neural2-C', 1.2),  # 若手起業家：明るく快活
+        'mid_manager': ('ja-JP-Neural2-B', 1.2),  # 中堅管理職：標準的で丁寧
+        'senior_executive': ('ja-JP-Neural2-D', 1.1),  # ベテラン経営者：落ち着いて低め
+        'creative_director': ('ja-JP-Neural2-C', 1.2),  # クリエイティブ系：明るく表現豊か
+        'tech_founder': ('ja-JP-Neural2-C', 1.2),  # テック系創業者：明るくスマート
+        'traditional_owner': ('ja-JP-Neural2-D', 1.1),  # 伝統的な事業主：落ち着いて丁寧
+        'cautious': ('ja-JP-Neural2-D', 1.1),  # 慎重なタイプ：落ち着いた低め
+        'confident': ('ja-JP-Neural2-C', 1.2),  # 自信家タイプ：明るくテキパキ
+        'analytical': ('ja-JP-Neural2-B', 1.2),  # 分析的タイプ：標準的で論理的
     }
 
     # ペルソナタイプから選択
@@ -231,9 +230,9 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
         logger.debug(f"  シナリオ選択: {scenario_id} → {config['description']}")
         return (config['voice'], config['speed'])
 
-    # デフォルト：明るく自然な女性声（話速を少し遅く調整）
-    logger.debug(f"  デフォルト選択: nova, 1.05")
-    return ('nova', 1.05)
+    # デフォルト：標準的な女性声
+    logger.debug(f"  デフォルト選択: ja-JP-Neural2-B, 1.2")
+    return ('ja-JP-Neural2-B', 1.2)
 
 
 @media_bp.route('/tts', methods=['POST'])

@@ -703,10 +703,11 @@ def chat_stream():
                             synthesis_input = texttospeech.SynthesisInput(text=normalized_chunk_text)
 
                             # 日本語の自然な音声を選択（女性声）
-                            # ja-JP-Neural2-B: 標準的な女性声（自然で明瞭）
+                            # selected_voice にはペルソナに応じた音声名が入っている
+                            # (ja-JP-Neural2-B/C/D のいずれか)
                             voice = texttospeech.VoiceSelectionParams(
                                 language_code="ja-JP",
-                                name="ja-JP-Neural2-B",  # 高品質なNeural2音声
+                                name=selected_voice,  # ペルソナに応じた音声
                                 ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
                             )
 
@@ -735,7 +736,7 @@ def chat_stream():
                             # TTS生成時間を計測
                             tts_duration = (time.time() - tts_start) * 1000  # ms
                             retry_info = f" (リトライ{attempt}回)" if attempt > 0 else ""
-                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字, voice=ja-JP-Neural2-B, speed={selected_speed}){retry_info}")
+                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字, voice={selected_voice}, speed={selected_speed}){retry_info}")
 
                             return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
                         except Exception as e:
