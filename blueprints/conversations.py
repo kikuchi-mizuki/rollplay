@@ -685,11 +685,13 @@ def chat_stream():
 
                             # 環境変数から認証情報を取得
                             credentials_json = os.getenv('GOOGLE_CLOUD_TTS_CREDENTIALS')
+                            credentials_path = None
                             if credentials_json:
-                                # JSONを一時ファイルに書き込んで認証
+                                # JSONを辞書としてパースしてから一時ファイルに書き込む
                                 import tempfile
+                                credentials_dict = json_module.loads(credentials_json)
                                 with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
-                                    f.write(credentials_json)
+                                    json_module.dump(credentials_dict, f, indent=2)
                                     credentials_path = f.name
                                 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
