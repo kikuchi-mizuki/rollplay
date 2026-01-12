@@ -334,6 +334,20 @@ def transcribe():
                 )
             text = (getattr(r, 'text', '') or '').strip()
             logger.debug(f"[Whisper成功] 認識結果: {text}")
+
+            # YouTube定型文など明らかな誤認識をフィルタリング
+            noise_patterns = [
+                'ご視聴ありがとうございました',
+                'チャンネル登録',
+                'グッドボタン',
+                '高評価',
+                'コメント',
+                'ご清聴ありがとうございました'
+            ]
+            if any(pattern in text for pattern in noise_patterns):
+                logger.warning(f"[誤認識フィルタ] YouTube定型文を検出: {text}")
+                return jsonify(success=False, error='誤認識の可能性があります。もう一度お試しください。'), 400
+
             return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
         except Exception as e:
             logger.debug(f"[Whisper失敗] エラー: {e}, ファイルサイズ: {size} bytes")
@@ -351,6 +365,20 @@ def transcribe():
                         prompt=business_prompt
                     )
                 text = (getattr(r, 'text', '') or '').strip()
+
+                # YouTube定型文など明らかな誤認識をフィルタリング
+                noise_patterns = [
+                    'ご視聴ありがとうございました',
+                    'チャンネル登録',
+                    'グッドボタン',
+                    '高評価',
+                    'コメント',
+                    'ご清聴ありがとうございました'
+                ]
+                if any(pattern in text for pattern in noise_patterns):
+                    logger.warning(f"[誤認識フィルタ] YouTube定型文を検出: {text}")
+                    return jsonify(success=False, error='誤認識の可能性があります。もう一度お試しください。'), 400
+
                 return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
             finally:
                 try: os.remove(wav_path)
