@@ -58,6 +58,7 @@ export function useRecording(streams: RecordingStreams) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recordingTimeRef = useRef<number>(0); // クロージャー問題を回避するためのRef
   const useRecordRTC = useRef<boolean>(true); // RecordRTCを使用するかどうか（AI音声録音問題の対策）
+  const isStoppingRef = useRef<boolean>(false); // 停止処理中フラグ（二重停止防止）
 
   // Phase 2 Day 6: Canvas合成用のRef
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -843,6 +844,8 @@ export function useRecording(streams: RecordingStreams) {
         console.log(`   - 録画時間: ${duration}秒`);
         console.log(`   - Blobサイズ: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
         console.log(`   - Blobタイプ: ${blob.type}`);
+
+        isStoppingRef.current = false; // 停止処理完了
       };
 
       // 録画エラー時の処理
@@ -900,29 +903,54 @@ export function useRecording(streams: RecordingStreams) {
    * Phase 2 Day 6: Canvas合成のクリーンアップも実施
    */
   const stopRecording = useCallback(() => {
+    // 既に停止処理中の場合はスキップ
+    if (isStoppingRef.current) {
+      console.log('⏭️ [RecordRTC] 停止処理中のためスキップ');
+      return;
+    }
+
     // RecordRTCを使用している場合
     if (recordRTCRef.current && isRecording) {
       console.log('🛑 [RecordRTC] 録画停止中...');
+      isStoppingRef.current = true; // 停止処理開始
 
-      recordRTCRef.current.stopRecording(() => {
-        const blob = recordRTCRef.current!.getBlob();
-        const duration = recordingTimeRef.current;
-        const timestamp = new Date();
+      // recordRTCRefをローカル変数にコピー（コールバック内でnullになるのを防ぐ）
+      const recorder = recordRTCRef.current;
 
-        console.log('✅ [RecordRTC] 録画停止完了');
-        console.log(`   - 録画時間: ${duration}秒`);
-        console.log(`   - Blobサイズ: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
-        console.log(`   - Blobタイプ: ${blob.type}`);
+      recorder.stopRecording(() => {
+        // recordRTCRefがnullになっていないか確認
+        if (!recorder) {
+          console.error('❌ [RecordRTC] recordRTCRefがnullです');
+          return;
+        }
 
-        setRecordingData({
-          blob,
-          duration,
-          timestamp,
-        });
+        try {
+          const blob = recorder.getBlob();
+          const duration = recordingTimeRef.current;
+          const timestamp = new Date();
 
-        // RecordRTCインスタンスを破棄
-        recordRTCRef.current!.destroy();
-        recordRTCRef.current = null;
+          console.log('✅ [RecordRTC] 録画停止完了');
+          console.log(`   - 録画時間: ${duration}秒`);
+          console.log(`   - Blobサイズ: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+          console.log(`   - Blobタイプ: ${blob.type}`);
+
+          setRecordingData({
+            blob,
+            duration,
+            timestamp,
+          });
+        } catch (err) {
+          console.error('❌ [RecordRTC] getBlob()エラー:', err);
+        } finally {
+          // RecordRTCインスタンスを破棄
+          try {
+            recorder.destroy();
+          } catch (err) {
+            console.warn('⚠️ [RecordRTC] destroy()エラー:', err);
+          }
+          recordRTCRef.current = null;
+          isStoppingRef.current = false; // 停止処理完了
+        }
       });
 
       setIsRecording(false);
@@ -946,7 +974,8 @@ export function useRecording(streams: RecordingStreams) {
 
     // 従来のMediaRecorderの場合
     if (mediaRecorderRef.current && isRecording) {
-      console.log('🛑 録画停止中...');
+      console.log('🛑 [MediaRecorder] 録画停止中...');
+      isStoppingRef.current = true; // 停止処理開始
       mediaRecorderRef.current.stop();
       setIsRecording(false);
 
