@@ -150,10 +150,10 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     """
     ペルソナ・シナリオに応じた音声と話速を選択
 
-    Google Cloud TTS 日本語女性声の特徴:
+    Google Cloud TTS 日本語Neural2音声の特徴:
     - ja-JP-Neural2-B: 標準的な女性声（30代、バランスが良い）
     - ja-JP-Neural2-C: 若々しく明るい女性声（20-30代、スタートアップ向き）
-    - ja-JP-Neural2-D: 落ち着いた低めの女性声（40代以上、信頼感）
+    - ja-JP-Neural2-D: 男性声（低め、落ち着いた）※女性声ではない
 
     Args:
         persona_type: ペルソナタイプ（'young', 'mid', 'senior', 'creative', 'tech', 'traditional'等）
@@ -165,7 +165,7 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     """
     # フロントエンドからの明示的な指定がある場合は優先
     if override_voice:
-        valid_voices = ['ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D']
+        valid_voices = ['ja-JP-Neural2-B', 'ja-JP-Neural2-C']
         if override_voice in valid_voices:
             # デフォルトの話速を返す
             return (override_voice, 1.2)
@@ -173,7 +173,7 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     # シナリオに応じたデフォルト設定（Google Cloud TTS）
     scenario_voice_map = {
         'meeting_1st': {
-            'voice': 'ja-JP-Neural2-D',  # 初回は慎重・落ち着いた印象（低め）
+            'voice': 'ja-JP-Neural2-B',  # 初回は落ち着いた標準的な女性声
             'speed': 1.2,
             'description': '初回面談 - 慎重で落ち着いた女性声'
         },
@@ -205,15 +205,15 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
     }
 
     # ペルソナタイプに応じた設定（シナリオ設定を上書き）
-    # Google Cloud TTS日本語女性声でバリエーション
+    # Google Cloud TTS日本語女性声のみを使用（B, Cの2種類）
     persona_voice_map = {
         'young_entrepreneur': ('ja-JP-Neural2-C', 1.2),  # 若手起業家：明るく快活
         'mid_manager': ('ja-JP-Neural2-B', 1.2),  # 中堅管理職：標準的で丁寧
-        'senior_executive': ('ja-JP-Neural2-D', 1.1),  # ベテラン経営者：落ち着いて低め
+        'senior_executive': ('ja-JP-Neural2-B', 1.1),  # ベテラン経営者：落ち着いた女性声（話速遅め）
         'creative_director': ('ja-JP-Neural2-C', 1.2),  # クリエイティブ系：明るく表現豊か
         'tech_founder': ('ja-JP-Neural2-C', 1.2),  # テック系創業者：明るくスマート
-        'traditional_owner': ('ja-JP-Neural2-D', 1.1),  # 伝統的な事業主：落ち着いて丁寧
-        'cautious': ('ja-JP-Neural2-D', 1.1),  # 慎重なタイプ：落ち着いた低め
+        'traditional_owner': ('ja-JP-Neural2-B', 1.1),  # 伝統的な事業主：落ち着いて丁寧
+        'cautious': ('ja-JP-Neural2-B', 1.1),  # 慎重なタイプ：落ち着いた女性声
         'confident': ('ja-JP-Neural2-C', 1.2),  # 自信家タイプ：明るくテキパキ
         'analytical': ('ja-JP-Neural2-B', 1.2),  # 分析的タイプ：標準的で論理的
     }

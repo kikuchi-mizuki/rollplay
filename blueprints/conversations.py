@@ -742,13 +742,13 @@ def chat_stream():
                             # 音声パラメータの設定
                             synthesis_input = texttospeech.SynthesisInput(text=normalized_chunk_text)
 
-                            # 日本語の自然な音声を選択（女性声）
+                            # 日本語の自然な音声を選択
                             # selected_voice にはペルソナに応じた音声名が入っている
-                            # (ja-JP-Neural2-B/C/D のいずれか)
+                            # (ja-JP-Neural2-B/C: 女性声のみ)
+                            # 性別指定は不要（音声名で自動判定される）
                             voice = texttospeech.VoiceSelectionParams(
                                 language_code="ja-JP",
-                                name=selected_voice,  # ペルソナに応じた音声
-                                ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
+                                name=selected_voice  # ペルソナに応じた音声
                             )
 
                             # 音声設定
