@@ -132,6 +132,10 @@ export function useRecording(streams: RecordingStreams) {
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
 
+    // video要素を作成（画面共有用 - 途中から開始される可能性あり）
+    let screenVideo: HTMLVideoElement | null = null;
+    let isScreenReady = false;
+
     // アバター画像を読み込み（存在する場合）
     let avatarImage: HTMLImageElement | null = null;
     let lastAvatarImageSrc: string | undefined = undefined; // 前回のアバター画像URL
@@ -164,6 +168,24 @@ export function useRecording(streams: RecordingStreams) {
     const drawFrame = () => {
       if (!canvasRef.current) return;
 
+      // 画面共有が途中から開始された場合の処理
+      if (screenStream && !screenVideo) {
+        console.log('🔄 [録画中] 画面共有開始を検出 → 描画を切り替えます');
+        screenVideo = document.createElement('video');
+        screenVideo.srcObject = screenStream;
+        screenVideo.autoplay = true;
+        screenVideo.muted = true;
+        screenVideo.playsInline = true;
+
+        screenVideo.onloadedmetadata = () => {
+          console.log('✅ [録画中] 画面共有video準備完了');
+          screenVideo!.play().then(() => {
+            isScreenReady = true;
+            console.log('▶️ [録画中] 画面共有video再生開始');
+          }).catch(err => console.warn('画面共有video再生エラー:', err));
+        };
+      }
+
       // アバター画像の変更をチェック（録画中の表情変化に対応）
       const currentAvatarSrc = avatarImageSrcRef?.current;
       if (currentAvatarSrc && currentAvatarSrc !== lastAvatarImageSrc) {
@@ -173,9 +195,76 @@ export function useRecording(streams: RecordingStreams) {
         lastAvatarImageSrc = currentAvatarSrc;
       }
 
-      // video要素が準備できているかチェック（readyState >= 3 = HAVE_FUTURE_DATA）
-      if (isCameraReady && cameraVideo.readyState >= 3) {
-        // カメラ映像を全画面描画（aspect-fitで中央配置）
+      // 画面共有が利用可能な場合は画面共有を描画（カメラ+アバターをPinP）
+      if (screenVideo && isScreenReady && screenVideo.readyState >= 2) {
+        // 背景を黒で塗りつぶし
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 画面共有を全画面描画
+        try {
+          ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+        } catch (err) {
+          console.error('❌ 画面共有描画エラー:', err);
+        }
+
+        // カメラを右下PinP描画（画面の1/6サイズ）
+        if (isCameraReady && cameraVideo.readyState >= 2) {
+          const pipWidth = Math.floor(canvas.width / 6);
+          const pipHeight = Math.floor(canvas.height / 6);
+          const cameraPipX = canvas.width - pipWidth - 20;
+          const cameraPipY = canvas.height - pipHeight - 20;
+
+          // カメラPinP背景（黒枠）
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(cameraPipX - 2, cameraPipY - 2, pipWidth + 4, pipHeight + 4);
+
+          // カメラ映像（aspect-fitで描画）
+          const cameraAspect = cameraVideo.videoWidth / cameraVideo.videoHeight;
+          const pipAspect = pipWidth / pipHeight;
+
+          let cameraDrawWidth = pipWidth;
+          let cameraDrawHeight = pipHeight;
+          let cameraDrawX = cameraPipX;
+          let cameraDrawY = cameraPipY;
+
+          if (cameraAspect > pipAspect) {
+            cameraDrawHeight = pipWidth / cameraAspect;
+            cameraDrawY = cameraPipY + (pipHeight - cameraDrawHeight) / 2;
+          } else {
+            cameraDrawWidth = pipHeight * cameraAspect;
+            cameraDrawX = cameraPipX + (pipWidth - cameraDrawWidth) / 2;
+          }
+
+          ctx.drawImage(cameraVideo, cameraDrawX, cameraDrawY, cameraDrawWidth, cameraDrawHeight);
+
+          // アバターを左下PinP描画
+          if (avatarImage && avatarImage.complete) {
+            const avatarPipX = 20;
+            const avatarPipY = canvas.height - pipHeight - 20;
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(avatarPipX - 2, avatarPipY - 2, pipWidth + 4, pipHeight + 4);
+
+            const avatarAspect = avatarImage.width / avatarImage.height;
+            let avatarDrawWidth = pipWidth;
+            let avatarDrawHeight = pipHeight;
+            let avatarDrawX = avatarPipX;
+            let avatarDrawY = avatarPipY;
+
+            if (avatarAspect > pipAspect) {
+              avatarDrawHeight = pipWidth / avatarAspect;
+              avatarDrawY = avatarPipY + (pipHeight - avatarDrawHeight) / 2;
+            } else {
+              avatarDrawWidth = pipHeight * avatarAspect;
+              avatarDrawX = avatarPipX + (pipWidth - avatarDrawWidth) / 2;
+            }
+
+            ctx.drawImage(avatarImage, avatarDrawX, avatarDrawY, avatarDrawWidth, avatarDrawHeight);
+          }
+        }
+      } else if (isCameraReady && cameraVideo.readyState >= 2) {
+        // 画面共有がない場合、カメラ映像を全画面描画（aspect-fitで中央配置）
         const videoAspect = cameraVideo.videoWidth / cameraVideo.videoHeight;
         const canvasAspect = canvas.width / canvas.height;
 
@@ -1079,6 +1168,21 @@ export function useRecording(streams: RecordingStreams) {
     const seconds = recordingTime % 60;
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }, [recordingTime]);
+
+  /**
+   * 録画中に画面共有状態が変わった場合の処理
+   *
+   * カメラのみCanvas合成の描画ロジックを動的に更新し、
+   * 画面共有が開始されたら画面共有を描画するように切り替える
+   */
+  useEffect(() => {
+    // 録画中でない場合はスキップ
+    if (!isRecording) {
+      return;
+    }
+
+    console.log(`[録画中] ストリーム状態: 画面共有=${!!screenStream}, カメラ=${!!cameraStream}`);
+  }, [isRecording, screenStream, cameraStream]);
 
   return {
     isRecording,
