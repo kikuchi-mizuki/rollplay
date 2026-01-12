@@ -127,6 +127,18 @@ def normalize_text_for_japanese_tts(text):
         pattern = r'\b' + re.escape(eng) + r'\b'
         result = re.sub(pattern, jpn, result)
 
+    # 読み間違えやすい日本語単語の読み仮名置換
+    # OpenAI TTSが誤読する単語をひらがなに置き換える
+    japanese_replacements = {
+        '今日': 'きょう',
+        '本日': 'ほんじつ',
+        '明日': 'あした',
+        '昨日': 'きのう',
+    }
+
+    for kanji, hiragana in japanese_replacements.items():
+        result = result.replace(kanji, hiragana)
+
     # 注: 読点後のスペース追加はOpenAI TTSで英語として解釈される問題があるため削除
     # result = re.sub(r'、(?!\s)', '、 ', result)
 
