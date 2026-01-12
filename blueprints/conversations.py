@@ -639,26 +639,34 @@ def chat_stream():
                     tts_start = time.time()
 
                     # ペルソナに応じた音声と話速を選択
-                    # ペルソナタイプを推測（会話の最初でペルソナ情報がある場合）
+                    # ペルソナタイプを推測（ペルソナ情報がある場合は常に適用）
                     persona_type = None
-                    if persona_info and is_first:
+                    if persona_info:
                         # ペルソナから音声タイプを推測
                         business_type = persona_info.get('business_type', '')
-                        if '飲食' in business_type or 'レストラン' in business_type:
-                            persona_type = 'traditional_owner'  # 伝統的な事業主
-                        elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type:
-                            persona_type = 'tech_founder'  # テック系創業者
-                        elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type:
-                            persona_type = 'creative_director'  # クリエイティブ系
-                        elif '企業' in business_type or '会社' in business_type:
-                            persona_type = 'mid_manager'  # 中堅管理職
-                        else:
-                            persona_type = 'default'
+                        company_size = persona_info.get('company_size', '')
+                        age_range = persona_info.get('age_range', '')
 
-                    # 音声と話速を選択
+                        # 年齢と業種から詳細に判定
+                        if 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type:
+                            persona_type = 'tech_founder'  # テック系創業者（明るく若々しい）
+                        elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type:
+                            persona_type = 'creative_director'  # クリエイティブ系（明るく表現豊か）
+                        elif '50代' in age_range or '60代' in age_range or 'ベテラン' in age_range:
+                            persona_type = 'senior_executive'  # ベテラン経営者（落ち着いた低め）
+                        elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type:
+                            persona_type = 'traditional_owner'  # 伝統的な事業主（落ち着いた低め）
+                        elif '20代' in age_range or '30代前半' in age_range:
+                            persona_type = 'young_entrepreneur'  # 若手起業家（明るく快活）
+                        elif '大手' in company_size or '中堅' in company_size:
+                            persona_type = 'mid_manager'  # 中堅管理職（標準的）
+                        else:
+                            persona_type = 'mid_manager'  # デフォルトは中堅管理職（標準的）
+
+                    # 音声と話速を選択（ペルソナ優先、シナリオは無視）
                     selected_voice, selected_speed = select_voice_for_persona(
-                        persona_type=persona_type or 'default',
-                        scenario_id=current_scenario_id
+                        persona_type=persona_type or 'mid_manager',
+                        scenario_id=None  # シナリオIDは渡さない（ペルソナ優先）
                     )
 
                     # リトライ設定（最大3回、指数バックオフ）

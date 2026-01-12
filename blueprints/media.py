@@ -218,19 +218,13 @@ def select_voice_for_persona(persona_type='default', scenario_id='', override_vo
         'analytical': ('ja-JP-Neural2-B', 1.2),  # 分析的タイプ：標準的で論理的
     }
 
-    # ペルソナタイプから選択
+    # ペルソナタイプから選択（最優先）
     if persona_type and persona_type in persona_voice_map:
         voice, speed = persona_voice_map[persona_type]
-        logger.debug(f"  ペルソナ優先選択: {persona_type} → voice={voice}, speed={speed}")
+        logger.debug(f"  ペルソナ選択: {persona_type} → voice={voice}, speed={speed}")
         return (voice, speed)
 
-    # シナリオIDから選択
-    if scenario_id and scenario_id in scenario_voice_map:
-        config = scenario_voice_map[scenario_id]
-        logger.debug(f"  シナリオ選択: {scenario_id} → {config['description']}")
-        return (config['voice'], config['speed'])
-
-    # デフォルト：標準的な女性声
+    # デフォルト：標準的な女性声（中堅管理職相当）
     logger.debug(f"  デフォルト選択: ja-JP-Neural2-B, 1.2")
     return ('ja-JP-Neural2-B', 1.2)
 
