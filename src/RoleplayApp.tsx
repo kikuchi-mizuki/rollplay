@@ -80,6 +80,7 @@ function RoleplayApp() {
   const analyserNodeRef = useRef<AnalyserNode | null>(null); // AnalyserNode（音声波形確認用）
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream（録画用）
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
+  const screenStreamRef = useRef<MediaStream | null>(null); // 画面共有のRef（録画中の画面共有開始に対応）
 
   // 録画開始時のWeb Audio API初期化フラグ
   const recordingAudioInitializedRef = useRef(false);
@@ -129,6 +130,7 @@ function RoleplayApp() {
     avatarImageSrcRef, // 録画中の表情変化に対応（Ref経由で最新値を参照）
     aiAudioStream, // AI音声出力のストリーム（Web Audio API）
     audioDestinationRef, // AI音声Destinationのref（ステート更新タイミング問題を回避）
+    screenStreamRef, // 画面共有のRef（録画中の画面共有開始に対応）
   }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
 
   // 録画開始のラッパー（Web Audio API初期化を確実に実行）
@@ -235,6 +237,12 @@ function RoleplayApp() {
   useEffect(() => {
     avatarImageSrcRef.current = imageSrc;
   }, [imageSrc]);
+
+  // screenStream（画面共有）の変更をRefに同期（録画中の画面共有開始に対応）
+  useEffect(() => {
+    screenStreamRef.current = screenStream;
+    console.log(`[録画中] ストリーム状態: 画面共有=${!!screenStream}, カメラ=${!!cameraStream}`);
+  }, [screenStream, cameraStream]);
 
   // Phase 2: カメラエラーハンドリング
   useEffect(() => {

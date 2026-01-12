@@ -29,6 +29,7 @@ export interface RecordingStreams {
   avatarImageSrcRef?: React.MutableRefObject<string | undefined>; // アバター画像のRef（録画中の表情変化に対応）
   aiAudioStream?: MediaStream | null; // AI音声出力のストリーム（Web Audio API）
   audioDestinationRef?: React.MutableRefObject<MediaStreamAudioDestinationNode | null>; // AI音声Destinationのref（ステート更新タイミング問題を回避）
+  screenStreamRef?: React.MutableRefObject<MediaStream | null>; // 画面共有のRef（録画中の画面共有開始に対応）
 }
 
 /**
@@ -46,7 +47,7 @@ export interface RecordingStreams {
  * @returns 録画状態、制御関数、録画データ
  */
 export function useRecording(streams: RecordingStreams) {
-  const { cameraStream, screenStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef } = streams;
+  const { cameraStream, screenStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef, screenStreamRef } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -168,11 +169,12 @@ export function useRecording(streams: RecordingStreams) {
     const drawFrame = () => {
       if (!canvasRef.current) return;
 
-      // 画面共有が途中から開始された場合の処理
-      if (screenStream && !screenVideo) {
+      // 画面共有が途中から開始された場合の処理（Refから最新の値を取得）
+      const currentScreenStream = screenStreamRef?.current;
+      if (currentScreenStream && !screenVideo) {
         console.log('🔄 [録画中] 画面共有開始を検出 → 描画を切り替えます');
         screenVideo = document.createElement('video');
-        screenVideo.srcObject = screenStream;
+        screenVideo.srcObject = currentScreenStream;
         screenVideo.autoplay = true;
         screenVideo.muted = true;
         screenVideo.playsInline = true;
