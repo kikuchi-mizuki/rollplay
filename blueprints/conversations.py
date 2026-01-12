@@ -678,19 +678,60 @@ def chat_stream():
 
                     for attempt in range(max_retries):
                         try:
-                            tts_response = openai_client.audio.speech.create(
-                                model="tts-1-hd",  # 高品質モデル（より自然で流暢）
-                                voice=selected_voice,  # ペルソナに応じた音声
-                                input=normalized_chunk_text,  # 正規化後のテキストを使用
-                                speed=selected_speed  # ペルソナに応じた話速
+                            # Google Cloud Text-to-Speech を使用
+                            from google.cloud import texttospeech
+                            import os
+                            import json as json_module
+
+                            # 環境変数から認証情報を取得
+                            credentials_json = os.getenv('GOOGLE_CLOUD_TTS_CREDENTIALS')
+                            if credentials_json:
+                                # JSONを一時ファイルに書き込んで認証
+                                import tempfile
+                                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
+                                    f.write(credentials_json)
+                                    credentials_path = f.name
+                                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+
+                            client = texttospeech.TextToSpeechClient()
+
+                            # 音声パラメータの設定
+                            synthesis_input = texttospeech.SynthesisInput(text=normalized_chunk_text)
+
+                            # 日本語の自然な音声を選択（女性声）
+                            # ja-JP-Neural2-B: 標準的な女性声（自然で明瞭）
+                            voice = texttospeech.VoiceSelectionParams(
+                                language_code="ja-JP",
+                                name="ja-JP-Neural2-B",  # 高品質なNeural2音声
+                                ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
                             )
-                            audio_data = tts_response.content
+
+                            # 音声設定
+                            audio_config = texttospeech.AudioConfig(
+                                audio_encoding=texttospeech.AudioEncoding.MP3,
+                                speaking_rate=selected_speed,  # 話速
+                                pitch=0.0,  # ピッチ（標準）
+                                volume_gain_db=0.0  # 音量
+                            )
+
+                            # TTS生成
+                            response = client.synthesize_speech(
+                                input=synthesis_input,
+                                voice=voice,
+                                audio_config=audio_config
+                            )
+
+                            audio_data = response.audio_content
                             audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+
+                            # 一時ファイルを削除
+                            if credentials_json and os.path.exists(credentials_path):
+                                os.remove(credentials_path)
 
                             # TTS生成時間を計測
                             tts_duration = (time.time() - tts_start) * 1000  # ms
                             retry_info = f" (リトライ{attempt}回)" if attempt > 0 else ""
-                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字, voice={selected_voice}, speed={selected_speed}){retry_info}")
+                            logger.debug(f"[TTS計測] チャンク{chunk_index}: {tts_duration:.0f}ms ({len(chunk_text)}文字, voice=ja-JP-Neural2-B, speed={selected_speed}){retry_info}")
 
                             return {'audio': audio_base64, 'text': chunk_text, 'chunk': chunk_index}
                         except Exception as e:
@@ -699,7 +740,7 @@ def chat_stream():
                                 time.sleep(retry_delay)
                                 retry_delay *= 2  # 指数バックオフ（100ms → 200ms → 400ms）
                             else:
-                                logger.debug(f"[TTS 最終エラー] チャンク{chunk_index}: {e} （{max_retries}回試行後）")
+                                logger.error(f"[TTS 最終エラー] チャンク{chunk_index}: {e} （{max_retries}回試行後）")
                                 return None
 
                 if not openai_api_key or not openai_client:
