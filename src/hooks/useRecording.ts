@@ -369,6 +369,8 @@ export function useRecording(streams: RecordingStreams) {
     canvas.height = screenHeight;
     canvasRef.current = canvas;
 
+    console.log(`📐 初期Canvas解像度: ${canvas.width}x${canvas.height}`);
+
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       console.error('❌ Canvasコンテキスト取得失敗');
@@ -413,16 +415,11 @@ export function useRecording(streams: RecordingStreams) {
         videoWidth: screenVideo.videoWidth,
         videoHeight: screenVideo.videoHeight,
       });
-      isScreenReady = true;
 
-      // 実際のvideoサイズに合わせてCanvasをリサイズ
-      if (screenVideo.videoWidth > 0 && screenVideo.videoHeight > 0) {
-        canvas.width = screenVideo.videoWidth;
-        canvas.height = screenVideo.videoHeight;
-        console.log(`📐 Canvas解像度を実際のvideoサイズに調整: ${canvas.width}x${canvas.height}`);
-      }
-
-      screenVideo.play().catch(err => console.warn('画面共有video再生エラー:', err));
+      screenVideo.play().then(() => {
+        isScreenReady = true;
+        console.log('▶️ 画面共有video再生開始（isScreenReady=true）');
+      }).catch(err => console.warn('画面共有video再生エラー:', err));
     };
 
     cameraVideo.onloadedmetadata = () => {
@@ -431,13 +428,23 @@ export function useRecording(streams: RecordingStreams) {
         videoWidth: cameraVideo.videoWidth,
         videoHeight: cameraVideo.videoHeight,
       });
-      isCameraReady = true;
-      cameraVideo.play().catch(err => console.warn('カメラvideo再生エラー:', err));
+
+      cameraVideo.play().then(() => {
+        isCameraReady = true;
+        console.log('▶️ カメラvideo再生開始（isCameraReady=true）');
+      }).catch(err => console.warn('カメラvideo再生エラー:', err));
     };
 
     // 描画ループ（30fps）
+    let frameCount = 0;
     const drawFrame = () => {
       if (!canvasRef.current) return;
+
+      frameCount++;
+      // 最初の10フレームと100フレームごとにデバッグログ
+      if (frameCount <= 10 || frameCount % 100 === 0) {
+        console.log(`[フレーム${frameCount}] 画面:${isScreenReady}(${screenVideo.readyState}) カメラ:${isCameraReady}(${cameraVideo.readyState})`);
+      }
 
       // アバター画像の変更をチェック（録画中の表情変化に対応）
       const currentAvatarSrc = avatarImageSrcRef?.current;
@@ -448,11 +455,16 @@ export function useRecording(streams: RecordingStreams) {
         lastAvatarImageSrc = currentAvatarSrc;
       }
 
-      // video要素が準備できているかチェック（readyState >= 3 = HAVE_FUTURE_DATA）
+      // video要素が準備できているかチェック（readyState >= 2 = HAVE_CURRENT_DATA）
+      // readyState >= 2であれば現在のフレームが利用可能
       if (isScreenReady && isCameraReady &&
-          screenVideo.readyState >= 3 && cameraVideo.readyState >= 3) {
+          screenVideo.readyState >= 2 && cameraVideo.readyState >= 2) {
         // 画面共有を全画面描画
-        ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+        try {
+          ctx.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
+        } catch (err) {
+          console.error('❌ 画面共有描画エラー:', err);
+        }
 
         // カメラを右下PinP描画（画面の1/6サイズ）
         const pipWidth = Math.floor(canvas.width / 6);
