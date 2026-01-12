@@ -550,6 +550,10 @@ function RoleplayApp() {
       // 🔍 デバッグ: 送信する会話履歴を確認（プレースホルダーを含めないhistoryBeforeBotを使用）
       const historyToSend = historyBeforeBot.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text }));
       console.log(`[会話履歴送信] 件数: ${historyToSend.length}`);
+      console.log(`[API送信] conversation_id: ${conversationId}, persona: ${currentPersona ? 'あり' : 'なし'}`);
+      if (currentPersona) {
+        console.log(`[API送信] persona.voice_name: ${currentPersona.voice_name}, persona.speaking_rate: ${currentPersona.speaking_rate}`);
+      }
       historyToSend.slice(-5).forEach((h, i) => {
         console.log(`  [${i}] ${h.speaker}: ${h.text.substring(0, 50)}...`);
       });
@@ -606,6 +610,7 @@ function RoleplayApp() {
               // 最終チャンクでペルソナ情報を受信（新規会話時のみ）
               if (data.final && data.persona) {
                 console.log('[ペルソナ受信] 新規会話のペルソナ情報を取得:', data.persona);
+                console.log('[ペルソナ受信] voice_name:', data.persona.voice_name, 'speaking_rate:', data.persona.speaking_rate);
                 setCurrentPersona(data.persona);
               }
 

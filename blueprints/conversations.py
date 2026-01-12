@@ -673,11 +673,12 @@ def chat_stream():
                     selected_speed = None
 
                     if persona_info:
+                        logger.debug(f"[TTS音声選択/チャンク{chunk_index}] persona_info keys: {list(persona_info.keys())}")
                         # 🎯 優先順位1: ペルソナに保存された音声設定を使用（会話内で一貫性を保つ）
                         if 'voice_name' in persona_info and 'speaking_rate' in persona_info:
                             selected_voice = persona_info['voice_name']
                             selected_speed = persona_info['speaking_rate']
-                            logger.info(f"[音声選択] ペルソナから直接取得: voice={selected_voice}, speed={selected_speed}")
+                            logger.info(f"[音声選択/チャンク{chunk_index}] ペルソナから直接取得: voice={selected_voice}, speed={selected_speed}")
                         else:
                             # 🎯 優先順位2: ペルソナ構造から音声タイプを推測（初回のみ）
                             persona_name = persona_info.get('persona_name', '')
@@ -873,6 +874,7 @@ def chat_stream():
                     if request_persona:
                         persona = request_persona
                         logger.info(f"[ペルソナ選択/ストリーミング] 会話継続: フロントエンドから取得 - {persona.get('name', 'Unknown')}")
+                        logger.debug(f"[ペルソナ選択/ストリーミング] persona keys: {list(persona.keys())}, voice_name: {persona.get('voice_name')}, speaking_rate: {persona.get('speaking_rate')}")
                     else:
                         logger.warning("[ペルソナ選択/ストリーミング] 会話継続だがconversation_id・personaなし: ペルソナなしで継続")
 
