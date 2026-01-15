@@ -63,6 +63,7 @@ function RoleplayApp() {
   const currentPersonaRef = useRef<any>(null); // currentPersonaのRef（クロージャー問題を回避）
   const [showPersonaSelector, setShowPersonaSelector] = useState(false); // ペルソナ選択モーダルの表示状態
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null); // 選択されたペルソナID
+  const selectedPersonaIdRef = useRef<string | null>(null); // selectedPersonaIdのRef（クロージャー問題を回避）
   const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
   const lastExpressionRef = useRef<string>(getDefaultExpression('avatar_03')); // 前回の表情を記憶（不要な切り替え防止）
@@ -257,6 +258,12 @@ function RoleplayApp() {
       speaking_rate: currentPersona.speaking_rate
     } : null);
   }, [currentPersona]);
+
+  // selectedPersonaIdの変更を監視してRefに同期
+  useEffect(() => {
+    selectedPersonaIdRef.current = selectedPersonaId;
+    console.log('[ペルソナID監視] selectedPersonaIdが更新されました:', selectedPersonaId);
+  }, [selectedPersonaId]);
 
   // Phase 2: カメラエラーハンドリング
   useEffect(() => {
@@ -578,6 +585,9 @@ function RoleplayApp() {
       });
 
       // SSEでストリーミング受信
+      const personaIdToSend = selectedPersonaIdRef.current; // Refから最新値を取得
+      console.log(`[API送信] persona_id: ${personaIdToSend ? personaIdToSend : 'なし'}`);
+
       const response = await fetch('/api/chat-stream', {
         method: 'POST',
         headers: {
@@ -589,7 +599,7 @@ function RoleplayApp() {
           scenario_id: selectedScenarioId,
           conversation_id: conversationId, // 会話IDを送信（ペルソナ固定用）
           persona: personaToSend, // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
-          persona_id: selectedPersonaId // 選択されたペルソナID（新規会話時）
+          persona_id: personaIdToSend // 選択されたペルソナID（新規会話時）
         }),
       });
 
