@@ -6,6 +6,7 @@ import { EvaluationSheet } from './components/EvaluationSheet';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { Toast } from './components/Toast';
 import { PersonaSelector } from './components/PersonaSelector';
+import { CameraPip } from './components/CameraPip';
 import { Message, Evaluation, RecordingState } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
@@ -1418,47 +1419,33 @@ function RoleplayApp() {
           {/* カメラON && 画面共有OFF: カメラをメイン表示、アバターをPinP */}
           {isCameraActive && !isScreenSharing ? (
             <div className="h-full w-full relative">
-              {/* メイン: カメラ映像 */}
-              <div className="h-full w-full relative bg-black/80 rounded-2xl flex items-center justify-center overflow-hidden">
-                {cameraVideoRef && (
-                  <video
-                    ref={cameraVideoRef}
-                    autoPlay
-                    playsInline
-                    muted
+              {/* メイン: カメラ映像（背景ぼかし機能付き） */}
+              <CameraPip
+                cameraVideoRef={cameraVideoRef}
+                isRecording={isVideoRecording}
+                recordingTime={videoRecordingTime}
+                isFullscreen={true}
+              />
+
+              {/* 字幕 */}
+              {mediaSubtitle && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm z-30">
+                  <div className="line-clamp-2 transition-all duration-300">
+                    {mediaSubtitle}
+                  </div>
+                </div>
+              )}
+
+              {/* PinP: アバター（左上） */}
+              {imageSrc && (
+                <div className="absolute top-4 left-4 w-32 h-32 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+                  <img
+                    src={imageSrc}
+                    alt="AI相談者のアバター"
                     className="w-full h-full object-cover"
-                    aria-label="カメラプレビュー"
                   />
-                )}
-
-                {/* 録画インジケーター */}
-                {isVideoRecording && (
-                  <div className="absolute top-4 right-4 bg-red-500/90 text-white text-xs px-3 py-1 rounded-full flex items-center gap-2 animate-pulse">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    REC {Math.floor(videoRecordingTime / 60)}:{String(videoRecordingTime % 60).padStart(2, '0')}
-                  </div>
-                )}
-
-                {/* 字幕 */}
-                {mediaSubtitle && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm">
-                    <div className="line-clamp-2 transition-all duration-300">
-                      {mediaSubtitle}
-                    </div>
-                  </div>
-                )}
-
-                {/* PinP: アバター（左上） */}
-                {imageSrc && (
-                  <div className="absolute top-4 left-4 w-32 h-32 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
-                    <img
-                      src={imageSrc}
-                      alt="AI相談者のアバター"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           ) : (
             /* 通常表示（画面共有ON または カメラOFF） */

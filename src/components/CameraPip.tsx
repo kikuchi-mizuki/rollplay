@@ -9,11 +9,13 @@ import { useState } from 'react';
  * @param cameraVideoRef - カメラプレビュー用のvideoRef
  * @param isRecording - 録画中かどうか（オプション）
  * @param recordingTime - 録画時間（秒）（オプション）
+ * @param isFullscreen - フルスクリーン表示かどうか（オプション）
  */
 interface CameraPipProps {
   cameraVideoRef: React.RefObject<HTMLVideoElement>;
   isRecording?: boolean;
   recordingTime?: number;
+  isFullscreen?: boolean;
 }
 
 type BackgroundMode = 'none' | 'blur' | 'color';
@@ -30,6 +32,7 @@ export function CameraPip({
   cameraVideoRef,
   isRecording = false,
   recordingTime = 0,
+  isFullscreen = false,
 }: CameraPipProps) {
   const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>('none');
   const [selectedColor, setSelectedColor] = useState(BACKGROUND_COLORS[0].value);
@@ -66,8 +69,13 @@ export function CameraPip({
     return {};
   };
 
+  // フルスクリーン時とPinP時でクラスを切り替え
+  const containerClass = isFullscreen
+    ? "h-full w-full relative bg-black/80 rounded-2xl flex items-center justify-center overflow-hidden"
+    : "absolute bottom-4 right-4 w-40 h-30 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl";
+
   return (
-    <div className="absolute bottom-4 right-4 w-40 h-30 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl"
+    <div className={containerClass}
       style={getBackgroundStyle()}
     >
       {/* 背景色モードの場合、ぼかした映像を後ろに表示 */}
