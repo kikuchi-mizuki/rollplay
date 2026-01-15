@@ -18,10 +18,11 @@ def init_blueprint(app):
     ブループリント初期化
     app.pyから必要な設定やヘルパー関数を受け取る
     """
-    global SCENARIOS_INDEX_PATH, load_scenario_object
+    global SCENARIOS_INDEX_PATH, load_scenario_object, SHARED_PERSONAS
 
     SCENARIOS_INDEX_PATH = app.config.get('SCENARIOS_INDEX_PATH')
     load_scenario_object = app.config.get('load_scenario_object')
+    SHARED_PERSONAS = app.config.get('SHARED_PERSONAS', [])
 
 
 @scenarios_bp.route('', methods=['GET'])
@@ -114,4 +115,21 @@ def get_scenario(scenario_id):
         return jsonify({
             'success': False,
             'error': 'シナリオの取得に失敗しました'
+        }), 500
+
+
+@scenarios_bp.route('/personas', methods=['GET'])
+def get_personas():
+    """ペルソナ一覧を取得"""
+    try:
+        return jsonify({
+            'success': True,
+            'personas': SHARED_PERSONAS
+        })
+    except Exception as e:
+        # 予期しないエラー
+        logger.exception(f"ペルソナ一覧取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'ペルソナ一覧の取得に失敗しました'
         }), 500

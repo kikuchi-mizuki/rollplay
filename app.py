@@ -543,6 +543,56 @@ def select_random_persona_for_scene(scene_id: str):
 
     return combined_persona
 
+
+def select_persona_by_id(persona_id, scene_id):
+    """
+    指定されたpersona_idのペルソナを選択し、
+    ベースプロフィールとシーン状況を統合して返す
+
+    Args:
+        persona_id: ペルソナID
+        scene_id: シーンID (meeting_1st, meeting_1_5th, meeting_2nd, meeting_3rd, kickoff, upsell)
+
+    Returns:
+        dict: ペルソナ情報（base_profile + scene_variation）
+    """
+    if not SHARED_PERSONAS:
+        logger.warning("[ペルソナ選択] 共有ペルソナが読み込まれていません")
+        return None
+
+    # persona_idが一致するペルソナを検索
+    persona = next((p for p in SHARED_PERSONAS if p.get('persona_id') == persona_id), None)
+
+    if not persona:
+        logger.warning(f"[ペルソナ選択] 指定されたpersona_id '{persona_id}' が見つかりません")
+        return None
+
+    persona_name = persona.get('persona_name', '不明')
+    logger.debug(f"[ペルソナ選択] ID指定選択: {persona_name} (ID: {persona_id})")
+
+    # シーンに応じた状況設定を取得
+    base_profile = persona.get('base_profile', {})
+    scene_variations = persona.get('scene_variations', {})
+
+    # シーンIDに対応する状況設定を取得（デフォルトはmeeting_1st）
+    scene_variation = scene_variations.get(scene_id, scene_variations.get('meeting_1st', {}))
+
+    if not scene_variation:
+        logger.warning(f"[ペルソナ選択] 警告: シーンID '{scene_id}' の状況設定が見つかりません")
+
+    # ベースプロフィールとシーン状況を統合
+    combined_persona = {
+        'persona_id': persona_id,
+        'persona_name': persona_name,
+        **base_profile,
+        **scene_variation
+    }
+
+    logger.debug(f"[ペルソナ選択] シーン: {scene_id}, 態度: {scene_variation.get('tone', '不明')}")
+
+    return combined_persona
+
+
 load_shared_personas()
 
 # ===== Few-shot評価サンプル読込（Week 5：評価精度向上） =====
@@ -930,6 +980,7 @@ def sniff_suffix(path: str) -> str:
 app.register_blueprint(scenarios_bp)
 app.config['SCENARIOS_INDEX_PATH'] = SCENARIOS_INDEX_PATH
 app.config['load_scenario_object'] = load_scenario_object
+app.config['SHARED_PERSONAS'] = SHARED_PERSONAS  # ペルソナ一覧
 init_scenarios_blueprint(app)
 
 # メディア処理Blueprint
@@ -968,6 +1019,7 @@ app.config['DEFAULT_SCENARIO_ID'] = DEFAULT_SCENARIO_ID
 app.config['SALES_ROLEPLAY_PROMPT'] = SALES_ROLEPLAY_PROMPT
 app.config['load_scenario_object'] = load_scenario_object
 app.config['select_random_persona_for_scene'] = select_random_persona_for_scene
+app.config['select_persona_by_id'] = select_persona_by_id
 app.config['RAG_INDEX'] = RAG_INDEX
 app.config['RAG_METADATA'] = RAG_METADATA
 app.config['search_rag_patterns'] = search_rag_patterns

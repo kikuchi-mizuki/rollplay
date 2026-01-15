@@ -5,6 +5,7 @@ import { MediaPanel } from './components/MediaPanel';
 import { EvaluationSheet } from './components/EvaluationSheet';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { Toast } from './components/Toast';
+import { PersonaSelector } from './components/PersonaSelector';
 import { Message, Evaluation, RecordingState } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
@@ -60,6 +61,8 @@ function RoleplayApp() {
   const [conversationId, setConversationId] = useState<string | null>(null); // 会話ID（ペルソナ固定用）
   const [currentPersona, setCurrentPersona] = useState<any>(null); // 現在のペルソナ情報（会話内固定）
   const currentPersonaRef = useRef<any>(null); // currentPersonaのRef（クロージャー問題を回避）
+  const [showPersonaSelector, setShowPersonaSelector] = useState(false); // ペルソナ選択モーダルの表示状態
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null); // 選択されたペルソナID
   const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
   const lastExpressionRef = useRef<string>(getDefaultExpression('avatar_03')); // 前回の表情を記憶（不要な切り替え防止）
@@ -345,6 +348,7 @@ function RoleplayApp() {
       setShowEvaluation(false);
       setConversationId(null);
       setCurrentPersona(null); // ペルソナ情報もリセット
+      setSelectedPersonaId(null); // ペルソナ選択もリセット
       conversationStartTime.current = new Date(); // 会話開始時刻を記録
 
       // デフォルト表情（listening）の静止画を表示（avatar_03固定）
@@ -355,6 +359,9 @@ function RoleplayApp() {
 
       // 字幕をクリア（ユーザーが最初に話しかけるまで何も表示しない）
       setMediaSubtitle('');
+
+      // ペルソナ選択モーダルを表示
+      setShowPersonaSelector(true);
     }
   }, [selectedScenarioId]);
 
@@ -581,7 +588,8 @@ function RoleplayApp() {
           history: historyToSend,
           scenario_id: selectedScenarioId,
           conversation_id: conversationId, // 会話IDを送信（ペルソナ固定用）
-          persona: personaToSend // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
+          persona: personaToSend, // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
+          persona_id: selectedPersonaId // 選択されたペルソナID（新規会話時）
         }),
       });
 
@@ -1718,6 +1726,16 @@ function RoleplayApp() {
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* ペルソナ選択モーダル */}
+      <PersonaSelector
+        isOpen={showPersonaSelector}
+        onSelect={(personaId) => {
+          setSelectedPersonaId(personaId);
+          setShowPersonaSelector(false);
+        }}
+        onClose={() => setShowPersonaSelector(false)}
+      />
     </div>
   );
 }

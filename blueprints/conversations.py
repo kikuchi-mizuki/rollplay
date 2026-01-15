@@ -23,6 +23,7 @@ DEFAULT_SCENARIO_ID = None
 SALES_ROLEPLAY_PROMPT = None
 load_scenario_object = None
 select_random_persona_for_scene = None
+select_persona_by_id = None
 RAG_INDEX = None
 RAG_METADATA = None
 search_rag_patterns = None
@@ -45,7 +46,7 @@ def init_blueprint(app):
     """
     global supabase_client, openai_client, openai_api_key
     global DEFAULT_SCENARIO_ID, SALES_ROLEPLAY_PROMPT
-    global load_scenario_object, select_random_persona_for_scene
+    global load_scenario_object, select_random_persona_for_scene, select_persona_by_id
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
     global load_evaluation_samples, RUBRIC_DATA
     global limiter
@@ -58,6 +59,7 @@ def init_blueprint(app):
     SALES_ROLEPLAY_PROMPT = app.config.get('SALES_ROLEPLAY_PROMPT')
     load_scenario_object = app.config.get('load_scenario_object')
     select_random_persona_for_scene = app.config.get('select_random_persona_for_scene')
+    select_persona_by_id = app.config.get('select_persona_by_id')
     RAG_INDEX = app.config.get('RAG_INDEX')
     RAG_METADATA = app.config.get('RAG_METADATA')
     search_rag_patterns = app.config.get('search_rag_patterns')
@@ -638,7 +640,8 @@ def chat_stream():
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
         conversation_id = data.get('conversation_id')  # 会話IDを取得
         request_persona = data.get('persona')  # フロントエンドから送信されたペルソナ（会話継続時のフォールバック）
-        logger.info(f"[リクエスト受信] conversation_id={conversation_id}, request_persona={'あり' if request_persona else 'なし'}")
+        persona_id = data.get('persona_id')  # フロントエンドから送信されたペルソナID（新規会話時）
+        logger.info(f"[リクエスト受信] conversation_id={conversation_id}, request_persona={'あり' if request_persona else 'なし'}, persona_id={persona_id if persona_id else 'なし'}")
         if request_persona:
             logger.info(f"[リクエスト受信] request_persona.voice_name={request_persona.get('voice_name')}, speaking_rate={request_persona.get('speaking_rate')}")
 
@@ -827,9 +830,13 @@ def chat_stream():
                 persona = None
 
                 if is_first_message:
-                    # 会話開始時: ペルソナをランダムに選択
-                    persona = select_random_persona_for_scene(scenario_id)
-                    logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ランダム選択 - {persona.get('name', 'Unknown') if persona else 'None'}")
+                    # 会話開始時: persona_idが指定されている場合はそのペルソナを使用、なければランダム選択
+                    if persona_id:
+                        persona = select_persona_by_id(persona_id, scenario_id)
+                        logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ID指定選択 - {persona.get('persona_name', 'Unknown') if persona else 'None'} (ID: {persona_id})")
+                    else:
+                        persona = select_random_persona_for_scene(scenario_id)
+                        logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ランダム選択 - {persona.get('persona_name', 'Unknown') if persona else 'None'}")
 
                     # 音声設定をpersonaに追加（会話内で一貫性を保つため）
                     if persona:
