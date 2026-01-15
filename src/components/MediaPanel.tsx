@@ -139,29 +139,24 @@ export function MediaPanel({
         {/* 録音中オーバーレイ */}
         {renderWaveform()}
 
-        {/* Phase 2: 画面共有時のPinP表示（アバター + カメラ） - 右下配置 */}
-        {isScreenSharing && (
-          <>
-            {/* カメラPinP（右下） - 背景ぼかし機能付き */}
-            {isCameraActive && cameraVideoRef && (
-              <CameraPip
-                cameraVideoRef={cameraVideoRef}
-                isRecording={isVideoRecording}
-                recordingTime={videoRecordingTime}
-              />
-            )}
+        {/* カメラPinP（右下） - 背景ぼかし機能付き - カメラON時は常に表示 */}
+        {isCameraActive && cameraVideoRef && (
+          <CameraPip
+            cameraVideoRef={cameraVideoRef}
+            isRecording={isVideoRecording}
+            recordingTime={videoRecordingTime}
+          />
+        )}
 
-            {/* アバターPinP（右下、カメラの左隣） */}
-            {imageSrc && (
-              <div className="absolute bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
-                <img
-                  src={imageSrc}
-                  alt="AI相談者のアバター"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-          </>
+        {/* Phase 2: 画面共有時のPinP表示（アバター） - 右下配置 */}
+        {isScreenSharing && imageSrc && (
+          <div className="absolute bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+            <img
+              src={imageSrc}
+              alt="AI相談者のアバター"
+              className="w-full h-full object-cover"
+            />
+          </div>
         )}
       </div>
     </div>
