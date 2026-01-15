@@ -67,7 +67,7 @@ export function CameraPip({
   };
 
   return (
-    <div className="absolute top-4 left-4 w-48 h-36 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl"
+    <div className="absolute bottom-4 right-4 w-40 h-30 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl"
       style={getBackgroundStyle()}
     >
       {/* 背景色モードの場合、ぼかした映像を後ろに表示 */}
