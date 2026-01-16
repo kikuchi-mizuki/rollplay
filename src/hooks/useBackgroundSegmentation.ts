@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SelfieSegmentation } from '@mediapipe/selfie_segmentation';
+import * as selfieSegmentation from '@mediapipe/selfie_segmentation';
 
 /**
  * 背景セグメンテーション用カスタムフック
@@ -31,7 +31,7 @@ export function useBackgroundSegmentation({
   enabled,
 }: UseBackgroundSegmentationProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const segmentationRef = useRef<SelfieSegmentation | null>(null);
+  const segmentationRef = useRef<selfieSegmentation.SelfieSegmentation | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -42,18 +42,18 @@ export function useBackgroundSegmentation({
       return;
     }
 
-    const selfieSegmentation = new SelfieSegmentation({
+    const segmenter = new selfieSegmentation.SelfieSegmentation({
       locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
       },
     });
 
-    selfieSegmentation.setOptions({
+    segmenter.setOptions({
       modelSelection: 1, // 0: 一般モデル, 1: ランドスケープモデル（高精度）
       selfieMode: true,
     });
 
-    selfieSegmentation.onResults((results) => {
+    segmenter.onResults((results) => {
       if (!canvasRef.current || !videoRef.current) return;
 
       const canvas = canvasRef.current;
@@ -87,14 +87,14 @@ export function useBackgroundSegmentation({
       }
     });
 
-    segmentationRef.current = selfieSegmentation;
+    segmentationRef.current = segmenter;
     setIsReady(true);
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      selfieSegmentation.close();
+      segmenter.close();
       segmentationRef.current = null;
       setIsReady(false);
     };
