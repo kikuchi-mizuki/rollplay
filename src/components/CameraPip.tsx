@@ -1,10 +1,12 @@
 import { Video, Palette } from 'lucide-react';
 import { useState } from 'react';
+import { useBackgroundSegmentation } from '../hooks/useBackgroundSegmentation';
 
 /**
  * カメラPinP（Picture-in-Picture）コンポーネント
  *
  * Phase 2 Day 2: カメラ映像を右下に小窓で表示
+ * Session 49: MediaPipeを使用して背景のみをぼかす機能を追加
  *
  * @param cameraVideoRef - カメラプレビュー用のvideoRef
  * @param isRecording - 録画中かどうか（オプション）
@@ -39,6 +41,15 @@ export function CameraPip({
   const [showSettings, setShowSettings] = useState(false);
   const [blurIntensity, setBlurIntensity] = useState(15); // 5-30px
 
+  // 背景セグメンテーション（人物と背景を分離）
+  const { canvasRef } = useBackgroundSegmentation({
+    videoRef: cameraVideoRef,
+    backgroundMode,
+    blurIntensity,
+    backgroundColor: selectedColor,
+    enabled: backgroundMode !== 'none',
+  });
+
   /**
    * 録画時間をMM:SS形式にフォーマット
    */
@@ -48,51 +59,43 @@ export function CameraPip({
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  /**
-   * 背景モードに応じたスタイルを取得
-   */
-  const getVideoStyle = (): React.CSSProperties => {
-    if (backgroundMode === 'blur') {
-      return {
-        filter: `blur(${blurIntensity}px) brightness(0.9)`,
-      };
-    }
-    return {};
-  };
-
-  const getBackgroundStyle = (): React.CSSProperties => {
-    if (backgroundMode === 'color') {
-      return {
-        backgroundColor: selectedColor,
-      };
-    }
-    return {};
-  };
-
   // フルスクリーン時とPinP時でクラスを切り替え
   const containerClass = isFullscreen
     ? "h-full w-full relative bg-black/80 rounded-2xl flex items-center justify-center overflow-hidden"
     : "absolute bottom-4 right-4 w-40 h-30 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl";
 
   return (
-    <div className={containerClass}
-      style={getBackgroundStyle()}
-    >
-      {/* 背景色モードの場合、ぼかした映像を後ろに表示 */}
-      {backgroundMode === 'color' && (
-        <div className="absolute inset-0" style={{ backgroundColor: selectedColor }} />
-      )}
-
-      {/* カメラ映像 */}
+    <div className={containerClass}>
+      {/* 元のカメラ映像（非表示 - セグメンテーション処理のソース用） */}
       <video
         ref={cameraVideoRef}
         autoPlay
         muted
         playsInline
-        className="relative z-10 w-full h-full object-cover transition-all duration-300"
-        style={getVideoStyle()}
-        aria-label="カメラプレビュー"
+        className="absolute opacity-0 pointer-events-none"
+        aria-label="カメラソース"
       />
+
+      {/* 背景モードがnoneの場合は元の映像を表示 */}
+      {backgroundMode === 'none' && (
+        <video
+          ref={cameraVideoRef}
+          autoPlay
+          muted
+          playsInline
+          className="relative z-10 w-full h-full object-cover transition-all duration-300"
+          aria-label="カメラプレビュー"
+        />
+      )}
+
+      {/* 背景モードがblur/colorの場合はセグメンテーション処理後のキャンバスを表示 */}
+      {backgroundMode !== 'none' && (
+        <canvas
+          ref={canvasRef}
+          className="relative z-10 w-full h-full object-cover transition-all duration-300"
+          aria-label="処理済みカメラプレビュー"
+        />
+      )}
 
       {/* 録画中インジケーター */}
       {isRecording && (
