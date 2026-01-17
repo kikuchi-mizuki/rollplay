@@ -205,18 +205,18 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
   }
 
   const stabilized = new Uint8Array(currentMask.length);
-  const baseAlpha = 0.95; // 現在フレームの重み（0.95 = 95%現在、5%前フレーム）
+  const baseAlpha = 0.92; // 現在フレームの重み（0.92 = 92%現在、8%前フレーム）
 
   for (let i = 0; i < currentMask.length; i++) {
     // 大きな変化がある場合は現在フレームを優先
     const diff = Math.abs(currentMask[i] - previousMask[i]);
 
-    // より敏感に動きを検出：0.2以上の変化で現在フレームのみ使用
+    // バランスの良い適応的ブレンディング
     let adaptiveAlpha = baseAlpha;
-    if (diff > 0.2) {
-      adaptiveAlpha = 1.0; // 動き検出時は100%現在フレーム（前フレーム使わない）
-    } else if (diff > 0.05) {
-      adaptiveAlpha = 0.98; // 小さな変化でも反応
+    if (diff > 0.4) {
+      adaptiveAlpha = 0.97; // 大きな動き時
+    } else if (diff > 0.15) {
+      adaptiveAlpha = 0.95; // 中程度の動き時
     }
 
     stabilized[i] = currentMask[i] * adaptiveAlpha + previousMask[i] * (1 - adaptiveAlpha);
