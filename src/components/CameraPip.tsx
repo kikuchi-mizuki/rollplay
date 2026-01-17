@@ -1,5 +1,5 @@
 import { Video, Palette } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useBackgroundSegmentation } from '../hooks/useBackgroundSegmentation';
 
 /**
@@ -41,9 +41,19 @@ export function CameraPip({
   const [showSettings, setShowSettings] = useState(false);
   const [blurIntensity, setBlurIntensity] = useState(15); // 5-30px
 
+  // セグメンテーション処理用の内部video ref
+  const internalVideoRef = useRef<HTMLVideoElement>(null);
+
+  // カメラストリームを内部video要素にコピー
+  useEffect(() => {
+    if (cameraVideoRef.current && internalVideoRef.current) {
+      internalVideoRef.current.srcObject = cameraVideoRef.current.srcObject;
+    }
+  }, [cameraVideoRef]);
+
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
-    videoRef: cameraVideoRef,
+    videoRef: internalVideoRef,
     backgroundMode,
     blurIntensity,
     backgroundColor: selectedColor,
@@ -66,14 +76,14 @@ export function CameraPip({
 
   return (
     <div className={containerClass}>
-      {/* 元のカメラ映像（非表示 - セグメンテーション処理のソース用） */}
+      {/* セグメンテーション処理用の内部video要素（非表示） */}
       <video
-        ref={cameraVideoRef}
+        ref={internalVideoRef}
         autoPlay
         muted
         playsInline
         className="absolute opacity-0 pointer-events-none"
-        aria-label="カメラソース"
+        aria-label="セグメンテーション処理用カメラソース"
       />
 
       {/* 背景モードがnoneの場合は元の映像を表示 */}
