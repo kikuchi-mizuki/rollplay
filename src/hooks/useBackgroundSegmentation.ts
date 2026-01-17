@@ -128,10 +128,10 @@ export function useBackgroundSegmentation({
         const segStartTime = performance.now();
         const segmentation = await modelRef.current.segmentPerson(video, {
           flipHorizontal: false,
-          internalResolution: 'high', // mediumからhighに変更して精度向上
-          segmentationThreshold: 0.4, // 0.5→0.4にさらに下げて検出を容易に
-          maxDetections: 5, // 複数人物対応
-          scoreThreshold: 0.4, // 検出スコア閾値を下げる
+          internalResolution: 'medium', // 速度と精度のバランス
+          segmentationThreshold: 0.3, // さらに下げて検出を容易に
+          maxDetections: 5,
+          scoreThreshold: 0.3,
         });
         const segDuration = performance.now() - segStartTime;
 
@@ -205,13 +205,19 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
   }
 
   const stabilized = new Uint8Array(currentMask.length);
-  const alpha = 0.85; // 現在フレームの重み（0.85 = 85%現在、15%前フレーム）
-  // 動きに追従しやすくするため、現在フレームの比重を増やす
+  const baseAlpha = 0.9; // 現在フレームの重み（0.9 = 90%現在、10%前フレーム）
 
   for (let i = 0; i < currentMask.length; i++) {
     // 大きな変化がある場合は現在フレームを優先
     const diff = Math.abs(currentMask[i] - previousMask[i]);
-    const adaptiveAlpha = diff > 0.5 ? 0.95 : alpha;
+
+    // より敏感に動きを検出：0.3以上の変化で現在フレーム優先
+    let adaptiveAlpha = baseAlpha;
+    if (diff > 0.3) {
+      adaptiveAlpha = 0.98; // 動き検出時はほぼ現在フレーム
+    } else if (diff > 0.1) {
+      adaptiveAlpha = 0.95; // 小さな変化でも反応
+    }
 
     stabilized[i] = currentMask[i] * adaptiveAlpha + previousMask[i] * (1 - adaptiveAlpha);
   }
