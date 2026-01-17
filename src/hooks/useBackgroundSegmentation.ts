@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-// MediaPipeのライブラリをサイドエフェクトとして読み込む
-import '@mediapipe/selfie_segmentation';
 
 // グローバル変数として登録されたSelfieSegmentationにアクセス
 declare global {
   interface Window {
     SelfieSegmentation: any;
+  }
+}
+
+// MediaPipeライブラリを動的に読み込む
+async function loadMediaPipe() {
+  if (!window.SelfieSegmentation) {
+    await import('@mediapipe/selfie_segmentation');
   }
 }
 
@@ -50,59 +55,78 @@ export function useBackgroundSegmentation({
       return;
     }
 
-    const segmenter = new window.SelfieSegmentation({
-      locateFile: (file: string) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
-      },
-    });
+    let segmenter: any = null;
 
-    segmenter.setOptions({
-      modelSelection: 1, // 0: 一般モデル, 1: ランドスケープモデル（高精度）
-      selfieMode: true,
-    });
+    const initializeSegmenter = async () => {
+      // MediaPipeライブラリを読み込む
+      await loadMediaPipe();
 
-    segmenter.onResults((results: any) => {
-      if (!canvasRef.current || !videoRef.current) return;
+      // ライブラリが読み込まれるまで少し待つ
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      // キャンバスサイズを映像サイズに合わせる
-      canvas.width = results.image.width;
-      canvas.height = results.image.height;
-
-      // 背景モードに応じて処理
-      if (backgroundMode === 'none') {
-        // 何もしない - 元の映像をそのまま描画
-        ctx.drawImage(results.image as unknown as HTMLVideoElement, 0, 0, canvas.width, canvas.height);
-      } else if (backgroundMode === 'blur') {
-        // 背景のみぼかし
-        applyBlurredBackground(
-          ctx,
-          results.image as unknown as HTMLVideoElement,
-          results.segmentationMask as unknown as ImageData,
-          blurIntensity
-        );
-      } else if (backgroundMode === 'color') {
-        // 背景色を適用
-        applyColorBackground(
-          ctx,
-          results.image as unknown as HTMLVideoElement,
-          results.segmentationMask as unknown as ImageData,
-          backgroundColor
-        );
+      if (!window.SelfieSegmentation) {
+        console.error('MediaPipe SelfieSegmentation not loaded');
+        return;
       }
-    });
 
-    segmentationRef.current = segmenter;
-    setIsReady(true);
+      segmenter = new window.SelfieSegmentation({
+        locateFile: (file: string) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+        },
+      });
+
+      segmenter.setOptions({
+        modelSelection: 1, // 0: 一般モデル, 1: ランドスケープモデル（高精度）
+        selfieMode: true,
+      });
+
+      segmenter.onResults((results: any) => {
+        if (!canvasRef.current || !videoRef.current) return;
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // キャンバスサイズを映像サイズに合わせる
+        canvas.width = results.image.width;
+        canvas.height = results.image.height;
+
+        // 背景モードに応じて処理
+        if (backgroundMode === 'none') {
+          // 何もしない - 元の映像をそのまま描画
+          ctx.drawImage(results.image as unknown as HTMLVideoElement, 0, 0, canvas.width, canvas.height);
+        } else if (backgroundMode === 'blur') {
+          // 背景のみぼかし
+          applyBlurredBackground(
+            ctx,
+            results.image as unknown as HTMLVideoElement,
+            results.segmentationMask as unknown as ImageData,
+            blurIntensity
+          );
+        } else if (backgroundMode === 'color') {
+          // 背景色を適用
+          applyColorBackground(
+            ctx,
+            results.image as unknown as HTMLVideoElement,
+            results.segmentationMask as unknown as ImageData,
+            backgroundColor
+          );
+        }
+      });
+
+      segmentationRef.current = segmenter;
+      setIsReady(true);
+    };
+
+    initializeSegmenter();
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      segmenter.close();
+      if (segmenter) {
+        segmenter.close();
+      }
       segmentationRef.current = null;
       setIsReady(false);
     };
