@@ -35,9 +35,6 @@ export function useBackgroundSegmentation({
   const animationFrameRef = useRef<number | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  // 前フレームのマスクデータ（時間的安定化用）
-  const previousMaskRef = useRef<Uint8Array | null>(null);
-
   // 処理中フラグ（フレームスキップ防止）
   const isProcessingRef = useRef(false);
 
@@ -163,14 +160,13 @@ export function useBackgroundSegmentation({
           });
         }
 
-        // 時間的安定化：前フレームとブレンド（動き優先）
-        const stabilizedMask = stabilizeMask(segmentation.data, previousMaskRef.current);
-        previousMaskRef.current = new Uint8Array(stabilizedMask);
+        // 現在フレームのみ使用（時間的安定化を無効化して即座に追従）
+        const currentMask = segmentation.data;
 
         // 背景モードに応じて処理
         if (backgroundMode === 'blur') {
           // 背景のみぼかし（エッジブレンディング付き）
-          await applyBlurredBackground(ctx, video, stabilizedMask, canvas.width, canvas.height, blurIntensity);
+          await applyBlurredBackground(ctx, video, currentMask, canvas.width, canvas.height, blurIntensity);
         } else {
           // 元の映像をそのまま描画
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -189,40 +185,10 @@ export function useBackgroundSegmentation({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      previousMaskRef.current = null;
     };
   }, [isReady, enabled, videoRef, backgroundMode, blurIntensity]);
 
   return { canvasRef, isReady };
-}
-
-/**
- * 時間的安定化：前フレームとブレンドしてチカチカを防止
- */
-function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null): Uint8Array {
-  if (!previousMask) {
-    return currentMask;
-  }
-
-  const stabilized = new Uint8Array(currentMask.length);
-
-  for (let i = 0; i < currentMask.length; i++) {
-    const diff = Math.abs(currentMask[i] - previousMask[i]);
-
-    // 動き優先の適応的ブレンディング
-    let alpha;
-    if (diff > 0.2) {
-      alpha = 0.98; // 動き時はほぼ現在フレーム
-    } else if (diff > 0.1) {
-      alpha = 0.95; // 小さな動きも反応
-    } else {
-      alpha = 0.9; // 静止時のみブレンド
-    }
-
-    stabilized[i] = currentMask[i] * alpha + previousMask[i] * (1 - alpha);
-  }
-
-  return stabilized;
 }
 
 /**
