@@ -163,11 +163,8 @@ export function useBackgroundSegmentation({
           });
         }
 
-        // 空間的平滑化：マスクを滑らかに（チカチカ防止）
-        const smoothedMask = smoothMask(segmentation.data, segmentation.width, segmentation.height);
-
-        // 時間的安定化：前フレームとブレンド（軽めに）
-        const stabilizedMask = stabilizeMask(smoothedMask, previousMaskRef.current);
+        // 時間的安定化：前フレームとブレンド（動き優先）
+        const stabilizedMask = stabilizeMask(segmentation.data, previousMaskRef.current);
         previousMaskRef.current = new Uint8Array(stabilizedMask);
 
         // 背景モードに応じて処理
@@ -208,18 +205,21 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
   }
 
   const stabilized = new Uint8Array(currentMask.length);
-  const baseAlpha = 0.94; // 現在フレームの重み
 
   for (let i = 0; i < currentMask.length; i++) {
     const diff = Math.abs(currentMask[i] - previousMask[i]);
 
-    // 適応的ブレンディング - 動きにより敏感に
-    let adaptiveAlpha = baseAlpha;
-    if (diff > 0.25) {
-      adaptiveAlpha = 0.97; // 中程度の動き時も反応
+    // 動き優先の適応的ブレンディング
+    let alpha;
+    if (diff > 0.2) {
+      alpha = 0.98; // 動き時はほぼ現在フレーム
+    } else if (diff > 0.1) {
+      alpha = 0.95; // 小さな動きも反応
+    } else {
+      alpha = 0.9; // 静止時のみブレンド
     }
 
-    stabilized[i] = currentMask[i] * adaptiveAlpha + previousMask[i] * (1 - adaptiveAlpha);
+    stabilized[i] = currentMask[i] * alpha + previousMask[i] * (1 - alpha);
   }
 
   return stabilized;
