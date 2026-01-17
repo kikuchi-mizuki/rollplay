@@ -50,6 +50,7 @@ export function CameraPip({
       if (cameraVideoRef.current && internalVideoRef.current) {
         const stream = cameraVideoRef.current.srcObject as MediaStream;
         if (stream) {
+          console.log('[CameraPip] Copying stream to internal video');
           internalVideoRef.current.srcObject = stream;
 
           // video要素の再生を確実に開始
@@ -59,12 +60,14 @@ export function CameraPip({
           } catch (error) {
             console.error('[CameraPip] Failed to play internal video:', error);
           }
+        } else {
+          console.log('[CameraPip] Stream not available yet');
         }
       }
     };
 
     copyStream();
-  }, [cameraVideoRef, backgroundMode]);
+  }, [cameraVideoRef]);
 
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
