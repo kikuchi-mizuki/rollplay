@@ -208,15 +208,15 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
   }
 
   const stabilized = new Uint8Array(currentMask.length);
-  const baseAlpha = 0.93; // 現在フレームの重み
+  const baseAlpha = 0.94; // 現在フレームの重み
 
   for (let i = 0; i < currentMask.length; i++) {
     const diff = Math.abs(currentMask[i] - previousMask[i]);
 
-    // 適応的ブレンディング
+    // 適応的ブレンディング - 動きにより敏感に
     let adaptiveAlpha = baseAlpha;
-    if (diff > 0.3) {
-      adaptiveAlpha = 0.96; // 大きな動き時
+    if (diff > 0.25) {
+      adaptiveAlpha = 0.97; // 中程度の動き時も反応
     }
 
     stabilized[i] = currentMask[i] * adaptiveAlpha + previousMask[i] * (1 - adaptiveAlpha);
@@ -226,32 +226,42 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
 }
 
 /**
- * 空間的平滑化：マスクをガウシアンブラーで滑らかに
- * チカチカを防ぎつつ、動きに即座に追従
+ * 超軽量な空間的平滑化：3x3の最小ブラー
+ * チカチカを防ぎつつ、パフォーマンスを維持
  */
 function smoothMask(mask: Uint8Array, width: number, height: number): Uint8Array {
   const smoothed = new Uint8Array(mask.length);
-  const radius = 2; // ブラー半径（小さいほど高速）
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let sum = 0;
-      let count = 0;
+      const idx = y * width + x;
 
-      // 周囲のピクセルを平均化
-      for (let dy = -radius; dy <= radius; dy++) {
-        for (let dx = -radius; dx <= radius; dx++) {
-          const nx = x + dx;
-          const ny = y + dy;
+      // 現在のピクセルと上下左右のみ（3x3の軽量版）
+      let sum = mask[idx] * 4; // 中心ピクセルの重み
+      let count = 4;
 
-          if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-            sum += mask[ny * width + nx];
-            count++;
-          }
-        }
+      // 上
+      if (y > 0) {
+        sum += mask[(y - 1) * width + x];
+        count++;
+      }
+      // 下
+      if (y < height - 1) {
+        sum += mask[(y + 1) * width + x];
+        count++;
+      }
+      // 左
+      if (x > 0) {
+        sum += mask[y * width + (x - 1)];
+        count++;
+      }
+      // 右
+      if (x < width - 1) {
+        sum += mask[y * width + (x + 1)];
+        count++;
       }
 
-      smoothed[y * width + x] = sum / count;
+      smoothed[idx] = sum / count;
     }
   }
 
