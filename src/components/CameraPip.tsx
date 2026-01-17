@@ -91,14 +91,19 @@ export function CameraPip({
 
   return (
     <div className={containerClass}>
-      {/* セグメンテーション処理用の内部video要素（非表示だが描画は必要） */}
+      {/* セグメンテーション処理用の内部video要素（画面外に配置） */}
       <video
         ref={internalVideoRef}
         autoPlay
         muted
         playsInline
-        className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
-        style={{ opacity: 0, visibility: 'hidden', zIndex: 0 }}
+        className="pointer-events-none"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          width: '640px',
+          height: '480px'
+        }}
         aria-label="セグメンテーション処理用カメラソース"
       />
 
