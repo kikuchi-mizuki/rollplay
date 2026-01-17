@@ -116,7 +116,6 @@ export function useBackgroundSegmentation({
       }
 
       isProcessingRef.current = true;
-      const frameStartTime = performance.now();
 
       // キャンバスサイズを映像サイズに合わせる
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
