@@ -54,8 +54,8 @@ export function useBackgroundSegmentation({
         const model = await bodyPix.load({
           architecture: 'MobileNetV1',
           outputStride: 16,
-          multiplier: 0.75,
-          quantBytes: 4, // 2→4に変更して精度向上
+          multiplier: 1.0, // 0.75→1.0に変更（より高精度）
+          quantBytes: 4,
         });
 
         if (isMounted) {
@@ -109,12 +109,25 @@ export function useBackgroundSegmentation({
       }
 
       try {
-        // セグメンテーションを実行（精度向上設定）
+        // セグメンテーションを実行（人物検出を優先）
         const segmentation = await modelRef.current.segmentPerson(video, {
           flipHorizontal: false,
-          internalResolution: 'high', // medium→highに変更
-          segmentationThreshold: 0.6, // 0.7→0.6に変更（境界精度向上）
+          internalResolution: 'medium', // highだと重いのでmediumに戻す
+          segmentationThreshold: 0.5, // 0.6→0.5に下げて人物検出を容易に
         });
+
+        // デバッグ：人物検出の統計
+        const personPixelCount = segmentation.data.filter((v: number) => v === 1).length;
+        const totalPixels = segmentation.data.length;
+        const personRatio = personPixelCount / totalPixels;
+
+        if (personRatio < 0.05) {
+          console.warn('[BodyPix] 人物検出率が低い:', {
+            personRatio: (personRatio * 100).toFixed(2) + '%',
+            personPixels: personPixelCount,
+            totalPixels
+          });
+        }
 
         // 時間的安定化：前フレームとブレンド
         const stabilizedMask = stabilizeMask(segmentation.data, previousMaskRef.current);
