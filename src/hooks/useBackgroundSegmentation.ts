@@ -85,11 +85,6 @@ export function useBackgroundSegmentation({
       return;
     }
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
     const processFrame = async () => {
       if (!videoRef.current || !modelRef.current || !canvasRef.current) {
         return;
