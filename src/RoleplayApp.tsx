@@ -1422,6 +1422,7 @@ function RoleplayApp() {
               {/* メイン: カメラ映像（背景ぼかし機能付き） */}
               <CameraPip
                 cameraVideoRef={cameraVideoRef}
+                cameraStream={cameraStream}
                 isRecording={isVideoRecording}
                 recordingTime={videoRecordingTime}
                 isFullscreen={true}

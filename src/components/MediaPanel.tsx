@@ -143,6 +143,7 @@ export function MediaPanel({
         {isCameraActive && cameraVideoRef && (
           <CameraPip
             cameraVideoRef={cameraVideoRef}
+            cameraStream={cameraStream}
             isRecording={isVideoRecording}
             recordingTime={videoRecordingTime}
           />

@@ -9,12 +9,14 @@ import { useBackgroundSegmentation } from '../hooks/useBackgroundSegmentation';
  * Session 49: MediaPipeを使用して背景のみをぼかす機能を追加
  *
  * @param cameraVideoRef - カメラプレビュー用のvideoRef
+ * @param cameraStream - カメラストリーム（背景セグメンテーション用）
  * @param isRecording - 録画中かどうか（オプション）
  * @param recordingTime - 録画時間（秒）（オプション）
  * @param isFullscreen - フルスクリーン表示かどうか（オプション）
  */
 interface CameraPipProps {
   cameraVideoRef: React.RefObject<HTMLVideoElement>;
+  cameraStream?: MediaStream | null;
   isRecording?: boolean;
   recordingTime?: number;
   isFullscreen?: boolean;
@@ -32,6 +34,7 @@ const BACKGROUND_COLORS = [
 
 export function CameraPip({
   cameraVideoRef,
+  cameraStream,
   isRecording = false,
   recordingTime = 0,
   isFullscreen = false,
@@ -47,27 +50,27 @@ export function CameraPip({
   // カメラストリームを内部video要素にコピー
   useEffect(() => {
     const copyStream = async () => {
-      if (cameraVideoRef.current && internalVideoRef.current) {
-        const stream = cameraVideoRef.current.srcObject as MediaStream;
-        if (stream) {
-          console.log('[CameraPip] Copying stream to internal video');
-          internalVideoRef.current.srcObject = stream;
+      if (cameraStream && internalVideoRef.current) {
+        console.log('[CameraPip] Copying stream to internal video');
+        internalVideoRef.current.srcObject = cameraStream;
 
-          // video要素の再生を確実に開始
-          try {
-            await internalVideoRef.current.play();
-            console.log('[CameraPip] Internal video started playing');
-          } catch (error) {
-            console.error('[CameraPip] Failed to play internal video:', error);
-          }
-        } else {
-          console.log('[CameraPip] Stream not available yet');
+        // video要素の再生を確実に開始
+        try {
+          await internalVideoRef.current.play();
+          console.log('[CameraPip] Internal video started playing');
+        } catch (error) {
+          console.error('[CameraPip] Failed to play internal video:', error);
         }
+      } else {
+        console.log('[CameraPip] Stream not available yet', {
+          hasStream: !!cameraStream,
+          hasRef: !!internalVideoRef.current
+        });
       }
     };
 
     copyStream();
-  }, [cameraVideoRef]);
+  }, [cameraStream]);
 
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
