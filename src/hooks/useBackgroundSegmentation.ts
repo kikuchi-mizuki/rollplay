@@ -41,6 +41,10 @@ export function useBackgroundSegmentation({
   // 処理中フラグ（フレームスキップ防止）
   const isProcessingRef = useRef(false);
 
+  // パフォーマンス測定用
+  const frameCountRef = useRef(0);
+  const lastLogTimeRef = useRef(Date.now());
+
   // BodyPixモデルの初期化
   useEffect(() => {
     if (!enabled) {
@@ -112,6 +116,7 @@ export function useBackgroundSegmentation({
       }
 
       isProcessingRef.current = true;
+      const frameStartTime = performance.now();
 
       // キャンバスサイズを映像サイズに合わせる
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
@@ -121,22 +126,39 @@ export function useBackgroundSegmentation({
 
       try {
         // セグメンテーションを実行（人物検出を優先）
+        const segStartTime = performance.now();
         const segmentation = await modelRef.current.segmentPerson(video, {
           flipHorizontal: false,
           internalResolution: 'medium', // highだと重いのでmediumに戻す
           segmentationThreshold: 0.5, // 0.6→0.5に下げて人物検出を容易に
         });
+        const segDuration = performance.now() - segStartTime;
 
         // デバッグ：人物検出の統計
         const personPixelCount = segmentation.data.filter((v: number) => v === 1).length;
         const totalPixels = segmentation.data.length;
         const personRatio = personPixelCount / totalPixels;
 
+        // フレームカウントと定期ログ
+        frameCountRef.current++;
+        const now = Date.now();
+        if (now - lastLogTimeRef.current >= 2000) { // 2秒ごとにログ
+          console.log('[BodyPix] パフォーマンス統計:', {
+            fps: (frameCountRef.current / 2).toFixed(1),
+            avgSegTime: segDuration.toFixed(1) + 'ms',
+            personRatio: (personRatio * 100).toFixed(1) + '%',
+            resolution: `${canvas.width}x${canvas.height}`
+          });
+          frameCountRef.current = 0;
+          lastLogTimeRef.current = now;
+        }
+
         if (personRatio < 0.05) {
           console.warn('[BodyPix] 人物検出率が低い:', {
             personRatio: (personRatio * 100).toFixed(2) + '%',
             personPixels: personPixelCount,
-            totalPixels
+            totalPixels,
+            segmentationTime: segDuration.toFixed(1) + 'ms'
           });
         }
 
