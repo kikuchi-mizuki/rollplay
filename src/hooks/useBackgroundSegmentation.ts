@@ -75,7 +75,7 @@ export function useBackgroundSegmentation({
       console.log('[BackgroundSegmentation] SelfieSegmentationインスタンス作成');
       segmenter = new window.SelfieSegmentation({
         locateFile: (file: string) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}`;
         },
       });
 
