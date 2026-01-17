@@ -128,8 +128,10 @@ export function useBackgroundSegmentation({
         const segStartTime = performance.now();
         const segmentation = await modelRef.current.segmentPerson(video, {
           flipHorizontal: false,
-          internalResolution: 'medium', // highだと重いのでmediumに戻す
-          segmentationThreshold: 0.5, // 0.6→0.5に下げて人物検出を容易に
+          internalResolution: 'high', // mediumからhighに変更して精度向上
+          segmentationThreshold: 0.4, // 0.5→0.4にさらに下げて検出を容易に
+          maxDetections: 5, // 複数人物対応
+          scoreThreshold: 0.4, // 検出スコア閾値を下げる
         });
         const segDuration = performance.now() - segStartTime;
 
