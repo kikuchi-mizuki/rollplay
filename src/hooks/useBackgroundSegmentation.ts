@@ -161,25 +161,39 @@ export function useBackgroundSegmentation({
       console.log('[BackgroundSegmentation] 映像処理ループ開始');
 
       const processFrame = async () => {
-        if (!videoRef.current || !segmentationRef.current) return;
+        if (!videoRef.current || !segmentationRef.current) {
+          console.log('[BackgroundSegmentation] refs not available, stopping');
+          return;
+        }
 
         const video = videoRef.current;
 
         // video要素のサイズが有効かチェック
         if (video.videoWidth === 0 || video.videoHeight === 0) {
-          console.log('[BackgroundSegmentation] Video size is 0, skipping frame');
+          console.log('[BackgroundSegmentation] Video size is 0, retrying...', {
+            width: video.videoWidth,
+            height: video.videoHeight,
+            readyState: video.readyState
+          });
           animationFrameRef.current = requestAnimationFrame(processFrame);
           return;
         }
 
         // video要素が再生中かチェック
         if (video.readyState < video.HAVE_CURRENT_DATA) {
-          console.log('[BackgroundSegmentation] Video not ready, skipping frame');
+          console.log('[BackgroundSegmentation] Video not ready, retrying...', {
+            readyState: video.readyState,
+            required: video.HAVE_CURRENT_DATA
+          });
           animationFrameRef.current = requestAnimationFrame(processFrame);
           return;
         }
 
         try {
+          console.log('[BackgroundSegmentation] Sending frame to MediaPipe', {
+            width: video.videoWidth,
+            height: video.videoHeight
+          });
           await segmentationRef.current.send({ image: video });
         } catch (error) {
           console.error('[BackgroundSegmentation] Segmentation error:', error);
@@ -191,16 +205,29 @@ export function useBackgroundSegmentation({
       processFrame();
     };
 
+    console.log('[BackgroundSegmentation] Checking video readiness', {
+      readyState: video.readyState,
+      videoWidth: video.videoWidth,
+      videoHeight: video.videoHeight,
+      srcObject: !!video.srcObject
+    });
+
     // メタデータが既に読み込まれている場合は即座に開始
     if (video.readyState >= video.HAVE_METADATA && video.videoWidth > 0) {
+      console.log('[BackgroundSegmentation] Video ready immediately, starting processing');
       startProcessing();
     } else {
       // メタデータの読み込みを待つ
       const onLoadedMetadata = () => {
-        console.log('[BackgroundSegmentation] Video metadata loaded, starting processing');
+        console.log('[BackgroundSegmentation] Video metadata loaded event fired', {
+          readyState: video.readyState,
+          videoWidth: video.videoWidth,
+          videoHeight: video.videoHeight
+        });
         startProcessing();
       };
 
+      console.log('[BackgroundSegmentation] Waiting for video metadata...');
       video.addEventListener('loadedmetadata', onLoadedMetadata);
 
       return () => {

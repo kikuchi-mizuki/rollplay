@@ -97,8 +97,8 @@ export function CameraPip({
         autoPlay
         muted
         playsInline
-        className="absolute opacity-0 pointer-events-none w-full h-full"
-        style={{ position: 'absolute', left: '-9999px' }}
+        className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
+        style={{ opacity: 0, visibility: 'hidden', zIndex: 0 }}
         aria-label="セグメンテーション処理用カメラソース"
       />
 
@@ -118,7 +118,8 @@ export function CameraPip({
       {backgroundMode !== 'none' && (
         <canvas
           ref={canvasRef}
-          className="relative z-10 w-full h-full object-cover transition-all duration-300"
+          className="absolute top-0 left-0 w-full h-full object-cover transition-all duration-300"
+          style={{ zIndex: 5 }}
           aria-label="処理済みカメラプレビュー"
         />
       )}
