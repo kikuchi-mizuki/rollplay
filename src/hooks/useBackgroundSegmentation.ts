@@ -38,6 +38,9 @@ export function useBackgroundSegmentation({
   // 前フレームのマスクデータ（時間的安定化用）
   const previousMaskRef = useRef<Uint8Array | null>(null);
 
+  // 処理中フラグ（フレームスキップ防止）
+  const isProcessingRef = useRef(false);
+
   // BodyPixモデルの初期化
   useEffect(() => {
     if (!enabled) {
@@ -91,6 +94,12 @@ export function useBackgroundSegmentation({
         return;
       }
 
+      // 前のフレームの処理中ならスキップ
+      if (isProcessingRef.current) {
+        animationFrameRef.current = requestAnimationFrame(processFrame);
+        return;
+      }
+
       const video = videoRef.current;
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -101,6 +110,8 @@ export function useBackgroundSegmentation({
         animationFrameRef.current = requestAnimationFrame(processFrame);
         return;
       }
+
+      isProcessingRef.current = true;
 
       // キャンバスサイズを映像サイズに合わせる
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
@@ -145,6 +156,7 @@ export function useBackgroundSegmentation({
         console.error('[BodyPix] セグメンテーションエラー:', error);
       }
 
+      isProcessingRef.current = false;
       animationFrameRef.current = requestAnimationFrame(processFrame);
     };
 
@@ -170,10 +182,15 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
   }
 
   const stabilized = new Uint8Array(currentMask.length);
-  const alpha = 0.7; // 現在フレームの重み（0.7 = 70%現在、30%前フレーム）
+  const alpha = 0.85; // 現在フレームの重み（0.85 = 85%現在、15%前フレーム）
+  // 動きに追従しやすくするため、現在フレームの比重を増やす
 
   for (let i = 0; i < currentMask.length; i++) {
-    stabilized[i] = currentMask[i] * alpha + previousMask[i] * (1 - alpha);
+    // 大きな変化がある場合は現在フレームを優先
+    const diff = Math.abs(currentMask[i] - previousMask[i]);
+    const adaptiveAlpha = diff > 0.5 ? 0.95 : alpha;
+
+    stabilized[i] = currentMask[i] * adaptiveAlpha + previousMask[i] * (1 - adaptiveAlpha);
   }
 
   return stabilized;
@@ -200,41 +217,13 @@ async function applyBlurredBackground(
   ctx.filter = 'none';
   const blurredImageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
-  // エッジブレンディングを適用してスムーズな境界を作成
-  const edgeKernelSize = 3; // エッジぼかしのカーネルサイズ
+  // 軽量なエッジブレンディング
   for (let i = 0; i < maskData.length; i++) {
     const pixelIndex = i * 4;
     const personValue = maskData[i]; // 0-1の値（安定化済み）
 
-    // エッジぼかし：境界付近で段階的にブレンド
-    let blendFactor = personValue;
-
-    // 境界検出と強化
-    const x = i % canvasWidth;
-    const y = Math.floor(i / canvasWidth);
-
-    // 周辺ピクセルをチェックしてエッジを検出
-    let isEdge = false;
-    for (let dy = -edgeKernelSize; dy <= edgeKernelSize; dy++) {
-      for (let dx = -edgeKernelSize; dx <= edgeKernelSize; dx++) {
-        const nx = x + dx;
-        const ny = y + dy;
-        if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < canvasHeight) {
-          const neighborIndex = ny * canvasWidth + nx;
-          if (Math.abs(maskData[neighborIndex] - personValue) > 0.3) {
-            isEdge = true;
-            break;
-          }
-        }
-      }
-      if (isEdge) break;
-    }
-
-    // エッジの場合はさらにブレンド
-    if (isEdge && personValue > 0.1 && personValue < 0.9) {
-      // エッジ領域では滑らかにブレンド
-      blendFactor = smoothstep(personValue);
-    }
+    // Smoothstep補間でスムーズなブレンド
+    const blendFactor = smoothstep(personValue);
 
     // ブレンド適用
     blurredImageData.data[pixelIndex] =
