@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import * as selfieSegmentation from '@mediapipe/selfie_segmentation';
+// MediaPipeのライブラリをサイドエフェクトとして読み込む
+import '@mediapipe/selfie_segmentation';
+
+// グローバル変数として登録されたSelfieSegmentationにアクセス
+declare global {
+  interface Window {
+    SelfieSegmentation: any;
+  }
+}
 
 /**
  * 背景セグメンテーション用カスタムフック
@@ -31,7 +39,7 @@ export function useBackgroundSegmentation({
   enabled,
 }: UseBackgroundSegmentationProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const segmentationRef = useRef<selfieSegmentation.SelfieSegmentation | null>(null);
+  const segmentationRef = useRef<any>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -42,8 +50,8 @@ export function useBackgroundSegmentation({
       return;
     }
 
-    const segmenter = new selfieSegmentation.SelfieSegmentation({
-      locateFile: (file) => {
+    const segmenter = new window.SelfieSegmentation({
+      locateFile: (file: string) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
       },
     });
@@ -53,7 +61,7 @@ export function useBackgroundSegmentation({
       selfieMode: true,
     });
 
-    segmenter.onResults((results) => {
+    segmenter.onResults((results: any) => {
       if (!canvasRef.current || !videoRef.current) return;
 
       const canvas = canvasRef.current;
