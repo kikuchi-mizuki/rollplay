@@ -46,10 +46,25 @@ export function CameraPip({
 
   // カメラストリームを内部video要素にコピー
   useEffect(() => {
-    if (cameraVideoRef.current && internalVideoRef.current) {
-      internalVideoRef.current.srcObject = cameraVideoRef.current.srcObject;
-    }
-  }, [cameraVideoRef]);
+    const copyStream = async () => {
+      if (cameraVideoRef.current && internalVideoRef.current) {
+        const stream = cameraVideoRef.current.srcObject as MediaStream;
+        if (stream) {
+          internalVideoRef.current.srcObject = stream;
+
+          // video要素の再生を確実に開始
+          try {
+            await internalVideoRef.current.play();
+            console.log('[CameraPip] Internal video started playing');
+          } catch (error) {
+            console.error('[CameraPip] Failed to play internal video:', error);
+          }
+        }
+      }
+    };
+
+    copyStream();
+  }, [cameraVideoRef, backgroundMode]);
 
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
@@ -76,13 +91,14 @@ export function CameraPip({
 
   return (
     <div className={containerClass}>
-      {/* セグメンテーション処理用の内部video要素（非表示） */}
+      {/* セグメンテーション処理用の内部video要素（非表示だが描画は必要） */}
       <video
         ref={internalVideoRef}
         autoPlay
         muted
         playsInline
-        className="absolute opacity-0 pointer-events-none"
+        className="absolute opacity-0 pointer-events-none w-full h-full"
+        style={{ position: 'absolute', left: '-9999px' }}
         aria-label="セグメンテーション処理用カメラソース"
       />
 
