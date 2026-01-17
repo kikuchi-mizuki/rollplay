@@ -226,49 +226,6 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
 }
 
 /**
- * 超軽量な空間的平滑化：3x3の最小ブラー
- * チカチカを防ぎつつ、パフォーマンスを維持
- */
-function smoothMask(mask: Uint8Array, width: number, height: number): Uint8Array {
-  const smoothed = new Uint8Array(mask.length);
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const idx = y * width + x;
-
-      // 現在のピクセルと上下左右のみ（3x3の軽量版）
-      let sum = mask[idx] * 4; // 中心ピクセルの重み
-      let count = 4;
-
-      // 上
-      if (y > 0) {
-        sum += mask[(y - 1) * width + x];
-        count++;
-      }
-      // 下
-      if (y < height - 1) {
-        sum += mask[(y + 1) * width + x];
-        count++;
-      }
-      // 左
-      if (x > 0) {
-        sum += mask[y * width + (x - 1)];
-        count++;
-      }
-      // 右
-      if (x < width - 1) {
-        sum += mask[y * width + (x + 1)];
-        count++;
-      }
-
-      smoothed[idx] = sum / count;
-    }
-  }
-
-  return smoothed;
-}
-
-/**
  * 背景のみぼかしを適用（エッジブレンディング付き）
  */
 async function applyBlurredBackground(
