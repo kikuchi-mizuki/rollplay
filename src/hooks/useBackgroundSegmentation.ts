@@ -154,21 +154,62 @@ export function useBackgroundSegmentation({
       return;
     }
 
-    console.log('[BackgroundSegmentation] 映像処理ループ開始');
+    const video = videoRef.current;
 
-    const processFrame = async () => {
-      if (!videoRef.current || !segmentationRef.current) return;
+    // video要素のメタデータが読み込まれるまで待つ
+    const startProcessing = () => {
+      console.log('[BackgroundSegmentation] 映像処理ループ開始');
 
-      try {
-        await segmentationRef.current.send({ image: videoRef.current });
-      } catch (error) {
-        console.error('[BackgroundSegmentation] Segmentation error:', error);
-      }
+      const processFrame = async () => {
+        if (!videoRef.current || !segmentationRef.current) return;
 
-      animationFrameRef.current = requestAnimationFrame(processFrame);
+        const video = videoRef.current;
+
+        // video要素のサイズが有効かチェック
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+          console.log('[BackgroundSegmentation] Video size is 0, skipping frame');
+          animationFrameRef.current = requestAnimationFrame(processFrame);
+          return;
+        }
+
+        // video要素が再生中かチェック
+        if (video.readyState < video.HAVE_CURRENT_DATA) {
+          console.log('[BackgroundSegmentation] Video not ready, skipping frame');
+          animationFrameRef.current = requestAnimationFrame(processFrame);
+          return;
+        }
+
+        try {
+          await segmentationRef.current.send({ image: video });
+        } catch (error) {
+          console.error('[BackgroundSegmentation] Segmentation error:', error);
+        }
+
+        animationFrameRef.current = requestAnimationFrame(processFrame);
+      };
+
+      processFrame();
     };
 
-    processFrame();
+    // メタデータが既に読み込まれている場合は即座に開始
+    if (video.readyState >= video.HAVE_METADATA && video.videoWidth > 0) {
+      startProcessing();
+    } else {
+      // メタデータの読み込みを待つ
+      const onLoadedMetadata = () => {
+        console.log('[BackgroundSegmentation] Video metadata loaded, starting processing');
+        startProcessing();
+      };
+
+      video.addEventListener('loadedmetadata', onLoadedMetadata);
+
+      return () => {
+        video.removeEventListener('loadedmetadata', onLoadedMetadata);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+    }
 
     return () => {
       if (animationFrameRef.current) {
