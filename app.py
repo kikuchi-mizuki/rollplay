@@ -1197,7 +1197,7 @@ def add_security_headers(response):
     # XSS保護
     response.headers['X-XSS-Protection'] = '1; mode=block'
     # Content Security Policy（段階的に強化）
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.openai.com https://cdn.jsdelivr.net;"
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://api.openai.com https://cdn.jsdelivr.net https://storage.googleapis.com;"
     return response
 
 # ===== 静的ファイルBlueprint（最後に登録 - キャッチオールルートのため） =====
