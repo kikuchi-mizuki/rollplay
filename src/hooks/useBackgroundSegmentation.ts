@@ -163,8 +163,11 @@ export function useBackgroundSegmentation({
           });
         }
 
-        // 時間的安定化：前フレームとブレンド
-        const stabilizedMask = stabilizeMask(segmentation.data, previousMaskRef.current);
+        // 空間的平滑化：マスクを滑らかに（チカチカ防止）
+        const smoothedMask = smoothMask(segmentation.data, segmentation.width, segmentation.height);
+
+        // 時間的安定化：前フレームとブレンド（軽めに）
+        const stabilizedMask = stabilizeMask(smoothedMask, previousMaskRef.current);
         previousMaskRef.current = new Uint8Array(stabilizedMask);
 
         // 背景モードに応じて処理
@@ -205,24 +208,54 @@ function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null)
   }
 
   const stabilized = new Uint8Array(currentMask.length);
-  const baseAlpha = 0.92; // 現在フレームの重み（0.92 = 92%現在、8%前フレーム）
+  const baseAlpha = 0.93; // 現在フレームの重み
 
   for (let i = 0; i < currentMask.length; i++) {
-    // 大きな変化がある場合は現在フレームを優先
     const diff = Math.abs(currentMask[i] - previousMask[i]);
 
-    // バランスの良い適応的ブレンディング
+    // 適応的ブレンディング
     let adaptiveAlpha = baseAlpha;
-    if (diff > 0.4) {
-      adaptiveAlpha = 0.97; // 大きな動き時
-    } else if (diff > 0.15) {
-      adaptiveAlpha = 0.95; // 中程度の動き時
+    if (diff > 0.3) {
+      adaptiveAlpha = 0.96; // 大きな動き時
     }
 
     stabilized[i] = currentMask[i] * adaptiveAlpha + previousMask[i] * (1 - adaptiveAlpha);
   }
 
   return stabilized;
+}
+
+/**
+ * 空間的平滑化：マスクをガウシアンブラーで滑らかに
+ * チカチカを防ぎつつ、動きに即座に追従
+ */
+function smoothMask(mask: Uint8Array, width: number, height: number): Uint8Array {
+  const smoothed = new Uint8Array(mask.length);
+  const radius = 2; // ブラー半径（小さいほど高速）
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let sum = 0;
+      let count = 0;
+
+      // 周囲のピクセルを平均化
+      for (let dy = -radius; dy <= radius; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+
+          if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+            sum += mask[ny * width + nx];
+            count++;
+          }
+        }
+      }
+
+      smoothed[y * width + x] = sum / count;
+    }
+  }
+
+  return smoothed;
 }
 
 /**
