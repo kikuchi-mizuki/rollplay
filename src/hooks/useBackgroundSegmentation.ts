@@ -58,29 +58,36 @@ export function useBackgroundSegmentation({
     let segmenter: any = null;
 
     const initializeSegmenter = async () => {
+      console.log('[BackgroundSegmentation] 初期化開始');
+
       // MediaPipeライブラリを読み込む
       await loadMediaPipe();
+      console.log('[BackgroundSegmentation] loadMediaPipe完了');
 
       // ライブラリが読み込まれるまで少し待つ
       await new Promise(resolve => setTimeout(resolve, 100));
 
       if (!window.SelfieSegmentation) {
-        console.error('MediaPipe SelfieSegmentation not loaded');
+        console.error('[BackgroundSegmentation] MediaPipe SelfieSegmentation not loaded');
         return;
       }
 
+      console.log('[BackgroundSegmentation] SelfieSegmentationインスタンス作成');
       segmenter = new window.SelfieSegmentation({
         locateFile: (file: string) => {
           return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
         },
       });
 
+      console.log('[BackgroundSegmentation] setOptions設定');
       segmenter.setOptions({
         modelSelection: 1, // 0: 一般モデル, 1: ランドスケープモデル（高精度）
         selfieMode: true,
       });
 
+      console.log('[BackgroundSegmentation] onResults登録');
       segmenter.onResults((results: any) => {
+        console.log('[BackgroundSegmentation] onResults呼び出し');
         if (!canvasRef.current || !videoRef.current) return;
 
         const canvas = canvasRef.current;
@@ -90,6 +97,7 @@ export function useBackgroundSegmentation({
         // キャンバスサイズを映像サイズに合わせる
         canvas.width = results.image.width;
         canvas.height = results.image.height;
+        console.log('[BackgroundSegmentation] Canvas描画:', canvas.width, 'x', canvas.height);
 
         // 背景モードに応じて処理
         if (backgroundMode === 'none') {
@@ -115,6 +123,7 @@ export function useBackgroundSegmentation({
       });
 
       segmentationRef.current = segmenter;
+      console.log('[BackgroundSegmentation] 初期化完了、isReadyをtrueに設定');
       setIsReady(true);
     };
 
@@ -134,9 +143,18 @@ export function useBackgroundSegmentation({
 
   // 映像処理ループ
   useEffect(() => {
+    console.log('[BackgroundSegmentation] 映像処理ループ useEffect', {
+      isReady,
+      enabled,
+      hasVideo: !!videoRef.current,
+      hasSegmenter: !!segmentationRef.current,
+    });
+
     if (!isReady || !enabled || !videoRef.current || !segmentationRef.current) {
       return;
     }
+
+    console.log('[BackgroundSegmentation] 映像処理ループ開始');
 
     const processFrame = async () => {
       if (!videoRef.current || !segmentationRef.current) return;
@@ -144,7 +162,7 @@ export function useBackgroundSegmentation({
       try {
         await segmentationRef.current.send({ image: videoRef.current });
       } catch (error) {
-        console.error('Segmentation error:', error);
+        console.error('[BackgroundSegmentation] Segmentation error:', error);
       }
 
       animationFrameRef.current = requestAnimationFrame(processFrame);
