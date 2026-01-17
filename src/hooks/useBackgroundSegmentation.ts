@@ -15,13 +15,12 @@ import '@tensorflow/tfjs';
  * @param enabled - 有効化フラグ
  */
 
-type BackgroundMode = 'none' | 'blur' | 'color';
+type BackgroundMode = 'none' | 'blur';
 
 interface UseBackgroundSegmentationProps {
   videoRef: React.RefObject<HTMLVideoElement>;
   backgroundMode: BackgroundMode;
   blurIntensity: number;
-  backgroundColor: string;
   enabled: boolean;
 }
 
@@ -29,13 +28,15 @@ export function useBackgroundSegmentation({
   videoRef,
   backgroundMode,
   blurIntensity,
-  backgroundColor,
   enabled,
 }: UseBackgroundSegmentationProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const modelRef = useRef<bodyPix.BodyPix | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isReady, setIsReady] = useState(false);
+
+  // 前フレームのマスクデータ（時間的安定化用）
+  const previousMaskRef = useRef<Uint8Array | null>(null);
 
   // BodyPixモデルの初期化
   useEffect(() => {
@@ -54,7 +55,7 @@ export function useBackgroundSegmentation({
           architecture: 'MobileNetV1',
           outputStride: 16,
           multiplier: 0.75,
-          quantBytes: 2,
+          quantBytes: 4, // 2→4に変更して精度向上
         });
 
         if (isMounted) {
@@ -108,20 +109,21 @@ export function useBackgroundSegmentation({
       }
 
       try {
-        // セグメンテーションを実行
+        // セグメンテーションを実行（精度向上設定）
         const segmentation = await modelRef.current.segmentPerson(video, {
           flipHorizontal: false,
-          internalResolution: 'medium',
-          segmentationThreshold: 0.7,
+          internalResolution: 'high', // medium→highに変更
+          segmentationThreshold: 0.6, // 0.7→0.6に変更（境界精度向上）
         });
+
+        // 時間的安定化：前フレームとブレンド
+        const stabilizedMask = stabilizeMask(segmentation.data, previousMaskRef.current);
+        previousMaskRef.current = new Uint8Array(stabilizedMask);
 
         // 背景モードに応じて処理
         if (backgroundMode === 'blur') {
-          // 背景のみぼかし
-          await applyBlurredBackground(ctx, video, segmentation, blurIntensity);
-        } else if (backgroundMode === 'color') {
-          // 背景色を適用
-          await applyColorBackground(ctx, video, segmentation, backgroundColor);
+          // 背景のみぼかし（エッジブレンディング付き）
+          await applyBlurredBackground(ctx, video, stabilizedMask, canvas.width, canvas.height, blurIntensity);
         } else {
           // 元の映像をそのまま描画
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -139,89 +141,107 @@ export function useBackgroundSegmentation({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      previousMaskRef.current = null;
     };
-  }, [isReady, enabled, videoRef, backgroundMode, blurIntensity, backgroundColor]);
+  }, [isReady, enabled, videoRef, backgroundMode, blurIntensity]);
 
   return { canvasRef, isReady };
 }
 
 /**
- * 背景のみぼかしを適用
+ * 時間的安定化：前フレームとブレンドしてチカチカを防止
+ */
+function stabilizeMask(currentMask: Uint8Array, previousMask: Uint8Array | null): Uint8Array {
+  if (!previousMask) {
+    return currentMask;
+  }
+
+  const stabilized = new Uint8Array(currentMask.length);
+  const alpha = 0.7; // 現在フレームの重み（0.7 = 70%現在、30%前フレーム）
+
+  for (let i = 0; i < currentMask.length; i++) {
+    stabilized[i] = currentMask[i] * alpha + previousMask[i] * (1 - alpha);
+  }
+
+  return stabilized;
+}
+
+/**
+ * 背景のみぼかしを適用（エッジブレンディング付き）
  */
 async function applyBlurredBackground(
   ctx: CanvasRenderingContext2D,
   video: HTMLVideoElement,
-  segmentation: bodyPix.SemanticPersonSegmentation,
+  maskData: Uint8Array,
+  canvasWidth: number,
+  canvasHeight: number,
   blurIntensity: number
 ) {
-  const canvas = ctx.canvas;
-  const width = canvas.width;
-  const height = canvas.height;
-
   // 元画像を描画
-  ctx.drawImage(video, 0, 0, width, height);
-  const originalImageData = ctx.getImageData(0, 0, width, height);
+  ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+  const originalImageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
   // ぼかし処理を適用
   ctx.filter = `blur(${blurIntensity}px)`;
-  ctx.drawImage(video, 0, 0, width, height);
+  ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
   ctx.filter = 'none';
-  const blurredImageData = ctx.getImageData(0, 0, width, height);
+  const blurredImageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
-  // マスクを使って人物部分のみ元画像を復元
-  const maskData = segmentation.data;
+  // エッジブレンディングを適用してスムーズな境界を作成
+  const edgeKernelSize = 3; // エッジぼかしのカーネルサイズ
   for (let i = 0; i < maskData.length; i++) {
     const pixelIndex = i * 4;
-    if (maskData[i] === 1) {
-      // 人物部分は元画像を使用
-      blurredImageData.data[pixelIndex] = originalImageData.data[pixelIndex];
-      blurredImageData.data[pixelIndex + 1] = originalImageData.data[pixelIndex + 1];
-      blurredImageData.data[pixelIndex + 2] = originalImageData.data[pixelIndex + 2];
-      blurredImageData.data[pixelIndex + 3] = originalImageData.data[pixelIndex + 3];
+    const personValue = maskData[i]; // 0-1の値（安定化済み）
+
+    // エッジぼかし：境界付近で段階的にブレンド
+    let blendFactor = personValue;
+
+    // 境界検出と強化
+    const x = i % canvasWidth;
+    const y = Math.floor(i / canvasWidth);
+
+    // 周辺ピクセルをチェックしてエッジを検出
+    let isEdge = false;
+    for (let dy = -edgeKernelSize; dy <= edgeKernelSize; dy++) {
+      for (let dx = -edgeKernelSize; dx <= edgeKernelSize; dx++) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < canvasHeight) {
+          const neighborIndex = ny * canvasWidth + nx;
+          if (Math.abs(maskData[neighborIndex] - personValue) > 0.3) {
+            isEdge = true;
+            break;
+          }
+        }
+      }
+      if (isEdge) break;
     }
+
+    // エッジの場合はさらにブレンド
+    if (isEdge && personValue > 0.1 && personValue < 0.9) {
+      // エッジ領域では滑らかにブレンド
+      blendFactor = smoothstep(personValue);
+    }
+
+    // ブレンド適用
+    blurredImageData.data[pixelIndex] =
+      originalImageData.data[pixelIndex] * blendFactor +
+      blurredImageData.data[pixelIndex] * (1 - blendFactor);
+    blurredImageData.data[pixelIndex + 1] =
+      originalImageData.data[pixelIndex + 1] * blendFactor +
+      blurredImageData.data[pixelIndex + 1] * (1 - blendFactor);
+    blurredImageData.data[pixelIndex + 2] =
+      originalImageData.data[pixelIndex + 2] * blendFactor +
+      blurredImageData.data[pixelIndex + 2] * (1 - blendFactor);
   }
 
   ctx.putImageData(blurredImageData, 0, 0);
 }
 
 /**
- * 背景に色を適用
+ * Smoothstep関数：滑らかな補間
  */
-async function applyColorBackground(
-  ctx: CanvasRenderingContext2D,
-  video: HTMLVideoElement,
-  segmentation: bodyPix.SemanticPersonSegmentation,
-  backgroundColor: string
-) {
-  const canvas = ctx.canvas;
-  const width = canvas.width;
-  const height = canvas.height;
-
-  // 背景色で塗りつぶし
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, 0, width, height);
-
-  // 元画像を取得
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = width;
-  tempCanvas.height = height;
-  const tempCtx = tempCanvas.getContext('2d');
-  if (!tempCtx) return;
-
-  tempCtx.drawImage(video, 0, 0, width, height);
-  const imageData = tempCtx.getImageData(0, 0, width, height);
-
-  // マスクを使って人物部分のみ抽出
-  const maskData = segmentation.data;
-  for (let i = 0; i < maskData.length; i++) {
-    const pixelIndex = i * 4;
-    if (maskData[i] === 0) {
-      // 背景部分は透明
-      imageData.data[pixelIndex + 3] = 0;
-    }
-  }
-
-  // 人物部分を上に重ねる
-  tempCtx.putImageData(imageData, 0, 0);
-  ctx.drawImage(tempCanvas, 0, 0, width, height);
+function smoothstep(x: number): number {
+  const t = Math.max(0, Math.min(1, x));
+  return t * t * (3 - 2 * t);
 }

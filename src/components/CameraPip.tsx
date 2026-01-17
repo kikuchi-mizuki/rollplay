@@ -22,15 +22,7 @@ interface CameraPipProps {
   isFullscreen?: boolean;
 }
 
-type BackgroundMode = 'none' | 'blur' | 'color';
-
-const BACKGROUND_COLORS = [
-  { name: 'グレー', value: '#1a1a2e' },
-  { name: 'ブルー', value: '#0f4c75' },
-  { name: 'グリーン', value: '#16213e' },
-  { name: 'パープル', value: '#2d1b69' },
-  { name: 'ホワイト', value: '#f0f0f0' },
-];
+type BackgroundMode = 'none' | 'blur';
 
 export function CameraPip({
   cameraVideoRef,
@@ -40,7 +32,6 @@ export function CameraPip({
   isFullscreen = false,
 }: CameraPipProps) {
   const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>('none');
-  const [selectedColor, setSelectedColor] = useState(BACKGROUND_COLORS[0].value);
   const [showSettings, setShowSettings] = useState(false);
   const [blurIntensity, setBlurIntensity] = useState(15); // 5-30px
 
@@ -77,7 +68,6 @@ export function CameraPip({
     videoRef: internalVideoRef,
     backgroundMode,
     blurIntensity,
-    backgroundColor: selectedColor,
     enabled: backgroundMode !== 'none',
   });
 
@@ -162,9 +152,9 @@ export function CameraPip({
       {showSettings && !isRecording && (
         <div className="absolute top-14 left-3 right-3 bg-black/90 backdrop-blur-md rounded-lg p-3 shadow-xl z-30 text-white">
           <div className="space-y-3">
-            {/* 背景モード選択 */}
+            {/* 背景モード切り替え */}
             <div>
-              <label className="text-xs font-medium mb-2 block">背景モード</label>
+              <label className="text-xs font-medium mb-2 block">背景ぼかし</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => setBackgroundMode('none')}
@@ -174,7 +164,7 @@ export function CameraPip({
                       : 'bg-white/10 hover:bg-white/20'
                   }`}
                 >
-                  なし
+                  OFF
                 </button>
                 <button
                   onClick={() => setBackgroundMode('blur')}
@@ -184,22 +174,12 @@ export function CameraPip({
                       : 'bg-white/10 hover:bg-white/20'
                   }`}
                 >
-                  ぼかし
-                </button>
-                <button
-                  onClick={() => setBackgroundMode('color')}
-                  className={`flex-1 px-2 py-1 text-xs rounded transition-colors ${
-                    backgroundMode === 'color'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white/10 hover:bg-white/20'
-                  }`}
-                >
-                  背景色
+                  ON
                 </button>
               </div>
             </div>
 
-            {/* ぼかし強度（ぼかしモード時のみ） */}
+            {/* ぼかし強度（ぼかしON時のみ） */}
             {backgroundMode === 'blur' && (
               <div>
                 <label className="text-xs font-medium mb-1 block">
@@ -213,29 +193,6 @@ export function CameraPip({
                   onChange={(e) => setBlurIntensity(Number(e.target.value))}
                   className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-purple-600"
                 />
-              </div>
-            )}
-
-            {/* 背景色選択（背景色モード時のみ） */}
-            {backgroundMode === 'color' && (
-              <div>
-                <label className="text-xs font-medium mb-2 block">背景色</label>
-                <div className="grid grid-cols-5 gap-2">
-                  {BACKGROUND_COLORS.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setSelectedColor(color.value)}
-                      className={`w-full aspect-square rounded border-2 transition-all ${
-                        selectedColor === color.value
-                          ? 'border-purple-400 scale-110'
-                          : 'border-white/20 hover:border-white/40'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                      aria-label={color.name}
-                    />
-                  ))}
-                </div>
               </div>
             )}
           </div>
