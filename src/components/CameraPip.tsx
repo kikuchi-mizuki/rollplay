@@ -74,8 +74,18 @@ export function CameraPip({
 
   // カメラストリームを内部video要素と表示用video要素にコピー
   useEffect(() => {
+    console.log('[CameraPip] useEffect triggered', {
+      hasStream: !!cameraStream,
+      backgroundMode,
+      isFullscreen,
+      hasInternalRef: !!internalVideoRef.current,
+      hasDisplayRef: !!displayVideoRef.current
+    });
+
     const copyStream = async () => {
       if (cameraStream) {
+        console.log('[CameraPip] Stream available, setting up video elements');
+
         // 内部video要素（セグメンテーション処理用）
         if (internalVideoRef.current) {
           console.log('[CameraPip] Copying stream to internal video');
@@ -88,11 +98,13 @@ export function CameraPip({
           } catch (error) {
             console.error('[CameraPip] Failed to play internal video:', error);
           }
+        } else {
+          console.warn('[CameraPip] internalVideoRef.current is null');
         }
 
         // 表示用video要素（backgroundMode === 'none' の場合に使用）
-        if (displayVideoRef.current && backgroundMode === 'none') {
-          console.log('[CameraPip] Setting stream to display video (backgroundMode: none)');
+        if (displayVideoRef.current) {
+          console.log('[CameraPip] Setting stream to display video (backgroundMode:', backgroundMode, ')');
           displayVideoRef.current.srcObject = cameraStream;
           try {
             await displayVideoRef.current.play();
@@ -100,18 +112,16 @@ export function CameraPip({
           } catch (error) {
             console.error('[CameraPip] Failed to play display video:', error);
           }
+        } else {
+          console.warn('[CameraPip] displayVideoRef.current is null (backgroundMode:', backgroundMode, ')');
         }
       } else {
-        console.log('[CameraPip] Stream not available yet', {
-          hasStream: !!cameraStream,
-          hasInternalRef: !!internalVideoRef.current,
-          hasDisplayRef: !!displayVideoRef.current
-        });
+        console.log('[CameraPip] Stream not available yet');
       }
     };
 
     copyStream();
-  }, [cameraStream, backgroundMode]);
+  }, [cameraStream, backgroundMode, isFullscreen]);
 
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
@@ -151,27 +161,30 @@ export function CameraPip({
         aria-label="セグメンテーション処理用カメラソース"
       />
 
-      {/* 背景モードがnoneの場合は元の映像を表示 */}
-      {backgroundMode === 'none' && (
-        <video
-          ref={displayVideoRef}
-          autoPlay
-          muted
-          playsInline
-          className="relative z-10 w-full h-full object-cover transition-all duration-300"
-          aria-label="カメラプレビュー"
-        />
-      )}
+      {/* 表示用video要素（常にレンダリング、backgroundModeで表示切り替え） */}
+      <video
+        ref={displayVideoRef}
+        autoPlay
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover transition-all duration-300"
+        style={{
+          display: backgroundMode === 'none' ? 'block' : 'none',
+          zIndex: 10
+        }}
+        aria-label="カメラプレビュー"
+      />
 
       {/* 背景モードがblur/colorの場合はセグメンテーション処理後のキャンバスを表示 */}
-      {backgroundMode !== 'none' && (
-        <canvas
-          ref={canvasRef}
-          className="absolute top-0 left-0 w-full h-full object-cover transition-all duration-300"
-          style={{ zIndex: 5 }}
-          aria-label="処理済みカメラプレビュー"
-        />
-      )}
+      <canvas
+        ref={canvasRef}
+        className="absolute top-0 left-0 w-full h-full object-cover transition-all duration-300"
+        style={{
+          display: backgroundMode !== 'none' ? 'block' : 'none',
+          zIndex: 5
+        }}
+        aria-label="処理済みカメラプレビュー"
+      />
 
       {/* 録画中インジケーター */}
       {isRecording && (
