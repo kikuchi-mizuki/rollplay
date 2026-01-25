@@ -1,7 +1,6 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { formatDuration } from '../lib/audio';
-import { useEffect } from 'react';
 import { CameraPip } from './CameraPip';
 
 /**
@@ -60,13 +59,6 @@ export function MediaPanel({
   onBackgroundModeChange,
   onBlurIntensityChange,
 }: MediaPanelProps) {
-  // 画面共有時のカメラPinP用にsrcObjectを設定
-  useEffect(() => {
-    if (isScreenSharing && isCameraActive && cameraStream && cameraVideoRef?.current) {
-      cameraVideoRef.current.srcObject = cameraStream;
-      console.log('✅ MediaPanel: カメラPinPのsrcObject設定完了');
-    }
-  }, [isScreenSharing, isCameraActive, cameraStream, cameraVideoRef]);
   // 録音中の波形バーを生成
   const renderWaveform = () => {
     if (!isRecording || !recordingState) return null;
