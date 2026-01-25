@@ -33,7 +33,7 @@ interface CameraPipProps {
 type BackgroundMode = 'none' | 'blur';
 
 export function CameraPip({
-  cameraVideoRef,
+  cameraVideoRef: _cameraVideoRef, // 親から渡されるが、内部では独自のrefを使用
   cameraStream,
   isRecording = false,
   recordingTime = 0,
@@ -69,6 +69,8 @@ export function CameraPip({
 
   // セグメンテーション処理用の内部video ref
   const internalVideoRef = useRef<HTMLVideoElement>(null);
+  // 表示用の独自video ref（refの競合を避けるため）
+  const displayVideoRef = useRef<HTMLVideoElement>(null);
 
   // カメラストリームを内部video要素と表示用video要素にコピー
   useEffect(() => {
@@ -89,11 +91,11 @@ export function CameraPip({
         }
 
         // 表示用video要素（backgroundMode === 'none' の場合に使用）
-        if (cameraVideoRef?.current && backgroundMode === 'none') {
+        if (displayVideoRef.current && backgroundMode === 'none') {
           console.log('[CameraPip] Setting stream to display video (backgroundMode: none)');
-          cameraVideoRef.current.srcObject = cameraStream;
+          displayVideoRef.current.srcObject = cameraStream;
           try {
-            await cameraVideoRef.current.play();
+            await displayVideoRef.current.play();
             console.log('[CameraPip] Display video started playing');
           } catch (error) {
             console.error('[CameraPip] Failed to play display video:', error);
@@ -103,13 +105,13 @@ export function CameraPip({
         console.log('[CameraPip] Stream not available yet', {
           hasStream: !!cameraStream,
           hasInternalRef: !!internalVideoRef.current,
-          hasDisplayRef: !!cameraVideoRef?.current
+          hasDisplayRef: !!displayVideoRef.current
         });
       }
     };
 
     copyStream();
-  }, [cameraStream, cameraVideoRef, backgroundMode]);
+  }, [cameraStream, backgroundMode]);
 
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
@@ -152,7 +154,7 @@ export function CameraPip({
       {/* 背景モードがnoneの場合は元の映像を表示 */}
       {backgroundMode === 'none' && (
         <video
-          ref={cameraVideoRef}
+          ref={displayVideoRef}
           autoPlay
           muted
           playsInline
