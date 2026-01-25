@@ -70,30 +70,46 @@ export function CameraPip({
   // セグメンテーション処理用の内部video ref
   const internalVideoRef = useRef<HTMLVideoElement>(null);
 
-  // カメラストリームを内部video要素にコピー
+  // カメラストリームを内部video要素と表示用video要素にコピー
   useEffect(() => {
     const copyStream = async () => {
-      if (cameraStream && internalVideoRef.current) {
-        console.log('[CameraPip] Copying stream to internal video');
-        internalVideoRef.current.srcObject = cameraStream;
+      if (cameraStream) {
+        // 内部video要素（セグメンテーション処理用）
+        if (internalVideoRef.current) {
+          console.log('[CameraPip] Copying stream to internal video');
+          internalVideoRef.current.srcObject = cameraStream;
 
-        // video要素の再生を確実に開始
-        try {
-          await internalVideoRef.current.play();
-          console.log('[CameraPip] Internal video started playing');
-        } catch (error) {
-          console.error('[CameraPip] Failed to play internal video:', error);
+          // video要素の再生を確実に開始
+          try {
+            await internalVideoRef.current.play();
+            console.log('[CameraPip] Internal video started playing');
+          } catch (error) {
+            console.error('[CameraPip] Failed to play internal video:', error);
+          }
+        }
+
+        // 表示用video要素（backgroundMode === 'none' の場合に使用）
+        if (cameraVideoRef?.current && backgroundMode === 'none') {
+          console.log('[CameraPip] Setting stream to display video (backgroundMode: none)');
+          cameraVideoRef.current.srcObject = cameraStream;
+          try {
+            await cameraVideoRef.current.play();
+            console.log('[CameraPip] Display video started playing');
+          } catch (error) {
+            console.error('[CameraPip] Failed to play display video:', error);
+          }
         }
       } else {
         console.log('[CameraPip] Stream not available yet', {
           hasStream: !!cameraStream,
-          hasRef: !!internalVideoRef.current
+          hasInternalRef: !!internalVideoRef.current,
+          hasDisplayRef: !!cameraVideoRef?.current
         });
       }
     };
 
     copyStream();
-  }, [cameraStream]);
+  }, [cameraStream, cameraVideoRef, backgroundMode]);
 
   // 背景セグメンテーション（人物と背景を分離）
   const { canvasRef } = useBackgroundSegmentation({
