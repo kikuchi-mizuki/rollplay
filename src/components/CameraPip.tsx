@@ -174,7 +174,7 @@ export function CameraPip({
   // フルスクリーン時とPinP時でクラスを切り替え
   const containerClass = isFullscreen
     ? "h-full w-full relative bg-black/80 rounded-2xl flex items-center justify-center overflow-hidden"
-    : "absolute bottom-4 right-4 w-40 h-30 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl";
+    : "absolute bottom-4 right-4 w-40 h-32 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl";
 
   return (
     <div className={containerClass}>

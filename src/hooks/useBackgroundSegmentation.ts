@@ -118,6 +118,7 @@ export function useBackgroundSegmentation({
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+        console.log('[BodyPix] Canvas resized:', { width: canvas.width, height: canvas.height });
       }
 
       try {
@@ -167,6 +168,17 @@ export function useBackgroundSegmentation({
         if (backgroundMode === 'blur') {
           // 背景のみぼかし（エッジブレンディング付き）
           await applyBlurredBackground(ctx, video, currentMask, canvas.width, canvas.height, blurIntensity);
+
+          // デバッグ: 描画後のcanvasの状態を確認
+          if (frameCountRef.current === 0) {
+            const imageData = ctx.getImageData(0, 0, Math.min(10, canvas.width), Math.min(10, canvas.height));
+            console.log('[BodyPix] Canvas content check (first 10x10 pixels):', {
+              hasData: imageData.data.some(v => v > 0),
+              samplePixel: `rgba(${imageData.data[0]}, ${imageData.data[1]}, ${imageData.data[2]}, ${imageData.data[3]})`,
+              canvasSize: `${canvas.width}x${canvas.height}`,
+              canvasStyle: `display: ${canvas.style.display}, zIndex: ${canvas.style.zIndex}`
+            });
+          }
         } else {
           // 元の映像をそのまま描画
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
