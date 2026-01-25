@@ -95,6 +95,28 @@ export function CameraPip({
           try {
             await internalVideoRef.current.play();
             console.log('[CameraPip] Internal video started playing');
+
+            // loadedmetadataイベントを待つ（video要素が完全に準備できるまで）
+            await new Promise<void>((resolve) => {
+              if (internalVideoRef.current && internalVideoRef.current.readyState >= 2) {
+                console.log('[CameraPip] Internal video already loaded');
+                resolve();
+              } else if (internalVideoRef.current) {
+                internalVideoRef.current.addEventListener('loadedmetadata', () => {
+                  console.log('[CameraPip] Internal video metadata loaded');
+                  resolve();
+                }, { once: true });
+              }
+            });
+
+            // デバッグ: video要素の状態を確認
+            console.log('[CameraPip] Internal video state:', {
+              readyState: internalVideoRef.current.readyState,
+              videoWidth: internalVideoRef.current.videoWidth,
+              videoHeight: internalVideoRef.current.videoHeight,
+              paused: internalVideoRef.current.paused,
+              ended: internalVideoRef.current.ended
+            });
           } catch (error) {
             console.error('[CameraPip] Failed to play internal video:', error);
           }
@@ -109,6 +131,15 @@ export function CameraPip({
           try {
             await displayVideoRef.current.play();
             console.log('[CameraPip] Display video started playing');
+            // デバッグ: video要素の状態を確認
+            console.log('[CameraPip] Display video state:', {
+              readyState: displayVideoRef.current.readyState,
+              videoWidth: displayVideoRef.current.videoWidth,
+              videoHeight: displayVideoRef.current.videoHeight,
+              paused: displayVideoRef.current.paused,
+              ended: displayVideoRef.current.ended,
+              displayStyle: window.getComputedStyle(displayVideoRef.current).display
+            });
           } catch (error) {
             console.error('[CameraPip] Failed to play display video:', error);
           }
@@ -155,7 +186,7 @@ export function CameraPip({
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
         style={{
-          opacity: 0,
+          opacity: 0.01,
           zIndex: -1
         }}
         aria-label="セグメンテーション処理用カメラソース"
