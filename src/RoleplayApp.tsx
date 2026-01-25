@@ -214,11 +214,11 @@ function RoleplayApp() {
   // 注意: ブラウザのAutoplayポリシーにより、ユーザージェスチャー後に初期化する必要がある
   // そのため、録画開始時またはVADモード開始時に初期化する
 
-  // カメラON時（画面共有OFFの場合）にvideoタグにsrcObjectを設定
+  // カメラON時にvideoタグにsrcObjectを設定（画面共有ON/OFF問わず）
   useEffect(() => {
-    if (isCameraActive && cameraStream && cameraVideoRef?.current && !isScreenSharing) {
+    if (isCameraActive && cameraStream && cameraVideoRef?.current) {
       cameraVideoRef.current.srcObject = cameraStream;
-      console.log('✅ RoleplayApp: カメラメイン表示のsrcObject設定完了');
+      console.log('✅ RoleplayApp: カメラのsrcObject設定完了 (画面共有:', isScreenSharing ? 'ON' : 'OFF', ')');
     }
   }, [isCameraActive, cameraStream, cameraVideoRef, isScreenSharing]);
 
