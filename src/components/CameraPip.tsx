@@ -212,7 +212,7 @@ export function CameraPip({
         className="absolute top-0 left-0 w-full h-full object-cover transition-all duration-300"
         style={{
           display: backgroundMode !== 'none' ? 'block' : 'none',
-          zIndex: 5
+          zIndex: 20
         }}
         aria-label="処理済みカメラプレビュー"
       />
