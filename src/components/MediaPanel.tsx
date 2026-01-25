@@ -18,6 +18,10 @@ import { CameraPip } from './CameraPip';
  * @param isScreenSharing - Phase 2 Day 3: 画面共有中かどうか（オプション）
  * @param isVideoRecording - Phase 2 Day 4: ビデオ録画中かどうか（オプション）
  * @param videoRecordingTime - Phase 2 Day 4: ビデオ録画時間（秒）（オプション）
+ * @param backgroundMode - 背景モード（オプション）
+ * @param blurIntensity - ぼかし強度（オプション）
+ * @param onBackgroundModeChange - 背景モード変更時のコールバック（オプション）
+ * @param onBlurIntensityChange - ぼかし強度変更時のコールバック（オプション）
  */
 interface MediaPanelProps {
   isRecording?: boolean;
@@ -32,6 +36,10 @@ interface MediaPanelProps {
   isScreenSharing?: boolean; // Phase 2 Day 3
   isVideoRecording?: boolean; // Phase 2 Day 4
   videoRecordingTime?: number; // Phase 2 Day 4
+  backgroundMode?: 'none' | 'blur'; // 背景モード
+  blurIntensity?: number; // ぼかし強度
+  onBackgroundModeChange?: (mode: 'none' | 'blur') => void;
+  onBlurIntensityChange?: (intensity: number) => void;
 }
 
 export function MediaPanel({
@@ -47,6 +55,10 @@ export function MediaPanel({
   isScreenSharing = false, // Phase 2 Day 3
   isVideoRecording = false, // Phase 2 Day 4
   videoRecordingTime = 0, // Phase 2 Day 4
+  backgroundMode, // 背景モード
+  blurIntensity, // ぼかし強度
+  onBackgroundModeChange,
+  onBlurIntensityChange,
 }: MediaPanelProps) {
   // 画面共有時のカメラPinP用にsrcObjectを設定
   useEffect(() => {
@@ -146,6 +158,10 @@ export function MediaPanel({
             cameraStream={cameraStream}
             isRecording={isVideoRecording}
             recordingTime={videoRecordingTime}
+            backgroundMode={backgroundMode}
+            blurIntensity={blurIntensity}
+            onBackgroundModeChange={onBackgroundModeChange}
+            onBlurIntensityChange={onBlurIntensityChange}
           />
         )}
 

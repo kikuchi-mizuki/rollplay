@@ -13,6 +13,10 @@ import { useBackgroundSegmentation } from '../hooks/useBackgroundSegmentation';
  * @param isRecording - 録画中かどうか（オプション）
  * @param recordingTime - 録画時間（秒）（オプション）
  * @param isFullscreen - フルスクリーン表示かどうか（オプション）
+ * @param backgroundMode - 背景モード（外部から制御可能）
+ * @param blurIntensity - ぼかし強度（外部から制御可能）
+ * @param onBackgroundModeChange - 背景モード変更時のコールバック
+ * @param onBlurIntensityChange - ぼかし強度変更時のコールバック
  */
 interface CameraPipProps {
   cameraVideoRef: React.RefObject<HTMLVideoElement>;
@@ -20,6 +24,10 @@ interface CameraPipProps {
   isRecording?: boolean;
   recordingTime?: number;
   isFullscreen?: boolean;
+  backgroundMode?: BackgroundMode;
+  blurIntensity?: number;
+  onBackgroundModeChange?: (mode: BackgroundMode) => void;
+  onBlurIntensityChange?: (intensity: number) => void;
 }
 
 type BackgroundMode = 'none' | 'blur';
@@ -30,10 +38,34 @@ export function CameraPip({
   isRecording = false,
   recordingTime = 0,
   isFullscreen = false,
+  backgroundMode: externalBackgroundMode,
+  blurIntensity: externalBlurIntensity,
+  onBackgroundModeChange,
+  onBlurIntensityChange,
 }: CameraPipProps) {
-  const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>('none');
+  // 外部から状態が渡された場合は外部状態を使用、そうでない場合は内部状態を使用
+  const [internalBackgroundMode, setInternalBackgroundMode] = useState<BackgroundMode>('none');
+  const [internalBlurIntensity, setInternalBlurIntensity] = useState(15); // 5-30px
   const [showSettings, setShowSettings] = useState(false);
-  const [blurIntensity, setBlurIntensity] = useState(15); // 5-30px
+
+  const backgroundMode = externalBackgroundMode ?? internalBackgroundMode;
+  const blurIntensity = externalBlurIntensity ?? internalBlurIntensity;
+
+  const setBackgroundMode = (mode: BackgroundMode) => {
+    if (onBackgroundModeChange) {
+      onBackgroundModeChange(mode);
+    } else {
+      setInternalBackgroundMode(mode);
+    }
+  };
+
+  const setBlurIntensity = (intensity: number) => {
+    if (onBlurIntensityChange) {
+      onBlurIntensityChange(intensity);
+    } else {
+      setInternalBlurIntensity(intensity);
+    }
+  };
 
   // セグメンテーション処理用の内部video ref
   const internalVideoRef = useRef<HTMLVideoElement>(null);

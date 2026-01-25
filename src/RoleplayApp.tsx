@@ -91,6 +91,10 @@ function RoleplayApp() {
   // 録画開始時のWeb Audio API初期化フラグ
   const recordingAudioInitializedRef = useRef(false);
 
+  // Phase 2: 背景ぼかしのグローバル状態（画面共有時も設定を維持）
+  const [backgroundMode, setBackgroundMode] = useState<'none' | 'blur'>('none');
+  const [blurIntensity, setBlurIntensity] = useState(15); // 5-30px
+
   // Phase 2: カメラアクセス
   const {
     cameraStream, // Day 4（録画機能）で使用
@@ -1426,6 +1430,10 @@ function RoleplayApp() {
                 isRecording={isVideoRecording}
                 recordingTime={videoRecordingTime}
                 isFullscreen={true}
+                backgroundMode={backgroundMode}
+                blurIntensity={blurIntensity}
+                onBackgroundModeChange={setBackgroundMode}
+                onBlurIntensityChange={setBlurIntensity}
               />
 
               {/* 字幕 */}
@@ -1463,6 +1471,10 @@ function RoleplayApp() {
               isScreenSharing={isScreenSharing}
               isVideoRecording={isVideoRecording}
               videoRecordingTime={videoRecordingTime}
+              backgroundMode={backgroundMode}
+              blurIntensity={blurIntensity}
+              onBackgroundModeChange={setBackgroundMode}
+              onBlurIntensityChange={setBlurIntensity}
             />
           )}
         </section>
