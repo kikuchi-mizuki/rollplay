@@ -1505,8 +1505,8 @@ function RoleplayApp() {
         </div>
       )}
 
-      {/* VADモード中の音声検出表示 */}
-      {isVADMode && isRecording && recordingState && (
+      {/* VADモード中の音声検出表示（画面共有時は非表示にして画面が見えるようにする） */}
+      {isVADMode && isRecording && recordingState && !isScreenSharing && (
         <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[60] bg-primary/20 backdrop-blur-xl border border-primary/30 rounded-2xl px-6 py-4 shadow-xl">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
