@@ -87,6 +87,7 @@ function RoleplayApp() {
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream（録画用）
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
   const screenStreamRef = useRef<MediaStream | null>(null); // 画面共有のRef（録画中の画面共有開始に対応）
+  const videoRecordingDataRef = useRef(videoRecordingData); // 録画データのRef（講評時の確実な参照用）
 
   // 録画開始時のWeb Audio API初期化フラグ
   const recordingAudioInitializedRef = useRef(false);
@@ -247,6 +248,17 @@ function RoleplayApp() {
     screenStreamRef.current = screenStream;
     console.log(`[録画中] ストリーム状態: 画面共有=${!!screenStream}, カメラ=${!!cameraStream}`);
   }, [screenStream, cameraStream]);
+
+  // videoRecordingData（録画データ）の変更をRefに同期（講評時の確実な参照用）
+  useEffect(() => {
+    videoRecordingDataRef.current = videoRecordingData;
+    if (videoRecordingData) {
+      console.log('[録画データ] Refに同期:', {
+        blobSize: videoRecordingData.blob.size,
+        duration: videoRecordingData.duration,
+      });
+    }
+  }, [videoRecordingData]);
 
   // currentPersona（ペルソナ情報）の変更を監視してRefに同期（デバッグ用）
   useEffect(() => {
@@ -1298,8 +1310,28 @@ function RoleplayApp() {
     if (isVideoRecording) {
       console.log('🎬 録画中のため、自動的に停止します');
       stopVideoRecording();
-      // 録画停止処理が完了するまで少し待つ（RecordRTCのコールバックが完了するまで）
-      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 録画データが利用可能になるまで待つ（最大10秒、Refを使用）
+      console.log('⏳ 録画データの生成を待っています...');
+      let waitCount = 0;
+      const maxWaitCount = 20; // 20回 × 500ms = 10秒
+
+      while (!videoRecordingDataRef.current && waitCount < maxWaitCount) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        waitCount++;
+        if (waitCount % 4 === 0) {
+          console.log(`⏳ 録画データ待機中... (${waitCount * 0.5}秒)`);
+        }
+      }
+
+      if (videoRecordingDataRef.current) {
+        console.log('✅ 録画データが利用可能になりました:', {
+          blobSize: videoRecordingDataRef.current.blob.size,
+          duration: videoRecordingDataRef.current.duration,
+        });
+      } else {
+        console.warn('⚠️ 録画データの生成がタイムアウトしました');
+      }
     }
 
     setIsLoadingEvaluation(true);
@@ -1345,28 +1377,29 @@ function RoleplayApp() {
             });
             console.log('✅ 評価結果を保存しました');
 
-            // 録画データの状態をデバッグログに出力
+            // 録画データの状態をデバッグログに出力（Refから取得）
+            const recordingData = videoRecordingDataRef.current;
             console.log('🔍 録画データの状態チェック:', {
-              hasVideoRecordingData: !!videoRecordingData,
-              blobSize: videoRecordingData?.blob?.size,
-              duration: videoRecordingData?.duration,
-              timestamp: videoRecordingData?.timestamp,
+              hasVideoRecordingData: !!recordingData,
+              blobSize: recordingData?.blob?.size,
+              duration: recordingData?.duration,
+              timestamp: recordingData?.timestamp,
             });
 
             // 録画データがある場合はアップロード
-            if (videoRecordingData) {
+            if (recordingData) {
               try {
                 console.log('📤 録画データをアップロード中...', {
-                  blobSize: videoRecordingData.blob.size,
-                  blobType: videoRecordingData.blob.type,
-                  duration: videoRecordingData.duration,
+                  blobSize: recordingData.blob.size,
+                  blobType: recordingData.blob.type,
+                  duration: recordingData.duration,
                 });
                 const filename = `recording_${newConversationId}_${Date.now()}.webm`;
                 const uploadResult = await uploadRecording(
                   newConversationId,
-                  videoRecordingData.blob,
+                  recordingData.blob,
                   filename,
-                  videoRecordingData.duration
+                  recordingData.duration
                 );
 
                 console.log('📤 アップロード結果:', uploadResult);
