@@ -28,6 +28,7 @@ interface CameraPipProps {
   blurIntensity?: number;
   onBackgroundModeChange?: (mode: BackgroundMode) => void;
   onBlurIntensityChange?: (intensity: number) => void;
+  onBlurredStreamReady?: (stream: MediaStream | null) => void; // 背景ぼかし済みストリームを親に通知
 }
 
 type BackgroundMode = 'none' | 'blur';
@@ -42,6 +43,7 @@ export function CameraPip({
   blurIntensity: externalBlurIntensity,
   onBackgroundModeChange,
   onBlurIntensityChange,
+  onBlurredStreamReady,
 }: CameraPipProps) {
   // 外部から状態が渡された場合は外部状態を使用、そうでない場合は内部状態を使用
   const [internalBackgroundMode, setInternalBackgroundMode] = useState<BackgroundMode>('none');
@@ -155,12 +157,41 @@ export function CameraPip({
   }, [cameraStream, backgroundMode, isFullscreen]);
 
   // 背景セグメンテーション（人物と背景を分離）
-  const { canvasRef } = useBackgroundSegmentation({
+  const { canvasRef, isReady } = useBackgroundSegmentation({
     videoRef: internalVideoRef,
     backgroundMode,
     blurIntensity,
     enabled: backgroundMode !== 'none',
   });
+
+  // 背景ぼかし済みストリームを生成して親に通知（録画用）
+  useEffect(() => {
+    if (backgroundMode !== 'none' && isReady && canvasRef.current && onBlurredStreamReady) {
+      console.log('[CameraPip] 背景ぼかし済みストリームを生成中...');
+      try {
+        // CanvasからMediaStreamを取得（30fps）
+        const blurredStream = canvasRef.current.captureStream(30);
+
+        // カメラストリームの音声トラックを追加（背景ぼかしは映像のみ）
+        if (cameraStream) {
+          const audioTracks = cameraStream.getAudioTracks();
+          audioTracks.forEach(track => {
+            blurredStream.addTrack(track.clone());
+          });
+          console.log('[CameraPip] 背景ぼかし済みストリームに音声トラックを追加:', audioTracks.length);
+        }
+
+        onBlurredStreamReady(blurredStream);
+        console.log('[CameraPip] 背景ぼかし済みストリームを親に通知');
+      } catch (error) {
+        console.error('[CameraPip] 背景ぼかし済みストリーム生成エラー:', error);
+        onBlurredStreamReady(null);
+      }
+    } else if (backgroundMode === 'none' && onBlurredStreamReady) {
+      // 背景ぼかしOFFの場合はnullを通知
+      onBlurredStreamReady(null);
+    }
+  }, [backgroundMode, isReady, canvasRef, cameraStream, onBlurredStreamReady]);
 
   /**
    * 録画時間をMM:SS形式にフォーマット

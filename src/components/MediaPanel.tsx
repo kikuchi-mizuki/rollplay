@@ -39,6 +39,7 @@ interface MediaPanelProps {
   blurIntensity?: number; // ぼかし強度
   onBackgroundModeChange?: (mode: 'none' | 'blur') => void;
   onBlurIntensityChange?: (intensity: number) => void;
+  onBlurredStreamReady?: (stream: MediaStream | null) => void; // 背景ぼかし済みストリームを親に通知
 }
 
 export function MediaPanel({
@@ -58,6 +59,7 @@ export function MediaPanel({
   blurIntensity, // ぼかし強度
   onBackgroundModeChange,
   onBlurIntensityChange,
+  onBlurredStreamReady,
 }: MediaPanelProps) {
   // 録音中の波形バーを生成
   const renderWaveform = () => {
@@ -154,6 +156,7 @@ export function MediaPanel({
             blurIntensity={blurIntensity}
             onBackgroundModeChange={onBackgroundModeChange}
             onBlurIntensityChange={onBlurIntensityChange}
+            onBlurredStreamReady={onBlurredStreamReady}
           />
         )}
 

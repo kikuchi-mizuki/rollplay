@@ -94,6 +94,7 @@ function RoleplayApp() {
   // Phase 2: 背景ぼかしのグローバル状態（画面共有時も設定を維持）
   const [backgroundMode, setBackgroundMode] = useState<'none' | 'blur'>('none');
   const [blurIntensity, setBlurIntensity] = useState(15); // 5-30px
+  const [blurredCameraStream, setBlurredCameraStream] = useState<MediaStream | null>(null); // 背景ぼかし済みストリーム（録画用）
 
   // Phase 2: カメラアクセス
   const {
@@ -136,6 +137,7 @@ function RoleplayApp() {
   } = useRecording({
     cameraStream,
     screenStream,
+    blurredCameraStream, // 背景ぼかし済みカメラストリーム（録画用）
     avatarImageSrc: imageSrc, // カメラのみモードでCanvas合成に使用（初期値）
     avatarImageSrcRef, // 録画中の表情変化に対応（Ref経由で最新値を参照）
     aiAudioStream, // AI音声出力のストリーム（Web Audio API）
@@ -1426,6 +1428,7 @@ function RoleplayApp() {
                 blurIntensity={blurIntensity}
                 onBackgroundModeChange={setBackgroundMode}
                 onBlurIntensityChange={setBlurIntensity}
+                onBlurredStreamReady={setBlurredCameraStream}
               />
 
               {/* 字幕 */}
@@ -1467,6 +1470,7 @@ function RoleplayApp() {
               blurIntensity={blurIntensity}
               onBackgroundModeChange={setBackgroundMode}
               onBlurIntensityChange={setBlurIntensity}
+              onBlurredStreamReady={setBlurredCameraStream}
             />
           )}
         </section>
@@ -1689,14 +1693,16 @@ function RoleplayApp() {
         </div>
       </footer>
 
-      {/* 状態バー */}
-      <div className="fixed bottom-0 left-0 right-0 bg-bg/80 backdrop-blur-sm border-t border-white/10 text-white text-xs px-4 py-2 text-center z-20 safe-area-bottom md:hidden">
-        {isRecording
-          ? `録音中... ${recordingState ? `${Math.floor(recordingState.duration / 60)}:${String(recordingState.duration % 60).padStart(2, '0')}` : ''}`
-          : isConnected
-          ? '準備完了'
-          : '接続中...'}
-      </div>
+      {/* 状態バー（画面共有時は非表示にして画面が見えるようにする） */}
+      {!isScreenSharing && (
+        <div className="fixed bottom-0 left-0 right-0 bg-bg/80 backdrop-blur-sm border-t border-white/10 text-white text-xs px-4 py-2 text-center z-20 safe-area-bottom md:hidden">
+          {isRecording
+            ? `録音中... ${recordingState ? `${Math.floor(recordingState.duration / 60)}:${String(recordingState.duration % 60).padStart(2, '0')}` : ''}`
+            : isConnected
+            ? '準備完了'
+            : '接続中...'}
+        </div>
+      )}
 
       {/* 講評シート */}
       <EvaluationSheet

@@ -25,6 +25,7 @@ export interface RecordingData {
 export interface RecordingStreams {
   cameraStream: MediaStream | null;
   screenStream: MediaStream | null;
+  blurredCameraStream?: MediaStream | null; // 背景ぼかし済みカメラストリーム（録画用）
   avatarImageSrc?: string; // アバター画像のパス（カメラのみモードでCanvas合成に使用）
   avatarImageSrcRef?: React.MutableRefObject<string | undefined>; // アバター画像のRef（録画中の表情変化に対応）
   aiAudioStream?: MediaStream | null; // AI音声出力のストリーム（Web Audio API）
@@ -47,7 +48,7 @@ export interface RecordingStreams {
  * @returns 録画状態、制御関数、録画データ
  */
 export function useRecording(streams: RecordingStreams) {
-  const { cameraStream, screenStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef, screenStreamRef } = streams;
+  const { cameraStream, screenStream, blurredCameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef, screenStreamRef } = streams;
   const [isRecording, setIsRecording] = useState(false);
   const [recordingError, setRecordingError] = useState<RecordingError | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -101,12 +102,19 @@ export function useRecording(streams: RecordingStreams) {
    * - 音声トラックも含める
    */
   const createCameraOnlyCompositeStream = useCallback((): MediaStream | null => {
-    if (!cameraStream) {
+    // 背景ぼかし済みストリームがある場合はそれを優先、なければ元のカメラストリームを使用
+    const effectiveCameraStream = blurredCameraStream || cameraStream;
+
+    if (!effectiveCameraStream) {
       console.log('⚠️ カメラCanvas合成スキップ: カメラが未起動');
       return null;
     }
 
-    console.log('🎨 カメラのみCanvas合成ストリーム作成開始...');
+    if (blurredCameraStream) {
+      console.log('🎨 カメラのみCanvas合成ストリーム作成開始（背景ぼかし済みストリーム使用）...');
+    } else {
+      console.log('🎨 カメラのみCanvas合成ストリーム作成開始（元のカメラストリーム使用）...');
+    }
 
     // Canvas解像度を1920x1080に固定（カメラのみの場合）
     const canvasWidth = 1920;
@@ -126,9 +134,9 @@ export function useRecording(streams: RecordingStreams) {
       return null;
     }
 
-    // video要素を作成（カメラ用）
+    // video要素を作成（カメラ用 - 背景ぼかし済みまたは元のストリーム）
     const cameraVideo = document.createElement('video');
-    cameraVideo.srcObject = cameraStream;
+    cameraVideo.srcObject = effectiveCameraStream;
     cameraVideo.autoplay = true;
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
@@ -389,8 +397,8 @@ export function useRecording(streams: RecordingStreams) {
     let cameraSourceConnected = false;
     let aiSourceConnected = false;
 
-    // カメラの音声をミキサーに接続
-    const cameraAudioTracks = cameraStream.getAudioTracks();
+    // カメラの音声をミキサーに接続（背景ぼかし済みストリームにも音声トラックが含まれている）
+    const cameraAudioTracks = effectiveCameraStream.getAudioTracks();
     if (cameraAudioTracks.length > 0) {
       try {
         // カメラ音声用のMediaStreamを作成（クローンしたトラックを使用）
@@ -445,7 +453,7 @@ export function useRecording(streams: RecordingStreams) {
     console.log(`  音声トラック数: ${mixedAudioTracks.length} (ミックス済み音声トラック)`);
 
     return compositeStream;
-  }, [cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
+  }, [cameraStream, blurredCameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
 
   /**
    * Canvas合成ストリームを作成
@@ -458,12 +466,19 @@ export function useRecording(streams: RecordingStreams) {
    * - 音声トラックも含める（カメラ + AI音声ミキシング）
    */
   const createCompositeStream = useCallback((): MediaStream | null => {
-    if (!screenStream || !cameraStream) {
+    // 背景ぼかし済みストリームがある場合はそれを優先、なければ元のカメラストリームを使用
+    const effectiveCameraStream = blurredCameraStream || cameraStream;
+
+    if (!screenStream || !effectiveCameraStream) {
       console.log('⚠️ Canvas合成スキップ: 画面共有またはカメラが未起動');
       return null;
     }
 
-    console.log('🎨 Canvas合成ストリーム作成開始...');
+    if (blurredCameraStream) {
+      console.log('🎨 Canvas合成ストリーム作成開始（背景ぼかし済みカメラストリーム使用）...');
+    } else {
+      console.log('🎨 Canvas合成ストリーム作成開始（元のカメラストリーム使用）...');
+    }
 
     // 画面共有の実際の解像度を取得
     const screenVideoTrack = screenStream.getVideoTracks()[0];
@@ -494,9 +509,9 @@ export function useRecording(streams: RecordingStreams) {
     screenVideo.muted = true;
     screenVideo.playsInline = true;
 
-    // video要素を作成（カメラ用）
+    // video要素を作成（カメラ用 - 背景ぼかし済みまたは元のストリーム）
     const cameraVideo = document.createElement('video');
-    cameraVideo.srcObject = cameraStream;
+    cameraVideo.srcObject = effectiveCameraStream;
     cameraVideo.autoplay = true;
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
@@ -715,8 +730,8 @@ export function useRecording(streams: RecordingStreams) {
       }
     }
 
-    // カメラの音声をミキサーに接続
-    const cameraAudioTracks = cameraStream.getAudioTracks();
+    // カメラの音声をミキサーに接続（背景ぼかし済みストリームにも音声トラックが含まれている）
+    const cameraAudioTracks = effectiveCameraStream.getAudioTracks();
     if (cameraAudioTracks.length > 0) {
       try {
         const cameraAudioStream = new MediaStream(cameraAudioTracks.map(t => t.clone()));
@@ -772,7 +787,7 @@ export function useRecording(streams: RecordingStreams) {
     console.log(`  音声トラック数: ${mixedAudioTracks.length} (画面共有 + カメラ + AI音声をミキシング)`);
 
     return compositeStream;
-  }, [screenStream, cameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
+  }, [screenStream, cameraStream, blurredCameraStream, avatarImageSrc, avatarImageSrcRef, aiAudioStream, audioDestinationRef]);
 
   /**
    * 録画を開始
@@ -867,7 +882,7 @@ export function useRecording(streams: RecordingStreams) {
 
         const recorder = new RecordRTC(recordingStream, {
           type: 'video',
-          mimeType: 'video/webm;codecs=vp9' as any, // RecordRTC型定義の制限を回避
+          mimeType: 'video/webm;codecs=vp9,opus' as any, // 音声コーデック（opus）を明示的に指定
           recorderType: RecordRTC.MediaStreamRecorder,
           audioBitsPerSecond: 128000,
           videoBitsPerSecond: 2500000,
