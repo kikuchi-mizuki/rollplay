@@ -1760,6 +1760,35 @@ function RoleplayApp() {
         </div>
       )}
 
+      {/* 講評読み込み中のオーバーレイ */}
+      {isLoadingEvaluation && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100]">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl px-8 py-10 shadow-2xl max-w-md mx-4">
+            <div className="flex flex-col items-center gap-6">
+              {/* ローディングスピナー */}
+              <div className="relative w-20 h-20">
+                <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
+              </div>
+
+              {/* メッセージ */}
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-white mb-2">講評を作成中...</h3>
+                <p className="text-white/80 text-sm">
+                  AIが会話を分析しています。<br />
+                  少々お待ちください。
+                </p>
+              </div>
+
+              {/* プログレスバー（アニメーション） */}
+              <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-primary to-purple-400 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 講評シート */}
       <EvaluationSheet
         isOpen={showEvaluation}
