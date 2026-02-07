@@ -1485,6 +1485,7 @@ function RoleplayApp() {
                 onBackgroundModeChange={setBackgroundMode}
                 onBlurIntensityChange={setBlurIntensity}
                 onBlurredStreamReady={setBlurredCameraStream}
+                hasSubtitle={!!mediaSubtitle}
               />
 
               {/* 字幕 */}

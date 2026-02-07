@@ -29,6 +29,7 @@ interface CameraPipProps {
   onBackgroundModeChange?: (mode: BackgroundMode) => void;
   onBlurIntensityChange?: (intensity: number) => void;
   onBlurredStreamReady?: (stream: MediaStream | null) => void; // 背景ぼかし済みストリームを親に通知
+  hasSubtitle?: boolean; // 字幕がある場合、PinPを上にずらす
 }
 
 type BackgroundMode = 'none' | 'blur';
@@ -44,6 +45,7 @@ export function CameraPip({
   onBackgroundModeChange,
   onBlurIntensityChange,
   onBlurredStreamReady,
+  hasSubtitle = false,
 }: CameraPipProps) {
   // 外部から状態が渡された場合は外部状態を使用、そうでない場合は内部状態を使用
   const [internalBackgroundMode, setInternalBackgroundMode] = useState<BackgroundMode>('none');
@@ -202,10 +204,10 @@ export function CameraPip({
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  // フルスクリーン時とPinP時でクラスを切り替え
+  // フルスクリーン時とPinP時でクラスを切り替え（字幕がある場合は上にずらす）
   const containerClass = isFullscreen
     ? "h-full w-full relative bg-black/80 rounded-2xl flex items-center justify-center overflow-hidden"
-    : "absolute bottom-4 right-4 w-40 h-32 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl";
+    : `absolute ${hasSubtitle ? 'bottom-16' : 'bottom-4'} right-4 w-40 h-32 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20 transition-all duration-300 hover:scale-105 hover:shadow-3xl`;
 
   return (
     <div className={containerClass}>

@@ -157,12 +157,15 @@ export function MediaPanel({
             onBackgroundModeChange={onBackgroundModeChange}
             onBlurIntensityChange={onBlurIntensityChange}
             onBlurredStreamReady={onBlurredStreamReady}
+            hasSubtitle={!!subtitle}
           />
         )}
 
-        {/* Phase 2: 画面共有時のPinP表示（アバター） - 右下配置 */}
+        {/* Phase 2: 画面共有時のPinP表示（アバター） - 右下配置（字幕がある場合は上にずらす） */}
         {isScreenSharing && imageSrc && (
-          <div className="absolute bottom-4 right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+          <div className={`absolute right-48 w-24 h-24 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10 ${
+            subtitle ? 'bottom-16' : 'bottom-4'
+          }`}>
             <img
               src={imageSrc}
               alt="AI相談者のアバター"
