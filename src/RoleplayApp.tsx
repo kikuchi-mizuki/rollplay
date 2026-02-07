@@ -14,7 +14,7 @@ import { useAuth } from './contexts/AuthContext';
 import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl } from './lib/expressionSelector';
 import { useCamera } from './hooks/useCamera'; // Phase 2: カメラアクセス
 import { useScreenShare } from './hooks/useScreenShare'; // Phase 2 Day 3: 画面共有
-import { useRecording } from './hooks/useRecording'; // Phase 2 Day 4: 録画機能
+import { useRecording, RecordingData } from './hooks/useRecording'; // Phase 2 Day 4: 録画機能
 // import { useDIDAvatar } from './components/DIDAvatar';
 // import { AvatarManager } from './components/AvatarManager';
 // import { Avatar } from './lib/avatarManager';
@@ -87,7 +87,7 @@ function RoleplayApp() {
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream（録画用）
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
   const screenStreamRef = useRef<MediaStream | null>(null); // 画面共有のRef（録画中の画面共有開始に対応）
-  const videoRecordingDataRef = useRef(videoRecordingData); // 録画データのRef（講評時の確実な参照用）
+  const videoRecordingDataRef = useRef<RecordingData | null>(null); // 録画データのRef（講評時の確実な参照用）
 
   // 録画開始時のWeb Audio API初期化フラグ
   const recordingAudioInitializedRef = useRef(false);
