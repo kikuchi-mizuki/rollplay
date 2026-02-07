@@ -1294,6 +1294,14 @@ function RoleplayApp() {
       return;
     }
 
+    // 録画中の場合は自動的に停止
+    if (isVideoRecording) {
+      console.log('🎬 録画中のため、自動的に停止します');
+      stopVideoRecording();
+      // 録画停止処理が完了するまで少し待つ（RecordRTCのコールバックが完了するまで）
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
     setIsLoadingEvaluation(true);
     try {
       // 講評を取得（Week 5: シナリオIDを渡す）
@@ -1337,10 +1345,22 @@ function RoleplayApp() {
             });
             console.log('✅ 評価結果を保存しました');
 
+            // 録画データの状態をデバッグログに出力
+            console.log('🔍 録画データの状態チェック:', {
+              hasVideoRecordingData: !!videoRecordingData,
+              blobSize: videoRecordingData?.blob?.size,
+              duration: videoRecordingData?.duration,
+              timestamp: videoRecordingData?.timestamp,
+            });
+
             // 録画データがある場合はアップロード
             if (videoRecordingData) {
               try {
-                console.log('📤 録画データをアップロード中...');
+                console.log('📤 録画データをアップロード中...', {
+                  blobSize: videoRecordingData.blob.size,
+                  blobType: videoRecordingData.blob.type,
+                  duration: videoRecordingData.duration,
+                });
                 const filename = `recording_${newConversationId}_${Date.now()}.webm`;
                 const uploadResult = await uploadRecording(
                   newConversationId,
@@ -1348,6 +1368,8 @@ function RoleplayApp() {
                   filename,
                   videoRecordingData.duration
                 );
+
+                console.log('📤 アップロード結果:', uploadResult);
 
                 if (uploadResult.success) {
                   console.log('✅ 録画データをアップロードしました');
@@ -1371,8 +1393,9 @@ function RoleplayApp() {
                 });
               }
             } else {
+              console.warn('⚠️ 録画データがありません。録画を停止していない可能性があります。');
               setToast({
-                message: '会話と評価を保存しました',
+                message: '会話と評価を保存しました（録画データなし）',
                 type: 'success',
               });
             }
