@@ -61,9 +61,9 @@ export function MediaPanel({
   onBlurIntensityChange,
   onBlurredStreamReady,
 }: MediaPanelProps) {
-  // 録音中の波形バーを生成
+  // 録音中の波形バーを生成（画面共有時は非表示にして画面が見えるようにする）
   const renderWaveform = () => {
-    if (!isRecording || !recordingState) return null;
+    if (!isRecording || !recordingState || isScreenSharing) return null;
 
     return (
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-2xl">
