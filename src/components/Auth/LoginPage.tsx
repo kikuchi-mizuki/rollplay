@@ -105,16 +105,6 @@ export function LoginPage() {
               に同意したものとみなされます。
             </p>
           </div>
-
-          {/* 登録ページへのリンク */}
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => navigate('/register')}
-              className="text-sm text-[#6C5CE7] hover:text-[#A29BFE] transition-colors"
-            >
-              初めての方はこちら
-            </button>
-          </div>
         </div>
 
         {/* システム説明 */}

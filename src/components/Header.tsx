@@ -85,7 +85,10 @@ export function Header({
       </div>
       {/* ユーザーメニュー */}
       {showSettings && (
-        <div className="absolute top-full right-4 mt-2 bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-xl w-64 shadow-xl z-[200] p-4">
+        <div
+          className="absolute top-full right-4 mt-2 bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-xl w-64 shadow-xl z-[9999] p-4"
+          style={{ pointerEvents: 'auto' }}
+        >
           {/* ユーザー情報 */}
           <div className="flex items-center gap-3 pb-3 border-b border-white/10">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
@@ -118,7 +121,8 @@ export function Header({
                   setShowSettings(false)
                   navigate('/admin/stores')
                 }}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                style={{ pointerEvents: 'auto' }}
               >
                 <Store size={16} />
                 <span>店舗管理</span>
@@ -126,7 +130,8 @@ export function Header({
             )}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+              style={{ pointerEvents: 'auto' }}
             >
               <LogOut size={16} />
               <span>ログアウト</span>
@@ -135,7 +140,8 @@ export function Header({
 
           <button
             onClick={() => setShowSettings(false)}
-            className="mt-2 w-full btn btn-outline text-xs"
+            className="mt-2 w-full btn btn-outline text-xs cursor-pointer"
+            style={{ pointerEvents: 'auto' }}
           >
             閉じる
           </button>
