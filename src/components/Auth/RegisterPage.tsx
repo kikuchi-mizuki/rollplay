@@ -194,6 +194,10 @@ export function RegisterPage() {
       setLoading(true)
       setError(null)
 
+      // 店舗コードに「ADMIN」が含まれている場合は管理者権限を付与
+      const isAdmin = storeCode.toUpperCase().includes('ADMIN')
+      const userRole = isAdmin ? 'admin' : 'user'
+
       // profilesテーブルに登録
       const { error: insertError } = await supabase
         .from('profiles')
@@ -204,7 +208,7 @@ export function RegisterPage() {
           display_name: displayName,
           email: user.email,
           avatar_url: user.user_metadata?.avatar_url || null,
-          role: 'user'
+          role: userRole
         })
 
       if (insertError) {
