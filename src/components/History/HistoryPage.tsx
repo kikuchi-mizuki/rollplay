@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getConversations, getEvaluations, getScenarios } from '../../lib/api';
 import { downloadEvaluationsCSV } from '../../lib/csv';
-import { History, BarChart3, TrendingUp, Calendar, Download, FileVideo } from 'lucide-react';
+import { History, BarChart3, TrendingUp, Calendar, Download, FileVideo, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Conversation {
   id: string;
@@ -29,6 +29,11 @@ interface EvaluationRecord {
   };
   total_score: number;
   average_score: number;
+  comments?: {
+    overall?: string;
+    strengths?: string[];
+    improvements?: string[];
+  };
   created_at: string;
 }
 
@@ -39,6 +44,7 @@ export function HistoryPage() {
   const [scenarios, setScenarios] = useState<{ id: string; title: string }[]>([]);
   const [selectedScenario, setSelectedScenario] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [expandedEvaluations, setExpandedEvaluations] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadData();
@@ -140,6 +146,18 @@ export function HistoryPage() {
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   };
 
+  const toggleEvaluationExpanded = (evaluationId: string) => {
+    setExpandedEvaluations(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(evaluationId)) {
+        newSet.delete(evaluationId);
+      } else {
+        newSet.add(evaluationId);
+      }
+      return newSet;
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -228,6 +246,13 @@ export function HistoryPage() {
             <div className="space-y-4">
               {evaluations.map((evaluation) => {
                 const conversation = getConversationForEvaluation(evaluation.id);
+                const isExpanded = expandedEvaluations.has(evaluation.id);
+                const hasComments = evaluation.comments && (
+                  evaluation.comments.overall ||
+                  (evaluation.comments.strengths && evaluation.comments.strengths.length > 0) ||
+                  (evaluation.comments.improvements && evaluation.comments.improvements.length > 0)
+                );
+
                 return (
                   <div
                     key={evaluation.id}
@@ -288,6 +313,63 @@ export function HistoryPage() {
                         </p>
                       </div>
                     </div>
+
+                    {/* 講評セクション */}
+                    {hasComments && (
+                      <div className="mt-4 border-t border-white/10 pt-4">
+                        <button
+                          onClick={() => toggleEvaluationExpanded(evaluation.id)}
+                          className="w-full flex items-center justify-between text-white/80 hover:text-white transition-colors"
+                        >
+                          <span className="font-semibold">講評を見る</span>
+                          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                        </button>
+
+                        {isExpanded && (
+                          <div className="mt-4 space-y-4">
+                            {/* 総評 */}
+                            {evaluation.comments.overall && (
+                              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                                <h4 className="text-white font-semibold mb-2 text-sm">総評</h4>
+                                <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+                                  {evaluation.comments.overall}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* 良かった点 */}
+                            {evaluation.comments.strengths && evaluation.comments.strengths.length > 0 && (
+                              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                                <h4 className="text-green-400 font-semibold mb-2 text-sm">良かった点</h4>
+                                <ul className="space-y-2">
+                                  {evaluation.comments.strengths.map((strength, idx) => (
+                                    <li key={idx} className="text-white/80 text-sm flex items-start gap-2">
+                                      <span className="text-green-400 mt-1">✓</span>
+                                      <span>{strength}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* 改善点 */}
+                            {evaluation.comments.improvements && evaluation.comments.improvements.length > 0 && (
+                              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                                <h4 className="text-yellow-400 font-semibold mb-2 text-sm">改善点</h4>
+                                <ul className="space-y-2">
+                                  {evaluation.comments.improvements.map((improvement, idx) => (
+                                    <li key={idx} className="text-white/80 text-sm flex items-start gap-2">
+                                      <span className="text-yellow-400 mt-1">⚠</span>
+                                      <span>{improvement}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
