@@ -328,21 +328,21 @@ export function HistoryPage() {
                         {isExpanded && (
                           <div className="mt-4 space-y-4">
                             {/* 総評 */}
-                            {evaluation.comments.overall && (
+                            {evaluation.comments?.overall && (
                               <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                                 <h4 className="text-white font-semibold mb-2 text-sm">総評</h4>
                                 <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
-                                  {evaluation.comments.overall}
+                                  {evaluation.comments?.overall}
                                 </p>
                               </div>
                             )}
 
                             {/* 良かった点 */}
-                            {evaluation.comments.strengths && evaluation.comments.strengths.length > 0 && (
+                            {evaluation.comments?.strengths && evaluation.comments?.strengths.length > 0 && (
                               <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                                 <h4 className="text-green-400 font-semibold mb-2 text-sm">良かった点</h4>
                                 <ul className="space-y-2">
-                                  {evaluation.comments.strengths.map((strength, idx) => (
+                                  {evaluation.comments?.strengths.map((strength, idx) => (
                                     <li key={idx} className="text-white/80 text-sm flex items-start gap-2">
                                       <span className="text-green-400 mt-1">✓</span>
                                       <span>{strength}</span>
@@ -353,11 +353,11 @@ export function HistoryPage() {
                             )}
 
                             {/* 改善点 */}
-                            {evaluation.comments.improvements && evaluation.comments.improvements.length > 0 && (
+                            {evaluation.comments?.improvements && evaluation.comments?.improvements.length > 0 && (
                               <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                                 <h4 className="text-yellow-400 font-semibold mb-2 text-sm">改善点</h4>
                                 <ul className="space-y-2">
-                                  {evaluation.comments.improvements.map((improvement, idx) => (
+                                  {evaluation.comments?.improvements.map((improvement, idx) => (
                                     <li key={idx} className="text-white/80 text-sm flex items-start gap-2">
                                       <span className="text-yellow-400 mt-1">⚠</span>
                                       <span>{improvement}</span>
