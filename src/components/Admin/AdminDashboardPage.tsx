@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { getStoresStats, getStoresRankings } from '../../lib/api'
-import { BarChart3, TrendingUp, Users, MessageSquare, Award, Building2 } from 'lucide-react'
+import { getStoresStats, getStoresRankings, getOnlineUsers } from '../../lib/api'
+import { BarChart3, TrendingUp, Users, MessageSquare, Award, Building2, Radio } from 'lucide-react'
 
 interface StoreRanking {
   store_id: string
@@ -23,6 +23,18 @@ interface StoresStats {
   overall_avg_score: number
 }
 
+interface OnlineUser {
+  id: string
+  display_name: string
+  email: string
+  store_id: string
+  store_name: string
+  store_code: string
+  region: string
+  last_active_at: string
+  role: string
+}
+
 /**
  * 本部管理者用ダッシュボード
  * 全店舗の統計情報とランキングを表示
@@ -32,8 +44,11 @@ export function AdminDashboardPage() {
   const { profile, loading } = useAuth()
   const [stats, setStats] = useState<StoresStats | null>(null)
   const [rankings, setRankings] = useState<StoreRanking[]>([])
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
+  const [onlineCount, setOnlineCount] = useState(0)
   const [loadingData, setLoadingData] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'rankings' | 'online'>('rankings')
 
   // 権限チェック
   useEffect(() => {
@@ -48,13 +63,16 @@ export function AdminDashboardPage() {
       setLoadingData(true)
       setError(null)
 
-      const [statsData, rankingsData] = await Promise.all([
+      const [statsData, rankingsData, onlineData] = await Promise.all([
         getStoresStats(),
-        getStoresRankings()
+        getStoresRankings(),
+        getOnlineUsers(5)
       ])
 
       setStats(statsData)
       setRankings(rankingsData)
+      setOnlineUsers(onlineData.onlineUsers)
+      setOnlineCount(onlineData.count)
     } catch (err: any) {
       console.error('データ取得エラー:', err)
       setError(err.message)
@@ -63,11 +81,33 @@ export function AdminDashboardPage() {
     }
   }
 
+  // オンラインユーザーのみを再取得（自動更新用）
+  const fetchOnlineUsers = async () => {
+    try {
+      const onlineData = await getOnlineUsers(5)
+      setOnlineUsers(onlineData.onlineUsers)
+      setOnlineCount(onlineData.count)
+    } catch (err: any) {
+      console.error('オンラインユーザー取得エラー:', err)
+    }
+  }
+
   useEffect(() => {
     if (profile?.role === 'admin') {
       fetchData()
     }
   }, [profile])
+
+  // オンラインユーザーを30秒ごとに更新
+  useEffect(() => {
+    if (profile?.role === 'admin' && activeTab === 'online') {
+      const interval = setInterval(() => {
+        fetchOnlineUsers()
+      }, 30000) // 30秒
+
+      return () => clearInterval(interval)
+    }
+  }, [profile, activeTab])
 
   const getRankMedal = (rank: number) => {
     if (rank === 1) return '🥇'
@@ -192,15 +232,40 @@ export function AdminDashboardPage() {
           </div>
         )}
 
-        {/* 店舗ランキング */}
+        {/* タブUI */}
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
-              <Award className="text-[#A29BFE]" size={28} />
-              店舗別ランキング
-            </h2>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setActiveTab('rankings')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                  activeTab === 'rankings'
+                    ? 'bg-gradient-to-r from-[#6C5CE7] to-[#A29BFE] text-white'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Award size={20} />
+                店舗別ランキング
+              </button>
+              <button
+                onClick={() => setActiveTab('online')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                  activeTab === 'online'
+                    ? 'bg-gradient-to-r from-[#6C5CE7] to-[#A29BFE] text-white'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Radio size={20} />
+                ログイン中のユーザー
+                {onlineCount > 0 && (
+                  <span className="px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">
+                    {onlineCount}
+                  </span>
+                )}
+              </button>
+            </div>
             <div className="text-sm text-slate-400">
-              平均スコア順
+              {activeTab === 'rankings' ? '平均スコア順' : '最終アクティブ順'}
             </div>
           </div>
 
@@ -208,69 +273,143 @@ export function AdminDashboardPage() {
             <div className="text-center py-12 text-slate-400">
               読み込み中...
             </div>
-          ) : rankings.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
-              <p>まだデータがありません</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-300 w-20">順位</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-300">店舗名</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-300">店舗コード</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-300">ユーザー数</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-300">練習回数</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-300">評価回数</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-300">平均スコア</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rankings.map((store, index) => (
-                    <tr
-                      key={store.store_id}
-                      className={`border-b border-white/5 hover:bg-white/5 transition-colors ${
-                        index < 3 ? 'bg-gradient-to-r from-white/5 to-transparent' : ''
-                      }`}
-                    >
-                      <td className="py-4 px-4">
-                        <span className="text-2xl">
-                          {getRankMedal(index + 1)}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 font-medium text-white">
-                        {store.store_name}
-                        {store.region && (
-                          <span className="ml-2 text-xs text-slate-400">
-                            ({store.region})
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-4">
-                        <code className="px-2 py-1 bg-white/10 rounded text-xs text-slate-300 font-mono">
-                          {store.store_code}
-                        </code>
-                      </td>
-                      <td className="py-4 px-4 text-center text-slate-300">
-                        {store.user_count}
-                      </td>
-                      <td className="py-4 px-4 text-center text-slate-300">
-                        {store.conversation_count}
-                      </td>
-                      <td className="py-4 px-4 text-center text-slate-300">
-                        {store.evaluation_count}
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <span className={`text-lg font-bold ${getScoreColor(store.average_score)}`}>
-                          {store.average_score.toFixed(1)}
-                        </span>
-                      </td>
+          ) : activeTab === 'rankings' ? (
+            rankings.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <p>まだデータがありません</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300 w-20">順位</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">店舗名</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">店舗コード</th>
+                      <th className="text-center py-3 px-4 font-semibold text-slate-300">ユーザー数</th>
+                      <th className="text-center py-3 px-4 font-semibold text-slate-300">練習回数</th>
+                      <th className="text-center py-3 px-4 font-semibold text-slate-300">評価回数</th>
+                      <th className="text-right py-3 px-4 font-semibold text-slate-300">平均スコア</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {rankings.map((store, index) => (
+                      <tr
+                        key={store.store_id}
+                        className={`border-b border-white/5 hover:bg-white/5 transition-colors ${
+                          index < 3 ? 'bg-gradient-to-r from-white/5 to-transparent' : ''
+                        }`}
+                      >
+                        <td className="py-4 px-4">
+                          <span className="text-2xl">
+                            {getRankMedal(index + 1)}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 font-medium text-white">
+                          {store.store_name}
+                          {store.region && (
+                            <span className="ml-2 text-xs text-slate-400">
+                              ({store.region})
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-4">
+                          <code className="px-2 py-1 bg-white/10 rounded text-xs text-slate-300 font-mono">
+                            {store.store_code}
+                          </code>
+                        </td>
+                        <td className="py-4 px-4 text-center text-slate-300">
+                          {store.user_count}
+                        </td>
+                        <td className="py-4 px-4 text-center text-slate-300">
+                          {store.conversation_count}
+                        </td>
+                        <td className="py-4 px-4 text-center text-slate-300">
+                          {store.evaluation_count}
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <span className={`text-lg font-bold ${getScoreColor(store.average_score)}`}>
+                            {store.average_score.toFixed(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          ) : (
+            /* オンラインユーザーテーブル */
+            onlineUsers.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <p>現在ログイン中のユーザーはいません</p>
+                <p className="text-sm mt-2">（過去5分以内にアクティブなユーザーを表示）</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">ステータス</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">ユーザー名</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">メール</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">店舗名</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">店舗コード</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">リージョン</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">権限</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-300">最終アクティブ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {onlineUsers.map((user) => (
+                      <tr
+                        key={user.id}
+                        className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                      >
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs text-green-400 font-semibold">オンライン</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 font-medium text-white">
+                          {user.display_name}
+                        </td>
+                        <td className="py-4 px-4 text-slate-300 text-sm">
+                          {user.email}
+                        </td>
+                        <td className="py-4 px-4 text-slate-300">
+                          {user.store_name}
+                        </td>
+                        <td className="py-4 px-4">
+                          <code className="px-2 py-1 bg-white/10 rounded text-xs text-slate-300 font-mono">
+                            {user.store_code}
+                          </code>
+                        </td>
+                        <td className="py-4 px-4 text-slate-300">
+                          {user.region}
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            user.role === 'admin' ? 'bg-purple-500/20 text-purple-300' :
+                            user.role === 'manager' ? 'bg-blue-500/20 text-blue-300' :
+                            'bg-gray-500/20 text-gray-300'
+                          }`}>
+                            {user.role === 'admin' ? '管理者' : user.role === 'manager' ? 'マネージャー' : 'ユーザー'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-slate-300 text-sm">
+                          {new Date(user.last_active_at).toLocaleString('ja-JP')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="mt-4 text-sm text-slate-400 text-center">
+                  自動更新: 30秒ごと
+                </div>
+              </div>
+            )
           )}
         </div>
       </div>

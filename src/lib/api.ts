@@ -340,6 +340,29 @@ export async function getStoresRankings(): Promise<any[]> {
 }
 
 /**
+ * ログイン中のユーザー一覧を取得（本部管理者専用）
+ */
+export async function getOnlineUsers(thresholdMinutes: number = 5): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/online-users?threshold=${thresholdMinutes}`);
+    const result = await response.json();
+
+    if (result.success) {
+      return {
+        onlineUsers: result.online_users,
+        count: result.count,
+        thresholdMinutes: result.threshold_minutes
+      };
+    } else {
+      throw new Error(result.error || 'オンラインユーザー取得に失敗しました');
+    }
+  } catch (error) {
+    console.error('オンラインユーザー取得エラー:', error);
+    throw error;
+  }
+}
+
+/**
  * 店舗メンバー一覧を取得（店舗管理者・本部管理者）
  */
 export async function getStoreMembers(storeId: string): Promise<any[]> {

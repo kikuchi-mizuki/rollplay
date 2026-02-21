@@ -181,18 +181,33 @@ def get_store_members(store_id):
         profiles_result = supabase_client.table('profiles').select('*').eq('store_id', store_id).execute()
         members = profiles_result.data if profiles_result.data else []
 
-        # 各メンバーの統計情報を追加
+        # N+1クエリ問題の解決: 全メンバーの統計データを一度に取得
+        user_ids = [member['id'] for member in members]
+
+        if user_ids:
+            # 全メンバーの会話数を一度に取得
+            conversations_result = supabase_client.table('conversations').select('id,user_id').in_('user_id', user_ids).execute()
+            conversations_by_user = {}
+            for conv in (conversations_result.data or []):
+                user_id = conv['user_id']
+                conversations_by_user[user_id] = conversations_by_user.get(user_id, 0) + 1
+
+            # 全メンバーの評価データを一度に取得
+            evaluations_result = supabase_client.table('evaluations').select('average_score,user_id').in_('user_id', user_ids).execute()
+            evaluations_by_user = {}
+            for eval in (evaluations_result.data or []):
+                user_id = eval['user_id']
+                if user_id not in evaluations_by_user:
+                    evaluations_by_user[user_id] = []
+                evaluations_by_user[user_id].append(eval['average_score'])
+
+        # 各メンバーに統計情報を追加
         for member in members:
             user_id = member['id']
+            member['conversation_count'] = conversations_by_user.get(user_id, 0) if user_ids else 0
 
-            # 会話数
-            conversations_result = supabase_client.table('conversations').select('id').eq('user_id', user_id).execute()
-            member['conversation_count'] = len(conversations_result.data) if conversations_result.data else 0
-
-            # 評価平均スコア
-            evaluations_result = supabase_client.table('evaluations').select('average_score').eq('user_id', user_id).execute()
-            evaluations = evaluations_result.data if evaluations_result.data else []
-            member['average_score'] = round(sum(e['average_score'] for e in evaluations) / len(evaluations), 2) if evaluations else 0
+            evaluations = evaluations_by_user.get(user_id, []) if user_ids else []
+            member['average_score'] = round(sum(evaluations) / len(evaluations), 2) if evaluations else 0
             member['evaluation_count'] = len(evaluations)
 
         return jsonify({
@@ -241,6 +256,32 @@ def get_regions_stats():
         stores_result = supabase_client.table('stores').select('*').execute()
         stores = stores_result.data if stores_result.data else []
 
+        # N+1クエリ問題の解決: 全店舗のデータを一度に取得
+        store_ids = [store['id'] for store in stores]
+
+        # 全店舗のユーザー数を一度に取得
+        profiles_result = supabase_client.table('profiles').select('id,store_id').in_('store_id', store_ids).execute()
+        profiles_by_store = {}
+        for profile in (profiles_result.data or []):
+            store_id = profile['store_id']
+            profiles_by_store[store_id] = profiles_by_store.get(store_id, 0) + 1
+
+        # 全店舗の会話数を一度に取得
+        conversations_result = supabase_client.table('conversations').select('id,store_id').in_('store_id', store_ids).execute()
+        conversations_by_store = {}
+        for conv in (conversations_result.data or []):
+            store_id = conv['store_id']
+            conversations_by_store[store_id] = conversations_by_store.get(store_id, 0) + 1
+
+        # 全店舗の評価データを一度に取得
+        evaluations_result = supabase_client.table('evaluations').select('average_score,store_id').in_('store_id', store_ids).execute()
+        evaluations_by_store = {}
+        for eval in (evaluations_result.data or []):
+            store_id = eval['store_id']
+            if store_id not in evaluations_by_store:
+                evaluations_by_store[store_id] = []
+            evaluations_by_store[store_id].append(eval['average_score'])
+
         # リージョン別にグループ化
         regions = {}
         for store in stores:
@@ -258,18 +299,11 @@ def get_regions_stats():
 
             store_id = store['id']
 
-            # 店舗のユーザー数
-            profiles_result = supabase_client.table('profiles').select('id').eq('store_id', store_id).execute()
-            user_count = len(profiles_result.data) if profiles_result.data else 0
-
-            # 店舗の会話数
-            conversations_result = supabase_client.table('conversations').select('id').eq('store_id', store_id).execute()
-            conversation_count = len(conversations_result.data) if conversations_result.data else 0
-
-            # 店舗の評価平均スコア
-            evaluations_result = supabase_client.table('evaluations').select('average_score').eq('store_id', store_id).execute()
-            evaluations = evaluations_result.data if evaluations_result.data else []
-            avg_score = sum(e['average_score'] for e in evaluations) / len(evaluations) if evaluations else 0
+            # 事前取得したデータから統計情報を取得
+            user_count = profiles_by_store.get(store_id, 0)
+            conversation_count = conversations_by_store.get(store_id, 0)
+            evaluations = evaluations_by_store.get(store_id, [])
+            avg_score = sum(evaluations) / len(evaluations) if evaluations else 0
 
             # リージョンの統計を更新
             regions[region]['store_count'] += 1
@@ -494,6 +528,57 @@ def export_all_evaluations():
         return jsonify({
             'success': False,
             'error': '評価データのエクスポートに失敗しました'
+        }), 500
+
+
+@admin_bp.route('/api/admin/online-users', methods=['GET'])
+def get_online_users():
+    """ログイン中のユーザー一覧を取得（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        # オンライン判定時間（分）
+        online_threshold_minutes = request.args.get('threshold', 5, type=int)
+
+        # last_active_atが過去N分以内のユーザーを取得
+        from datetime import datetime, timedelta
+        threshold_time = datetime.utcnow() - timedelta(minutes=online_threshold_minutes)
+        threshold_str = threshold_time.isoformat()
+
+        # オンラインユーザー取得
+        profiles_result = supabase_client.table('profiles').select('*').gte('last_active_at', threshold_str).order('last_active_at', desc=True).execute()
+        online_users = profiles_result.data if profiles_result.data else []
+
+        # 店舗情報を一括取得
+        store_ids = list(set([user['store_id'] for user in online_users if user.get('store_id')]))
+        stores_result = supabase_client.table('stores').select('*').in_('id', store_ids).execute()
+        stores_dict = {store['id']: store for store in (stores_result.data or [])}
+
+        # ユーザー情報に店舗情報を追加
+        for user in online_users:
+            store_id = user.get('store_id')
+            if store_id and store_id in stores_dict:
+                user['store_name'] = stores_dict[store_id].get('store_name')
+                user['store_code'] = stores_dict[store_id].get('store_code')
+                user['region'] = stores_dict[store_id].get('region')
+            else:
+                user['store_name'] = '未設定'
+                user['store_code'] = '未設定'
+                user['region'] = '未設定'
+
+        return jsonify({
+            'success': True,
+            'online_users': online_users,
+            'count': len(online_users),
+            'threshold_minutes': online_threshold_minutes
+        })
+
+    except Exception as e:
+        logger.exception(f"オンラインユーザー取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'オンラインユーザー情報の取得に失敗しました'
         }), 500
 
 
