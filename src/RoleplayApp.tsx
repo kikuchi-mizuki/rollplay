@@ -1099,6 +1099,53 @@ function RoleplayApp() {
     };
   }, [audioRecorderRef]);
 
+  /**
+   * 会話履歴を保存するヘルパー関数
+   * - 講評取得時とVADモード停止時の両方で使用
+   * - 既に保存済みの場合はスキップ
+   */
+  const saveConversationHistory = async () => {
+    if (!user || !profile?.store_id || messages.length === 0) {
+      return null;
+    }
+
+    // 既に保存済みの場合はスキップ
+    if (conversationId) {
+      console.log('⏭️ 会話は既に保存済み:', conversationId);
+      return conversationId;
+    }
+
+    try {
+      const durationSeconds = conversationStartTime.current
+        ? Math.floor((new Date().getTime() - conversationStartTime.current.getTime()) / 1000)
+        : undefined;
+
+      const scenarioTitle = scenarios.find(s => s.id === selectedScenarioId)?.title || selectedScenarioId;
+
+      const { conversationId: newConversationId } = await saveConversation({
+        userId: user.id,
+        storeId: profile.store_id,
+        scenarioId: selectedScenarioId,
+        scenarioTitle,
+        messages,
+        durationSeconds,
+        persona: currentPersonaRef.current,
+      });
+
+      setConversationId(newConversationId);
+      console.log('✅ 会話履歴を保存しました:', newConversationId);
+
+      return newConversationId;
+    } catch (error) {
+      console.error('❌ 会話保存エラー:', error);
+      setToast({
+        message: '会話の保存に失敗しました',
+        type: 'error',
+      });
+      return null;
+    }
+  };
+
   // VAD（会話モード）のトグル
   const handleToggleVAD = async () => {
     if (isVADMode) {
@@ -1125,6 +1172,12 @@ function RoleplayApp() {
         currentAudioRef.current.currentTime = 0;
         currentAudioRef.current = null;
         console.log('🔇 HTMLAudioElement停止（会話モード停止）');
+      }
+
+      // 会話がある場合は自動的に保存（講評なしでも履歴に残す）
+      if (messages.length > 0) {
+        console.log('💾 会話モード停止: 会話を自動保存します');
+        await saveConversationHistory();
       }
 
       setToast({
@@ -1327,39 +1380,31 @@ function RoleplayApp() {
     }
 
     setIsLoadingEvaluation(true);
+    let evalData: Evaluation | null = null;
+
     try {
       // 講評を取得（Week 5: シナリオIDを渡す）
-      const evalData = await getEvaluation(messages, selectedScenarioId);
-      setEvaluation(evalData);
-      setShowEvaluation(true);
+      try {
+        evalData = await getEvaluation(messages, selectedScenarioId);
+        setEvaluation(evalData);
+        setShowEvaluation(true);
+      } catch (error) {
+        console.error('講評取得エラー:', error);
+        setToast({
+          message: '講評の取得に失敗しました。会話は保存します。',
+          type: 'error',
+        });
+      }
 
-      // 会話履歴を保存（Supabase統合）
+      // 会話履歴を保存（講評の有無に関わらず保存）
       if (user && profile?.store_id) {
         try {
-          // 会話時間を計算
-          const durationSeconds = conversationStartTime.current
-            ? Math.floor((new Date().getTime() - conversationStartTime.current.getTime()) / 1000)
-            : undefined;
+        // 会話を保存（共通ヘルパー関数を使用）
+        const newConversationId = await saveConversationHistory();
 
-          // シナリオタイトルを取得
-          const scenarioTitle = scenarios.find(s => s.id === selectedScenarioId)?.title || selectedScenarioId;
-
-          // 会話を保存
-          const { conversationId: newConversationId } = await saveConversation({
-            userId: user.id,
-            storeId: profile.store_id,
-            scenarioId: selectedScenarioId,
-            scenarioTitle,
-            messages,
-            durationSeconds,
-            persona: currentPersonaRef.current, // ペルソナ情報を保存（Refから最新値）
-          });
-
-          setConversationId(newConversationId);
-          console.log('✅ 会話履歴を保存しました:', newConversationId);
-
-          // 評価を保存
-          if (newConversationId) {
+        if (newConversationId) {
+          // 評価を保存（講評取得に成功した場合のみ）
+          if (evalData) {
             await saveEvaluation({
               conversationId: newConversationId,
               userId: user.id,
@@ -1368,78 +1413,88 @@ function RoleplayApp() {
               evaluation: evalData,
             });
             console.log('✅ 評価結果を保存しました');
+          }
 
-            // 録画データの状態をデバッグログに出力（Refから取得）
-            const recordingData = videoRecordingDataRef.current;
-            console.log('🔍 録画データの状態チェック:', {
-              hasVideoRecordingData: !!recordingData,
-              blobSize: recordingData?.blob?.size,
-              duration: recordingData?.duration,
-              timestamp: recordingData?.timestamp,
-            });
+          // 録画データの状態をデバッグログに出力（Refから取得）
+          const recordingData = videoRecordingDataRef.current;
+          console.log('🔍 録画データの状態チェック:', {
+            hasVideoRecordingData: !!recordingData,
+            blobSize: recordingData?.blob?.size,
+            duration: recordingData?.duration,
+            timestamp: recordingData?.timestamp,
+          });
 
-            // 録画データがある場合はアップロード
-            if (recordingData) {
-              try {
-                console.log('📤 録画データをアップロード中...', {
-                  blobSize: recordingData.blob.size,
-                  blobType: recordingData.blob.type,
-                  duration: recordingData.duration,
-                });
-                const filename = `recording_${newConversationId}_${Date.now()}.webm`;
-                const uploadResult = await uploadRecording(
-                  newConversationId,
-                  recordingData.blob,
-                  filename,
-                  recordingData.duration
-                );
+          // 録画データがある場合はアップロード
+          if (recordingData) {
+            try {
+              console.log('📤 録画データをアップロード中...', {
+                blobSize: recordingData.blob.size,
+                blobType: recordingData.blob.type,
+                duration: recordingData.duration,
+              });
+              const filename = `recording_${newConversationId}_${Date.now()}.webm`;
+              const uploadResult = await uploadRecording(
+                newConversationId,
+                recordingData.blob,
+                filename,
+                recordingData.duration
+              );
 
-                console.log('📤 アップロード結果:', uploadResult);
+              console.log('📤 アップロード結果:', uploadResult);
 
-                if (uploadResult.success) {
-                  console.log('✅ 録画データをアップロードしました');
-                  setToast({
-                    message: '会話・評価・録画を保存しました',
-                    type: 'success',
-                  });
-                } else {
-                  console.error('録画アップロードエラー:', uploadResult.error);
-                  setToast({
-                    message: '会話と評価を保存しましたが、録画のアップロードに失敗しました',
-                    type: 'error',
-                  });
-                }
-              } catch (uploadError) {
-                console.error('録画アップロードエラー:', uploadError);
-                // 録画アップロードエラーは警告のみ（会話と評価は保存済み）
+              if (uploadResult.success) {
+                console.log('✅ 録画データをアップロードしました');
+                const successMessage = evalData
+                  ? '会話・評価・録画を保存しました'
+                  : '会話と録画を保存しました';
                 setToast({
-                  message: '会話と評価を保存しましたが、録画のアップロードに失敗しました',
+                  message: successMessage,
+                  type: 'success',
+                });
+              } else {
+                console.error('録画アップロードエラー:', uploadResult.error);
+                const errorMessage = evalData
+                  ? '会話と評価を保存しましたが、録画のアップロードに失敗しました'
+                  : '会話を保存しましたが、録画のアップロードに失敗しました';
+                setToast({
+                  message: errorMessage,
                   type: 'error',
                 });
               }
-            } else {
-              console.warn('⚠️ 録画データがありません。録画を停止していない可能性があります。');
+            } catch (uploadError) {
+              console.error('録画アップロードエラー:', uploadError);
+              // 録画アップロードエラーは警告のみ（会話と評価は保存済み）
+              const errorMessage = evalData
+                ? '会話と評価を保存しましたが、録画のアップロードに失敗しました'
+                : '会話を保存しましたが、録画のアップロードに失敗しました';
               setToast({
-                message: '会話と評価を保存しました（録画データなし）',
-                type: 'success',
+                message: errorMessage,
+                type: 'error',
               });
             }
+          } else {
+            console.warn('⚠️ 録画データがありません。録画を停止していない可能性があります。');
+            const successMessage = evalData
+              ? '会話と評価を保存しました（録画データなし）'
+              : '会話を保存しました（録画データなし）';
+            setToast({
+              message: successMessage,
+              type: 'success',
+            });
           }
-        } catch (saveError) {
+        }
+      } catch (saveError) {
           console.error('保存エラー:', saveError);
           // 保存エラーは致命的ではないので、警告のみ表示
+          const errorMessage = evalData
+            ? '講評は表示されましたが、会話の保存に失敗しました'
+            : '会話の保存に失敗しました';
           setToast({
-            message: '評価は表示されましたが、保存に失敗しました',
+            message: errorMessage,
             type: 'error',
           });
         }
       }
-    } catch (error) {
-      console.error('講評取得エラー:', error);
-      setToast({
-        message: '講評の取得に失敗しました。',
-        type: 'error',
-      });
     } finally {
       setIsLoadingEvaluation(false);
     }
