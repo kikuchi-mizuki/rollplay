@@ -7,6 +7,7 @@ import { ConfirmDialog } from './components/ConfirmDialog';
 import { Toast } from './components/Toast';
 import { PersonaSelector } from './components/PersonaSelector';
 import { CameraPip } from './components/CameraPip';
+import { DebugInfo } from './components/DebugInfo';
 import { Message, Evaluation, RecordingState } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
@@ -1889,6 +1890,9 @@ function RoleplayApp() {
         }}
         onClose={() => setShowPersonaSelector(false)}
       />
+
+      {/* デバッグ情報（開発環境のみ） */}
+      {import.meta.env.DEV && <DebugInfo />}
     </div>
   );
 }
