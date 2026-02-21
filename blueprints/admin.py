@@ -659,24 +659,40 @@ def delete_user(user_id):
 
         user = user_result.data[0]
 
-        # プロファイル削除（CASCADE設定により関連データも削除される）
-        delete_result = supabase_client.table('profiles').delete().eq('id', user_id).execute()
+        # auth.usersからユーザーを削除
+        # CASCADE設定により、profiles, conversations, evaluationsも自動削除される
+        try:
+            # Supabase Admin APIを使用してauth.usersから削除
+            supabase_client.auth.admin.delete_user(user_id)
+            logger.info(f"ユーザー削除成功: {user_id} ({user.get('display_name')})")
 
-        if delete_result.error:
-            raise Exception(delete_result.error)
+            return jsonify({
+                'success': True,
+                'message': 'ユーザーを削除しました'
+            })
 
-        logger.info(f"ユーザー削除成功: {user_id} ({user.get('display_name')})")
+        except AttributeError:
+            # auth.adminが利用できない場合は、profilesから削除
+            # （古いバージョンのSupabase SDKの場合）
+            logger.warning(f"auth.admin APIが利用できません。profilesテーブルから削除します。")
 
-        return jsonify({
-            'success': True,
-            'message': 'ユーザーを削除しました'
-        })
+            delete_result = supabase_client.table('profiles').delete().eq('id', user_id).execute()
+
+            if delete_result.error:
+                raise Exception(delete_result.error)
+
+            logger.info(f"プロファイル削除成功: {user_id} ({user.get('display_name')})")
+
+            return jsonify({
+                'success': True,
+                'message': 'ユーザーを削除しました'
+            })
 
     except Exception as e:
         logger.exception(f"ユーザー削除 - 予期しないエラー: {type(e).__name__}: {e}")
         return jsonify({
             'success': False,
-            'error': 'ユーザーの削除に失敗しました'
+            'error': f'ユーザーの削除に失敗しました: {str(e)}'
         }), 500
 
 
