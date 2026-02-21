@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { User } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -14,7 +15,7 @@ export function RegisterPage() {
   const [storeId, setStoreId] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [verifying, setVerifying] = useState(false)
   const verifyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const hasNavigatedRef = useRef(false)
@@ -179,7 +180,7 @@ export function RegisterPage() {
       if (signInError) {
         throw signInError
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('❌ アカウント変更エラー:', err)
       setError('アカウント変更に失敗しました。もう一度お試しください。')
       setLoading(false)
@@ -194,11 +195,8 @@ export function RegisterPage() {
       setLoading(true)
       setError(null)
 
-      // 店舗コードに「ADMIN」が含まれている場合は管理者権限を付与
-      const isAdmin = storeCode.toUpperCase().includes('ADMIN')
-      const userRole = isAdmin ? 'admin' : 'user'
-
       // profilesテーブルに登録
+      // 注: 管理者権限はデータベーストリガーで自動付与される（セキュリティ強化）
       const { error: insertError } = await supabase
         .from('profiles')
         .insert({
@@ -208,7 +206,7 @@ export function RegisterPage() {
           display_name: displayName,
           email: user.email,
           avatar_url: user.user_metadata?.avatar_url || null,
-          role: userRole
+          // roleフィールドは省略（データベーストリガーで自動設定）
         })
 
       if (insertError) {
@@ -217,9 +215,10 @@ export function RegisterPage() {
 
       // 登録成功 - ホーム画面へリダイレクト
       navigate('/')
-    } catch (err: any) {
+    } catch (err) {
       console.error('Registration error:', err)
-      setError(err.message || '登録に失敗しました。もう一度お試しください。')
+      const errorMessage = err instanceof Error ? err.message : '登録に失敗しました。もう一度お試しください。'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

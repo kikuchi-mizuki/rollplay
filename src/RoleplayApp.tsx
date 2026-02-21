@@ -931,6 +931,7 @@ function RoleplayApp() {
           // メモリリーク防止：明示的にdisconnectして参照をクリア
           try {
             source.disconnect();
+            aiVolumeGain.disconnect(); // GainNodeもdisconnect
             source.buffer = null;
           } catch (e) {
             // 既にdisconnect済みの場合はエラーを無視

@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getConversations, getEvaluations, getScenarios } from '../../lib/api';
 import { downloadEvaluationsCSV } from '../../lib/csv';
+import { Message } from '../../types';
 import { History, BarChart3, TrendingUp, Calendar, Download, FileVideo, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Conversation {
   id: string;
   scenario_id: string;
-  messages: any[];
+  messages: Message[];
   duration_seconds: number;
   created_at: string;
   has_recording?: boolean;
@@ -44,6 +45,7 @@ export function HistoryPage() {
   const [scenarios, setScenarios] = useState<{ id: string; title: string }[]>([]);
   const [selectedScenario, setSelectedScenario] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedEvaluations, setExpandedEvaluations] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -55,6 +57,7 @@ export function HistoryPage() {
 
     try {
       setLoading(true);
+      setError(null);
 
       // シナリオ一覧を取得
       const scenariosData = await getScenarios();
@@ -78,6 +81,8 @@ export function HistoryPage() {
 
     } catch (error) {
       console.error('データ取得エラー:', error);
+      const errorMessage = error instanceof Error ? error.message : 'データの取得に失敗しました';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -176,6 +181,13 @@ export function HistoryPage() {
           </h1>
           <p className="text-white/60">過去の練習記録と評価結果を確認できます</p>
         </div>
+
+        {/* エラーメッセージ */}
+        {error && (
+          <div className="glass-card p-4 mb-6 bg-red-500/10 border-red-500/30">
+            <p className="text-red-300 text-sm">{error}</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="glass-card p-6">

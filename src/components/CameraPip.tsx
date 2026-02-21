@@ -168,6 +168,8 @@ export function CameraPip({
 
   // 背景ぼかし済みストリームを生成して親に通知（録画用）
   useEffect(() => {
+    let clonedTracks: MediaStreamTrack[] = [];
+
     if (backgroundMode !== 'none' && isReady && canvasRef.current && onBlurredStreamReady) {
       console.log('[CameraPip] 背景ぼかし済みストリームを生成中...');
       try {
@@ -178,7 +180,9 @@ export function CameraPip({
         if (cameraStream) {
           const audioTracks = cameraStream.getAudioTracks();
           audioTracks.forEach(track => {
-            blurredStream.addTrack(track.clone());
+            const clonedTrack = track.clone();
+            blurredStream.addTrack(clonedTrack);
+            clonedTracks.push(clonedTrack); // クリーンアップ用に保存
           });
           console.log('[CameraPip] 背景ぼかし済みストリームに音声トラックを追加:', audioTracks.length);
         }
@@ -193,6 +197,13 @@ export function CameraPip({
       // 背景ぼかしOFFの場合はnullを通知
       onBlurredStreamReady(null);
     }
+
+    // クリーンアップ: cloneしたトラックを停止
+    return () => {
+      clonedTracks.forEach(track => {
+        track.stop();
+      });
+    };
   }, [backgroundMode, isReady, canvasRef, cameraStream, onBlurredStreamReady]);
 
   /**
