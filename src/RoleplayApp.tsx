@@ -165,7 +165,8 @@ function RoleplayApp() {
     }
     // 録画開始
     startVideoRecordingInternal();
-  }, [startVideoRecordingInternal, initializeAudio]);
+  }, [startVideoRecordingInternal]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Note: initializeAudioは関数定義なので依存配列に含める必要はない
 
   // アバター管理（将来実装予定）
   // Web Speech API サポートチェック
