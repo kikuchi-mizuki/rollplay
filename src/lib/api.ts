@@ -363,6 +363,103 @@ export async function getOnlineUsers(thresholdMinutes: number = 5): Promise<any>
 }
 
 /**
+ * 全ユーザー一覧を取得（本部管理者専用）
+ */
+export async function getAllUsers(filters?: { store_id?: string; role?: string; search?: string }): Promise<any> {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.store_id) params.append('store_id', filters.store_id);
+    if (filters?.role) params.append('role', filters.role);
+    if (filters?.search) params.append('search', filters.search);
+
+    const url = `${API_BASE_URL}/api/admin/users${params.toString() ? '?' + params.toString() : ''}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.success) {
+      return {
+        users: result.users,
+        count: result.count
+      };
+    } else {
+      throw new Error(result.error || 'ユーザー一覧取得に失敗しました');
+    }
+  } catch (error) {
+    console.error('ユーザー一覧取得エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * ユーザーを削除（本部管理者専用）
+ */
+export async function deleteUser(userId: string): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
+      method: 'DELETE'
+    });
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'ユーザー削除に失敗しました');
+    }
+  } catch (error) {
+    console.error('ユーザー削除エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * ユーザーの権限を変更（本部管理者専用）
+ */
+export async function updateUserRole(userId: string, role: 'admin' | 'manager' | 'user'): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/role`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ role })
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      return result.user;
+    } else {
+      throw new Error(result.error || 'ユーザー権限変更に失敗しました');
+    }
+  } catch (error) {
+    console.error('ユーザー権限変更エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * ユーザーの所属店舗を変更（本部管理者専用）
+ */
+export async function updateUserStore(userId: string, storeId: string): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/store`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ store_id: storeId })
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      return result.user;
+    } else {
+      throw new Error(result.error || 'ユーザー店舗変更に失敗しました');
+    }
+  } catch (error) {
+    console.error('ユーザー店舗変更エラー:', error);
+    throw error;
+  }
+}
+
+/**
  * 店舗メンバー一覧を取得（店舗管理者・本部管理者）
  */
 export async function getStoreMembers(storeId: string): Promise<any[]> {

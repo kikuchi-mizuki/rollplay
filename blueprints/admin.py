@@ -582,6 +582,183 @@ def get_online_users():
         }), 500
 
 
+@admin_bp.route('/api/admin/users', methods=['GET'])
+def get_all_users():
+    """全ユーザー一覧を取得（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        # パラメータ取得
+        store_id = request.args.get('store_id')
+        role = request.args.get('role')
+        search = request.args.get('search')
+
+        # 全ユーザー取得
+        query = supabase_client.table('profiles').select('*')
+
+        if store_id:
+            query = query.eq('store_id', store_id)
+
+        if role:
+            query = query.eq('role', role)
+
+        query = query.order('created_at', desc=True)
+        profiles_result = query.execute()
+        users = profiles_result.data if profiles_result.data else []
+
+        # 検索フィルター（フロントエンドで処理するため、全データを返す）
+        if search:
+            search_lower = search.lower()
+            users = [u for u in users if
+                     search_lower in (u.get('display_name') or '').lower() or
+                     search_lower in (u.get('email') or '').lower()]
+
+        # 店舗情報を一括取得
+        store_ids = list(set([user['store_id'] for user in users if user.get('store_id')]))
+        stores_result = supabase_client.table('stores').select('*').in_('id', store_ids).execute()
+        stores_dict = {store['id']: store for store in (stores_result.data or [])}
+
+        # ユーザー情報に店舗情報を追加
+        for user in users:
+            store_id = user.get('store_id')
+            if store_id and store_id in stores_dict:
+                user['store_name'] = stores_dict[store_id].get('store_name')
+                user['store_code'] = stores_dict[store_id].get('store_code')
+                user['region'] = stores_dict[store_id].get('region')
+            else:
+                user['store_name'] = '未設定'
+                user['store_code'] = '未設定'
+                user['region'] = '未設定'
+
+        return jsonify({
+            'success': True,
+            'users': users,
+            'count': len(users)
+        })
+
+    except Exception as e:
+        logger.exception(f"ユーザー一覧取得 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'ユーザー一覧の取得に失敗しました'
+        }), 500
+
+
+@admin_bp.route('/api/admin/users/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    """ユーザーを削除（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        # ユーザー情報を取得（存在確認）
+        user_result = supabase_client.table('profiles').select('*').eq('id', user_id).execute()
+        if not user_result.data:
+            return jsonify({'success': False, 'error': 'ユーザーが見つかりません'}), 404
+
+        user = user_result.data[0]
+
+        # プロファイル削除（CASCADE設定により関連データも削除される）
+        delete_result = supabase_client.table('profiles').delete().eq('id', user_id).execute()
+
+        if delete_result.error:
+            raise Exception(delete_result.error)
+
+        logger.info(f"ユーザー削除成功: {user_id} ({user.get('display_name')})")
+
+        return jsonify({
+            'success': True,
+            'message': 'ユーザーを削除しました'
+        })
+
+    except Exception as e:
+        logger.exception(f"ユーザー削除 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'ユーザーの削除に失敗しました'
+        }), 500
+
+
+@admin_bp.route('/api/admin/users/<user_id>/role', methods=['PUT'])
+def update_user_role(user_id):
+    """ユーザーの権限を変更（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        data = request.get_json()
+        new_role = data.get('role')
+
+        if new_role not in ['admin', 'manager', 'user']:
+            return jsonify({'success': False, 'error': '不正な権限です'}), 400
+
+        # 権限を更新
+        update_result = supabase_client.table('profiles').update({
+            'role': new_role
+        }).eq('id', user_id).execute()
+
+        if not update_result.data:
+            return jsonify({'success': False, 'error': 'ユーザーが見つかりません'}), 404
+
+        logger.info(f"ユーザー権限変更成功: {user_id} -> {new_role}")
+
+        return jsonify({
+            'success': True,
+            'message': '権限を更新しました',
+            'user': update_result.data[0]
+        })
+
+    except Exception as e:
+        logger.exception(f"ユーザー権限変更 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '権限の更新に失敗しました'
+        }), 500
+
+
+@admin_bp.route('/api/admin/users/<user_id>/store', methods=['PUT'])
+def update_user_store(user_id):
+    """ユーザーの所属店舗を変更（本部管理者専用）"""
+    try:
+        if not supabase_client:
+            return jsonify({'success': False, 'error': 'Database not configured'}), 500
+
+        data = request.get_json()
+        new_store_id = data.get('store_id')
+
+        # 店舗の存在確認
+        store_result = supabase_client.table('stores').select('store_code').eq('id', new_store_id).execute()
+        if not store_result.data:
+            return jsonify({'success': False, 'error': '指定された店舗が見つかりません'}), 404
+
+        store_code = store_result.data[0]['store_code']
+
+        # 店舗を更新
+        update_result = supabase_client.table('profiles').update({
+            'store_id': new_store_id,
+            'store_code': store_code
+        }).eq('id', user_id).execute()
+
+        if not update_result.data:
+            return jsonify({'success': False, 'error': 'ユーザーが見つかりません'}), 404
+
+        logger.info(f"ユーザー店舗変更成功: {user_id} -> {new_store_id}")
+
+        return jsonify({
+            'success': True,
+            'message': '所属店舗を更新しました',
+            'user': update_result.data[0]
+        })
+
+    except Exception as e:
+        logger.exception(f"ユーザー店舗変更 - 予期しないエラー: {type(e).__name__}: {e}")
+        return jsonify({
+            'success': False,
+            'error': '所属店舗の更新に失敗しました'
+        }), 500
+
+
 @admin_bp.route('/api/admin/export/stores', methods=['GET'])
 def export_all_stores():
     """全店舗データをCSV形式で出力（本部管理者専用）"""

@@ -6,6 +6,7 @@ import { AuthCallback } from './components/Auth/AuthCallback'
 import { ProtectedRoute } from './components/Auth/ProtectedRoute'
 import { StoreManagementPage } from './components/Admin/StoreManagementPage'
 import { AdminDashboardPage } from './components/Admin/AdminDashboardPage'
+import { UserManagementPage } from './components/Admin/UserManagementPage'
 import { StoreDashboardPage } from './components/Store/StoreDashboardPage'
 import { HistoryPage } from './components/History/HistoryPage'
 import RoleplayApp from './RoleplayApp'
@@ -48,6 +49,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <StoreManagementPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute>
+                <UserManagementPage />
               </ProtectedRoute>
             }
           />
