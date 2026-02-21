@@ -30,6 +30,7 @@ search_rag_patterns = None
 load_evaluation_samples = None
 RUBRIC_DATA = None
 limiter = None  # レート制限機能
+require_csrf = None  # CSRF保護機能
 MAX_MESSAGE_LENGTH = 2000  # デフォルト値
 MAX_HISTORY_LENGTH = 50
 MAX_EVALUATION_TEXT_LENGTH = 10000
@@ -49,7 +50,7 @@ def init_blueprint(app):
     global load_scenario_object, select_random_persona_for_scene, select_persona_by_id
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
     global load_evaluation_samples, RUBRIC_DATA
-    global limiter
+    global limiter, require_csrf
     global MAX_MESSAGE_LENGTH, MAX_HISTORY_LENGTH, MAX_EVALUATION_TEXT_LENGTH
 
     supabase_client = app.config.get('supabase_client')
@@ -66,6 +67,7 @@ def init_blueprint(app):
     load_evaluation_samples = app.config.get('load_evaluation_samples')
     RUBRIC_DATA = app.config.get('RUBRIC_DATA')
     limiter = app.config.get('limiter')
+    require_csrf = app.config.get('require_csrf')
     validate_integer_param = app.config.get('validate_integer_param')
     validate_required_string = app.config.get('validate_required_string')
     MAX_MESSAGE_LENGTH = app.config.get('MAX_MESSAGE_LENGTH', 2000)
@@ -86,6 +88,18 @@ def apply_rate_limit(limit_string):
         logger.warning(f"⚠️ レート制限が無効です: {func.__name__}")
         return func
     return decorator
+
+
+def apply_csrf(func):
+    """
+    CSRF保護デコレータを条件付きで適用するヘルパー
+    require_csrfが利用可能な場合のみCSRF保護を適用
+    """
+    if require_csrf:
+        return require_csrf(func)
+    # require_csrfがNoneの場合は警告
+    logger.warning(f"⚠️ CSRF保護が無効です: {func.__name__}")
+    return func
 
 
 def get_persona_type_from_profile(persona: dict) -> str:
@@ -132,6 +146,7 @@ def get_persona_type_from_profile(persona: dict) -> str:
 
 
 @conversations_bp.route('/api/conversations', methods=['POST'])
+@apply_csrf
 def save_conversation():
     """会話履歴をSupabaseに保存"""
     try:
@@ -224,6 +239,7 @@ def get_conversations():
 
 
 @conversations_bp.route('/api/evaluations', methods=['GET', 'POST'])
+@apply_csrf
 def handle_evaluations():
     """評価履歴の取得または保存"""
     if request.method == 'GET':
@@ -327,6 +343,7 @@ def handle_evaluations():
 # ===== チャット応答エンドポイント =====
 
 @conversations_bp.route('/api/chat', methods=['POST'])
+@apply_csrf
 @apply_rate_limit("10 per minute")  # GPT-4o-mini使用のためレート制限
 def chat():
     try:
@@ -335,6 +352,8 @@ def chat():
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
         conversation_id = data.get('conversation_id')  # 会話IDを取得
+        request_persona = data.get('persona')  # フロントエンドから送信されたペルソナ（会話継続時のフォールバック）
+        persona_id = data.get('persona_id')  # フロントエンドから送信されたペルソナID（新規会話時）
 
         # 入力値検証
         if len(user_message) > MAX_MESSAGE_LENGTH:
@@ -680,6 +699,7 @@ def chat():
 
 
 @conversations_bp.route('/api/chat-stream', methods=['POST'])
+@apply_csrf
 @apply_rate_limit("5 per minute")  # GPT-4o-mini+TTS使用（CPU集約的）のためレート制限
 def chat_stream():
     """
@@ -1282,6 +1302,7 @@ def get_mock_response(user_message):
         return mock_responses[1]
 
 @conversations_bp.route('/api/evaluate', methods=['POST'])
+@apply_csrf
 @apply_rate_limit("3 per minute")  # GPT-4評価生成（コスト高）のためレート制限
 def evaluate_conversation():
     try:
@@ -1779,6 +1800,7 @@ def generate_improvement_suggestions(questioning, listening, proposing, closing,
 # ========================================
 
 @conversations_bp.route('/api/conversations/<conversation_id>/recording', methods=['POST'])
+@apply_csrf
 def upload_recording(conversation_id):
     """
     録画ファイルをSupabase Storageにアップロードし、conversationsテーブルを更新

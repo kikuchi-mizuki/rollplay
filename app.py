@@ -105,11 +105,12 @@ class SimpleRateLimiter:
     シンプルなメモリベースのレート制限（flask-limiterのフォールバック）
     スレッドセーフで、固定ウィンドウ戦略を使用
     """
-    def __init__(self, app=None, key_func=None):
+    def __init__(self, app=None, key_func=None, max_keys=10000):
         self.app = app
         self.key_func = key_func or self._default_key_func
         self.storage = defaultdict(list)
         self.lock = threading.Lock()
+        self.max_keys = max_keys  # DoS対策: 最大キー数制限
 
     def _default_key_func(self):
         """デフォルトのキー関数（リモートアドレスを使用）"""
@@ -160,6 +161,16 @@ class SimpleRateLimiter:
                         timestamp for timestamp in self.storage[key]
                         if timestamp > cutoff_time
                     ]
+
+                    # DoS対策: キー数制限チェック
+                    if len(self.storage) > self.max_keys:
+                        # 最も古いタイムスタンプを持つキーを削除
+                        oldest_key = min(
+                            self.storage.keys(),
+                            key=lambda k: self.storage[k][0] if self.storage[k] else now
+                        )
+                        del self.storage[oldest_key]
+                        logger.warning(f"⚠️ レート制限ストレージ上限到達: 古いキーを削除 {oldest_key}")
 
                     # レート制限チェック
                     if len(self.storage[key]) >= limit_count:
@@ -440,7 +451,7 @@ if CORS_AVAILABLE and CORS:
     CORS(app,
          origins=allowed_origins,
          supports_credentials=True,
-         allow_headers=["Content-Type", "Authorization"],
+         allow_headers=["Content-Type", "Authorization", "X-CSRF-Token"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          max_age=3600  # プリフライトリクエストのキャッシュ時間（1時間）
     )
@@ -1294,6 +1305,7 @@ app.config['download_video_to_storage'] = download_video_to_storage
 app.config['save_video_to_cache'] = save_video_to_cache
 app.config['limiter'] = limiter  # レート制限機能を渡す
 app.config['require_auth'] = require_auth  # 認証デコレータを渡す
+app.config['require_csrf'] = require_csrf  # CSRF保護デコレータを渡す
 init_media_blueprint(app)
 
 # 管理者機能Blueprint

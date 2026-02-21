@@ -165,8 +165,7 @@ function RoleplayApp() {
     }
     // 録画開始
     startVideoRecordingInternal();
-  }, [startVideoRecordingInternal]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Note: initializeAudioは関数定義なので依存配列に含める必要はない
+  }, [startVideoRecordingInternal, initializeAudio]);
 
   // アバター管理（将来実装予定）
   // Web Speech API サポートチェック
@@ -816,7 +815,7 @@ function RoleplayApp() {
   };
 
   // Web Audio API初期化（モバイル自動再生ポリシー対応）
-  const initializeAudio = async () => {
+  const initializeAudio = useCallback(async () => {
     if (audioInitialized && audioContextRef.current) {
       console.log('✅ 音声は既に初期化済み');
       return audioContextRef.current;
@@ -884,7 +883,7 @@ function RoleplayApp() {
       console.warn('⚠️ Web Audio API初期化失敗:', error);
       return null;
     }
-  };
+  }, [audioInitialized, setAiAudioStream]);
 
   // Web Audio APIで音声を再生
   const playAudioWithWebAudio = async (audioData: ArrayBuffer): Promise<void> => {

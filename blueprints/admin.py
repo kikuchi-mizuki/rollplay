@@ -16,6 +16,7 @@ admin_bp = Blueprint('admin', __name__)
 
 # グローバル変数（init_blueprint()で初期化）
 supabase_client = None
+require_csrf = None  # CSRF保護機能
 
 
 def init_blueprint(app):
@@ -23,9 +24,22 @@ def init_blueprint(app):
     ブループリント初期化
     app.pyから必要な設定やヘルパー関数を受け取る
     """
-    global supabase_client
+    global supabase_client, require_csrf
 
     supabase_client = app.config.get('supabase_client')
+    require_csrf = app.config.get('require_csrf')
+
+
+def apply_csrf(func):
+    """
+    CSRF保護デコレータを条件付きで適用するヘルパー
+    require_csrfが利用可能な場合のみCSRF保護を適用
+    """
+    if require_csrf:
+        return require_csrf(func)
+    # require_csrfがNoneの場合は警告
+    logger.warning(f"⚠️ CSRF保護が無効です: {func.__name__}")
+    return func
 
 
 def sanitize_csv_field(value):
@@ -725,6 +739,7 @@ def get_all_users():
 
 
 @admin_bp.route('/api/admin/users/<user_id>', methods=['DELETE'])
+@apply_csrf
 @require_admin
 def delete_user(user_id):
     """ユーザーを削除（本部管理者専用）"""
@@ -777,6 +792,7 @@ def delete_user(user_id):
 
 
 @admin_bp.route('/api/admin/users/<user_id>/role', methods=['PUT'])
+@apply_csrf
 @require_admin
 def update_user_role(user_id):
     """ユーザーの権限を変更（本部管理者専用）"""
@@ -815,6 +831,7 @@ def update_user_role(user_id):
 
 
 @admin_bp.route('/api/admin/users/<user_id>/store', methods=['PUT'])
+@apply_csrf
 @require_admin
 def update_user_store(user_id):
     """ユーザーの所属店舗を変更（本部管理者専用）"""
