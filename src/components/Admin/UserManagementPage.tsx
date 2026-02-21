@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { getAllUsers, deleteUser, updateUserRole, updateUserStore } from '../../lib/api'
-import { Users, Trash2, RefreshCw, Search, Shield, Building2, Edit2, X, Check } from 'lucide-react'
+import { Users, Trash2, RefreshCw, Search, Edit2, X } from 'lucide-react'
 
 interface User {
   id: string
