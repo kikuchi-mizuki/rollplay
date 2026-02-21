@@ -8,7 +8,7 @@ import { Toast } from './components/Toast';
 import { PersonaSelector } from './components/PersonaSelector';
 import { CameraPip } from './components/CameraPip';
 import { DebugInfo } from './components/DebugInfo';
-import { Message, Evaluation, RecordingState } from './types';
+import { Message, Evaluation, RecordingState, Persona } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
 import { useAuth } from './contexts/AuthContext';
@@ -58,8 +58,8 @@ function RoleplayApp() {
   const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [conversationId, setConversationId] = useState<string | null>(null); // 会話ID（ペルソナ固定用）
-  const [currentPersona, setCurrentPersona] = useState<any>(null); // 現在のペルソナ情報（会話内固定）
-  const currentPersonaRef = useRef<any>(null); // currentPersonaのRef（クロージャー問題を回避）
+  const [currentPersona, setCurrentPersona] = useState<Persona | null>(null); // 現在のペルソナ情報（会話内固定）
+  const currentPersonaRef = useRef<Persona | null>(null); // currentPersonaのRef（クロージャー問題を回避）
   const [showPersonaSelector, setShowPersonaSelector] = useState(false); // ペルソナ選択モーダルの表示状態
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null); // 選択されたペルソナID
   const selectedPersonaIdRef = useRef<string | null>(null); // selectedPersonaIdのRef（クロージャー問題を回避）
@@ -165,7 +165,7 @@ function RoleplayApp() {
     }
     // 録画開始
     startVideoRecordingInternal();
-  }, [startVideoRecordingInternal]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startVideoRecordingInternal, initializeAudio]);
 
   // アバター管理（将来実装予定）
   // Web Speech API サポートチェック
@@ -374,6 +374,28 @@ function RoleplayApp() {
       setShowPersonaSelector(true);
     }
   }, [selectedScenarioId]);
+
+  // AudioContextのクリーンアップ（メモリリーク防止）
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        console.log('🧹 AudioContextをクローズします');
+        audioContextRef.current.close().catch((err) => {
+          console.warn('AudioContextクローズエラー（無視可能）:', err);
+        });
+        audioContextRef.current = null;
+      }
+      // AudioBufferSourceNodeも停止
+      if (currentAudioSourceRef.current) {
+        try {
+          currentAudioSourceRef.current.stop();
+        } catch (err) {
+          // 既に停止済みの場合はエラーを無視
+        }
+        currentAudioSourceRef.current = null;
+      }
+    };
+  }, []);
 
   /**
    * ストリーミング対応の音声再生

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User } from '@supabase/supabase-js'
+import { User, PostgrestSingleResponse } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
 interface Profile {
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await Promise.race([
         profilePromise,
         profileTimeout
-      ]) as any
+      ]) as PostgrestSingleResponse<Profile>
 
       if (error) {
         console.error('❌ プロフィール取得エラー:', error)
@@ -92,10 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.warn('⚠️  最終ログイン時刻更新失敗:', error)
           }
         })
-    } catch (err: any) {
-      console.error('❌ Profile fetch error:', err.message || err)
+    } catch (err) {
+      const error = err as Error
+      console.error('❌ Profile fetch error:', error.message || error)
 
-      if (err.message === 'プロフィール取得タイムアウト') {
+      if (error.message === 'プロフィール取得タイムアウト') {
         console.error(`⚠️  プロフィールデータの取得に${timeout/1000}秒以上かかっています`)
         console.error('⚠️  Supabaseのコールドスタート（スリープからの復帰）の可能性が高いです')
 

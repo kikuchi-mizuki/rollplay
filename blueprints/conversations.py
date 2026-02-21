@@ -77,17 +77,58 @@ def apply_rate_limit(limit_string):
     """
     レート制限デコレータを条件付きで適用するヘルパー
     limiterが利用可能な場合のみレート制限を適用
+    app.pyで常にlimiterが設定されるため、通常はレート制限が適用されます
     """
     def decorator(func):
         if limiter:
             return limiter.limit(limit_string)(func)
-        else:
-            # レート制限が無効な場合は警告ログを出力
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.warning(f"⚠️ レート制限が無効です: {func.__name__} (flask-limiterが未インストール)")
+        # limiterがNoneの場合（通常は発生しない）
+        logger.warning(f"⚠️ レート制限が無効です: {func.__name__}")
         return func
     return decorator
+
+
+def get_persona_type_from_profile(persona: dict) -> str:
+    """
+    ペルソナ情報から音声タイプを判定する
+
+    Args:
+        persona: ペルソナ辞書（persona_id, base_profile等を含む）
+
+    Returns:
+        判定されたペルソナタイプ（'young_entrepreneur', 'tech_founder', 等）
+        判定できない場合は 'mid_manager'（デフォルト）
+    """
+    persona_id = persona.get('persona_id', '')
+    base_profile = persona.get('base_profile', {})
+    business_type = base_profile.get('business_type', '')
+
+    # 🎯 判定順序重要: より具体的な条件を先に判定
+
+    # 美容/アパレル → young_entrepreneur (明るく快活) ⚠️ 「アパレルEC」を先に判定
+    if '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id or 'apparel' in persona_id:
+        return 'young_entrepreneur'
+    # IT/テック/SaaS系 → tech_founder (明るく前向き)
+    elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id or 'saas' in persona_id:
+        return 'tech_founder'
+    # クリエイティブ/広告/マッチングアプリ → creative_director (やや速め)
+    elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or '広告' in business_type or 'マッチングアプリ' in business_type or 'creative' in persona_id or 'ad_agency' in persona_id or 'matching' in persona_id:
+        return 'creative_director'
+    # 飲食/伝統/建設/運送 → traditional_owner (落ち着いて慎重)
+    elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or '建設' in business_type or '運送' in business_type or 'restaurant' in persona_id or 'construction' in persona_id or 'driver' in persona_id:
+        return 'traditional_owner'
+    # 教育 → confident (自信家)
+    elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
+        return 'confident'
+    # 不動産/人材紹介 → mid_manager (標準的で丁寧)
+    elif '不動産' in business_type or '人材紹介' in business_type or 'real_estate' in persona_id or 'recruitment' in persona_id:
+        return 'mid_manager'
+    # EC/オンライン → mid_manager (標準的) ⚠️ より一般的な条件は最後に
+    elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
+        return 'mid_manager'
+    # デフォルト → mid_manager (標準的)
+    else:
+        return 'mid_manager'
 
 
 @conversations_bp.route('/api/conversations', methods=['POST'])
@@ -327,11 +368,23 @@ def chat():
                     logger.info(f"[ペルソナ選択] 会話継続: DBから取得 - {persona.get('name', 'Unknown')}")
                 else:
                     logger.warning(f"[ペルソナ選択] 会話継続: DBにペルソナなし (conversation_id={conversation_id})")
+                    # フォールバック: フロントエンドから送信されたpersonaを使用
+                    if request_persona:
+                        persona = request_persona
+                        logger.info(f"[ペルソナ選択] フロントエンドから取得（フォールバック） - {persona.get('name', 'Unknown')}")
             except Exception as e:
                 logger.error(f"[ペルソナ取得エラー] conversation_id={conversation_id}: {e}")
+                # フォールバック: フロントエンドから送信されたpersonaを使用
+                if request_persona:
+                    persona = request_persona
+                    logger.info(f"[ペルソナ選択] フロントエンドから取得（エラー時フォールバック） - {persona.get('name', 'Unknown')}")
         else:
-            # conversation_idがない会話継続（後方互換）
-            logger.warning("[ペルソナ選択] 会話継続だがconversation_idなし: ペルソナなしで継続")
+            # conversation_idがない会話継続（後方互換）: フロントエンドから送信されたpersonaを使用
+            if request_persona:
+                persona = request_persona
+                logger.info(f"[ペルソナ選択] 会話継続: フロントエンドから取得 - {persona.get('name', 'Unknown')}")
+            else:
+                logger.warning("[ペルソナ選択] 会話継続だがconversation_idなし: ペルソナなしで継続")
 
         # Whisper統一版: GPT-4を使用して対話生成
         if openai_api_key and openai_client:
@@ -687,41 +740,10 @@ def chat_stream():
                             logger.info(f"[音声選択/チャンク{chunk_index}] ペルソナから直接取得: voice={selected_voice}, speed={selected_speed}")
                         else:
                             # 🎯 優先順位2: ペルソナ構造から音声タイプを推測（初回のみ）
+                            persona_type = get_persona_type_from_profile(persona_info)
                             persona_name = persona_info.get('persona_name', '')
-                            persona_id = persona_info.get('persona_id', '')
-
-                            # base_profileから業種・年齢等を取得
                             base_profile = persona_info.get('base_profile', {})
                             business_type = base_profile.get('business_type', '')
-
-                            # ペルソナ名やIDから音声タイプを判定
-                            # 🎯 判定順序重要: より具体的な条件を先に判定
-
-                            # 美容/アパレル → young_entrepreneur (明るく快活) ⚠️ 「アパレルEC」を先に判定
-                            if '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id or 'apparel' in persona_id:
-                                persona_type = 'young_entrepreneur'
-                            # IT/テック/SaaS系 → tech_founder (明るく前向き)
-                            elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id or 'saas' in persona_id:
-                                persona_type = 'tech_founder'
-                            # クリエイティブ/広告/マッチングアプリ → creative_director (やや速め)
-                            elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or '広告' in business_type or 'マッチングアプリ' in business_type or 'creative' in persona_id or 'ad_agency' in persona_id or 'matching' in persona_id:
-                                persona_type = 'creative_director'
-                            # 飲食/伝統/建設/運送 → traditional_owner (落ち着いて慎重)
-                            elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or '建設' in business_type or '運送' in business_type or 'restaurant' in persona_id or 'construction' in persona_id or 'driver' in persona_id:
-                                persona_type = 'traditional_owner'
-                            # 教育 → confident (自信家)
-                            elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id:
-                                persona_type = 'confident'
-                            # 不動産/人材紹介 → mid_manager (標準的で丁寧)
-                            elif '不動産' in business_type or '人材紹介' in business_type or 'real_estate' in persona_id or 'recruitment' in persona_id:
-                                persona_type = 'mid_manager'
-                            # EC/オンライン → mid_manager (標準的) ⚠️ より一般的な条件は最後に
-                            elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id:
-                                persona_type = 'mid_manager'
-                            # デフォルト
-                            else:
-                                persona_type = 'mid_manager'
-
                             logger.info(f"[音声選択] ペルソナ: {persona_name} → タイプ: {persona_type}, 業種: {business_type}")
 
                     # 音声と話速を選択（まだ決まっていない場合のみ）
@@ -843,38 +865,10 @@ def chat_stream():
                         from blueprints.media import select_voice_for_persona
 
                         # ペルソナ構造から音声タイプを判定
+                        persona_type = get_persona_type_from_profile(persona)
                         persona_name = persona.get('persona_name', '')
-                        persona_id_from_persona = persona.get('persona_id', '')
                         base_profile = persona.get('base_profile', {})
                         business_type = base_profile.get('business_type', '')
-
-                        persona_type = None
-                        # 🎯 判定順序重要: より具体的な条件を先に判定
-
-                        # 美容/アパレル → young_entrepreneur (明るく快活) ⚠️ 「アパレルEC」を先に判定
-                        if '美容' in business_type or 'サロン' in business_type or 'アパレル' in business_type or 'beauty' in persona_id_from_persona or 'apparel' in persona_id_from_persona:
-                            persona_type = 'young_entrepreneur'
-                        # IT/テック/SaaS系 → tech_founder (明るく前向き)
-                        elif 'IT' in business_type or 'テック' in business_type or 'スタートアップ' in business_type or 'SaaS' in business_type or 'tech' in persona_id_from_persona or 'saas' in persona_id_from_persona:
-                            persona_type = 'tech_founder'
-                        # クリエイティブ/広告/マッチングアプリ → creative_director (やや速め)
-                        elif 'クリエイティブ' in business_type or 'デザイン' in business_type or '制作' in business_type or '動画' in business_type or '広告' in business_type or 'マッチングアプリ' in business_type or 'creative' in persona_id_from_persona or 'ad_agency' in persona_id_from_persona or 'matching' in persona_id_from_persona:
-                            persona_type = 'creative_director'
-                        # 飲食/伝統/建設/運送 → traditional_owner (落ち着いて慎重)
-                        elif '飲食' in business_type or 'レストラン' in business_type or '伝統' in business_type or '建設' in business_type or '運送' in business_type or 'restaurant' in persona_id_from_persona or 'construction' in persona_id_from_persona or 'driver' in persona_id_from_persona:
-                            persona_type = 'traditional_owner'
-                        # 教育 → confident (自信家)
-                        elif '教育' in business_type or 'スクール' in business_type or 'education' in persona_id_from_persona:
-                            persona_type = 'confident'
-                        # 不動産/人材紹介 → mid_manager (標準的で丁寧)
-                        elif '不動産' in business_type or '人材紹介' in business_type or 'real_estate' in persona_id_from_persona or 'recruitment' in persona_id_from_persona:
-                            persona_type = 'mid_manager'
-                        # EC/オンライン → mid_manager (標準的) ⚠️ より一般的な条件は最後に
-                        elif 'EC' in business_type or 'オンライン' in business_type or 'ecommerce' in persona_id_from_persona:
-                            persona_type = 'mid_manager'
-                        # デフォルト
-                        else:
-                            persona_type = 'mid_manager'
 
                         # 音声と話速を選択してpersonaに保存
                         voice_name, speaking_rate = select_voice_for_persona(

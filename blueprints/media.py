@@ -60,10 +60,13 @@ def apply_rate_limit(limit_string):
     """
     レート制限デコレータを条件付きで適用するヘルパー
     limiterが利用可能な場合のみレート制限を適用
+    app.pyで常にlimiterが設定されるため、通常はレート制限が適用されます
     """
     def decorator(func):
         if limiter:
             return limiter.limit(limit_string)(func)
+        # limiterがNoneの場合（通常は発生しない）
+        logger.warning(f"⚠️ レート制限が無効です: {func.__name__}")
         return func
     return decorator
 

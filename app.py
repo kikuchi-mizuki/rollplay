@@ -93,6 +93,101 @@ except ImportError as e:
 # 環境変数を読み込み
 load_dotenv()
 
+# ===== シンプルなメモリベースのレート制限（フォールバック） =====
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+class SimpleRateLimiter:
+    """
+    シンプルなメモリベースのレート制限（flask-limiterのフォールバック）
+    スレッドセーフで、固定ウィンドウ戦略を使用
+    """
+    def __init__(self, app=None, key_func=None):
+        self.app = app
+        self.key_func = key_func or self._default_key_func
+        self.storage = defaultdict(list)
+        self.lock = threading.Lock()
+
+    def _default_key_func(self):
+        """デフォルトのキー関数（リモートアドレスを使用）"""
+        from flask import request
+        return request.remote_addr or 'unknown'
+
+    def _parse_limit_string(self, limit_string):
+        """
+        レート制限文字列をパース
+        例: "10 per minute" -> (10, 60秒)
+        """
+        import re
+        match = re.match(r'(\d+)\s+per\s+(second|minute|hour|day)', limit_string.lower())
+        if not match:
+            raise ValueError(f"Invalid limit string: {limit_string}")
+
+        count = int(match.group(1))
+        unit = match.group(2)
+
+        unit_seconds = {
+            'second': 1,
+            'minute': 60,
+            'hour': 3600,
+            'day': 86400
+        }
+
+        return count, unit_seconds[unit]
+
+    def limit(self, limit_string):
+        """
+        レート制限デコレータを返す（flask-limiter互換）
+
+        Args:
+            limit_string: レート制限文字列（例: "10 per minute"）
+        """
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                limit_count, window_seconds = self._parse_limit_string(limit_string)
+                key = self.key_func()
+
+                with self.lock:
+                    now = datetime.now()
+                    cutoff_time = now - timedelta(seconds=window_seconds)
+
+                    # 古いエントリをクリーンアップ
+                    self.storage[key] = [
+                        timestamp for timestamp in self.storage[key]
+                        if timestamp > cutoff_time
+                    ]
+
+                    # レート制限チェック
+                    if len(self.storage[key]) >= limit_count:
+                        logger.warning(f"⚠️ レート制限超過: {key} ({limit_string})")
+                        return jsonify({
+                            'success': False,
+                            'error': 'レート制限を超過しました。しばらく待ってから再試行してください。'
+                        }), 429
+
+                    # リクエストを記録
+                    self.storage[key].append(now)
+
+                return func(*args, **kwargs)
+            return wrapper
+        return decorator
+
+    def cleanup_old_entries(self, max_age_seconds=3600):
+        """
+        古いエントリを定期的にクリーンアップ（メモリリーク防止）
+        max_age_seconds: 保持する最大秒数（デフォルト1時間）
+        """
+        with self.lock:
+            cutoff_time = datetime.now() - timedelta(seconds=max_age_seconds)
+            for key in list(self.storage.keys()):
+                self.storage[key] = [
+                    timestamp for timestamp in self.storage[key]
+                    if timestamp > cutoff_time
+                ]
+                if not self.storage[key]:
+                    del self.storage[key]
+
 # ===== ログ記録システムの設定 =====
 
 # ロガーの設定
@@ -175,9 +270,24 @@ if LIMITER_AVAILABLE and Limiter:
         storage_uri="memory://",
         strategy="fixed-window"
     )
-    logger.info("レート制限有効化: デフォルト 200回/日, 50回/時間")
+    logger.info("✅ flask-limiterでレート制限有効化: デフォルト 200回/日, 50回/時間")
 else:
-    logger.warning("flask-limiterが利用できません（レート制限は無効）")
+    # フォールバック: シンプルなメモリベースのレート制限を使用
+    limiter = SimpleRateLimiter(app=app)
+    logger.warning("⚠️ flask-limiterが利用できません - SimpleRateLimiterフォールバックを使用")
+    logger.info("✅ メモリベースのレート制限有効化（フォールバック）")
+
+    # 定期的にメモリをクリーンアップするタイマーを設定
+    def cleanup_timer():
+        while True:
+            threading.Event().wait(1800)  # 30分ごと
+            if limiter and isinstance(limiter, SimpleRateLimiter):
+                limiter.cleanup_old_entries()
+                logger.info("🧹 レート制限ストレージをクリーンアップしました")
+
+    cleanup_thread = threading.Thread(target=cleanup_timer, daemon=True)
+    cleanup_thread.start()
+    logger.info("✅ レート制限クリーンアップスレッド起動")
 
 # Swagger設定（API仕様書自動生成）
 if FLASGGER_AVAILABLE and Swagger:

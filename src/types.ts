@@ -38,3 +38,37 @@ export interface RecordingState {
   level: number; // 0-100
 }
 
+/**
+ * ペルソナのベースプロフィール
+ */
+export interface PersonaBaseProfile {
+  business_type?: string;
+  location?: string;
+  business_detail?: string;
+  current_video_status?: string;
+  age?: number;
+  gender?: string;
+  [key: string]: any; // その他の動的プロパティ
+}
+
+/**
+ * SNSアカウント情報
+ */
+export interface PersonaSnsAccounts {
+  [platform: string]: string;
+}
+
+/**
+ * ペルソナ情報
+ */
+export interface Persona {
+  persona_id: string;
+  persona_name?: string;
+  name?: string; // 後方互換性のため
+  base_profile?: PersonaBaseProfile;
+  voice_name?: string;
+  speaking_rate?: number;
+  sns_accounts?: PersonaSnsAccounts;
+  [key: string]: any; // その他の動的プロパティ
+}
+
