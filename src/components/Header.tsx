@@ -1,4 +1,4 @@
-import { Settings, LogOut, User, Store, History } from 'lucide-react';
+import { Settings, LogOut, User, Store, History, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -116,17 +116,30 @@ export function Header({
           <div className="py-3 space-y-2">
             {/* 本部管理者専用メニュー */}
             {profile?.role === 'admin' && (
-              <button
-                onClick={() => {
-                  setShowSettings(false)
-                  navigate('/admin/stores')
-                }}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-                style={{ pointerEvents: 'auto' }}
-              >
-                <Store size={16} />
-                <span>店舗管理</span>
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    setShowSettings(false)
+                    navigate('/admin/dashboard')
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <BarChart3 size={16} />
+                  <span>管理者ダッシュボード</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSettings(false)
+                    navigate('/admin/stores')
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  <Store size={16} />
+                  <span>店舗管理</span>
+                </button>
+              </>
             )}
             <button
               onClick={handleLogout}
