@@ -5,6 +5,7 @@
 import io
 import csv
 import logging
+from functools import wraps
 from flask import Blueprint, jsonify, request
 
 # ロガー取得
@@ -27,7 +28,78 @@ def init_blueprint(app):
     supabase_client = app.config.get('supabase_client')
 
 
+def sanitize_csv_field(value):
+    """
+    CSVインジェクション対策
+    数式として実行される可能性のある文字で始まる値をエスケープ
+    """
+    if value is None:
+        return ''
+
+    value_str = str(value)
+
+    # 数式インジェクション対策：=, +, -, @, タブ, 改行で始まる場合はシングルクォートを追加
+    if value_str and value_str[0] in ('=', '+', '-', '@', '\t', '\r', '\n'):
+        return "'" + value_str
+
+    return value_str
+
+
+def require_admin(f):
+    """
+    管理者権限を要求するデコレータ
+    リクエストヘッダーのAuthorizationトークンを検証し、管理者権限をチェック
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Authorizationヘッダーをチェック
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            logger.warning('認証失敗: Authorizationヘッダーがありません')
+            return jsonify({'success': False, 'error': '認証が必要です'}), 401
+
+        token = auth_header.replace('Bearer ', '')
+
+        try:
+            # Supabaseでトークンを検証してユーザー情報を取得
+            user_response = supabase_client.auth.get_user(token)
+
+            if not user_response or not user_response.user:
+                logger.warning('認証失敗: 無効なトークン')
+                return jsonify({'success': False, 'error': '無効な認証トークンです'}), 401
+
+            user_id = user_response.user.id
+
+            # プロフィールから権限を取得
+            profile_result = supabase_client.table('profiles').select('role').eq('id', user_id).single().execute()
+
+            if not profile_result.data:
+                logger.warning(f'認証失敗: プロフィールが見つかりません (user_id={user_id})')
+                return jsonify({'success': False, 'error': 'ユーザープロフィールが見つかりません'}), 404
+
+            user_role = profile_result.data.get('role')
+
+            # 管理者権限をチェック
+            if user_role != 'admin':
+                logger.warning(f'権限不足: user_id={user_id}, role={user_role}')
+                return jsonify({'success': False, 'error': '管理者権限が必要です'}), 403
+
+            # リクエストにユーザーIDを追加（エンドポイント内で使用可能）
+            request.user_id = user_id
+            request.user_role = user_role
+
+            logger.info(f'管理者認証成功: user_id={user_id}')
+            return f(*args, **kwargs)
+
+        except Exception as e:
+            logger.error(f'認証エラー: {type(e).__name__}: {e}')
+            return jsonify({'success': False, 'error': '認証処理でエラーが発生しました'}), 500
+
+    return decorated_function
+
+
 @admin_bp.route('/api/admin/stores/stats', methods=['GET'])
+@require_admin
 def get_stores_stats():
     """全店舗の統計情報を取得（本部管理者専用）"""
     try:
@@ -81,6 +153,7 @@ def get_stores_stats():
 
 
 @admin_bp.route('/api/admin/stores/rankings', methods=['GET'])
+@require_admin
 def get_stores_rankings():
     """店舗別ランキングを取得（本部管理者専用）"""
     try:
@@ -171,6 +244,7 @@ def get_stores_rankings():
 
 
 @admin_bp.route('/api/stores/<store_id>/members', methods=['GET'])
+@require_admin
 def get_store_members(store_id):
     """店舗メンバー一覧を取得（店舗管理者・本部管理者）"""
     try:
@@ -246,6 +320,7 @@ def get_store_members(store_id):
 
 
 @admin_bp.route('/api/admin/regions/stats', methods=['GET'])
+@require_admin
 def get_regions_stats():
     """リージョン別集計を取得（本部管理者専用）"""
     try:
@@ -372,6 +447,7 @@ def get_regions_stats():
 
 
 @admin_bp.route('/api/stores/<store_id>/analytics', methods=['GET'])
+@require_admin
 def get_store_analytics(store_id):
     """店舗分析データを取得（店舗管理者・本部管理者）"""
     try:
@@ -419,6 +495,7 @@ def get_store_analytics(store_id):
 
 
 @admin_bp.route('/api/admin/export/evaluations', methods=['GET'])
+@require_admin
 def export_all_evaluations():
     """全評価データをCSV形式で出力（本部管理者専用）"""
     try:
@@ -482,19 +559,19 @@ def export_all_evaluations():
             scores = evaluation.get('scores', {})
 
             writer.writerow([
-                evaluation.get('id', ''),
-                store.get('store_code', ''),
-                store.get('store_name', ''),
-                store.get('region', ''),
-                user.get('display_name', ''),
-                evaluation.get('scenario_id', ''),
-                scores.get('questioning_skill', 0),
-                scores.get('listening_skill', 0),
-                scores.get('proposal_skill', 0),
-                scores.get('closing_skill', 0),
-                evaluation.get('total_score', 0),
-                evaluation.get('average_score', 0),
-                evaluation.get('created_at', '')
+                sanitize_csv_field(evaluation.get('id', '')),
+                sanitize_csv_field(store.get('store_code', '')),
+                sanitize_csv_field(store.get('store_name', '')),
+                sanitize_csv_field(store.get('region', '')),
+                sanitize_csv_field(user.get('display_name', '')),
+                sanitize_csv_field(evaluation.get('scenario_id', '')),
+                sanitize_csv_field(scores.get('questioning_skill', 0)),
+                sanitize_csv_field(scores.get('listening_skill', 0)),
+                sanitize_csv_field(scores.get('proposal_skill', 0)),
+                sanitize_csv_field(scores.get('closing_skill', 0)),
+                sanitize_csv_field(evaluation.get('total_score', 0)),
+                sanitize_csv_field(evaluation.get('average_score', 0)),
+                sanitize_csv_field(evaluation.get('created_at', ''))
             ])
 
         # BOM付きUTF-8で返却（Excel互換）
@@ -532,6 +609,7 @@ def export_all_evaluations():
 
 
 @admin_bp.route('/api/admin/online-users', methods=['GET'])
+@require_admin
 def get_online_users():
     """ログイン中のユーザー一覧を取得（本部管理者専用）"""
     try:
@@ -583,6 +661,7 @@ def get_online_users():
 
 
 @admin_bp.route('/api/admin/users', methods=['GET'])
+@require_admin
 def get_all_users():
     """全ユーザー一覧を取得（本部管理者専用）"""
     try:
@@ -646,6 +725,7 @@ def get_all_users():
 
 
 @admin_bp.route('/api/admin/users/<user_id>', methods=['DELETE'])
+@require_admin
 def delete_user(user_id):
     """ユーザーを削除（本部管理者専用）"""
     try:
@@ -697,6 +777,7 @@ def delete_user(user_id):
 
 
 @admin_bp.route('/api/admin/users/<user_id>/role', methods=['PUT'])
+@require_admin
 def update_user_role(user_id):
     """ユーザーの権限を変更（本部管理者専用）"""
     try:
@@ -734,6 +815,7 @@ def update_user_role(user_id):
 
 
 @admin_bp.route('/api/admin/users/<user_id>/store', methods=['PUT'])
+@require_admin
 def update_user_store(user_id):
     """ユーザーの所属店舗を変更（本部管理者専用）"""
     try:
@@ -776,6 +858,7 @@ def update_user_store(user_id):
 
 
 @admin_bp.route('/api/admin/export/stores', methods=['GET'])
+@require_admin
 def export_all_stores():
     """全店舗データをCSV形式で出力（本部管理者専用）"""
     try:
@@ -851,15 +934,15 @@ def export_all_stores():
         # データ行
         for store in stores:
             writer.writerow([
-                store.get('store_code', ''),
-                store.get('store_name', ''),
-                store.get('region', ''),
-                store.get('status', ''),
-                store.get('user_count', 0),
-                store.get('conversation_count', 0),
-                store.get('evaluation_count', 0),
-                store.get('average_score', 0),
-                store.get('created_at', '')
+                sanitize_csv_field(store.get('store_code', '')),
+                sanitize_csv_field(store.get('store_name', '')),
+                sanitize_csv_field(store.get('region', '')),
+                sanitize_csv_field(store.get('status', '')),
+                sanitize_csv_field(store.get('user_count', 0)),
+                sanitize_csv_field(store.get('conversation_count', 0)),
+                sanitize_csv_field(store.get('evaluation_count', 0)),
+                sanitize_csv_field(store.get('average_score', 0)),
+                sanitize_csv_field(store.get('created_at', ''))
             ])
 
         # BOM付きUTF-8で返却（Excel互換）
