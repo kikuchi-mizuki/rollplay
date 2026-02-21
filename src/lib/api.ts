@@ -1,6 +1,7 @@
 import { Message, Evaluation } from '../types';
 import { fetchWithErrorHandling, APIError } from './errors';
 import { supabase } from './supabase';
+import logger from './logger';
 
 // エラークラスを再エクスポート（他のコンポーネントで使用可能）
 export { APIError, NetworkError, TimeoutError, getErrorMessage } from './errors';
@@ -61,7 +62,7 @@ export async function getCsrfToken(): Promise<string> {
       throw new Error(result.error || 'CSRFトークン取得失敗');
     }
   } catch (error) {
-    console.error('CSRFトークン取得エラー:', error);
+    logger.error('CSRFトークン取得エラー:', error);
     throw error;
   }
 }
@@ -99,7 +100,7 @@ export async function getScenarios(): Promise<{ id: string; title: string; enabl
       throw new Error(result.error || 'シナリオ取得に失敗しました');
     }
   } catch (error) {
-    console.error('シナリオ取得エラー:', error);
+    logger.error('シナリオ取得エラー:', error);
     throw error;
   }
 }
@@ -138,7 +139,7 @@ export async function sendMessage(message: string, history: Message[], scenarioI
       throw new APIError(result.error || 'メッセージ送信に失敗しました', response.status);
     }
   } catch (error) {
-    console.error('メッセージ送信エラー:', error);
+    logger.error('メッセージ送信エラー:', error);
     // エラーを適切に再スロー
     throw error;
   }
@@ -177,10 +178,10 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       const evalData = result.evaluation;
 
       // デバッグログ: 受信した評価データを出力
-      console.log('[講評API] 受信データ:', evalData);
-      console.log('[講評API] overall:', evalData.overall);
-      console.log('[講評API] strengths:', evalData.strengths);
-      console.log('[講評API] improvements:', evalData.improvements);
+      logger.debug('[講評API] 受信データ:', evalData);
+      logger.debug('[講評API] overall:', evalData.overall);
+      logger.debug('[講評API] strengths:', evalData.strengths);
+      logger.debug('[講評API] improvements:', evalData.improvements);
 
       // Flaskの評価結果をReactのEvaluation型に変換
       // 空配列・空文字列もチェックして、適切にフォールバック
@@ -202,9 +203,9 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
           ? evalData.improvement_points
           : evalData.comments?.filter((c: string) => c.startsWith('⚠️')) || ['継続的な練習で更なる向上を目指しましょう。'];
 
-      console.log('[講評API] 変換後 overall:', overall);
-      console.log('[講評API] 変換後 strengths:', strengths);
-      console.log('[講評API] 変換後 improvements:', improvements);
+      logger.debug('[講評API] 変換後 overall:', overall);
+      logger.debug('[講評API] 変換後 strengths:', strengths);
+      logger.debug('[講評API] 変換後 improvements:', improvements);
 
       return {
         overall,
@@ -222,7 +223,7 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       throw new APIError(result.error || '講評取得に失敗しました', response.status);
     }
   } catch (error) {
-    console.error('講評取得エラー:', error);
+    logger.error('講評取得エラー:', error);
     // エラーを適切に再スロー
     throw error;
   }
@@ -272,7 +273,7 @@ export async function saveConversation(params: {
       throw new APIError(result.error || '会話履歴の保存に失敗しました', response.status);
     }
   } catch (error) {
-    console.error('会話保存エラー:', error);
+    logger.error('会話保存エラー:', error);
     throw error;
   }
 }
@@ -325,7 +326,7 @@ export async function saveEvaluation(params: {
       throw new APIError(result.error || '評価結果の保存に失敗しました', response.status);
     }
   } catch (error) {
-    console.error('評価保存エラー:', error);
+    logger.error('評価保存エラー:', error);
     throw error;
   }
 }
@@ -354,7 +355,7 @@ export async function getConversations(params: {
       throw new Error(result.error || '会話履歴の取得に失敗しました');
     }
   } catch (error) {
-    console.error('会話履歴取得エラー:', error);
+    logger.error('会話履歴取得エラー:', error);
     throw error;
   }
 }
@@ -383,7 +384,7 @@ export async function getEvaluations(params: {
       throw new Error(result.error || '評価履歴の取得に失敗しました');
     }
   } catch (error) {
-    console.error('評価履歴取得エラー:', error);
+    logger.error('評価履歴取得エラー:', error);
     throw error;
   }
 }
@@ -402,7 +403,7 @@ export async function getStoresStats(): Promise<any> {
       throw new Error(result.error || '統計情報の取得に失敗しました');
     }
   } catch (error) {
-    console.error('統計情報取得エラー:', error);
+    logger.error('統計情報取得エラー:', error);
     throw error;
   }
 }
@@ -421,7 +422,7 @@ export async function getStoresRankings(): Promise<any[]> {
       throw new Error(result.error || 'ランキング取得に失敗しました');
     }
   } catch (error) {
-    console.error('ランキング取得エラー:', error);
+    logger.error('ランキング取得エラー:', error);
     throw error;
   }
 }
@@ -444,7 +445,7 @@ export async function getOnlineUsers(thresholdMinutes: number = 5): Promise<any>
       throw new Error(result.error || 'オンラインユーザー取得に失敗しました');
     }
   } catch (error) {
-    console.error('オンラインユーザー取得エラー:', error);
+    logger.error('オンラインユーザー取得エラー:', error);
     throw error;
   }
 }
@@ -472,7 +473,7 @@ export async function getAllUsers(filters?: { store_id?: string; role?: string; 
       throw new Error(result.error || 'ユーザー一覧取得に失敗しました');
     }
   } catch (error) {
-    console.error('ユーザー一覧取得エラー:', error);
+    logger.error('ユーザー一覧取得エラー:', error);
     throw error;
   }
 }
@@ -495,7 +496,7 @@ export async function deleteUser(userId: string): Promise<void> {
       throw new Error(result.error || 'ユーザー削除に失敗しました');
     }
   } catch (error) {
-    console.error('ユーザー削除エラー:', error);
+    logger.error('ユーザー削除エラー:', error);
     throw error;
   }
 }
@@ -523,7 +524,7 @@ export async function updateUserRole(userId: string, role: 'admin' | 'manager' |
       throw new Error(result.error || 'ユーザー権限変更に失敗しました');
     }
   } catch (error) {
-    console.error('ユーザー権限変更エラー:', error);
+    logger.error('ユーザー権限変更エラー:', error);
     throw error;
   }
 }
@@ -551,7 +552,7 @@ export async function updateUserStore(userId: string, storeId: string): Promise<
       throw new Error(result.error || 'ユーザー店舗変更に失敗しました');
     }
   } catch (error) {
-    console.error('ユーザー店舗変更エラー:', error);
+    logger.error('ユーザー店舗変更エラー:', error);
     throw error;
   }
 }
@@ -570,7 +571,7 @@ export async function getStoreMembers(storeId: string): Promise<any[]> {
       throw new Error(result.error || 'メンバー取得に失敗しました');
     }
   } catch (error) {
-    console.error('メンバー取得エラー:', error);
+    logger.error('メンバー取得エラー:', error);
     throw error;
   }
 }
@@ -593,7 +594,7 @@ export async function getStoreAnalytics(storeId: string): Promise<any> {
       throw new Error(result.error || '分析データ取得に失敗しました');
     }
   } catch (error) {
-    console.error('分析データ取得エラー:', error);
+    logger.error('分析データ取得エラー:', error);
     throw error;
   }
 }
@@ -619,7 +620,7 @@ export async function uploadRecording(
     formData.append('filename', filename);
     formData.append('duration', duration.toString());
 
-    console.log(`📤 録画アップロード開始: conversation_id=${conversationId}, filename=${filename}, size=${blob.size}`);
+    logger.info(`📤 録画アップロード開始: conversation_id=${conversationId}, filename=${filename}, size=${blob.size}`);
 
     // CSRFトークンを追加（Content-Typeは指定しない - FormDataで自動設定）
     const headers = await addCsrfTokenToHeaders({});
@@ -637,20 +638,20 @@ export async function uploadRecording(
     const result = await response.json();
 
     if (result.success) {
-      console.log(`✅ 録画アップロード成功: url=${result.recording_url}`);
+      logger.info(`✅ 録画アップロード成功: url=${result.recording_url}`);
       return {
         success: true,
         recording_url: result.recording_url
       };
     } else {
-      console.error(`❌ 録画アップロード失敗: ${result.error}`);
+      logger.error(`❌ 録画アップロード失敗: ${result.error}`);
       return {
         success: false,
         error: result.error || '録画のアップロードに失敗しました'
       };
     }
   } catch (error) {
-    console.error('録画アップロードエラー:', error);
+    logger.error('録画アップロードエラー:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : '録画のアップロードに失敗しました'
@@ -699,7 +700,7 @@ export async function getRecordingUrl(
       };
     }
   } catch (error) {
-    console.error('録画URL取得エラー:', error);
+    logger.error('録画URL取得エラー:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : '録画情報の取得に失敗しました'

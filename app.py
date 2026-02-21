@@ -204,9 +204,17 @@ class SimpleRateLimiter:
 
 # ===== ログ記録システムの設定 =====
 
+# 環境変数からログレベルを取得（デフォルト: 本番環境はWARNING、開発環境はINFO）
+is_production = os.getenv('PRODUCTION', '').lower() in ('true', '1', 'yes')
+default_log_level = 'WARNING' if is_production else 'INFO'
+log_level_str = os.getenv('LOG_LEVEL', default_log_level).upper()
+
+# ログレベル文字列を logging 定数に変換
+log_level = getattr(logging, log_level_str, logging.INFO)
+
 # ロガーの設定
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(log_level)
 
 # ログディレクトリの作成
 log_dir = os.path.join(os.path.dirname(__file__), 'logs')
@@ -219,11 +227,11 @@ file_handler = RotatingFileHandler(
     backupCount=5,
     encoding='utf-8'
 )
-file_handler.setLevel(logging.INFO)
+file_handler.setLevel(log_level)
 
 # コンソールハンドラー（開発用）
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(log_level)
 
 # フォーマッター設定
 formatter = logging.Formatter(
@@ -238,7 +246,8 @@ logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
 logger.info("=" * 80)
-logger.info("アプリケーション起動 - ログシステム初期化完了")
+logger.info(f"アプリケーション起動 - ログシステム初期化完了（ログレベル: {log_level_str}）")
+logger.info(f"環境: {'本番' if is_production else '開発'}")
 logger.info("=" * 80)
 
 # ===== CSRF保護（カスタム実装） =====
