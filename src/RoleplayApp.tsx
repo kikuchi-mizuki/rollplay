@@ -1499,7 +1499,7 @@ function RoleplayApp() {
 
               {/* PinP: アバター（左上） */}
               {imageSrc && (
-                <div className="absolute top-4 left-4 w-32 h-32 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+                <div className="absolute top-4 left-4 w-32 h-32 bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-50">
                   <img
                     src={imageSrc}
                     alt="AI相談者のアバター"
