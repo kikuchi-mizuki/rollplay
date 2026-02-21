@@ -144,6 +144,77 @@ function RoleplayApp() {
     screenStreamRef, // 画面共有のRef（録画中の画面共有開始に対応）
   }); // 画面共有+カメラの場合はCanvas合成録画、カメラのみの場合もCanvas合成（カメラ+アバター+AI音声）
 
+  // Web Audio API初期化（モバイル自動再生ポリシー対応）
+  const initializeAudio = useCallback(async () => {
+    if (audioInitialized && audioContextRef.current) {
+      console.log('✅ 音声は既に初期化済み');
+      return audioContextRef.current;
+    }
+
+    try {
+      console.log('🔊 Web Audio API初期化開始...');
+
+      // AudioContextを作成（Safari対応）
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass();
+      audioContextRef.current = audioContext;
+
+      // AudioContextをresumeして有効化（モバイル対応）
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+
+      // AI音声ミキサー用のGainNodeを作成（常時接続）
+      const mixerGain = audioContext.createGain();
+      mixerGain.gain.value = 1.0; // 直接代入
+      aiMixerGainNodeRef.current = mixerGain;
+
+      // GainNodeをスピーカーに接続
+      mixerGain.connect(audioContext.destination);
+
+      // 録画用のMediaStreamDestinationを作成してGainNodeに接続
+      const recordingDestination = audioContext.createMediaStreamDestination();
+      mixerGain.connect(recordingDestination); // 録画用にGainNodeを接続
+      audioDestinationRef.current = recordingDestination;
+
+      // AnalyserNodeを作成してMediaStreamDestinationの前に挿入（音声波形確認用）
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.8;
+      analyserNodeRef.current = analyser;
+
+      // ミキサー → AnalyserNode → MediaStreamDestination の順に接続
+      mixerGain.connect(analyser);
+      analyser.connect(recordingDestination);
+
+      setAiAudioStream(recordingDestination.stream);
+      console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続 + AnalyserNode）');
+      console.log(`   - ミキサーGain値: ${mixerGain.gain.value}`);
+      console.log(`   - MediaStreamDestination作成: active=${recordingDestination.stream.active}`);
+      console.log(`   - 音声トラック数: ${recordingDestination.stream.getAudioTracks().length}`);
+      console.log(`   - AnalyserNode追加: fftSize=${analyser.fftSize}`);
+
+      // 極めて低い音量の連続信号でMediaStreamDestinationを常時アクティブ化
+      // (OscillatorNodeは停止するまで永続的に動作する)
+      // 重要: スピーカーには出力せず、録画用Destinationのみに接続
+      const oscillator = audioContext.createOscillator();
+      oscillator.frequency.value = 20; // 20Hz（人間の可聴域下限、ほぼ聞こえない）
+      const silenceGain = audioContext.createGain();
+      silenceGain.gain.value = 0.00001; // 極小音量（スピーカー出力しないのでさらに小さく）
+      oscillator.connect(silenceGain);
+      silenceGain.connect(recordingDestination); // 録画用のみに接続（スピーカーには出力しない）
+      oscillator.start();
+      console.log('🔇 MediaStreamDestinationをアクティブ化（20Hz/0.00001音量・録画専用）');
+
+      setAudioInitialized(true);
+      console.log('✅ Web Audio API初期化成功');
+      return audioContext;
+    } catch (error) {
+      console.warn('⚠️ Web Audio API初期化失敗:', error);
+      return null;
+    }
+  }, [audioInitialized, setAiAudioStream]);
+
   // 録画開始のラッパー（Web Audio API初期化を確実に実行）
   const startVideoRecording = useCallback(async () => {
     // 録画開始前にWeb Audio APIを初期化（ユーザージェスチャーが必要なため）
@@ -813,77 +884,6 @@ function RoleplayApp() {
       isSendingRef.current = false;
     }
   };
-
-  // Web Audio API初期化（モバイル自動再生ポリシー対応）
-  const initializeAudio = useCallback(async () => {
-    if (audioInitialized && audioContextRef.current) {
-      console.log('✅ 音声は既に初期化済み');
-      return audioContextRef.current;
-    }
-
-    try {
-      console.log('🔊 Web Audio API初期化開始...');
-
-      // AudioContextを作成（Safari対応）
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContextClass();
-      audioContextRef.current = audioContext;
-
-      // AudioContextをresumeして有効化（モバイル対応）
-      if (audioContext.state === 'suspended') {
-        await audioContext.resume();
-      }
-
-      // AI音声ミキサー用のGainNodeを作成（常時接続）
-      const mixerGain = audioContext.createGain();
-      mixerGain.gain.value = 1.0; // 直接代入
-      aiMixerGainNodeRef.current = mixerGain;
-
-      // GainNodeをスピーカーに接続
-      mixerGain.connect(audioContext.destination);
-
-      // 録画用のMediaStreamDestinationを作成してGainNodeに接続
-      const recordingDestination = audioContext.createMediaStreamDestination();
-      mixerGain.connect(recordingDestination); // 録画用にGainNodeを接続
-      audioDestinationRef.current = recordingDestination;
-
-      // AnalyserNodeを作成してMediaStreamDestinationの前に挿入（音声波形確認用）
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.8;
-      analyserNodeRef.current = analyser;
-
-      // ミキサー → AnalyserNode → MediaStreamDestination の順に接続
-      mixerGain.connect(analyser);
-      analyser.connect(recordingDestination);
-
-      setAiAudioStream(recordingDestination.stream);
-      console.log('✅ AI音声出力ストリーム作成完了（GainNodeミキサー方式 - 録画用接続 + AnalyserNode）');
-      console.log(`   - ミキサーGain値: ${mixerGain.gain.value}`);
-      console.log(`   - MediaStreamDestination作成: active=${recordingDestination.stream.active}`);
-      console.log(`   - 音声トラック数: ${recordingDestination.stream.getAudioTracks().length}`);
-      console.log(`   - AnalyserNode追加: fftSize=${analyser.fftSize}`);
-
-      // 極めて低い音量の連続信号でMediaStreamDestinationを常時アクティブ化
-      // (OscillatorNodeは停止するまで永続的に動作する)
-      // 重要: スピーカーには出力せず、録画用Destinationのみに接続
-      const oscillator = audioContext.createOscillator();
-      oscillator.frequency.value = 20; // 20Hz（人間の可聴域下限、ほぼ聞こえない）
-      const silenceGain = audioContext.createGain();
-      silenceGain.gain.value = 0.00001; // 極小音量（スピーカー出力しないのでさらに小さく）
-      oscillator.connect(silenceGain);
-      silenceGain.connect(recordingDestination); // 録画用のみに接続（スピーカーには出力しない）
-      oscillator.start();
-      console.log('🔇 MediaStreamDestinationをアクティブ化（20Hz/0.00001音量・録画専用）');
-
-      setAudioInitialized(true);
-      console.log('✅ Web Audio API初期化成功');
-      return audioContext;
-    } catch (error) {
-      console.warn('⚠️ Web Audio API初期化失敗:', error);
-      return null;
-    }
-  }, [audioInitialized, setAiAudioStream]);
 
   // Web Audio APIで音声を再生
   const playAudioWithWebAudio = async (audioData: ArrayBuffer): Promise<void> => {
