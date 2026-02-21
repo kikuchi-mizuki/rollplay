@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, PostgrestSingleResponse } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { clearCsrfToken } from '../lib/api'
 
 interface Profile {
   id: string
@@ -226,6 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ログアウト
   const signOut = async () => {
     await supabase.auth.signOut()
+    clearCsrfToken() // CSRFトークンをクリア
     setUser(null)
     setProfile(null)
   }

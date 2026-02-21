@@ -1,5 +1,6 @@
 import { Message, Evaluation } from '../types';
 import { fetchWithErrorHandling, APIError } from './errors';
+import { supabase } from './supabase';
 
 // エラークラスを再エクスポート（他のコンポーネントで使用可能）
 export { APIError, NetworkError, TimeoutError, getErrorMessage } from './errors';
@@ -9,6 +10,79 @@ export { APIError, NetworkError, TimeoutError, getErrorMessage } from './errors'
 // 開発環境: localhost:5001
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
                      (import.meta.env.DEV ? 'http://localhost:5001' : '');
+
+// ===== CSRF保護 =====
+
+// CSRFトークンのキャッシュ
+let csrfToken: string | null = null;
+let csrfTokenExpiry: number | null = null;
+
+/**
+ * CSRFトークンを取得
+ * キャッシュされたトークンがあり、有効期限内であればそれを返す
+ */
+export async function getCsrfToken(): Promise<string> {
+  // キャッシュされたトークンがあり、有効期限内であれば返す（30分）
+  if (csrfToken && csrfTokenExpiry && Date.now() < csrfTokenExpiry) {
+    return csrfToken;
+  }
+
+  try {
+    // 認証トークンを取得
+    const { data: { session } } = await supabase.auth.getSession();
+    const authToken = session?.access_token;
+
+    // CSRFトークンを取得
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/csrf-token`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(`CSRFトークン取得失敗: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.success && result.csrf_token) {
+      csrfToken = result.csrf_token;
+      csrfTokenExpiry = Date.now() + 30 * 60 * 1000; // 30分
+      return csrfToken;
+    } else {
+      throw new Error(result.error || 'CSRFトークン取得失敗');
+    }
+  } catch (error) {
+    console.error('CSRFトークン取得エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * CSRFトークンをクリア（ログアウト時などに使用）
+ */
+export function clearCsrfToken() {
+  csrfToken = null;
+  csrfTokenExpiry = null;
+}
+
+/**
+ * APIリクエストにCSRFトークンを追加
+ */
+async function addCsrfTokenToHeaders(headers: HeadersInit = {}): Promise<HeadersInit> {
+  const token = await getCsrfToken();
+  return {
+    ...headers,
+    'X-CSRF-Token': token,
+  };
+}
 
 /**
  * シナリオ一覧を取得
@@ -40,11 +114,14 @@ export async function sendMessage(message: string, history: Message[], scenarioI
       text: msg.text
     }));
 
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({
+      'Content-Type': 'application/json',
+    });
+
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/chat`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         message: message,
         history: conversationHistory,
@@ -79,11 +156,14 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       text: msg.text
     }));
 
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({
+      'Content-Type': 'application/json',
+    });
+
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/evaluate`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         conversation: conversation,
         scenario_id: scenarioId  // Week 5: シナリオIDを送信
@@ -160,11 +240,14 @@ export async function saveConversation(params: {
   persona?: any; // ペルソナ情報（会話内固定用）
 }): Promise<{ conversationId: string }> {
   try {
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({
+      'Content-Type': 'application/json',
+    });
+
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/conversations`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         user_id: params.userId,
         store_id: params.storeId,
@@ -204,11 +287,14 @@ export async function saveEvaluation(params: {
   evaluation: Evaluation;
 }): Promise<{ evaluationId: string }> {
   try {
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({
+      'Content-Type': 'application/json',
+    });
+
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/evaluations`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         conversation_id: params.conversationId,
         user_id: params.userId,
@@ -395,8 +481,12 @@ export async function getAllUsers(filters?: { store_id?: string; role?: string; 
  */
 export async function deleteUser(userId: string): Promise<void> {
   try {
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({});
+
     const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers
     });
     const result = await response.json();
 
@@ -414,11 +504,14 @@ export async function deleteUser(userId: string): Promise<void> {
  */
 export async function updateUserRole(userId: string, role: 'admin' | 'manager' | 'user'): Promise<any> {
   try {
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({
+      'Content-Type': 'application/json'
+    });
+
     const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/role`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       body: JSON.stringify({ role })
     });
     const result = await response.json();
@@ -439,11 +532,14 @@ export async function updateUserRole(userId: string, role: 'admin' | 'manager' |
  */
 export async function updateUserStore(userId: string, storeId: string): Promise<any> {
   try {
+    // CSRFトークンを追加
+    const headers = await addCsrfTokenToHeaders({
+      'Content-Type': 'application/json'
+    });
+
     const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/store`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       body: JSON.stringify({ store_id: storeId })
     });
     const result = await response.json();
@@ -524,10 +620,14 @@ export async function uploadRecording(
 
     console.log(`📤 録画アップロード開始: conversation_id=${conversationId}, filename=${filename}, size=${blob.size}`);
 
+    // CSRFトークンを追加（Content-Typeは指定しない - FormDataで自動設定）
+    const headers = await addCsrfTokenToHeaders({});
+
     const response = await fetchWithErrorHandling(
       `${API_BASE_URL}/api/conversations/${conversationId}/recording`,
       {
         method: 'POST',
+        headers,
         body: formData
       },
       120000 // 120秒タイムアウト（大きなファイルのため）

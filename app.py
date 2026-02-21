@@ -16,6 +16,9 @@ from datetime import datetime
 import base64
 import io
 import tempfile
+import secrets
+import hmac
+import hashlib
 from dotenv import load_dotenv
 from shutil import which
 from supabase import create_client, Client
@@ -226,6 +229,189 @@ logger.addHandler(console_handler)
 logger.info("=" * 80)
 logger.info("アプリケーション起動 - ログシステム初期化完了")
 logger.info("=" * 80)
+
+# ===== CSRF保護（カスタム実装） =====
+
+# CSRF秘密鍵（環境変数から取得、なければ生成）
+CSRF_SECRET_KEY = os.getenv('CSRF_SECRET_KEY')
+if not CSRF_SECRET_KEY:
+    # 開発環境用に固定キーを使用（本番環境では環境変数を設定すること）
+    CSRF_SECRET_KEY = secrets.token_urlsafe(32)
+    logger.warning("⚠️ CSRF_SECRET_KEYが設定されていません - ランダムキーを使用（サーバー再起動でトークンが無効化されます）")
+else:
+    logger.info("✅ CSRF_SECRET_KEYが設定されています")
+
+# CSRFトークンストア（メモリベース、有効期限付き）
+csrf_tokens = {}  # {token: {user_id: str, created_at: datetime}}
+csrf_token_lock = threading.Lock()
+
+def generate_csrf_token(user_id: str = None) -> str:
+    """
+    CSRFトークンを生成
+
+    Args:
+        user_id: ユーザーID（認証済みユーザーの場合）
+
+    Returns:
+        CSRFトークン（Base64エンコード）
+    """
+    # ランダムトークンを生成
+    random_token = secrets.token_urlsafe(32)
+
+    # HMAC署名を生成（改ざん防止）
+    message = f"{random_token}:{user_id or 'anonymous'}"
+    signature = hmac.new(
+        CSRF_SECRET_KEY.encode(),
+        message.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    # トークン = ランダム値:署名
+    token = f"{random_token}:{signature}"
+
+    # トークンストアに保存
+    with csrf_token_lock:
+        csrf_tokens[token] = {
+            'user_id': user_id,
+            'created_at': datetime.now()
+        }
+
+    return token
+
+def verify_csrf_token(token: str, user_id: str = None) -> bool:
+    """
+    CSRFトークンを検証
+
+    Args:
+        token: CSRFトークン
+        user_id: ユーザーID（認証済みユーザーの場合）
+
+    Returns:
+        トークンが有効かどうか
+    """
+    if not token:
+        return False
+
+    try:
+        # トークンを分割
+        parts = token.split(':')
+        if len(parts) != 2:
+            return False
+
+        random_token, signature = parts
+
+        # HMAC署名を検証
+        message = f"{random_token}:{user_id or 'anonymous'}"
+        expected_signature = hmac.new(
+            CSRF_SECRET_KEY.encode(),
+            message.encode(),
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(signature, expected_signature):
+            logger.warning(f"⚠️ CSRF署名検証失敗: user_id={user_id}")
+            return False
+
+        # トークンストアから取得
+        with csrf_token_lock:
+            token_data = csrf_tokens.get(token)
+            if not token_data:
+                logger.warning(f"⚠️ CSRFトークンが見つかりません: user_id={user_id}")
+                return False
+
+            # 有効期限チェック（1時間）
+            age = (datetime.now() - token_data['created_at']).total_seconds()
+            if age > 3600:  # 1時間
+                del csrf_tokens[token]
+                logger.warning(f"⚠️ CSRFトークンが期限切れ: age={age}秒, user_id={user_id}")
+                return False
+
+            # ユーザーIDが一致するかチェック（認証済みユーザーの場合）
+            if user_id and token_data['user_id'] != user_id:
+                logger.warning(f"⚠️ CSRFトークンのユーザーID不一致: expected={token_data['user_id']}, actual={user_id}")
+                return False
+
+        return True
+
+    except Exception as e:
+        logger.error(f"CSRF検証エラー: {e}")
+        return False
+
+def cleanup_csrf_tokens():
+    """
+    期限切れCSRFトークンをクリーンアップ
+    """
+    with csrf_token_lock:
+        now = datetime.now()
+        expired_tokens = [
+            token for token, data in csrf_tokens.items()
+            if (now - data['created_at']).total_seconds() > 3600
+        ]
+        for token in expired_tokens:
+            del csrf_tokens[token]
+        if expired_tokens:
+            logger.info(f"🧹 期限切れCSRFトークンを削除: {len(expired_tokens)}個")
+
+def require_csrf(f):
+    """
+    CSRF保護デコレータ
+
+    GETリクエストは除外、POST/PUT/DELETEのみ検証
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # GETリクエストはCSRF検証をスキップ
+        if request.method == 'GET':
+            return f(*args, **kwargs)
+
+        # CSRFトークンを取得
+        csrf_token = request.headers.get('X-CSRF-Token')
+
+        if not csrf_token:
+            logger.warning(f"⚠️ CSRFトークンが提供されていません: {request.method} {request.path}")
+            return jsonify({
+                'success': False,
+                'error': 'CSRFトークンが必要です'
+            }), 403
+
+        # ユーザーIDを取得（認証済みの場合）
+        user_id = None
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            try:
+                from supabase import create_client
+                supabase_url = os.getenv('SUPABASE_URL')
+                supabase_key = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
+                if supabase_url and supabase_key:
+                    supabase_client = create_client(supabase_url, supabase_key)
+                    token = auth_header.replace('Bearer ', '')
+                    user_response = supabase_client.auth.get_user(token)
+                    if user_response and user_response.user:
+                        user_id = user_response.user.id
+            except Exception as e:
+                logger.debug(f"ユーザーID取得エラー（CSRF検証）: {e}")
+
+        # CSRFトークンを検証
+        if not verify_csrf_token(csrf_token, user_id):
+            logger.warning(f"⚠️ CSRF検証失敗: {request.method} {request.path}, user_id={user_id}")
+            return jsonify({
+                'success': False,
+                'error': 'CSRFトークンが無効です'
+            }), 403
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+# CSRFトークンクリーンアップタイマー（30分ごと）
+def csrf_cleanup_timer():
+    while True:
+        threading.Event().wait(1800)  # 30分
+        cleanup_csrf_tokens()
+
+csrf_cleanup_thread = threading.Thread(target=csrf_cleanup_timer, daemon=True)
+csrf_cleanup_thread.start()
+logger.info("✅ CSRFトークンクリーンアップスレッド起動")
 
 app = Flask(__name__)
 if CORS_AVAILABLE and CORS:
@@ -1313,6 +1499,37 @@ def add_security_headers(response):
 # ===== 静的ファイルBlueprint（最後に登録 - キャッチオールルートのため） =====
 app.register_blueprint(static_bp)
 init_static_blueprint(app)
+
+
+# ===== CSRFトークン取得エンドポイント =====
+@app.route('/api/csrf-token', methods=['GET'])
+def get_csrf_token():
+    """
+    CSRFトークンを取得
+
+    認証済みユーザーの場合はユーザーIDと紐付け、
+    未認証の場合は匿名トークンを発行
+    """
+    user_id = None
+
+    # 認証ヘッダーからユーザーIDを取得
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        try:
+            token = auth_header.replace('Bearer ', '')
+            user_response = supabase_client.auth.get_user(token)
+            if user_response and user_response.user:
+                user_id = user_response.user.id
+        except Exception as e:
+            logger.debug(f"ユーザーID取得エラー（CSRFトークン発行）: {e}")
+
+    # CSRFトークンを生成
+    csrf_token = generate_csrf_token(user_id)
+
+    return jsonify({
+        'success': True,
+        'csrf_token': csrf_token
+    })
 
 
 if __name__ == '__main__':
