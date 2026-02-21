@@ -53,9 +53,10 @@ export async function getCsrfToken(): Promise<string> {
     const result = await response.json();
 
     if (result.success && result.csrf_token) {
-      csrfToken = result.csrf_token;
+      const token: string = result.csrf_token;
+      csrfToken = token;
       csrfTokenExpiry = Date.now() + 30 * 60 * 1000; // 30分
-      return csrfToken;
+      return token;
     } else {
       throw new Error(result.error || 'CSRFトークン取得失敗');
     }
