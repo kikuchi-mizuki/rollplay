@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getConversations, getEvaluations, getScenarios } from '../../lib/api';
 import { downloadEvaluationsCSV } from '../../lib/csv';
@@ -151,7 +151,7 @@ export function HistoryPage() {
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   };
 
-  const toggleEvaluationExpanded = (evaluationId: string) => {
+  const toggleEvaluationExpanded = useCallback((evaluationId: string) => {
     setExpandedEvaluations(prev => {
       const newSet = new Set(prev);
       if (newSet.has(evaluationId)) {
@@ -161,7 +161,7 @@ export function HistoryPage() {
       }
       return newSet;
     });
-  };
+  }, []);
 
   if (loading) {
     return (

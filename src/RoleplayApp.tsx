@@ -15,9 +15,6 @@ import { getDefaultExpression, getExpressionForResponse, getExpressionImageUrl }
 import { useCamera } from './hooks/useCamera'; // Phase 2: カメラアクセス
 import { useScreenShare } from './hooks/useScreenShare'; // Phase 2 Day 3: 画面共有
 import { useRecording, RecordingData } from './hooks/useRecording'; // Phase 2 Day 4: 録画機能
-// import { useDIDAvatar } from './components/DIDAvatar';
-// import { AvatarManager } from './components/AvatarManager';
-// import { Avatar } from './lib/avatarManager';
 
 // 本番環境ではconsole.logを無効化するユーティリティ
 // 使用例: debug('メッセージ') は開発環境でのみ出力
@@ -170,12 +167,6 @@ function RoleplayApp() {
   }, [startVideoRecordingInternal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // アバター管理（将来実装予定）
-  // const [showAvatarManager, setShowAvatarManager] = useState(false);
-  // const [selectedAvatar, setSelectedAvatar] = useState<Avatar | null>(null);
-
-  // D-IDアバター統合（無効化 - タイムラグ対策）
-  // const { loading: didLoading, generateAndPlayVideo } = useDIDAvatar();
-
   // Web Speech API サポートチェック
   useEffect(() => {
     if ('speechSynthesis' in window) {
@@ -1606,6 +1597,8 @@ function RoleplayApp() {
                   }
                 `}
                 title={isCameraActive ? 'カメラをOFF' : 'カメラをON'}
+                aria-label={isCameraActive ? 'カメラをオフにする' : 'カメラをオンにする'}
+                aria-pressed={isCameraActive}
               >
                 {isCameraLoading ? '⏳' : '📷'}
                 {!isCameraActive && !isCameraLoading && (
@@ -1628,6 +1621,8 @@ function RoleplayApp() {
                   }
                 `}
                 title={isScreenSharing ? '画面共有を停止' : '画面共有を開始'}
+                aria-label={isScreenSharing ? '画面共有を停止する' : '画面共有を開始する'}
+                aria-pressed={isScreenSharing}
               >
                 {isScreenShareLoading ? '⏳' : '🖥️'}
               </button>
@@ -1644,6 +1639,14 @@ function RoleplayApp() {
                     : 'bg-white/20 text-white hover:bg-white/30'
                   }
                 `}
+                aria-label={
+                  !isCameraActive && !isScreenSharing
+                    ? "カメラまたは画面共有をオンにしてから録画してください"
+                    : isVideoRecording
+                    ? "録画を停止する"
+                    : "録画を開始する"
+                }
+                aria-pressed={isVideoRecording}
                 title={
                   !isCameraActive && !isScreenSharing
                     ? "カメラまたは画面共有をONにしてから録画してください"

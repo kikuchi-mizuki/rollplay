@@ -279,14 +279,18 @@ export function RegisterPage() {
 
           {/* 店舗コード入力 */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label htmlFor="store-code-input" className="block text-sm font-medium text-slate-300 mb-2">
               店舗コード <span className="text-red-400">*</span>
             </label>
             <input
+              id="store-code-input"
               type="text"
               placeholder="例: STORE_001"
               value={storeCode}
               onChange={(e) => handleStoreCodeChange(e.target.value)}
+              aria-label="店舗コードを入力"
+              aria-required="true"
+              aria-invalid={storeCode && !storeCodeValid && !verifying ? 'true' : 'false'}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]/60 focus:border-transparent transition-all backdrop-blur-sm"
             />
             {storeCode && verifying && (
@@ -315,14 +319,17 @@ export function RegisterPage() {
 
           {/* 表示名 */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label htmlFor="display-name-input" className="block text-sm font-medium text-slate-300 mb-2">
               表示名 <span className="text-red-400">*</span>
             </label>
             <input
+              id="display-name-input"
               type="text"
               placeholder="山田 太郎"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
+              aria-label="表示名を入力"
+              aria-required="true"
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]/60 focus:border-transparent transition-all backdrop-blur-sm"
             />
           </div>

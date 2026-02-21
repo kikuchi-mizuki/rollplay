@@ -279,7 +279,9 @@ export function CameraPip({
           <button
             onClick={() => setShowSettings(!showSettings)}
             className="bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-lg shadow-lg hover:bg-black/80 transition-colors"
-            aria-label="背景設定"
+            aria-label="背景設定を開く"
+            aria-expanded={showSettings}
+            aria-controls="camera-settings-panel"
           >
             <Palette size={14} />
           </button>
@@ -288,11 +290,16 @@ export function CameraPip({
 
       {/* 背景設定パネル */}
       {showSettings && !isRecording && (
-        <div className="absolute top-14 left-3 right-3 bg-black/90 backdrop-blur-md rounded-lg p-3 shadow-xl z-30 text-white">
+        <div
+          id="camera-settings-panel"
+          role="dialog"
+          aria-labelledby="camera-settings-title"
+          className="absolute top-14 left-3 right-3 bg-black/90 backdrop-blur-md rounded-lg p-3 shadow-xl z-30 text-white"
+        >
           <div className="space-y-3">
             {/* 背景モード切り替え */}
             <div>
-              <label className="text-xs font-medium mb-2 block">背景ぼかし</label>
+              <label id="camera-settings-title" className="text-xs font-medium mb-2 block">背景ぼかし</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => setBackgroundMode('none')}
