@@ -85,10 +85,16 @@ export function Header({
       </div>
       {/* ユーザーメニュー */}
       {showSettings && (
-        <div
-          className="absolute top-full right-4 mt-2 bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-xl w-64 shadow-xl z-[9999] p-4"
-          style={{ pointerEvents: 'auto' }}
-        >
+        <>
+          {/* 背景オーバーレイ（メニュー外クリックで閉じる） */}
+          <div
+            className="fixed inset-0 z-[9998]"
+            onClick={() => setShowSettings(false)}
+          />
+          <div
+            className="absolute top-full right-4 mt-2 bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-xl w-64 shadow-xl z-[9999] p-4"
+            style={{ pointerEvents: 'auto' }}
+          >
           {/* ユーザー情報 */}
           <div className="flex items-center gap-3 pb-3 border-b border-white/10">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
@@ -170,6 +176,7 @@ export function Header({
             閉じる
           </button>
         </div>
+        </>
       )}
     </header>
   );

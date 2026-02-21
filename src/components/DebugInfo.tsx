@@ -16,7 +16,7 @@ export function DebugInfo() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-w-md z-[9999] text-xs">
+    <div className="fixed bottom-4 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg max-w-md z-[9997] text-xs">
       <h3 className="font-bold text-yellow-400 mb-2">🔍 デバッグ情報</h3>
 
       <div className="space-y-2">
