@@ -76,14 +76,25 @@ export function clearCsrfToken() {
 }
 
 /**
- * APIリクエストにCSRFトークンを追加
+ * APIリクエストにCSRFトークンと認証トークンを追加
  */
 async function addCsrfTokenToHeaders(headers: HeadersInit = {}): Promise<HeadersInit> {
-  const token = await getCsrfToken();
-  return {
-    ...headers,
-    'X-CSRF-Token': token,
+  const csrfToken = await getCsrfToken();
+
+  // 認証トークンを取得
+  const { data: { session } } = await supabase.auth.getSession();
+  const authToken = session?.access_token;
+
+  const newHeaders: Record<string, string> = {
+    ...(headers as Record<string, string>),
+    'X-CSRF-Token': csrfToken,
   };
+
+  if (authToken) {
+    newHeaders['Authorization'] = `Bearer ${authToken}`;
+  }
+
+  return newHeaders;
 }
 
 /**
@@ -394,7 +405,19 @@ export async function getEvaluations(params: {
  */
 export async function getStoresStats(): Promise<any> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/stores/stats`);
+    // 認証トークンを取得
+    const { data: { session } } = await supabase.auth.getSession();
+    const authToken = session?.access_token;
+
+    if (!authToken) {
+      throw new Error('認証が必要です');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/stores/stats`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
     const result = await response.json();
 
     if (result.success && result.stats) {
@@ -413,7 +436,19 @@ export async function getStoresStats(): Promise<any> {
  */
 export async function getStoresRankings(): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/stores/rankings`);
+    // 認証トークンを取得
+    const { data: { session } } = await supabase.auth.getSession();
+    const authToken = session?.access_token;
+
+    if (!authToken) {
+      throw new Error('認証が必要です');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/stores/rankings`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
     const result = await response.json();
 
     if (result.success && result.rankings) {
@@ -432,7 +467,19 @@ export async function getStoresRankings(): Promise<any[]> {
  */
 export async function getOnlineUsers(thresholdMinutes: number = 5): Promise<any> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/online-users?threshold=${thresholdMinutes}`);
+    // 認証トークンを取得
+    const { data: { session } } = await supabase.auth.getSession();
+    const authToken = session?.access_token;
+
+    if (!authToken) {
+      throw new Error('認証が必要です');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/online-users?threshold=${thresholdMinutes}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
     const result = await response.json();
 
     if (result.success) {
@@ -455,13 +502,25 @@ export async function getOnlineUsers(thresholdMinutes: number = 5): Promise<any>
  */
 export async function getAllUsers(filters?: { store_id?: string; role?: string; search?: string }): Promise<any> {
   try {
+    // 認証トークンを取得
+    const { data: { session } } = await supabase.auth.getSession();
+    const authToken = session?.access_token;
+
+    if (!authToken) {
+      throw new Error('認証が必要です');
+    }
+
     const params = new URLSearchParams();
     if (filters?.store_id) params.append('store_id', filters.store_id);
     if (filters?.role) params.append('role', filters.role);
     if (filters?.search) params.append('search', filters.search);
 
     const url = `${API_BASE_URL}/api/admin/users${params.toString() ? '?' + params.toString() : ''}`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
     const result = await response.json();
 
     if (result.success) {
