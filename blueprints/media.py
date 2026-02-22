@@ -28,6 +28,7 @@ download_video_to_storage = None
 save_video_to_cache = None
 limiter = None  # レート制限機能
 require_auth = None  # 認証デコレータ
+require_budget = None  # コスト制限機能
 
 
 def init_blueprint(app):
@@ -39,7 +40,7 @@ def init_blueprint(app):
     global AudioSegment, sniff_suffix
     global generate_cache_key, get_cached_video, get_did_client
     global download_video_to_storage, save_video_to_cache
-    global limiter, require_auth
+    global limiter, require_auth, require_budget
 
     openai_client = app.config.get('openai_client')
     supabase_client = app.config.get('supabase_client')
@@ -54,6 +55,7 @@ def init_blueprint(app):
     save_video_to_cache = app.config.get('save_video_to_cache')
     limiter = app.config.get('limiter')
     require_auth = app.config.get('require_auth')
+    require_budget = app.config.get('require_budget')
 
 
 def apply_rate_limit(limit_string):
@@ -296,6 +298,18 @@ def text_to_speech():
 @apply_auth
 @apply_rate_limit("5 per minute")  # Whisper API使用のためレート制限
 def transcribe():
+    # コスト制限チェック
+    if require_budget:
+        from utils.cost_limiter import cost_limiter
+        can_use, error_msg = cost_limiter.can_use_service('whisper')
+        if not can_use:
+            logger.warning(f"🚫 予算制限によりサービス拒否: whisper")
+            return jsonify({
+                'success': False,
+                'error': error_msg,
+                'budget_exceeded': True
+            }), 429
+
     temp_path = None
     new_path = None
     try:
@@ -397,6 +411,11 @@ def transcribe():
                 logger.warning(f"[誤認識フィルタ] YouTube定型文を検出: {text}")
                 return jsonify(success=False, error='誤認識の可能性があります。もう一度お試しください。'), 400
 
+            # 使用量を記録
+            if require_budget:
+                from utils.cost_limiter import cost_limiter
+                cost_limiter.record_usage('whisper')
+
             return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
         except Exception as e:
             logger.debug(f"[Whisper失敗] エラー: {e}, ファイルサイズ: {size} bytes")
@@ -427,6 +446,11 @@ def transcribe():
                 if any(pattern in text for pattern in noise_patterns):
                     logger.warning(f"[誤認識フィルタ] YouTube定型文を検出: {text}")
                     return jsonify(success=False, error='誤認識の可能性があります。もう一度お試しください。'), 400
+
+                # 使用量を記録
+                if require_budget:
+                    from utils.cost_limiter import cost_limiter
+                    cost_limiter.record_usage('whisper')
 
                 return jsonify(success=True, text=text, method='whisper', timestamp=datetime.now().isoformat())
             finally:

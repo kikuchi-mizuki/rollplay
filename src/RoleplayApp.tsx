@@ -8,6 +8,7 @@ import { Toast } from './components/Toast';
 import { PersonaSelector } from './components/PersonaSelector';
 import { CameraPip } from './components/CameraPip';
 import { DebugInfo } from './components/DebugInfo';
+import { BudgetNotice } from './components/BudgetNotice';
 import { Message, Evaluation, RecordingState, Persona } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
@@ -1525,12 +1526,17 @@ function RoleplayApp() {
 
   return (
     <div className="min-h-[100dvh] min-h-[100svh] flex flex-col">
-      <Header 
-        isConnected={isConnected} 
+      <Header
+        isConnected={isConnected}
         scenarios={scenarios}
         selectedScenarioId={selectedScenarioId}
         onScenarioChange={setSelectedScenarioId}
       />
+
+      {/* 予算制限の告知バナー */}
+      <div className="max-w-[1200px] mx-auto w-full px-4 md:px-6 lg:px-10 xl:px-14 pt-4">
+        <BudgetNotice />
+      </div>
 
       {/* メインコンテンツ - モバイル: 縦並び、デスクトップ: 横並び */}
       <main className="flex-1 flex flex-col lg:grid lg:gap-8 lg:grid-cols-[minmax(520px,1fr)_minmax(420px,0.9fr)] items-stretch pb-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px)+1rem)] px-4 md:px-6 lg:px-10 xl:px-14 max-w-[1200px] mx-auto w-full relative transition-all">

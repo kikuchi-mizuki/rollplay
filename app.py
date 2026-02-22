@@ -8,6 +8,8 @@ from blueprints.static import static_bp, init_blueprint as init_static_blueprint
 from blueprints.admin import admin_bp, init_blueprint as init_admin_blueprint
 from blueprints.evaluations import evaluations_bp, init_blueprint as init_evaluations_blueprint
 from blueprints.conversations import conversations_bp, init_blueprint as init_conversations_blueprint
+# コスト制限モジュールのインポート
+from utils.cost_limiter import cost_limiter, require_budget
 import json
 import re
 import subprocess
@@ -1337,6 +1339,8 @@ app.config['save_video_to_cache'] = save_video_to_cache
 app.config['limiter'] = limiter  # レート制限機能を渡す
 app.config['require_auth'] = require_auth  # 認証デコレータを渡す
 app.config['require_csrf'] = require_csrf  # CSRF保護デコレータを渡す
+app.config['cost_limiter'] = cost_limiter  # コスト制限機能を渡す
+app.config['require_budget'] = require_budget  # 予算チェックデコレータを渡す
 init_media_blueprint(app)
 
 # 管理者機能Blueprint

@@ -37,6 +37,7 @@ load_evaluation_samples = None
 RUBRIC_DATA = None
 limiter = None  # レート制限機能
 require_csrf = None  # CSRF保護機能
+require_budget = None  # コスト制限機能
 MAX_MESSAGE_LENGTH = 2000  # デフォルト値
 MAX_HISTORY_LENGTH = 50
 MAX_EVALUATION_TEXT_LENGTH = 10000
@@ -56,7 +57,7 @@ def init_blueprint(app):
     global load_scenario_object, select_random_persona_for_scene, select_persona_by_id
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
     global load_evaluation_samples, RUBRIC_DATA
-    global limiter, require_csrf
+    global limiter, require_csrf, require_budget
     global MAX_MESSAGE_LENGTH, MAX_HISTORY_LENGTH, MAX_EVALUATION_TEXT_LENGTH
 
     supabase_client = app.config.get('supabase_client')
@@ -74,6 +75,7 @@ def init_blueprint(app):
     RUBRIC_DATA = app.config.get('RUBRIC_DATA')
     limiter = app.config.get('limiter')
     require_csrf = app.config.get('require_csrf')
+    require_budget = app.config.get('require_budget')
     validate_integer_param = app.config.get('validate_integer_param')
     validate_required_string = app.config.get('validate_required_string')
     MAX_MESSAGE_LENGTH = app.config.get('MAX_MESSAGE_LENGTH', 2000)
@@ -712,6 +714,18 @@ def chat_stream():
     ストリーミング対応のチャットエンドポイント
     GPT応答を即座に生成・TTS・送信してリアルタイム性を向上
     """
+    # コスト制限チェック
+    if require_budget:
+        from utils.cost_limiter import cost_limiter
+        can_use, error_msg = cost_limiter.can_use_service('gpt_chat')
+        if not can_use:
+            logger.warning(f"🚫 予算制限によりサービス拒否: gpt_chat")
+            return jsonify({
+                'success': False,
+                'error': error_msg,
+                'budget_exceeded': True
+            }), 429
+
     try:
         data = request.get_json()
         if not data:
@@ -1283,6 +1297,11 @@ def chat_stream():
                 # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
                 logger.exception(f"チャットストリーム - 予期しないエラー: {type(e).__name__}: {e}")
                 yield f"data: {json.dumps({'error': '応答生成中にエラーが発生しました。もう一度お試しください'})}\n\n"
+
+        # 使用量を記録（ストリーミング開始時点で記録）
+        if require_budget:
+            from utils.cost_limiter import cost_limiter
+            cost_limiter.record_usage('gpt_chat')
 
         return Response(generate(), mimetype='text/event-stream', headers={
             'Cache-Control': 'no-cache',
