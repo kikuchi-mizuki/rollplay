@@ -8,6 +8,12 @@ import logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, jsonify, request, Response
+from utils.validation import (
+    validate_json_size,
+    validate_string_field,
+    validate_integer_field,
+    validate_list_field
+)
 
 # ロガー取得
 logger = logging.getLogger(__name__)
@@ -708,6 +714,24 @@ def chat_stream():
     """
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': '不正なリクエストです'}), 400
+
+        # データサイズのバリデーション
+        size_error = validate_json_size(data, max_size_mb=5)
+        if size_error:
+            return size_error
+
+        # メッセージフィールドのバリデーション
+        msg_error = validate_string_field(data, 'message', required=False, max_length=MAX_MESSAGE_LENGTH)
+        if msg_error:
+            return msg_error
+
+        # 会話履歴のバリデーション
+        history_error = validate_list_field(data, 'history', required=False, max_items=MAX_HISTORY_LENGTH)
+        if history_error:
+            return history_error
+
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         scenario_id = data.get('scenario_id') or DEFAULT_SCENARIO_ID
@@ -718,14 +742,7 @@ def chat_stream():
         if request_persona:
             logger.info(f"[リクエスト受信] request_persona.voice_name={request_persona.get('voice_name')}, speaking_rate={request_persona.get('speaking_rate')}")
 
-        # 入力値検証
-        if len(user_message) > MAX_MESSAGE_LENGTH:
-            logger.warning(f"メッセージ長超過: {len(user_message)}文字 (最大{MAX_MESSAGE_LENGTH}文字)")
-            return jsonify({
-                'success': False,
-                'error': f'メッセージが長すぎます（最大{MAX_MESSAGE_LENGTH}文字）'
-            }), 400
-
+        # 会話履歴の長さ制限（既にバリデーション済みだが念のため）
         if len(conversation_history) > MAX_HISTORY_LENGTH:
             logger.warning(f"会話履歴超過: {len(conversation_history)}件 (最大{MAX_HISTORY_LENGTH}件)")
             conversation_history = conversation_history[-MAX_HISTORY_LENGTH:]

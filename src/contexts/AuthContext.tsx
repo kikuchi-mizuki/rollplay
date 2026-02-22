@@ -152,10 +152,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw err
           })
 
-        const { data: { session }, error } = await Promise.race([
+        const result = await Promise.race([
           sessionPromise,
           timeoutPromise
-        ]) as any
+        ]) as Awaited<ReturnType<typeof supabase.auth.getSession>>
+
+        const { data: { session }, error } = result
 
         if (error) {
           console.error('❌ セッション取得エラー:', error)

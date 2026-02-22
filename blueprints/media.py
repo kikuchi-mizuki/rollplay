@@ -296,25 +296,71 @@ def text_to_speech():
 @apply_auth
 @apply_rate_limit("5 per minute")  # Whisper API使用のためレート制限
 def transcribe():
+    temp_path = None
+    new_path = None
     try:
         if 'audio' not in request.files:
             return jsonify(success=False, error='音声ファイルが見つかりません'), 400
+
         up = request.files['audio']
+
+        # ファイル名のチェック
+        if not up.filename:
+            return jsonify(success=False, error='ファイル名が無効です'), 400
+
+        # 許可されたMIMEタイプ（音声ファイル）
+        ALLOWED_MIMETYPES = {
+            'audio/webm', 'audio/mpeg', 'audio/mp4', 'audio/wav',
+            'audio/ogg', 'audio/flac', 'audio/x-m4a', 'audio/mp3',
+            'application/octet-stream'  # ブラウザがMIMEタイプを判定できない場合
+        }
+
+        # MIMEタイプの検証（Content-Typeヘッダー）
+        if up.mimetype and up.mimetype not in ALLOWED_MIMETYPES:
+            logger.warning(f"不正なMIMEタイプ: {up.mimetype}")
+            return jsonify(success=False, error=f'サポートされていないファイル形式です: {up.mimetype}'), 400
+
+        # ファイルサイズの制限（25MB - Whisper APIの制限）
+        MAX_FILE_SIZE = 25 * 1024 * 1024  # 25MB
+        up.seek(0, 2)  # ファイルの終端に移動
+        file_size = up.tell()
+        up.seek(0)  # ファイルの先頭に戻す
+
+        if file_size > MAX_FILE_SIZE:
+            logger.warning(f"ファイルサイズ超過: {file_size} bytes")
+            return jsonify(success=False, error=f'ファイルサイズが大きすぎます（最大25MB）'), 413
+
         # 一旦 .bin で保存
         with tempfile.NamedTemporaryFile(delete=False, suffix='.bin') as t:
             up.save(t.name)
             temp_path = t.name
+
         # 先頭バイトから実体を判定してrename
         real_suffix = sniff_suffix(temp_path)
+
+        # 許可された拡張子のチェック
+        ALLOWED_EXTENSIONS = {'.webm', '.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.ogg', '.flac'}
+        if real_suffix not in ALLOWED_EXTENSIONS:
+            logger.warning(f"不正なファイル形式: {real_suffix}")
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
+            return jsonify(success=False, error=f'サポートされていないファイル形式です'), 400
+
         new_path = temp_path
         if real_suffix != '.bin':
             new_path = temp_path + real_suffix
             os.replace(temp_path, new_path)
+
         size = os.path.getsize(new_path)
         logger.debug(f"[upload] mime={up.mimetype} saved={new_path} size={size}")
+
         if size < 1024:  # 1KB未満は明らかに短すぎる
-            try: os.remove(new_path)
-            except Exception: pass
+            try:
+                os.remove(new_path)
+            except Exception:
+                pass
             logger.error(f"録音データが小さすぎます: {size} bytes")
             return jsonify(success=False, error=f'録音データが小さすぎます({size} bytes)。もう少し長く話してください。'), 400
         # Whisperへ（まず直送）
@@ -397,11 +443,14 @@ def transcribe():
         logger.error(f"予期しないエラー: {type(e).__name__}: {e}")
         return jsonify(success=False, error='音声認識中にエラーが発生しました。もう一度お試しください。'), 500
     finally:
-        try:
-            if 'new_path' in locals() and new_path and os.path.exists(new_path):
-                os.remove(new_path)
-        except Exception as e:
-            logger.warning(f"一時ファイル削除失敗: {e}")
+        # 一時ファイルのクリーンアップ
+        for path in [temp_path, new_path]:
+            if path and os.path.exists(path):
+                try:
+                    os.remove(path)
+                    logger.debug(f"一時ファイルを削除: {path}")
+                except Exception as e:
+                    logger.warning(f"一時ファイル削除失敗: {e}")
 
 
 def transcribe_with_whisper(audio_bytes):

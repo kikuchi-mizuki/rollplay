@@ -113,8 +113,30 @@ class SimpleRateLimiter:
         self.max_keys = max_keys  # DoS対策: 最大キー数制限
 
     def _default_key_func(self):
-        """デフォルトのキー関数（リモートアドレスを使用）"""
+        """
+        デフォルトのキー関数（プロキシ対応のリモートアドレス取得）
+        X-Forwarded-Forヘッダーから実際のクライアントIPを取得
+        """
         from flask import request
+
+        # X-Forwarded-Forヘッダーから実際のIPアドレスを取得
+        # 形式: "client, proxy1, proxy2" から最初のIPを取得
+        forwarded_for = request.headers.get('X-Forwarded-For')
+        if forwarded_for:
+            # 最初のIPアドレス（実際のクライアント）を取得
+            client_ip = forwarded_for.split(',')[0].strip()
+            # 簡単なIPアドレス形式の検証
+            import re
+            # IPv4またはIPv6の基本的な形式チェック
+            if re.match(r'^[\d\.]+$|^[\da-fA-F:]+$', client_ip):
+                return client_ip
+
+        # X-Real-IPヘッダー（一部のプロキシが使用）
+        real_ip = request.headers.get('X-Real-IP')
+        if real_ip:
+            return real_ip.strip()
+
+        # フォールバック: request.remote_addr
         return request.remote_addr or 'unknown'
 
     def _parse_limit_string(self, limit_string):
