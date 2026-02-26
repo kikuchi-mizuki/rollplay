@@ -12,7 +12,7 @@ interface PersonaInfoProps {
  * 会話中も選択したペルソナ情報を表示
  */
 export function PersonaInfo({ persona, isVisible }: PersonaInfoProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!isVisible || !persona) return null;
 
