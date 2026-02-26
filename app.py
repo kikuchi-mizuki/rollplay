@@ -872,10 +872,13 @@ def select_random_persona_for_scene(scene_id: str):
         logger.warning(f"[ペルソナ選択] 警告: シーンID '{scene_id}' の状況設定が見つかりません")
 
     # ベースプロフィールとシーン状況を統合
+    # フロントエンド表示用にbase_profile、company_detailsを保持
     combined_persona = {
         'persona_id': persona_id,
         'persona_name': persona_name,
-        **base_profile,
+        'base_profile': base_profile,  # ネストされた構造を保持
+        'company_details': persona.get('company_details', {}),  # company_detailsを追加
+        **base_profile,  # プロンプト生成用にフラット化も保持（後方互換性）
         **scene_variation
     }
 
@@ -921,10 +924,13 @@ def select_persona_by_id(persona_id, scene_id):
         logger.warning(f"[ペルソナ選択] 警告: シーンID '{scene_id}' の状況設定が見つかりません")
 
     # ベースプロフィールとシーン状況を統合
+    # フロントエンド表示用にbase_profile、company_detailsを保持
     combined_persona = {
         'persona_id': persona_id,
         'persona_name': persona_name,
-        **base_profile,
+        'base_profile': base_profile,  # ネストされた構造を保持
+        'company_details': persona.get('company_details', {}),  # company_detailsを追加
+        **base_profile,  # プロンプト生成用にフラット化も保持（後方互換性）
         **scene_variation
     }
 
