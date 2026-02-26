@@ -110,6 +110,57 @@ def apply_csrf(func):
     return func
 
 
+def get_difficulty_instructions(difficulty: str) -> str:
+    """
+    難易度レベルに応じたAI指示を生成
+
+    Args:
+        difficulty: 'beginner' | 'intermediate' | 'advanced'
+
+    Returns:
+        難易度に応じた指示文字列
+    """
+    difficulty_map = {
+        'beginner': {
+            'title': '初級モード',
+            'instructions': [
+                '質問には丁寧に答え、営業担当者をサポートする',
+                '課題や関心事を比較的明確に伝える',
+                '興味を持っている様子を示し、前向きな反応を返す',
+                '複雑な質問や予算の詳細な追求は控える',
+                '営業が良い提案をした場合は素直に評価する'
+            ]
+        },
+        'intermediate': {
+            'title': '中級モード',
+            'instructions': [
+                '適度に警戒心を持ち、質問には慎重に答える',
+                '自社の課題は存在するが、すぐには明かさない',
+                '営業の提案に対して適度な質問や確認を行う',
+                '予算や条件について具体的な確認をする',
+                '営業のスキルに応じて態度を変える（良い質問には詳細に答える）'
+            ]
+        },
+        'advanced': {
+            'title': '上級モード',
+            'instructions': [
+                '警戒心が強く、簡単には心を開かない',
+                '具体的な数字（売上、ROI、予算など）について詳しく質問する',
+                '他社サービスとの比較や、実績について厳しく質問する',
+                '営業の提案に対して懐疑的な姿勢を示す',
+                '「なぜ？」「具体的には？」など深掘りする質問を多用する',
+                '営業が優れた提案をしない限り、簡単には前向きにならない',
+                '時間的制約や予算の厳しさを明確に示す'
+            ]
+        }
+    }
+
+    level_data = difficulty_map.get(difficulty, difficulty_map['intermediate'])
+    instructions_text = '\n- '.join(level_data['instructions'])
+
+    return f"\n\n【{level_data['title']}】\n- {instructions_text}"
+
+
 def get_persona_type_from_profile(persona: dict) -> str:
     """
     ペルソナ情報から音声タイプを判定する
@@ -498,6 +549,10 @@ def chat():
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
+
+                    # 難易度レベルの指示を追加
+                    system_prompt += get_difficulty_instructions(difficulty)
+
                 elif not is_first_message:
                     # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
                     conversation_turn = len(conversation_history) // 2  # 往復数を計算
@@ -752,7 +807,8 @@ def chat_stream():
         conversation_id = data.get('conversation_id')  # 会話IDを取得
         request_persona = data.get('persona')  # フロントエンドから送信されたペルソナ（会話継続時のフォールバック）
         persona_id = data.get('persona_id')  # フロントエンドから送信されたペルソナID（新規会話時）
-        logger.info(f"[リクエスト受信] conversation_id={conversation_id}, request_persona={'あり' if request_persona else 'なし'}, persona_id={persona_id if persona_id else 'なし'}")
+        difficulty = data.get('difficulty', 'intermediate')  # 難易度レベル（beginner/intermediate/advanced）
+        logger.info(f"[リクエスト受信] conversation_id={conversation_id}, request_persona={'あり' if request_persona else 'なし'}, persona_id={persona_id if persona_id else 'なし'}, difficulty={difficulty}")
         if request_persona:
             logger.info(f"[リクエスト受信] request_persona.voice_name={request_persona.get('voice_name')}, speaking_rate={request_persona.get('speaking_rate')}")
 
@@ -1036,6 +1092,10 @@ def chat_stream():
                         system_prompt += "\n\n【シナリオ設定】\n- " + "\n- ".join(persona_txt)
                     if guidelines:
                         system_prompt += "\n\n【返答ガイドライン】\n- " + "\n- ".join(guidelines)
+
+                    # 難易度レベルの指示を追加
+                    system_prompt += get_difficulty_instructions(difficulty)
+
                 elif not is_first_message:
                     # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
                     conversation_turn = len(conversation_history) // 2  # 往復数を計算
@@ -1530,6 +1590,29 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 "【提案力】具体的な発言を引用した改善点と改善方法"
             ],
             "overall": "総合評価（全体の印象と次回への具体的なアドバイス。100-200文字程度）",
+            "detailedFeedback": {{
+                "questioning": {{
+                    "rationale": "質問力のスコアをこの点数にした理由（具体的な根拠）",
+                    "examples": ["営業の具体的な質問例1", "営業の具体的な質問例2"]
+                }},
+                "listening": {{
+                    "rationale": "傾聴力のスコアをこの点数にした理由（具体的な根拠）",
+                    "examples": ["傾聴の具体例1", "傾聴の具体例2"]
+                }},
+                "proposing": {{
+                    "rationale": "提案力のスコアをこの点数にした理由（具体的な根拠）",
+                    "examples": ["提案の具体例1", "提案の具体例2"]
+                }},
+                "closing": {{
+                    "rationale": "クロージング力のスコアをこの点数にした理由（具体的な根拠）",
+                    "examples": ["クロージングの具体例1"]
+                }}
+            }},
+            "actionPlan": [
+                "次回のロープレで実践すべき具体的なアクション1",
+                "次回のロープレで実践すべき具体的なアクション2",
+                "次回のロープレで実践すべき具体的なアクション3"
+            ],
             "analysis": {{
                 "questions_count": 数値,
                 "listening_responses_count": 数値,
@@ -1552,10 +1635,11 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 {"role": "system", "content": """あなたはショート動画制作営業のプロフェッショナルコーチです。
 10年以上の営業経験を持ち、1000件以上のロープレを評価してきました。
 営業の発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。
-良かった点と改善点を明確に分け、次回のロープレで即実行できる具体的なアドバイスを心がけてください。"""},
+良かった点と改善点を明確に分け、次回のロープレで即実行できる具体的なアドバイスを心がけてください。
+各スコアの根拠、具体例、改善アクションプランを含めて、詳細で実用的なフィードバックを提供してください。"""},
                 {"role": "user", "content": evaluation_prompt}
             ],
-            max_tokens=1500,  # より詳細な評価のため増量
+            max_tokens=2500,  # 詳細フィードバックのためトークン数を増量
             temperature=0.3
         )
         

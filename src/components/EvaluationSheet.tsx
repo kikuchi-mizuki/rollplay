@@ -18,7 +18,7 @@ interface EvaluationSheetProps {
 }
 
 export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: EvaluationSheetProps) {
-  const [activeTab, setActiveTab] = useState<'overall' | 'strengths' | 'improvements' | 'scores'>(
+  const [activeTab, setActiveTab] = useState<'overall' | 'strengths' | 'improvements' | 'scores' | 'detailed'>(
     'overall'
   );
   const [copied, setCopied] = useState(false);
@@ -71,6 +71,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
     { id: 'strengths' as const, label: '良かった点' },
     { id: 'improvements' as const, label: '改善点' },
     { id: 'scores' as const, label: 'スコア' },
+    { id: 'detailed' as const, label: '詳細分析' },
   ];
 
   return (
@@ -205,6 +206,153 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                   {evaluation.scores.total}
                 </div>
               </div>
+
+              {/* アクションプラン */}
+              {evaluation.actionPlan && evaluation.actionPlan.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-bold text-text mb-3">次回への改善アクションプラン</h3>
+                  <div className="space-y-2">
+                    {evaluation.actionPlan.map((action, index) => (
+                      <div key={index} className="card bg-blue-500/10 border-l-4 border-blue-500">
+                        <div className="flex items-start gap-3">
+                          <span className="text-blue-500 font-bold">{index + 1}.</span>
+                          <p className="text-text flex-1">{action}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'detailed' && (
+            <div className="space-y-6">
+              {/* 質問力の詳細 */}
+              {evaluation.detailedFeedback?.questioning && (
+                <div className="card">
+                  <h3 className="text-lg font-bold text-text mb-3 flex items-center gap-2">
+                    <span className="text-blue-500">📋</span> 質問力の分析
+                  </h3>
+                  {evaluation.detailedFeedback.questioning.rationale && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">スコアの根拠</h4>
+                      <p className="text-text leading-relaxed">
+                        {evaluation.detailedFeedback.questioning.rationale}
+                      </p>
+                    </div>
+                  )}
+                  {evaluation.detailedFeedback.questioning.examples && evaluation.detailedFeedback.questioning.examples.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">具体例</h4>
+                      <ul className="space-y-2">
+                        {evaluation.detailedFeedback.questioning.examples.map((example, idx) => (
+                          <li key={idx} className="bg-slate-100 p-3 rounded text-sm text-text italic border-l-4 border-blue-500">
+                            {example}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 傾聴力の詳細 */}
+              {evaluation.detailedFeedback?.listening && (
+                <div className="card">
+                  <h3 className="text-lg font-bold text-text mb-3 flex items-center gap-2">
+                    <span className="text-green-500">👂</span> 傾聴力の分析
+                  </h3>
+                  {evaluation.detailedFeedback.listening.rationale && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">スコアの根拠</h4>
+                      <p className="text-text leading-relaxed">
+                        {evaluation.detailedFeedback.listening.rationale}
+                      </p>
+                    </div>
+                  )}
+                  {evaluation.detailedFeedback.listening.examples && evaluation.detailedFeedback.listening.examples.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">具体例</h4>
+                      <ul className="space-y-2">
+                        {evaluation.detailedFeedback.listening.examples.map((example, idx) => (
+                          <li key={idx} className="bg-slate-100 p-3 rounded text-sm text-text italic border-l-4 border-green-500">
+                            {example}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 提案力の詳細 */}
+              {evaluation.detailedFeedback?.proposing && (
+                <div className="card">
+                  <h3 className="text-lg font-bold text-text mb-3 flex items-center gap-2">
+                    <span className="text-purple-500">💡</span> 提案力の分析
+                  </h3>
+                  {evaluation.detailedFeedback.proposing.rationale && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">スコアの根拠</h4>
+                      <p className="text-text leading-relaxed">
+                        {evaluation.detailedFeedback.proposing.rationale}
+                      </p>
+                    </div>
+                  )}
+                  {evaluation.detailedFeedback.proposing.examples && evaluation.detailedFeedback.proposing.examples.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">具体例</h4>
+                      <ul className="space-y-2">
+                        {evaluation.detailedFeedback.proposing.examples.map((example, idx) => (
+                          <li key={idx} className="bg-slate-100 p-3 rounded text-sm text-text italic border-l-4 border-purple-500">
+                            {example}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* クロージング力の詳細 */}
+              {evaluation.detailedFeedback?.closing && (
+                <div className="card">
+                  <h3 className="text-lg font-bold text-text mb-3 flex items-center gap-2">
+                    <span className="text-orange-500">🎯</span> クロージング力の分析
+                  </h3>
+                  {evaluation.detailedFeedback.closing.rationale && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">スコアの根拠</h4>
+                      <p className="text-text leading-relaxed">
+                        {evaluation.detailedFeedback.closing.rationale}
+                      </p>
+                    </div>
+                  )}
+                  {evaluation.detailedFeedback.closing.examples && evaluation.detailedFeedback.closing.examples.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-text-muted mb-2">具体例</h4>
+                      <ul className="space-y-2">
+                        {evaluation.detailedFeedback.closing.examples.map((example, idx) => (
+                          <li key={idx} className="bg-slate-100 p-3 rounded text-sm text-text italic border-l-4 border-orange-500">
+                            {example}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 詳細分析がない場合 */}
+              {!evaluation.detailedFeedback && (
+                <div className="card bg-gray-50 text-center py-8">
+                  <p className="text-text-muted">詳細分析データはありません</p>
+                  <p className="text-sm text-text-muted mt-2">
+                    次回の評価から詳細な分析が表示されます
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

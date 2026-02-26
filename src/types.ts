@@ -27,6 +27,26 @@ export interface Evaluation {
     closing: number;
     total: number;
   };
+  // 詳細フィードバック（オプショナル）
+  detailedFeedback?: {
+    questioning?: {
+      rationale?: string; // スコアの根拠
+      examples?: string[]; // 具体的な会話例
+    };
+    listening?: {
+      rationale?: string;
+      examples?: string[];
+    };
+    proposing?: {
+      rationale?: string;
+      examples?: string[];
+    };
+    closing?: {
+      rationale?: string;
+      examples?: string[];
+    };
+  };
+  actionPlan?: string[]; // 次回への改善アクションプラン
 }
 
 /**

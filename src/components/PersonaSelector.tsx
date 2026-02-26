@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface PersonaSelectorProps {
   isOpen: boolean;
-  onSelect: (personaId: string) => void;
+  onSelect: (personaId: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => void;
   onClose: () => void;
 }
 
@@ -32,6 +32,7 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
 
   useEffect(() => {
     if (isOpen) {
@@ -55,7 +56,16 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
 
   const handleConfirm = () => {
     if (selectedPersonaId) {
-      onSelect(selectedPersonaId);
+      onSelect(selectedPersonaId, selectedDifficulty);
+      onClose();
+    }
+  };
+
+  const handleRandomSelect = () => {
+    if (personas.length > 0) {
+      const randomIndex = Math.floor(Math.random() * personas.length);
+      const randomPersona = personas[randomIndex];
+      onSelect(randomPersona.persona_id, selectedDifficulty);
       onClose();
     }
   };
@@ -80,7 +90,69 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <>
+              {/* 難易度選択 */}
+              <div className="mb-6">
+                <h3 className="text-white font-semibold mb-3">難易度レベル</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    onClick={() => setSelectedDifficulty('beginner')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedDifficulty === 'beginner'
+                        ? 'border-green-500 bg-green-500/10 shadow-lg shadow-green-500/20'
+                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">⭐</div>
+                      <div className={`font-semibold ${selectedDifficulty === 'beginner' ? 'text-green-400' : 'text-gray-300'}`}>
+                        初級
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        優しく丁寧な対応
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setSelectedDifficulty('intermediate')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedDifficulty === 'intermediate'
+                        ? 'border-yellow-500 bg-yellow-500/10 shadow-lg shadow-yellow-500/20'
+                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">⭐⭐</div>
+                      <div className={`font-semibold ${selectedDifficulty === 'intermediate' ? 'text-yellow-400' : 'text-gray-300'}`}>
+                        中級
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        標準的な対応
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setSelectedDifficulty('advanced')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedDifficulty === 'advanced'
+                        ? 'border-red-500 bg-red-500/10 shadow-lg shadow-red-500/20'
+                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">⭐⭐⭐</div>
+                      <div className={`font-semibold ${selectedDifficulty === 'advanced' ? 'text-red-400' : 'text-gray-300'}`}>
+                        上級
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        厳しい質問あり
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {personas.map((persona) => (
                 <div
                   key={persona.persona_id}
@@ -152,7 +224,8 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            </>
           )}
         </div>
 
@@ -164,19 +237,29 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
           >
             キャンセル
           </button>
-          <button
-            onClick={handleConfirm}
-            disabled={!selectedPersonaId}
-            className={`
-              px-8 py-2 rounded-lg font-semibold transition-all
-              ${selectedPersonaId
-                ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg'
-                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-              }
-            `}
-          >
-            この顧客で開始
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleRandomSelect}
+              disabled={loading || personas.length === 0}
+              className="px-6 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              title="ランダムに顧客を選択します"
+            >
+              おまかせ選択
+            </button>
+            <button
+              onClick={handleConfirm}
+              disabled={!selectedPersonaId}
+              className={`
+                px-8 py-2 rounded-lg font-semibold transition-all
+                ${selectedPersonaId
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg'
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                }
+              `}
+            >
+              この顧客で開始
+            </button>
+          </div>
         </div>
       </div>
     </div>

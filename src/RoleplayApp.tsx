@@ -6,6 +6,7 @@ import { EvaluationSheet } from './components/EvaluationSheet';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { Toast } from './components/Toast';
 import { PersonaSelector } from './components/PersonaSelector';
+import { PersonaInfo } from './components/PersonaInfo';
 import { CameraPip } from './components/CameraPip';
 import { DebugInfo } from './components/DebugInfo';
 import { BudgetNotice } from './components/BudgetNotice';
@@ -64,6 +65,7 @@ function RoleplayApp() {
   const [showPersonaSelector, setShowPersonaSelector] = useState(false); // ペルソナ選択モーダルの表示状態
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null); // 選択されたペルソナID
   const selectedPersonaIdRef = useRef<string | null>(null); // selectedPersonaIdのRef（クロージャー問題を回避）
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate'); // 難易度レベル
   const currentAvatarId = 'avatar_03'; // 固定アバター（20代女性）
   const conversationStartTime = useRef<Date | null>(null);
   const lastExpressionRef = useRef<string>(getDefaultExpression('avatar_03')); // 前回の表情を記憶（不要な切り替え防止）
@@ -696,7 +698,8 @@ function RoleplayApp() {
           scenario_id: selectedScenarioId,
           conversation_id: conversationId, // 会話IDを送信（ペルソナ固定用）
           persona: personaToSend, // 現在のペルソナを送信（conversation_idがない場合のフォールバック）
-          persona_id: personaIdToSend // 選択されたペルソナID（新規会話時）
+          persona_id: personaIdToSend, // 選択されたペルソナID（新規会話時）
+          difficulty: difficulty // 難易度レベル（beginner/intermediate/advanced）
         }),
       });
 
@@ -1611,9 +1614,15 @@ function RoleplayApp() {
         {/* モバイル: チャットを下部に表示（スクロール可能） */}
         <section
           id="chat-anchor"
-          className="card flex flex-col justify-center items-center w-full flex-1 lg:min-h-[calc(100dvh-180px)] overflow-hidden relative animate-floatIn lg:order-1"
+          className="flex flex-col gap-4 w-full flex-1 lg:min-h-[calc(100dvh-180px)] lg:order-1"
         >
-          <ChatPanel messages={messages} />
+          {/* 顧客情報パネル */}
+          <PersonaInfo persona={currentPersona} isVisible={!!currentPersona} />
+
+          {/* チャットパネル */}
+          <div className="card flex flex-col justify-center items-center w-full flex-1 overflow-hidden relative animate-floatIn">
+            <ChatPanel messages={messages} />
+          </div>
         </section>
       </main>
 
@@ -1912,8 +1921,12 @@ function RoleplayApp() {
       {/* ペルソナ選択モーダル */}
       <PersonaSelector
         isOpen={showPersonaSelector}
-        onSelect={(personaId) => {
+        onSelect={(personaId, selectedDifficulty) => {
+          selectedPersonaIdRef.current = personaId;
           setSelectedPersonaId(personaId);
+          if (selectedDifficulty) {
+            setDifficulty(selectedDifficulty);
+          }
           setShowPersonaSelector(false);
         }}
         onClose={() => setShowPersonaSelector(false)}
