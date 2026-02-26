@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface PersonaSelectorProps {
   isOpen: boolean;
-  onSelect: (personaId: string, difficulty?: 'beginner' | 'intermediate' | 'advanced') => void;
+  onSelect: (personaId: string, difficulty?: 'beginner' | 'intermediate' | 'advanced', personaData?: Persona) => void;
   onClose: () => void;
 }
 
@@ -56,7 +56,8 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
 
   const handleConfirm = () => {
     if (selectedPersonaId) {
-      onSelect(selectedPersonaId, selectedDifficulty);
+      const selectedPersona = personas.find(p => p.persona_id === selectedPersonaId);
+      onSelect(selectedPersonaId, selectedDifficulty, selectedPersona);
       onClose();
     }
   };
@@ -65,7 +66,7 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
     if (personas.length > 0) {
       const randomIndex = Math.floor(Math.random() * personas.length);
       const randomPersona = personas[randomIndex];
-      onSelect(randomPersona.persona_id, selectedDifficulty);
+      onSelect(randomPersona.persona_id, selectedDifficulty, randomPersona);
       onClose();
     }
   };

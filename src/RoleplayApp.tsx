@@ -1921,11 +1921,17 @@ function RoleplayApp() {
       {/* ペルソナ選択モーダル */}
       <PersonaSelector
         isOpen={showPersonaSelector}
-        onSelect={(personaId, selectedDifficulty) => {
+        onSelect={(personaId, selectedDifficulty, personaData) => {
           selectedPersonaIdRef.current = personaId;
           setSelectedPersonaId(personaId);
           if (selectedDifficulty) {
             setDifficulty(selectedDifficulty);
+          }
+          // ペルソナ情報を即座にセット（バックエンドからの応答を待たない）
+          if (personaData) {
+            setCurrentPersona(personaData);
+            currentPersonaRef.current = personaData;
+            console.log('[ペルソナ選択] 即座にセット:', personaData.persona_name);
           }
           setShowPersonaSelector(false);
         }}
