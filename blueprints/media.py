@@ -383,8 +383,9 @@ def transcribe():
 
         # Whisperで音声認識（ビジネス用語認識精度向上）
         # promptに営業・ビジネス用語を追加して認識精度を向上
-        business_prompt = "御社、弊社、貴社、事業概要、サービス内容、費用、予算、導入事例、実績、課題、ニーズ、提案、ご提案、検討、ご検討、ROI、KPI"
-        logger.debug(f"[Whisper設定] prompt: ビジネス用語ヒント, temperature: 0")
+        # 動画制作・マーケティング関連の専門用語を含む
+        business_prompt = "御社、弊社、貴社、事業概要、サービス内容、費用、予算、導入事例、実績、課題、ニーズ、提案、ご提案、検討、ご検討、ROI、KPI、動画制作、ショート動画、TikTok、Instagram、YouTube、SNS、リール、縦型動画、エンゲージメント、インプレッション、リーチ、コンバージョン、広告運用、マーケティング、ブランディング、集客、認知拡大、フォロワー、バズる、バイラル"
+        logger.debug(f"[Whisper設定] prompt: ビジネス・動画制作用語ヒント, temperature: 0")
 
         try:
             with open(new_path, 'rb') as f:
@@ -424,6 +425,7 @@ def transcribe():
             wav_path = new_path + '.wav'
             AudioSegment.from_file(new_path).set_frame_rate(16000).set_channels(1).export(wav_path, format='wav')
             try:
+                # WAV変換後も同じビジネス・動画制作用語プロンプトを使用
                 with open(wav_path, 'rb') as f:
                     r = openai_client.audio.transcriptions.create(
                         model='whisper-1',
