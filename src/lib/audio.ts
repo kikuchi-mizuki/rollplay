@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 70; // 音声検出閾値（0-100）バランス調整：65→70
+  private vadThreshold: number = 65; // 音声検出閾値（0-100）話始め検出強化：70→65
   private vadInterruptThreshold: number = 92; // 割り込み検出閾値（AI話し中の割り込みを検出）※明確な割り込みのみ
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
@@ -37,7 +37,7 @@ export class AudioRecorder {
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
-  private voiceContinueDuration: number = 200; // 音声が継続する必要がある時間（ミリ秒）バランス調整：100→200ms
+  private voiceContinueDuration: number = 100; // 音声が継続する必要がある時間（ミリ秒）話始め検出強化：200→100ms
 
   /**
    * 録音開始（モバイル対応強化）
