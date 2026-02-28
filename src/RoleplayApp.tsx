@@ -9,7 +9,7 @@ import { PersonaSelector } from './components/PersonaSelector';
 import { PersonaInfo } from './components/PersonaInfo';
 import { CameraPip } from './components/CameraPip';
 import { DebugInfo } from './components/DebugInfo';
-import { BudgetNotice } from './components/BudgetNotice';
+// import { BudgetNotice } from './components/BudgetNotice'; // 利用額超過時のみ表示するため一時的に非表示
 import { Message, Evaluation, RecordingState, Persona } from './types';
 import { getEvaluation, getScenarios, saveConversation, saveEvaluation, uploadRecording } from './lib/api';
 import { AudioRecorder, diagnoseMicrophone, MicrophoneDiagnostics } from './lib/audio';
@@ -1536,10 +1536,8 @@ function RoleplayApp() {
         onScenarioChange={setSelectedScenarioId}
       />
 
-      {/* 予算制限の告知バナー */}
-      <div className="max-w-[1200px] mx-auto w-full px-4 md:px-6 lg:px-10 xl:px-14 pt-4">
-        <BudgetNotice />
-      </div>
+      {/* 予算制限の告知バナー（利用額超過時のみ表示） */}
+      {/* 現在は非表示。将来的にAPI側で予算超過を検知した場合にエラーメッセージで対応 */}
 
       {/* メインコンテンツ - モバイル: 縦並び、デスクトップ: 横並び */}
       <main className="flex-1 flex flex-col lg:grid lg:gap-8 lg:grid-cols-[minmax(520px,1fr)_minmax(420px,0.9fr)] items-stretch pb-[calc(var(--footer-h)+env(safe-area-inset-bottom,0px)+1rem)] px-4 md:px-6 lg:px-10 xl:px-14 max-w-[1200px] mx-auto w-full relative transition-all">
