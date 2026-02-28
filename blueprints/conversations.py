@@ -707,7 +707,7 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=50,          # 超高速化: 80→50（さらに簡潔な応答）
+                    max_tokens=100,         # 会話継続性: 50→100（途切れ防止）
                     temperature=0.5,        # テンポ重視: 0.6→0.5（決定速度向上）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
@@ -1263,12 +1263,12 @@ def chat_stream():
                     "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。\n\n⏱️ テンポ重視: 応答は1-2文で完結してください。ビジネス会話は簡潔に。長い説明は避け、要点だけを伝えてください。"
                 })
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=50）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=50）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=100）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=100）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=50,          # 超高速化: 80→50（さらに簡潔な応答）
+                    max_tokens=100,         # 会話継続性: 50→100（途切れ防止）
                     temperature=0.5,        # テンポ重視: 0.6→0.5（決定速度向上）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
@@ -1655,7 +1655,12 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
 10年以上の営業経験を持ち、1000件以上のロープレを評価してきました。
 営業の発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。
 良かった点と改善点を明確に分け、次回のロープレで即実行できる具体的なアドバイスを心がけてください。
-各スコアの根拠、具体例、改善アクションプランを含めて、詳細で実用的なフィードバックを提供してください。"""},
+各スコアの根拠、具体例、改善アクションプランを含めて、詳細で実用的なフィードバックを提供してください。
+
+【重要】必ず以下のJSON形式で回答してください。他の説明文は一切含めず、JSON形式のみを返してください：
+- detailedFeedback フィールドは必須です
+- questioning, listening, proposing, closing の4つすべてに rationale と examples を含めてください
+- JSON形式が不完全だと評価が表示されません"""},
                 {"role": "user", "content": evaluation_prompt}
             ],
             max_tokens=2500,  # 詳細フィードバックのためトークン数を増量
