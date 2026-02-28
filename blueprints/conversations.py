@@ -565,42 +565,17 @@ def chat():
                         logger.info(f"  {txt}")
 
                 elif not is_first_message:
-                    # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
-                    conversation_turn = len(conversation_history) // 2  # 往復数を計算
-
-                    # 会話継続中も、ペルソナの重要情報を含める（一貫性を保つため）
-                    # 会話履歴から最初のメッセージでどのペルソナが選ばれたかを推測
-                    # または、セッション情報からペルソナを取得する必要がある
-                    # 暫定的に、会話継続中は一貫性を強調する指示のみ追加
-                    system_prompt += "\n\n【重要：会話継続中】\n"
-                    system_prompt += "- あなたは既に会話を開始しています\n"
-                    system_prompt += "- 必ず過去の会話で話した以下の内容と完全に一貫性を保ってください：\n"
-                    system_prompt += "  • 業種・事業内容（変更不可）\n"
-                    system_prompt += "  • 現在の動画制作状況（変更不可）\n"
-                    system_prompt += "  • 主な課題・ペインポイント（変更不可）\n"
-                    system_prompt += "  • SNSアカウント情報（変更不可）\n"
-                    system_prompt += "- 【過去の実例パターン】の業種は無視し、あなたが最初に話した設定を使い続けてください\n"
-                    system_prompt += "- 例: 「外注している」と言った場合、「外注を検討している」と言ってはいけません\n"
-                    system_prompt += "- 例: 「月10本外注中」と言った場合、「本数が増えない」と矛盾することは言わないでください\n"
-
-                    # 🎯 会話進行度に応じた態度変化（段階的な信頼構築）
-                    system_prompt += f"\n【会話の進行度: {conversation_turn}往復目】\n"
+                    # 🎯 会話継続時は簡潔な指示のみ（処理速度重視）
+                    conversation_turn = len(conversation_history) // 2
+                    system_prompt += "\n\n【会話継続中】過去の会話内容と一貫性を保ち、"
                     if conversation_turn <= 2:
-                        system_prompt += "- 態度: まだ警戒的で慎重（初対面の段階）\n"
-                        system_prompt += "- 具体的な情報開示は控えめに\n"
-                        system_prompt += "- 営業の質問には簡潔に答える\n"
+                        system_prompt += "警戒的に応答してください。"
                     elif conversation_turn <= 5:
-                        system_prompt += "- 態度: 少しずつ心を開き始める（信頼構築の段階）\n"
-                        system_prompt += "- 営業が良い質問をした場合は、より詳細に答える\n"
-                        system_prompt += "- 自社の課題について少しずつ話す\n"
+                        system_prompt += "徐々に心を開いてください。"
                     elif conversation_turn <= 8:
-                        system_prompt += "- 態度: 興味を持ち始め、積極的に質問する（検討段階）\n"
-                        system_prompt += "- サービスの具体的な内容や効果について質問する\n"
-                        system_prompt += "- 自社の課題と営業の提案の関連性を確認する\n"
+                        system_prompt += "積極的に質問してください。"
                     else:
-                        system_prompt += "- 態度: 前向きに検討、具体的な条件を確認（決断段階）\n"
-                        system_prompt += "- 予算、期間、サポート体制などの具体的な条件を質問\n"
-                        system_prompt += "- 営業の提案が良ければ前向きなサインを出す\n"
+                        system_prompt += "前向きに検討してください。"
 
                 messages = [{"role": "system", "content": system_prompt}]
 
@@ -715,7 +690,7 @@ def chat():
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # テンポ重視: 150→80（簡潔な応答）
+                    max_tokens=50,          # 超高速化: 80→50（さらに簡潔な応答）
                     temperature=0.5,        # テンポ重視: 0.6→0.5（決定速度向上）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3   # 繰り返しを減らす
@@ -1132,42 +1107,17 @@ def chat_stream():
                         logger.info(f"  {txt}")
 
                 elif not is_first_message:
-                    # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
-                    conversation_turn = len(conversation_history) // 2  # 往復数を計算
-
-                    # 会話継続中も、ペルソナの重要情報を含める（一貫性を保つため）
-                    # 会話履歴から最初のメッセージでどのペルソナが選ばれたかを推測
-                    # または、セッション情報からペルソナを取得する必要がある
-                    # 暫定的に、会話継続中は一貫性を強調する指示のみ追加
-                    system_prompt += "\n\n【重要：会話継続中】\n"
-                    system_prompt += "- あなたは既に会話を開始しています\n"
-                    system_prompt += "- 必ず過去の会話で話した以下の内容と完全に一貫性を保ってください：\n"
-                    system_prompt += "  • 業種・事業内容（変更不可）\n"
-                    system_prompt += "  • 現在の動画制作状況（変更不可）\n"
-                    system_prompt += "  • 主な課題・ペインポイント（変更不可）\n"
-                    system_prompt += "  • SNSアカウント情報（変更不可）\n"
-                    system_prompt += "- 【過去の実例パターン】の業種は無視し、あなたが最初に話した設定を使い続けてください\n"
-                    system_prompt += "- 例: 「外注している」と言った場合、「外注を検討している」と言ってはいけません\n"
-                    system_prompt += "- 例: 「月10本外注中」と言った場合、「本数が増えない」と矛盾することは言わないでください\n"
-
-                    # 🎯 会話進行度に応じた態度変化（段階的な信頼構築）
-                    system_prompt += f"\n【会話の進行度: {conversation_turn}往復目】\n"
+                    # 🎯 会話継続時は簡潔な指示のみ（処理速度重視）
+                    conversation_turn = len(conversation_history) // 2
+                    system_prompt += "\n\n【会話継続中】過去の会話内容と一貫性を保ち、"
                     if conversation_turn <= 2:
-                        system_prompt += "- 態度: まだ警戒的で慎重（初対面の段階）\n"
-                        system_prompt += "- 具体的な情報開示は控えめに\n"
-                        system_prompt += "- 営業の質問には簡潔に答える\n"
+                        system_prompt += "警戒的に応答してください。"
                     elif conversation_turn <= 5:
-                        system_prompt += "- 態度: 少しずつ心を開き始める（信頼構築の段階）\n"
-                        system_prompt += "- 営業が良い質問をした場合は、より詳細に答える\n"
-                        system_prompt += "- 自社の課題について少しずつ話す\n"
+                        system_prompt += "徐々に心を開いてください。"
                     elif conversation_turn <= 8:
-                        system_prompt += "- 態度: 興味を持ち始め、積極的に質問する（検討段階）\n"
-                        system_prompt += "- サービスの具体的な内容や効果について質問する\n"
-                        system_prompt += "- 自社の課題と営業の提案の関連性を確認する\n"
+                        system_prompt += "積極的に質問してください。"
                     else:
-                        system_prompt += "- 態度: 前向きに検討、具体的な条件を確認（決断段階）\n"
-                        system_prompt += "- 予算、期間、サポート体制などの具体的な条件を質問\n"
-                        system_prompt += "- 営業の提案が良ければ前向きなサインを出す\n"
+                        system_prompt += "前向きに検討してください。"
 
                 # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため）
                 try:
@@ -1262,8 +1212,8 @@ def chat_stream():
 
                 messages = [{"role": "system", "content": system_prompt}]
 
-                # 🎯 文脈理解改善: 会話履歴（応答速度とのバランス：20→15件）
-                for msg in conversation_history[-15:]:  # 最新15件まで（速度重視）
+                # 🎯 超高速化: 会話履歴を最小限に（15→8件）
+                for msg in conversation_history[-8:]:  # 最新8件まで（超高速化）
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -1279,12 +1229,12 @@ def chat_stream():
                     "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。\n\n⏱️ テンポ重視: 応答は1-2文で完結してください。ビジネス会話は簡潔に。長い説明は避け、要点だけを伝えてください。"
                 })
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=80）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=80）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=50）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=50）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=80,          # テンポ重視: 150→80（簡潔な応答）
+                    max_tokens=50,          # 超高速化: 80→50（さらに簡潔な応答）
                     temperature=0.5,        # テンポ重視: 0.6→0.5（決定速度向上）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
