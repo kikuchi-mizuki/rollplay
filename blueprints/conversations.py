@@ -1651,16 +1651,30 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
         response = openai_client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": """あなたはショート動画制作営業のプロフェッショナルコーチです。
+                {"role": "system", "content": """【最重要指示】あなたの出力は必ず有効なJSON形式のみとしてください。説明文や前置きは一切不要です。
+
+あなたはショート動画制作営業のプロフェッショナルコーチです。
 10年以上の営業経験を持ち、1000件以上のロープレを評価してきました。
 営業の発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。
-良かった点と改善点を明確に分け、次回のロープレで即実行できる具体的なアドバイスを心がけてください。
-各スコアの根拠、具体例、改善アクションプランを含めて、詳細で実用的なフィードバックを提供してください。
 
-【重要】必ず以下のJSON形式で回答してください。他の説明文は一切含めず、JSON形式のみを返してください：
-- detailedFeedback フィールドは必須です
-- questioning, listening, proposing, closing の4つすべてに rationale と examples を含めてください
-- JSON形式が不完全だと評価が表示されません"""},
+【出力形式】
+以下のJSON形式で必ず回答してください：
+{
+  "scores": { "questioning": 数値, "listening": 数値, "proposing": 数値, "closing": 数値 },
+  "strengths": ["具体例を含む良かった点1", "具体例を含む良かった点2", "具体例を含む良かった点3"],
+  "improvements": ["具体例を含む改善点1", "具体例を含む改善点2", "具体例を含む改善点3"],
+  "overall": "総合評価コメント",
+  "detailedFeedback": {
+    "questioning": { "rationale": "スコア理由", "examples": ["例1", "例2"] },
+    "listening": { "rationale": "スコア理由", "examples": ["例1", "例2"] },
+    "proposing": { "rationale": "スコア理由", "examples": ["例1", "例2"] },
+    "closing": { "rationale": "スコア理由", "examples": ["例1"] }
+  },
+  "actionPlan": ["アクション1", "アクション2", "アクション3"],
+  "analysis": { "questions_count": 数値, "listening_responses_count": 数値, "proposals_count": 数値, "closings_count": 数値, "conversation_flow": "分析" }
+}
+
+【重要】detailedFeedbackフィールドは必須です。questioning, listening, proposing, closingの4つすべてにrationaleとexamplesを必ず含めてください。"""},
                 {"role": "user", "content": evaluation_prompt}
             ],
             max_tokens=2500,  # 詳細フィードバックのためトークン数を増量
@@ -1683,7 +1697,28 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             if 'detailedFeedback' in evaluation:
                 logger.info(f"[評価生成] detailedFeedbackキー: {list(evaluation['detailedFeedback'].keys())}")
             else:
-                logger.warning("[評価生成] ⚠️ detailedFeedbackが生成されませんでした")
+                logger.warning("[評価生成] ⚠️ detailedFeedbackが生成されませんでした - フォールバックデータを生成します")
+                # detailedFeedbackが欠けている場合、デフォルト値を設定
+                scores = evaluation.get('scores', {"questioning": 50, "listening": 50, "proposing": 50, "closing": 50})
+                evaluation['detailedFeedback'] = {
+                    "questioning": {
+                        "rationale": f"質問力は{scores.get('questioning', 50)}点です。基本的な質問は行えていますが、より深掘りした質問を心がけましょう。",
+                        "examples": ["顧客の課題について質問しています", "ニーズのヒアリングを試みています"]
+                    },
+                    "listening": {
+                        "rationale": f"傾聴力は{scores.get('listening', 50)}点です。顧客の発言を受けて会話を進めていますが、さらに深く共感を示すことで信頼関係が構築できます。",
+                        "examples": ["顧客の回答を聞いています", "会話を継続しています"]
+                    },
+                    "proposing": {
+                        "rationale": f"提案力は{scores.get('proposing', 50)}点です。サービスの説明は行えていますが、顧客の課題に紐づけた提案を意識しましょう。",
+                        "examples": ["サービスについて説明しています", "提案を試みています"]
+                    },
+                    "closing": {
+                        "rationale": f"クロージング力は{scores.get('closing', 50)}点です。次のステップを提示することで、商談を前進させましょう。",
+                        "examples": ["会話をまとめようとしています"]
+                    }
+                }
+                logger.info("[評価生成] フォールバックdetailedFeedbackを生成しました")
 
             # 基本情報を追加
             evaluation['total_utterances'] = len(sales_utterances)
@@ -1814,6 +1849,29 @@ def generate_evaluation_fallback(sales_utterances):
         'overall_comment': overall_comment,  # 後方互換性のため維持
         'improvement_suggestions': improvement_suggestions,  # 後方互換性のため維持
         'total_utterances': total_utterances,
+        'detailedFeedback': {
+            'questioning': {
+                'rationale': f"質問力は{round(questioning_score, 1)}点です。質問数は{len(questions)}個でした。",
+                'examples': questions[:2] if questions else ["質問の具体例がありません"]
+            },
+            'listening': {
+                'rationale': f"傾聴力は{round(listening_score, 1)}点です。傾聴表現は{len(listening_responses)}回検出されました。",
+                'examples': listening_responses[:2] if listening_responses else ["傾聴の具体例がありません"]
+            },
+            'proposing': {
+                'rationale': f"提案力は{round(proposing_score, 1)}点です。提案は{len(proposals)}回行われました。",
+                'examples': proposals[:2] if proposals else ["提案の具体例がありません"]
+            },
+            'closing': {
+                'rationale': f"クロージング力は{round(closing_score, 1)}点です。クロージング表現は{len(closings)}回検出されました。",
+                'examples': closings[:1] if closings else ["クロージングの具体例がありません"]
+            }
+        },
+        'actionPlan': improvement_suggestions[:3] if improvement_suggestions else [
+            "顧客の課題を深掘りする質問を増やしましょう",
+            "提案時には具体的な事例や数値を示しましょう",
+            "次のアクションを明確に提示してクロージングしましょう"
+        ],
         'analysis': {
             'questions_count': len(questions),
             'open_questions_count': open_questions_count,
