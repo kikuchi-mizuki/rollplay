@@ -217,6 +217,8 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       logger.debug('[講評API] 変換後 overall:', overall);
       logger.debug('[講評API] 変換後 strengths:', strengths);
       logger.debug('[講評API] 変換後 improvements:', improvements);
+      logger.debug('[講評API] detailedFeedback:', evalData.detailedFeedback);
+      logger.debug('[講評API] actionPlan:', evalData.actionPlan);
 
       return {
         overall,
@@ -229,6 +231,8 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
           closing: (evalData.scores?.closing_skill || evalData.scores?.closing || 0) * 20,
           total: (evalData.total_score || evalData.scores?.total || 0) * 20,
         },
+        detailedFeedback: evalData.detailedFeedback,
+        actionPlan: evalData.actionPlan,
       };
     } else {
       throw new APIError(result.error || '講評取得に失敗しました', response.status);
