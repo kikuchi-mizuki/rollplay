@@ -273,10 +273,6 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
 
           {activeTab === 'detailed' && (
             <div className="space-y-6">
-              {/* デバッグ: 評価データの確認 */}
-              {console.log('[EvaluationSheet] evaluation:', evaluation)}
-              {console.log('[EvaluationSheet] detailedFeedback:', evaluation.detailedFeedback)}
-
               {/* 質問力の詳細 */}
               {evaluation.detailedFeedback?.questioning && (
                 <div className="glass-card p-5">
