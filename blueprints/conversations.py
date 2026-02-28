@@ -1720,6 +1720,16 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 }
                 logger.info("[評価生成] フォールバックdetailedFeedbackを生成しました")
 
+            # actionPlanのフォールバック処理
+            if 'actionPlan' not in evaluation or not evaluation['actionPlan']:
+                logger.warning("[評価生成] ⚠️ actionPlanが生成されませんでした - フォールバックデータを生成します")
+                evaluation['actionPlan'] = [
+                    "顧客の課題を深掘りする質問を増やしましょう",
+                    "提案時には具体的な事例や数値を示しましょう",
+                    "次のアクションを明確に提示してクロージングしましょう"
+                ]
+                logger.info("[評価生成] フォールバックactionPlanを生成しました")
+
             # 基本情報を追加
             evaluation['total_utterances'] = len(sales_utterances)
 
