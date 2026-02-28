@@ -477,39 +477,45 @@ def chat():
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
                 if persona and is_first_message:
                     # ペルソナ情報を詳細にシステムプロンプトに追加
-                    if 'business_type' in persona:
-                        persona_txt.append(f"業種: {persona['business_type']}")
-                    if 'location' in persona:
-                        persona_txt.append(f"場所: {persona['location']}")
-                    if 'business_detail' in persona:
-                        persona_txt.append(f"事業詳細: {persona['business_detail']}")
-                    if 'current_video_status' in persona:
-                        persona_txt.append(f"現在の動画制作状況: {persona['current_video_status']}")
+                    # base_profileがある場合はそこから、なければフラット化された構造から取得
+                    base_profile = persona.get('base_profile', {})
+                    business_type = base_profile.get('business_type') or persona.get('business_type')
+                    location = base_profile.get('location') or persona.get('location')
+                    business_detail = base_profile.get('business_detail') or persona.get('business_detail')
+                    current_video_status = base_profile.get('current_video_status') or persona.get('current_video_status')
+
+                    if business_type:
+                        persona_txt.append(f"業種: {business_type}")
+                    if location:
+                        persona_txt.append(f"場所: {location}")
+                    if business_detail:
+                        persona_txt.append(f"事業詳細: {business_detail}")
+                    if current_video_status:
+                        persona_txt.append(f"現在の動画制作状況: {current_video_status}")
 
                     # SNSアカウント情報
-                    if 'sns_accounts' in persona:
-                        sns_accounts = persona['sns_accounts']
-                        if isinstance(sns_accounts, dict):
-                            sns_list = []
-                            for platform, info in sns_accounts.items():
-                                if info and info != "なし":
-                                    sns_list.append(f"{platform.capitalize()}: {info}")
-                            if sns_list:
-                                persona_txt.append("SNSアカウント:")
-                                for sns_info in sns_list:
-                                    persona_txt.append(f"  - {sns_info}")
+                    sns_accounts = base_profile.get('sns_accounts') or persona.get('sns_accounts')
+                    if sns_accounts and isinstance(sns_accounts, dict):
+                        sns_list = []
+                        for platform, info in sns_accounts.items():
+                            if info and info != "なし":
+                                sns_list.append(f"{platform.capitalize()}: {info}")
+                        if sns_list:
+                            persona_txt.append("SNSアカウント:")
+                            for sns_info in sns_list:
+                                persona_txt.append(f"  - {sns_info}")
 
                     # ペインポイント
-                    if 'pain_points' in persona:
-                        pain_points = persona['pain_points']
-                        if pain_points and isinstance(pain_points, list):
-                            persona_txt.append("ペインポイント:")
-                            for pain in pain_points[:5]:  # 最大5件表示
-                                persona_txt.append(f"  • {pain}")
+                    pain_points = base_profile.get('pain_points') or persona.get('pain_points')
+                    if pain_points and isinstance(pain_points, list):
+                        persona_txt.append("ペインポイント:")
+                        for pain in pain_points[:5]:  # 最大5件表示
+                            persona_txt.append(f"  • {pain}")
 
                     # 予算感
-                    if 'budget_sense' in persona:
-                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+                    budget_sense = base_profile.get('budget_sense') or persona.get('budget_sense')
+                    if budget_sense:
+                        persona_txt.append(f"予算感: {budget_sense}")
 
                     # シーン別の状況設定
                     if 'tone' in persona:
@@ -552,6 +558,11 @@ def chat():
 
                     # 難易度レベルの指示を追加
                     system_prompt += get_difficulty_instructions(difficulty)
+
+                    # デバッグ: プロンプトに含まれるペルソナ情報をログ出力
+                    logger.info(f"[プロンプト生成] ペルソナ情報をシステムプロンプトに追加:")
+                    for txt in persona_txt[:10]:  # 最初の10行のみ
+                        logger.info(f"  {txt}")
 
                 elif not is_first_message:
                     # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
@@ -962,10 +973,23 @@ def chat_stream():
                     # 会話開始時: persona_idが指定されている場合はそのペルソナを使用、なければランダム選択
                     if persona_id:
                         persona = select_persona_by_id(persona_id, scenario_id)
-                        logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ID指定選択 - {persona.get('persona_name', 'Unknown') if persona else 'None'} (ID: {persona_id})")
+                        if persona:
+                            base_profile = persona.get('base_profile', {})
+                            logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ID指定選択")
+                            logger.info(f"  - ペルソナ名: {persona.get('persona_name', 'Unknown')}")
+                            logger.info(f"  - ペルソナID: {persona_id}")
+                            logger.info(f"  - 業種: {base_profile.get('business_type', 'Unknown')}")
+                            logger.info(f"  - 地域: {base_profile.get('location', 'Unknown')}")
+                            logger.info(f"  - 予算感: {base_profile.get('budget_sense', 'Unknown')}")
+                        else:
+                            logger.warning(f"[ペルソナ選択/ストリーミング] ペルソナが見つかりません (ID: {persona_id})")
                     else:
                         persona = select_random_persona_for_scene(scenario_id)
-                        logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ランダム選択 - {persona.get('persona_name', 'Unknown') if persona else 'None'}")
+                        if persona:
+                            base_profile = persona.get('base_profile', {})
+                            logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ランダム選択")
+                            logger.info(f"  - ペルソナ名: {persona.get('persona_name', 'Unknown')}")
+                            logger.info(f"  - 業種: {base_profile.get('business_type', 'Unknown')}")
 
                     # 音声設定をpersonaに追加（会話内で一貫性を保つため）
                     if persona:
@@ -1020,39 +1044,45 @@ def chat_stream():
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
                 if persona and is_first_message:
                     # ペルソナ情報を詳細にシステムプロンプトに追加
-                    if 'business_type' in persona:
-                        persona_txt.append(f"業種: {persona['business_type']}")
-                    if 'location' in persona:
-                        persona_txt.append(f"場所: {persona['location']}")
-                    if 'business_detail' in persona:
-                        persona_txt.append(f"事業詳細: {persona['business_detail']}")
-                    if 'current_video_status' in persona:
-                        persona_txt.append(f"現在の動画制作状況: {persona['current_video_status']}")
+                    # base_profileがある場合はそこから、なければフラット化された構造から取得
+                    base_profile = persona.get('base_profile', {})
+                    business_type = base_profile.get('business_type') or persona.get('business_type')
+                    location = base_profile.get('location') or persona.get('location')
+                    business_detail = base_profile.get('business_detail') or persona.get('business_detail')
+                    current_video_status = base_profile.get('current_video_status') or persona.get('current_video_status')
+
+                    if business_type:
+                        persona_txt.append(f"業種: {business_type}")
+                    if location:
+                        persona_txt.append(f"場所: {location}")
+                    if business_detail:
+                        persona_txt.append(f"事業詳細: {business_detail}")
+                    if current_video_status:
+                        persona_txt.append(f"現在の動画制作状況: {current_video_status}")
 
                     # SNSアカウント情報
-                    if 'sns_accounts' in persona:
-                        sns_accounts = persona['sns_accounts']
-                        if isinstance(sns_accounts, dict):
-                            sns_list = []
-                            for platform, info in sns_accounts.items():
-                                if info and info != "なし":
-                                    sns_list.append(f"{platform.capitalize()}: {info}")
-                            if sns_list:
-                                persona_txt.append("SNSアカウント:")
-                                for sns_info in sns_list:
-                                    persona_txt.append(f"  - {sns_info}")
+                    sns_accounts = base_profile.get('sns_accounts') or persona.get('sns_accounts')
+                    if sns_accounts and isinstance(sns_accounts, dict):
+                        sns_list = []
+                        for platform, info in sns_accounts.items():
+                            if info and info != "なし":
+                                sns_list.append(f"{platform.capitalize()}: {info}")
+                        if sns_list:
+                            persona_txt.append("SNSアカウント:")
+                            for sns_info in sns_list:
+                                persona_txt.append(f"  - {sns_info}")
 
                     # ペインポイント
-                    if 'pain_points' in persona:
-                        pain_points = persona['pain_points']
-                        if pain_points and isinstance(pain_points, list):
-                            persona_txt.append("ペインポイント:")
-                            for pain in pain_points[:5]:  # 最大5件表示
-                                persona_txt.append(f"  • {pain}")
+                    pain_points = base_profile.get('pain_points') or persona.get('pain_points')
+                    if pain_points and isinstance(pain_points, list):
+                        persona_txt.append("ペインポイント:")
+                        for pain in pain_points[:5]:  # 最大5件表示
+                            persona_txt.append(f"  • {pain}")
 
                     # 予算感
-                    if 'budget_sense' in persona:
-                        persona_txt.append(f"予算感: {persona['budget_sense']}")
+                    budget_sense = base_profile.get('budget_sense') or persona.get('budget_sense')
+                    if budget_sense:
+                        persona_txt.append(f"予算感: {budget_sense}")
 
                     # シーン別の状況設定
                     if 'tone' in persona:
@@ -1095,6 +1125,11 @@ def chat_stream():
 
                     # 難易度レベルの指示を追加
                     system_prompt += get_difficulty_instructions(difficulty)
+
+                    # デバッグ: プロンプトに含まれるペルソナ情報をログ出力
+                    logger.info(f"[プロンプト生成] ペルソナ情報をシステムプロンプトに追加:")
+                    for txt in persona_txt[:10]:  # 最初の10行のみ
+                        logger.info(f"  {txt}")
 
                 elif not is_first_message:
                     # 🎯 文脈理解改善: 会話ターン数に応じた態度調整
