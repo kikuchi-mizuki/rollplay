@@ -74,8 +74,8 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden border border-gray-700 flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[85vh] overflow-hidden border-t border-x sm:border border-gray-700 flex flex-col">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 sm:p-6 flex-shrink-0">
           <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">顧客ペルソナを選択</h2>
