@@ -148,7 +148,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
         <div className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
           {activeTab === 'overall' && (
             <div className="space-y-4">
-              <p className="text-white leading-7 whitespace-pre-wrap">{evaluation.overall}</p>
+              <p className="text-slate-800 leading-7 whitespace-pre-wrap">{evaluation.overall}</p>
             </div>
           )}
 
@@ -156,7 +156,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
             <div className="space-y-3">
               {evaluation.strengths.map((strength, index) => (
                 <div key={index} className="glass-card p-4 border-l-2 border-green-400/50">
-                  <p className="text-white leading-relaxed">{strength}</p>
+                  <p className="text-slate-800 leading-relaxed">{strength}</p>
                 </div>
               ))}
             </div>
@@ -166,7 +166,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
             <div className="space-y-3">
               {evaluation.improvements.map((improvement, index) => (
                 <div key={index} className="glass-card p-4 border-l-2 border-orange-400/50">
-                  <p className="text-white leading-relaxed">{improvement}</p>
+                  <p className="text-slate-800 leading-relaxed">{improvement}</p>
                 </div>
               ))}
             </div>
@@ -179,12 +179,12 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 {/* 質問力 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-100">質問力</div>
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-sm font-medium text-slate-600">質問力</div>
+                    <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.questioning}
                     </div>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-[#6C5CE7] h-2 rounded-full transition-all duration-500"
                       style={{ width: `${evaluation.scores.questioning}%` }}
@@ -195,12 +195,12 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 {/* 傾聴力 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-100">傾聴力</div>
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-sm font-medium text-slate-600">傾聴力</div>
+                    <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.listening}
                     </div>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-[#6C5CE7] h-2 rounded-full transition-all duration-500"
                       style={{ width: `${evaluation.scores.listening}%` }}
@@ -211,12 +211,12 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 {/* 提案力 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-100">提案力</div>
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-sm font-medium text-slate-600">提案力</div>
+                    <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.proposing}
                     </div>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-[#6C5CE7] h-2 rounded-full transition-all duration-500"
                       style={{ width: `${evaluation.scores.proposing}%` }}
@@ -227,12 +227,12 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 {/* クロージング力 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-100">クロージング力</div>
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-sm font-medium text-slate-600">クロージング力</div>
+                    <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.closing}
                     </div>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-[#6C5CE7] h-2 rounded-full transition-all duration-500"
                       style={{ width: `${evaluation.scores.closing}%` }}
@@ -243,17 +243,17 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
 
               {/* 総合スコア */}
               <div className="glass-card p-6 text-center border border-[#6C5CE7]/30">
-                <div className="text-sm font-medium text-slate-100 mb-2">総合スコア</div>
+                <div className="text-sm font-medium text-slate-600 mb-2">総合スコア</div>
                 <div className="text-5xl font-bold text-[#6C5CE7] mb-1">
                   {evaluation.scores.total}
                 </div>
-                <div className="text-sm text-slate-300">/ 100点</div>
+                <div className="text-sm text-slate-500">/ 100点</div>
               </div>
 
               {/* アクションプラン */}
               {evaluation.actionPlan && evaluation.actionPlan.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-sm font-medium text-slate-100 mb-3">次回への改善アクションプラン</h3>
+                  <h3 className="text-sm font-medium text-slate-700 mb-3">次回への改善アクションプラン</h3>
                   <div className="space-y-3">
                     {evaluation.actionPlan.map((action, index) => (
                       <div key={index} className="glass-card p-4 border-l-2 border-[#6C5CE7]/50">
@@ -261,7 +261,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                           <div className="flex-shrink-0 w-6 h-6 bg-[#6C5CE7] text-white rounded-full flex items-center justify-center font-medium text-xs">
                             {index + 1}
                           </div>
-                          <p className="text-white flex-1 leading-relaxed text-sm">{action}</p>
+                          <p className="text-slate-800 flex-1 leading-relaxed text-sm">{action}</p>
                         </div>
                       </div>
                     ))}
@@ -276,21 +276,21 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               {/* 質問力の詳細 */}
               {evaluation.detailedFeedback?.questioning && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-white mb-4">質問力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">質問力</h3>
                   {evaluation.detailedFeedback.questioning.rationale && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">評価理由</h4>
-                      <p className="text-white leading-relaxed text-sm">
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
+                      <p className="text-slate-800 leading-relaxed text-sm">
                         {evaluation.detailedFeedback.questioning.rationale}
                       </p>
                     </div>
                   )}
                   {evaluation.detailedFeedback.questioning.examples && evaluation.detailedFeedback.questioning.examples.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">具体例</h4>
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">具体例</h4>
                       <ul className="space-y-2">
                         {evaluation.detailedFeedback.questioning.examples.map((example, idx) => (
-                          <li key={idx} className="bg-white/5 p-3 rounded-lg text-sm text-slate-100 border-l-2 border-white/20">
+                          <li key={idx} className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700 border-l-2 border-slate-300">
                             {example}
                           </li>
                         ))}
@@ -303,21 +303,21 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               {/* 傾聴力の詳細 */}
               {evaluation.detailedFeedback?.listening && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-white mb-4">傾聴力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">傾聴力</h3>
                   {evaluation.detailedFeedback.listening.rationale && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">評価理由</h4>
-                      <p className="text-white leading-relaxed text-sm">
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
+                      <p className="text-slate-800 leading-relaxed text-sm">
                         {evaluation.detailedFeedback.listening.rationale}
                       </p>
                     </div>
                   )}
                   {evaluation.detailedFeedback.listening.examples && evaluation.detailedFeedback.listening.examples.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">具体例</h4>
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">具体例</h4>
                       <ul className="space-y-2">
                         {evaluation.detailedFeedback.listening.examples.map((example, idx) => (
-                          <li key={idx} className="bg-white/5 p-3 rounded-lg text-sm text-slate-100 border-l-2 border-white/20">
+                          <li key={idx} className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700 border-l-2 border-slate-300">
                             {example}
                           </li>
                         ))}
@@ -330,21 +330,21 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               {/* 提案力の詳細 */}
               {evaluation.detailedFeedback?.proposing && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-white mb-4">提案力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">提案力</h3>
                   {evaluation.detailedFeedback.proposing.rationale && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">評価理由</h4>
-                      <p className="text-white leading-relaxed text-sm">
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
+                      <p className="text-slate-800 leading-relaxed text-sm">
                         {evaluation.detailedFeedback.proposing.rationale}
                       </p>
                     </div>
                   )}
                   {evaluation.detailedFeedback.proposing.examples && evaluation.detailedFeedback.proposing.examples.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">具体例</h4>
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">具体例</h4>
                       <ul className="space-y-2">
                         {evaluation.detailedFeedback.proposing.examples.map((example, idx) => (
-                          <li key={idx} className="bg-white/5 p-3 rounded-lg text-sm text-slate-100 border-l-2 border-white/20">
+                          <li key={idx} className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700 border-l-2 border-slate-300">
                             {example}
                           </li>
                         ))}
@@ -357,21 +357,21 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               {/* クロージング力の詳細 */}
               {evaluation.detailedFeedback?.closing && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-white mb-4">クロージング力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">クロージング力</h3>
                   {evaluation.detailedFeedback.closing.rationale && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">評価理由</h4>
-                      <p className="text-white leading-relaxed text-sm">
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
+                      <p className="text-slate-800 leading-relaxed text-sm">
                         {evaluation.detailedFeedback.closing.rationale}
                       </p>
                     </div>
                   )}
                   {evaluation.detailedFeedback.closing.examples && evaluation.detailedFeedback.closing.examples.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-slate-100 mb-2">具体例</h4>
+                      <h4 className="text-sm font-medium text-slate-700 mb-2">具体例</h4>
                       <ul className="space-y-2">
                         {evaluation.detailedFeedback.closing.examples.map((example, idx) => (
-                          <li key={idx} className="bg-white/5 p-3 rounded-lg text-sm text-slate-100 border-l-2 border-white/20">
+                          <li key={idx} className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700 border-l-2 border-slate-300">
                             {example}
                           </li>
                         ))}
@@ -384,8 +384,8 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               {/* 詳細分析がない場合 */}
               {!evaluation.detailedFeedback && (
                 <div className="glass-card p-8 text-center">
-                  <h3 className="text-base font-semibold text-white mb-2">詳細分析データがありません</h3>
-                  <p className="text-sm text-slate-300 mb-4">
+                  <h3 className="text-base font-semibold text-slate-900 mb-2">詳細分析データがありません</h3>
+                  <p className="text-sm text-slate-600 mb-4">
                     新しく会話を開始して講評を受けると、各スキルの詳細な分析が表示されます
                   </p>
                 </div>
