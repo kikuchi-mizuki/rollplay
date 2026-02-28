@@ -147,7 +147,11 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
         {/* コンテンツ */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
           {activeTab === 'overall' && (
-            <div>
+            <div className="card bg-gradient-to-br from-blue-50 to-purple-50 border-l-4 border-primary">
+              <div className="flex items-start gap-3 mb-3">
+                <span className="text-3xl">📝</span>
+                <h3 className="text-lg font-bold text-text">総合評価</h3>
+              </div>
               <p className="text-text leading-7 whitespace-pre-wrap">{evaluation.overall}</p>
             </div>
           )}
@@ -155,8 +159,11 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
           {activeTab === 'strengths' && (
             <div className="space-y-3">
               {evaluation.strengths.map((strength, index) => (
-                <div key={index} className="card bg-success/5 border-l-4 border-success">
-                  <p className="text-text">{strength}</p>
+                <div key={index} className="card bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-3">
+                    <span className="text-green-600 font-bold text-xl flex-shrink-0">✓</span>
+                    <p className="text-text flex-1 leading-relaxed">{strength}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -165,8 +172,11 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
           {activeTab === 'improvements' && (
             <div className="space-y-3">
               {evaluation.improvements.map((improvement, index) => (
-                <div key={index} className="card bg-warn/5 border-l-4 border-warn">
-                  <p className="text-text">{improvement}</p>
+                <div key={index} className="card bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-orange-500 hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-3">
+                    <span className="text-orange-600 font-bold text-xl flex-shrink-0">→</span>
+                    <p className="text-text flex-1 leading-relaxed">{improvement}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -174,49 +184,97 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
 
           {activeTab === 'scores' && (
             <div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="card text-center">
-                  <div className="text-sm text-text-muted mb-2">質問力</div>
-                  <div className="text-2xl font-bold text-text">
-                    {evaluation.scores.questioning}
+              {/* スコアカード（プログレスバー付き） */}
+              <div className="space-y-4 mb-6">
+                {/* 質問力 */}
+                <div className="card">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-text">質問力</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {evaluation.scores.questioning}
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${evaluation.scores.questioning}%` }}
+                    ></div>
                   </div>
                 </div>
-                <div className="card text-center">
-                  <div className="text-sm text-text-muted mb-2">傾聴力</div>
-                  <div className="text-2xl font-bold text-text">
-                    {evaluation.scores.listening}
+
+                {/* 傾聴力 */}
+                <div className="card">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-text">傾聴力</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {evaluation.scores.listening}
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${evaluation.scores.listening}%` }}
+                    ></div>
                   </div>
                 </div>
-                <div className="card text-center">
-                  <div className="text-sm text-text-muted mb-2">提案力</div>
-                  <div className="text-2xl font-bold text-text">
-                    {evaluation.scores.proposing}
+
+                {/* 提案力 */}
+                <div className="card">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-text">提案力</div>
+                    <div className="text-2xl font-bold text-purple-600">
+                      {evaluation.scores.proposing}
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${evaluation.scores.proposing}%` }}
+                    ></div>
                   </div>
                 </div>
-                <div className="card text-center">
-                  <div className="text-sm text-text-muted mb-2">クロージング力</div>
-                  <div className="text-2xl font-bold text-text">
-                    {evaluation.scores.closing}
+
+                {/* クロージング力 */}
+                <div className="card">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-semibold text-text">クロージング力</div>
+                    <div className="text-2xl font-bold text-orange-600">
+                      {evaluation.scores.closing}
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${evaluation.scores.closing}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>
-              <div className="card bg-primary/5 text-center border-2 border-primary">
-                <div className="text-sm text-text-muted mb-2">総合スコア</div>
-                <div className="text-4xl font-bold text-primary">
+
+              {/* 総合スコア */}
+              <div className="card bg-gradient-to-br from-primary/10 to-blue-500/10 text-center border-2 border-primary shadow-lg">
+                <div className="text-sm font-semibold text-text-muted mb-2">総合スコア</div>
+                <div className="text-5xl font-bold text-primary mb-2">
                   {evaluation.scores.total}
                 </div>
+                <div className="text-sm text-text-muted">/ 100点</div>
               </div>
 
               {/* アクションプラン */}
               {evaluation.actionPlan && evaluation.actionPlan.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-lg font-bold text-text mb-3">次回への改善アクションプラン</h3>
-                  <div className="space-y-2">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-2xl">🎯</span>
+                    <h3 className="text-lg font-bold text-text">次回への改善アクションプラン</h3>
+                  </div>
+                  <div className="space-y-3">
                     {evaluation.actionPlan.map((action, index) => (
-                      <div key={index} className="card bg-blue-500/10 border-l-4 border-blue-500">
+                      <div key={index} className="card bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 hover:shadow-md transition-shadow">
                         <div className="flex items-start gap-3">
-                          <span className="text-blue-500 font-bold">{index + 1}.</span>
-                          <p className="text-text flex-1">{action}</p>
+                          <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                            {index + 1}
+                          </div>
+                          <p className="text-text flex-1 leading-relaxed">{action}</p>
                         </div>
                       </div>
                     ))}
@@ -346,11 +404,18 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
 
               {/* 詳細分析がない場合 */}
               {!evaluation.detailedFeedback && (
-                <div className="card bg-gray-50 text-center py-8">
-                  <p className="text-text-muted">詳細分析データはありません</p>
-                  <p className="text-sm text-text-muted mt-2">
-                    次回の評価から詳細な分析が表示されます
+                <div className="card bg-gradient-to-br from-gray-50 to-slate-100 text-center py-12 border-2 border-dashed border-gray-300">
+                  <div className="text-6xl mb-4">📊</div>
+                  <h3 className="text-lg font-bold text-text mb-2">詳細分析は準備中です</h3>
+                  <p className="text-text-muted mb-4">
+                    現在の評価には詳細分析が含まれていません
                   </p>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                    <p className="text-sm text-blue-800">
+                      💡 新しく会話を開始して講評を受けると、<br />
+                      各スキルの詳細な分析が表示されます
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

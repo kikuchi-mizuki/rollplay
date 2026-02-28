@@ -1664,14 +1664,21 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
         
         # JSONレスポンスを解析
         evaluation_text = response.choices[0].message.content.strip()
-        
+
         # JSONの開始と終了を検索
         start_idx = evaluation_text.find('{')
         end_idx = evaluation_text.rfind('}') + 1
-        
+
         if start_idx != -1 and end_idx != -1:
             json_text = evaluation_text[start_idx:end_idx]
             evaluation = json.loads(json_text)
+
+            # デバッグ: detailedFeedbackの確認
+            logger.info(f"[評価生成] detailedFeedback存在確認: {('detailedFeedback' in evaluation)}")
+            if 'detailedFeedback' in evaluation:
+                logger.info(f"[評価生成] detailedFeedbackキー: {list(evaluation['detailedFeedback'].keys())}")
+            else:
+                logger.warning("[評価生成] ⚠️ detailedFeedbackが生成されませんでした")
 
             # 基本情報を追加
             evaluation['total_utterances'] = len(sales_utterances)
