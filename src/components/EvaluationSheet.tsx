@@ -1,5 +1,5 @@
 import { X, Copy, Check, Download } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Evaluation, Message } from '../types';
 import { downloadSingleEvaluationCSV } from '../lib/csv';
 
@@ -22,6 +22,21 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
     'overall'
   );
   const [copied, setCopied] = useState(false);
+
+  // デバッグ: 評価データをコンソールに出力
+  useEffect(() => {
+    if (isOpen && evaluation) {
+      console.log('[EvaluationSheet] 評価データ全体:', evaluation);
+      console.log('[EvaluationSheet] detailedFeedback:', evaluation.detailedFeedback);
+      console.log('[EvaluationSheet] detailedFeedbackの有無:', !!evaluation.detailedFeedback);
+      if (evaluation.detailedFeedback) {
+        console.log('[EvaluationSheet] questioning:', evaluation.detailedFeedback.questioning);
+        console.log('[EvaluationSheet] listening:', evaluation.detailedFeedback.listening);
+        console.log('[EvaluationSheet] proposing:', evaluation.detailedFeedback.proposing);
+        console.log('[EvaluationSheet] closing:', evaluation.detailedFeedback.closing);
+      }
+    }
+  }, [isOpen, evaluation]);
 
   if (!isOpen || !evaluation) return null;
 
