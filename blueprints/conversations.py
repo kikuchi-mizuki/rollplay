@@ -565,17 +565,34 @@ def chat():
                         logger.info(f"  {txt}")
 
                 elif not is_first_message:
-                    # 🎯 会話継続時は簡潔な指示のみ（処理速度重視）
+                    # 🎯 会話継続時も基本ペルソナ情報を含める（一貫性のため）
+                    if persona:
+                        base_profile = persona.get('base_profile', {})
+                        business_type = base_profile.get('business_type') or persona.get('business_type')
+                        business_detail = base_profile.get('business_detail') or persona.get('business_detail')
+                        pain_points = base_profile.get('pain_points') or persona.get('pain_points')
+                        budget_sense = base_profile.get('budget_sense') or persona.get('budget_sense')
+
+                        system_prompt += "\n\n【あなたの設定（必ず守る）】\n"
+                        if business_type:
+                            system_prompt += f"業種: {business_type}\n"
+                        if business_detail:
+                            system_prompt += f"事業: {business_detail}\n"
+                        if pain_points and isinstance(pain_points, list):
+                            system_prompt += f"課題: {', '.join(pain_points[:3])}\n"
+                        if budget_sense:
+                            system_prompt += f"予算感: {budget_sense}\n"
+
                     conversation_turn = len(conversation_history) // 2
-                    system_prompt += "\n\n【会話継続中】過去の会話内容と一貫性を保ち、"
+                    system_prompt += "\n【態度】"
                     if conversation_turn <= 2:
-                        system_prompt += "警戒的に応答してください。"
+                        system_prompt += "警戒的に応答"
                     elif conversation_turn <= 5:
-                        system_prompt += "徐々に心を開いてください。"
+                        system_prompt += "徐々に心を開く"
                     elif conversation_turn <= 8:
-                        system_prompt += "積極的に質問してください。"
+                        system_prompt += "積極的に質問"
                     else:
-                        system_prompt += "前向きに検討してください。"
+                        system_prompt += "前向きに検討"
 
                 messages = [{"role": "system", "content": system_prompt}]
 
@@ -1107,17 +1124,34 @@ def chat_stream():
                         logger.info(f"  {txt}")
 
                 elif not is_first_message:
-                    # 🎯 会話継続時は簡潔な指示のみ（処理速度重視）
+                    # 🎯 会話継続時も基本ペルソナ情報を含める（一貫性のため）
+                    if persona:
+                        base_profile = persona.get('base_profile', {})
+                        business_type = base_profile.get('business_type') or persona.get('business_type')
+                        business_detail = base_profile.get('business_detail') or persona.get('business_detail')
+                        pain_points = base_profile.get('pain_points') or persona.get('pain_points')
+                        budget_sense = base_profile.get('budget_sense') or persona.get('budget_sense')
+
+                        system_prompt += "\n\n【あなたの設定（必ず守る）】\n"
+                        if business_type:
+                            system_prompt += f"業種: {business_type}\n"
+                        if business_detail:
+                            system_prompt += f"事業: {business_detail}\n"
+                        if pain_points and isinstance(pain_points, list):
+                            system_prompt += f"課題: {', '.join(pain_points[:3])}\n"
+                        if budget_sense:
+                            system_prompt += f"予算感: {budget_sense}\n"
+
                     conversation_turn = len(conversation_history) // 2
-                    system_prompt += "\n\n【会話継続中】過去の会話内容と一貫性を保ち、"
+                    system_prompt += "\n【態度】"
                     if conversation_turn <= 2:
-                        system_prompt += "警戒的に応答してください。"
+                        system_prompt += "警戒的に応答"
                     elif conversation_turn <= 5:
-                        system_prompt += "徐々に心を開いてください。"
+                        system_prompt += "徐々に心を開く"
                     elif conversation_turn <= 8:
-                        system_prompt += "積極的に質問してください。"
+                        system_prompt += "積極的に質問"
                     else:
-                        system_prompt += "前向きに検討してください。"
+                        system_prompt += "前向きに検討"
 
                 # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため）
                 try:
