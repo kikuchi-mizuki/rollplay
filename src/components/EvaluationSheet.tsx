@@ -273,6 +273,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
 
           {activeTab === 'detailed' && (
             <div className="space-y-6">
+              {/* デバッグ: 評価データの確認 */}
+              {console.log('[EvaluationSheet] evaluation:', evaluation)}
+              {console.log('[EvaluationSheet] detailedFeedback:', evaluation.detailedFeedback)}
+
               {/* 質問力の詳細 */}
               {evaluation.detailedFeedback?.questioning && (
                 <div className="glass-card p-5">
@@ -381,8 +385,12 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 </div>
               )}
 
-              {/* 詳細分析がない場合 */}
-              {!evaluation.detailedFeedback && (
+              {/* 詳細分析がない場合（4つのスキル全てが存在しない場合のみ） */}
+              {(!evaluation.detailedFeedback ||
+                (!evaluation.detailedFeedback.questioning &&
+                 !evaluation.detailedFeedback.listening &&
+                 !evaluation.detailedFeedback.proposing &&
+                 !evaluation.detailedFeedback.closing)) && (
                 <div className="glass-card p-8 text-center">
                   <h3 className="text-base font-semibold text-slate-900 mb-2">詳細分析データがありません</h3>
                   <p className="text-sm text-slate-600 mb-4">
