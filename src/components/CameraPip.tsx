@@ -288,13 +288,13 @@ export function CameraPip({
         </div>
       )}
 
-      {/* 背景設定パネル */}
+      {/* 背景設定パネル（アバターの上に表示） */}
       {showSettings && !isRecording && (
         <div
           id="camera-settings-panel"
           role="dialog"
           aria-labelledby="camera-settings-title"
-          className="absolute top-14 left-3 right-3 bg-black/90 backdrop-blur-md rounded-lg p-3 shadow-xl z-30 text-white"
+          className="absolute bottom-3 left-3 right-3 bg-black/90 backdrop-blur-md rounded-lg p-3 shadow-xl z-30 text-white"
         >
           <div className="space-y-3">
             {/* 背景モード切り替え */}
