@@ -1,12 +1,9 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
-import { formatDuration } from '../lib/audio';
 import { CameraPip } from './CameraPip';
 
 /**
  * メディアパネルコンポーネント（映像プレビュー領域）
- * @param isRecording - 録音中かどうか
- * @param recordingState - 録音状態（録音中の時のみ使用）
  * @param videoSrc - 動画のソースURL（オプション）
  * @param imageSrc - 画像のソースURL（オプション）
  * @param subtitle - 字幕テキスト（オプション）
@@ -43,8 +40,6 @@ interface MediaPanelProps {
 }
 
 export function MediaPanel({
-  isRecording = false,
-  recordingState,
   videoSrc,
   imageSrc,
   subtitle,
@@ -61,34 +56,6 @@ export function MediaPanel({
   onBlurIntensityChange,
   onBlurredStreamReady,
 }: MediaPanelProps) {
-  // 録音中の波形バーを生成（画面共有時は非表示にして画面が見えるようにする）
-  const renderWaveform = () => {
-    if (!isRecording || !recordingState || isScreenSharing) return null;
-
-    return (
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-2xl">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex items-center gap-2">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="wave-bar w-1 bg-primary rounded-full"
-                style={{
-                  height: `${20 + recordingState.level * 0.3}%`,
-                  animationDelay: `${i * 0.1}s`,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="text-white text-lg font-medium">
-          {formatDuration(recordingState.duration)}
-        </div>
-        <p className="text-white/80 text-sm mt-2">録音中...</p>
-      </div>
-    );
-  };
-
   return (
     <div className="h-full w-full flex flex-col overflow-hidden relative">
       {/* メディアコンテンツ */}
@@ -141,9 +108,6 @@ export function MediaPanel({
             </div>
           </div>
         )}
-
-        {/* 録音中オーバーレイ */}
-        {renderWaveform()}
 
         {/* カメラPinP（右下） - 背景ぼかし機能付き - カメラON時は常に表示 */}
         {isCameraActive && cameraVideoRef && (

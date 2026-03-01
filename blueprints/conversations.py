@@ -823,10 +823,11 @@ def chat_stream():
 
         def generate():
             """SSE (Server-Sent Events) でストリーミング送信（TTS並列生成対応）"""
+            import time  # ⏱️ パフォーマンス計測用
             print("[DEBUG-GENERATE] generate()関数が呼ばれました", flush=True)
             try:
-                # TTS生成用スレッドプール（最大3並列でTTS生成）
-                executor = ThreadPoolExecutor(max_workers=3)
+                # TTS生成用スレッドプール（最大6並列でTTS生成、精度への影響なし）
+                executor = ThreadPoolExecutor(max_workers=6)
                 tts_futures = {}  # {chunk_index: Future}
                 print("[DEBUG-GENERATE] ThreadPoolExecutor初期化完了", flush=True)
 
@@ -1154,8 +1155,11 @@ def chat_stream():
                         system_prompt += "前向きに検討"
 
                 # RAG検索: 実際のロープレデータから類似パターンを取得（リアルな応答のため）
+                perf_rag_start = time.time()
+                rag_used = False
                 try:
                     if RAG_INDEX and RAG_METADATA:
+                        rag_used = True
                         # 🎯 質問タイプの分類（トピック抽出）
                         def extract_question_topics(message: str) -> list:
                             """営業の質問からトピックを抽出"""
@@ -1191,8 +1195,8 @@ def chat_stream():
 
                         search_query = "\n".join(recent_context + [f"営業: {user_message}"]) + topic_emphasis
 
-                        # top_k=5（応答速度重視で削減：15→5）
-                        rag_results = search_rag_patterns(search_query, top_k=5, scenario_id=scenario_id)
+                        # top_k=3（応答速度重視で削減：5→3、精度への影響は最小限）
+                        rag_results = search_rag_patterns(search_query, top_k=3, scenario_id=scenario_id)
                         if rag_results:
                             rag_patterns = []
                             pattern_count = 0
@@ -1215,29 +1219,30 @@ def chat_stream():
 
                                     if customer_lines:
                                         customer_only_text = '\n'.join(customer_lines)
-                                        rag_patterns.append(f"- {customer_only_text[:300]}")  # 300文字まで（リアル感を保つ）
+                                        rag_patterns.append(f"- {customer_only_text[:250]}")  # 250文字まで（速度重視、リアル感は維持）
                                         pattern_count += 1
                                         logger.debug(f"[RAG採用] パターン{pattern_count} (類似度距離: {similarity:.3f})")
-                                        if pattern_count >= 3:  # 応答速度重視で削減（7→3）
+                                        if pattern_count >= 2:  # 応答速度重視で削減（3→2、最も類似度が高い2件のみ）
                                             break
 
                             if rag_patterns:
                                 rag_context = "\n\n【⭐ 重要：実際のロープレパターン（参考例）】\n"
-                                rag_context += "⚠️ 重要: 以下はあくまで会話の「トーン」や「応答スタイル」の参考例です。\n"
-                                rag_context += "⚠️ 業種や事業内容は【シナリオ設定】で指定されたペルソナ情報に必ず従ってください。\n"
-                                rag_context += "⚠️ 実例パターンに含まれる業種（クリーニング、音楽など）は無視し、必ずペルソナの業種で応答してください。\n\n"
-                                rag_context += "以下は実際の顧客の応答例です。これらの口調、表現、フィラー（「えーと」「あのー」「そうですね...」など）、間（「...」）を参考にしてください：\n\n"
+                                rag_context += "⚠️ 以下は口調・トーンの参考例です。業種はペルソナ設定に従ってください。\n\n"
+                                rag_context += "参考例（口調のみ）：\n"
                                 rag_context += "\n".join(rag_patterns)
-                                rag_context += "\n\n【応答時の注意】\n"
-                                rag_context += "- 上記のパターンと同じような口調・言い回しを参考にすること（業種は除く）\n"
-                                rag_context += "- フィラー（「えーと」「あのー」「そうですね...」）を適度に入れること\n"
-                                rag_context += "- 間（「...」）を使って考えている様子を表現すること\n"
-                                rag_context += "- 必ず【シナリオ設定】のペルソナ情報（業種、事業内容、課題）に基づいて応答すること"
+                                rag_context += "\n\n応答時：フィラーや間を使い、ペルソナの業種・課題で応答すること。"
                                 system_prompt += rag_context
                                 logger.debug(f"[RAG強化] {len(rag_patterns)}個の顧客応答パターンを参照（口調・表現を積極活用）")
                 except Exception as e:
                     logger.debug(f"[RAG] 検索エラー（続行）: {e}")
                     # エラーでも続行
+
+                # ⏱️ パフォーマンス計測: RAG検索完了
+                if rag_used:
+                    perf_rag_end = time.time()
+                    perf_rag_time = (perf_rag_end - perf_rag_start) * 1000
+                    logger.info(f"⏱️ [計測] RAG検索処理: {perf_rag_time:.0f}ms")
+                    print(f"[PERF] RAG検索処理: {perf_rag_time:.0f}ms", flush=True)
 
                 # メッセージ履歴構築（直近10件：会話の一貫性を保つ）
                 logger.debug(f"[会話履歴デバッグ] 受信した履歴件数: {len(conversation_history)}")
@@ -1246,8 +1251,8 @@ def chat_stream():
 
                 messages = [{"role": "system", "content": system_prompt}]
 
-                # 🎯 超高速化: 会話履歴を最小限に（15→8件）
-                for msg in conversation_history[-8:]:  # 最新8件まで（超高速化）
+                # 🎯 超高速化: 会話履歴を最小限に（6→4件、テンポ最優先）
+                for msg in conversation_history[-4:]:  # 最新4件まで（テンポ最優先、直近の文脈で十分）
                     if msg['speaker'] == '営業':
                         messages.append({"role": "user", "content": msg['text']})
                     elif msg['speaker'] == '顧客':
@@ -1257,23 +1262,32 @@ def chat_stream():
                 logger.debug(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
 
                 # GPT-4o-miniストリーミング応答（超高速＋自然な会話）
-                # 日本語での応答を強制するため、messagesに追加の指示を挿入
                 messages.append({
                     "role": "system",
-                    "content": "🚨 重要リマインダー: この会話は100%日本語で行ってください。英語は一切使用しないでください。\n\n⏱️ テンポ重視: 応答は1-2文で完結してください。ビジネス会話は簡潔に。長い説明は避け、要点だけを伝えてください。"
+                    "content": "日本語のみ使用。1-2文で簡潔に応答。"
                 })
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=100）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=100）")
+                # ⏱️ パフォーマンス計測: GPT呼び出し開始
+                perf_gpt_start = time.time()
+
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=60）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=60）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=100,         # 会話継続性: 50→100（途切れ防止）
-                    temperature=0.5,        # テンポ重視: 0.6→0.5（決定速度向上）
+                    max_tokens=60,          # 超高速化: 80→60（テンポ重視、瞬時応答）
+                    temperature=0.3,        # 超高速化: 0.4→0.3（決定速度最大化）
                     presence_penalty=0.3,   # 新しいトピックを促進
                     frequency_penalty=0.3,  # 繰り返しを減らす
                     stream=True  # ストリーミング有効化
                 )
+
+                # ⏱️ パフォーマンス計測: GPT API呼び出し完了（接続確立）
+                perf_gpt_connected = time.time()
+                perf_connection_time = (perf_gpt_connected - perf_gpt_start) * 1000
+                logger.info(f"⏱️ [計測] GPT接続確立: {perf_connection_time:.0f}ms")
+                print(f"[PERF] GPT接続確立: {perf_connection_time:.0f}ms", flush=True)
+
                 print("[DEBUG-GENERATE] GPT-4o-mini応答オブジェクト取得完了", flush=True)
 
                 # チャンクバッファ
@@ -1288,11 +1302,20 @@ def chat_stream():
                 print("[DEBUG-GENERATE] GPTレスポンス受信ループ開始", flush=True)
                 logger.info("[ストリーミング] GPTレスポンス受信開始")
                 token_count = 0  # デバッグ用トークンカウント
+                perf_first_token_time = None  # 最初のトークン受信時刻
+                perf_first_chunk_sent_time = None  # 最初のチャンク送信時刻
                 for chunk in response:
                     if chunk.choices[0].delta.content:
                         content = chunk.choices[0].delta.content
                         text_buffer += content
                         token_count += 1
+
+                        # ⏱️ パフォーマンス計測: 最初のトークン受信（TTFT: Time To First Token）
+                        if token_count == 1:
+                            perf_first_token_time = time.time()
+                            perf_ttft = (perf_first_token_time - perf_gpt_start) * 1000
+                            logger.info(f"⏱️ [計測] GPT最初のトークン受信（TTFT）: {perf_ttft:.0f}ms")
+                            print(f"[PERF] GPT最初のトークン受信（TTFT）: {perf_ttft:.0f}ms", flush=True)
 
                         # 句点（。）でのみ分割（音声品質向上のため）
                         should_send = False
@@ -1323,6 +1346,14 @@ def chat_stream():
                         if future.done():
                             result = future.result()
                             if result:
+                                # ⏱️ パフォーマンス計測: チャンク送信時刻
+                                perf_chunk_sent_time = time.time()
+                                if perf_first_chunk_sent_time is None:
+                                    perf_first_chunk_sent_time = perf_chunk_sent_time
+                                    perf_time_to_first_audio = (perf_first_chunk_sent_time - perf_gpt_start) * 1000
+                                    logger.info(f"⏱️ [計測] 最初の音声チャンク送信: {perf_time_to_first_audio:.0f}ms")
+                                    print(f"[PERF] 最初の音声チャンク送信: {perf_time_to_first_audio:.0f}ms", flush=True)
+
                                 yield f"data: {json.dumps(result)}\n\n"
                                 if not first_chunk_sent:
                                     first_chunk_sent = True
@@ -1357,6 +1388,19 @@ def chat_stream():
                             logger.debug(f"[チャンク{next_yield_index}] 送信完了（最終処理）")
                         del tts_futures[next_yield_index]
                     next_yield_index += 1
+
+                # ⏱️ パフォーマンス計測: 全体の処理完了
+                perf_total_end = time.time()
+                perf_total_time = (perf_total_end - perf_gpt_start) * 1000
+                logger.info(f"⏱️ [計測サマリー] 全体処理時間: {perf_total_time:.0f}ms | チャンク数: {chunk_count} | トークン数: {token_count}")
+                print(f"[PERF] === 計測サマリー ===", flush=True)
+                print(f"[PERF] 1. GPT接続確立: {perf_connection_time:.0f}ms", flush=True)
+                if perf_first_token_time:
+                    print(f"[PERF] 2. GPT最初のトークン受信（TTFT）: {(perf_first_token_time - perf_gpt_start) * 1000:.0f}ms", flush=True)
+                if perf_first_chunk_sent_time:
+                    print(f"[PERF] 3. 最初の音声チャンク送信: {(perf_first_chunk_sent_time - perf_gpt_start) * 1000:.0f}ms", flush=True)
+                print(f"[PERF] 4. 全体処理時間: {perf_total_time:.0f}ms", flush=True)
+                print(f"[PERF] ==================", flush=True)
 
                 # スレッドプールをクリーンアップ
                 executor.shutdown(wait=False)

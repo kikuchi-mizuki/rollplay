@@ -381,13 +381,16 @@ def transcribe():
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
 
-        # Whisperで音声認識（ビジネス用語認識精度向上）
-        # promptに営業・ビジネス用語を追加して認識精度を向上
-        # 動画制作・マーケティング関連の専門用語を含む
-        business_prompt = "御社、弊社、貴社、事業概要、サービス内容、費用、予算、導入事例、実績、課題、ニーズ、提案、ご提案、検討、ご検討、ROI、KPI、動画制作、ショート動画、TikTok、Instagram、YouTube、SNS、リール、縦型動画、エンゲージメント、インプレッション、リーチ、コンバージョン、広告運用、マーケティング、ブランディング、集客、認知拡大、フォロワー、バズる、バイラル"
-        logger.debug(f"[Whisper設定] prompt: ビジネス・動画制作用語ヒント, temperature: 0")
+        # Whisperで音声認識（ビジネス用語認識精度向上・速度最適化）
+        # promptを最重要単語のみに削減（精度維持・速度向上）
+        business_prompt = "御社、貴社、費用、予算、実績、課題、提案、検討、ROI、動画制作、ショート動画、SNS、Instagram、YouTube、TikTok"
+        logger.debug(f"[Whisper設定] prompt: 最重要ビジネス用語（最適化版）, temperature: 0")
 
         try:
+            # ⏱️ パフォーマンス計測: Whisper API呼び出し
+            import time
+            whisper_start = time.time()
+
             with open(new_path, 'rb') as f:
                 r = openai_client.audio.transcriptions.create(
                     model='whisper-1',
@@ -396,7 +399,10 @@ def transcribe():
                     temperature=0,
                     prompt=business_prompt
                 )
+
+            whisper_duration = (time.time() - whisper_start) * 1000
             text = (getattr(r, 'text', '') or '').strip()
+            logger.info(f"⏱️ [Whisper計測] 処理時間: {whisper_duration:.0f}ms, ファイルサイズ: {size} bytes, 認識結果: {text}")
             logger.debug(f"[Whisper成功] 認識結果: {text}")
 
             # YouTube定型文など明らかな誤認識をフィルタリング

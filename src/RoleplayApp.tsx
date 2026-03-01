@@ -77,6 +77,7 @@ function RoleplayApp() {
   const [audioInitialized, setAudioInitialized] = useState(false); // HTMLAudioElement初期化フラグ
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
+  const webSpeechFinalTextRef = useRef<string | null>(null); // Web Speech APIの最終結果を保存
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
   const messagesRef = useRef<Message[]>([]); // messagesの最新値を保持（ステート更新タイミング問題を回避）
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
@@ -484,27 +485,30 @@ function RoleplayApp() {
     // 🔍 会話履歴を先にキャプチャ（messagesRefから最新値を取得 - ステート更新タイミング問題を回避）
     const historyBeforeBot = messagesRef.current;
 
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      text: text.trim(),
-      timestamp: new Date(),
-    };
+    // VADモードの場合、ユーザーメッセージは既に暫定→最終に変換済みなので追加しない
+    if (!vadMode) {
+      const userMessage: Message = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        text: text.trim(),
+        timestamp: new Date(),
+      };
 
-    // 長時間会話での安定性向上：メッセージ数を制限（最大50件）
-    setMessages((prev) => {
-      const newMessages = [...prev, userMessage];
-      const MAX_MESSAGES = 50;
+      // 長時間会話での安定性向上：メッセージ数を制限（最大50件）
+      setMessages((prev) => {
+        const newMessages = [...prev, userMessage];
+        const MAX_MESSAGES = 50;
 
-      if (newMessages.length > MAX_MESSAGES) {
-        // 古いメッセージを削除（最新50件のみ保持）
-        const trimmed = newMessages.slice(-MAX_MESSAGES);
-        console.log(`[メモリ最適化] メッセージ履歴をトリミング: ${newMessages.length} → ${trimmed.length}件`);
-        return trimmed;
-      }
+        if (newMessages.length > MAX_MESSAGES) {
+          // 古いメッセージを削除（最新50件のみ保持）
+          const trimmed = newMessages.slice(-MAX_MESSAGES);
+          console.log(`[メモリ最適化] メッセージ履歴をトリミング: ${newMessages.length} → ${trimmed.length}件`);
+          return trimmed;
+        }
 
-      return newMessages;
-    });
+        return newMessages;
+      });
+    }
 
     // ⏱️ レイテンシー計測用（t0, t1から引き継ぎ）
     let firstTokenReceived = false;
@@ -602,12 +606,18 @@ function RoleplayApp() {
       // 再生専用ループ（イベント駆動型・オーバーラップ対応）
       const playbackLoop = async () => {
         playbackLoopRunning = true;
-        console.log('🔄 再生ループ開始（イベント駆動型・オーバーラップ対応）');
+        console.log('🔄 [再生ループ] 開始 (イベント駆動型・オーバーラップ対応)');
+
+        // AI音声再生中はリアルタイム文字起こしを一時停止（AIの声を拾わないように）
+        audioRecorderRef.pauseRealtimeTranscription();
 
         while (playbackLoopRunning) {
           // キューに何か来るまで待つ（イベント駆動型、50ms遅延なし）
           await waitForQueue();
-          if (!playbackLoopRunning) break;
+          if (!playbackLoopRunning) {
+            console.log('🛑 [再生ループ] ループフラグがfalse、終了します');
+            break;
+          }
 
           // キューにチャンクがあり、再生中でなければ即座に再生
           if (audioQueue.length > 0 && !isPlaying) {
@@ -615,10 +625,15 @@ function RoleplayApp() {
             const { audio: audioData, text: chunkText } = item;
             isPlaying = true;
 
-            // デバッグ: 音声データのサイズを確認
-            console.log(`📦 [デバッグ] チャンク取り出し: "${chunkText}" (データサイズ: ${audioData.byteLength} bytes)`);
+            console.log(`📦 [チャンク取り出し] "${chunkText}" (${audioData.byteLength} bytes), 残りキュー: ${audioQueue.length}`);
 
             try {
+              // 音声データの有効性チェック
+              if (!audioData || audioData.byteLength === 0) {
+                console.error(`❌ [エラー] 無効な音声データ: "${chunkText}" (サイズ: ${audioData?.byteLength || 0} bytes)`);
+                throw new Error('無効な音声データ');
+              }
+
               // 各チャンクのテキストを字幕として表示（2行以内で切り替わる）
               setMediaSubtitle(chunkText);
 
@@ -635,17 +650,22 @@ function RoleplayApp() {
 
               // Web Audio APIで音声を再生（モバイル対応）
               // 再生中にサーバー側では次のTTSが生成されている（オーバーラップ）
-              console.log(`▶️ [デバッグ] 音声再生開始: "${chunkText}"`);
+              console.log(`▶️ [再生開始] "${chunkText}" (${audioData.byteLength} bytes)`);
+              const playStartTime = performance.now();
               await playAudioWithWebAudio(audioData);
-              console.log(`✅ [デバッグ] 音声再生完了: "${chunkText}"`);
+              const playDuration = performance.now() - playStartTime;
+              console.log(`✅ [再生完了] "${chunkText}" (再生時間: ${playDuration.toFixed(0)}ms)`);
 
               // チャンク間に自然な間隔を追加（200ms→300msに延長して被りを防止）
               await new Promise(resolve => setTimeout(resolve, 300));
             } catch (error) {
-              console.error(`❌ 音声再生失敗: "${chunkText}"`, error);
+              console.error(`❌ [音声再生エラー] "${chunkText}"`, error);
+              console.error(`[エラー詳細] タイプ: ${error instanceof Error ? error.message : String(error)}`);
+              // エラーが発生しても次のチャンクに進む
             } finally {
               // 必ず再生フラグをfalseに戻す（例外時も保証）
               isPlaying = false;
+              console.log(`🔓 [再生フラグ解放] 次のチャンクへ`);
             }
           }
         }
@@ -666,6 +686,9 @@ function RoleplayApp() {
           audioRecorderRef.resumeVAD();
           console.log('🔓 VAD再開（正常終了）');
         }
+
+        // リアルタイム文字起こしを再開
+        audioRecorderRef.resumeRealtimeTranscription();
       };
 
       // 再生ループを起動（常駐・バックグラウンド実行）
@@ -746,11 +769,14 @@ function RoleplayApp() {
               }
 
               if (data.audio) {
+                const audioChunkReceiveTime = performance.now();
+
                 // ⏱️ GPT最初のトークン受信
                 if (!firstTokenReceived && t1) {
                   t2 = performance.now();
                   console.log(`[latency] t2: GPT最初のトークン受信 (${t2.toFixed(0)}ms)`);
                   console.log(`[latency] whisper→gpt_first_token: ${(t2 - t1).toFixed(0)}ms`);
+                  console.log(`⏱️ [フロントエンド計測] 音声チャンク受信: ${audioChunkReceiveTime.toFixed(0)}ms`);
                   firstTokenReceived = true;
 
                   // 🎭 t2: GPT最初のトークン受信 → 表情を先行変化（心理トリック）
@@ -778,13 +804,18 @@ function RoleplayApp() {
                   bytes[i] = binaryString.charCodeAt(i);
                 }
 
+                // 音声データサイズをチェック
+                console.log(`📥 [キュー追加] "${data.text}" (${bytes.buffer.byteLength} bytes)`);
+
                 // 音声キューに追加（音声とテキストをペアで管理）
                 // 再生ループが自動的に取り出して再生する（オーバーラップ）
                 audioQueue.push({ audio: bytes.buffer, text: data.text || '' });
                 fullText += data.text || '';
+                console.log(`📊 [キュー状態] 現在のキューサイズ: ${audioQueue.length}`);
 
                 // イベント駆動型キュー：待機中のループを即座に起こす
                 if (resolveWaiter) {
+                  console.log('🔔 [キュー通知] 再生ループを起動');
                   (resolveWaiter as () => void)();
                   resolveWaiter = null;
                 }
@@ -815,11 +846,16 @@ function RoleplayApp() {
       }
 
       // SSEストリーム完了後、キューが空になるまで待つ
-      console.log(`⏳ [デバッグ] ストリーム完了。残りチャンク数: ${audioQueue.length}`);
+      console.log(`⏳ [ストリーム完了] 残りチャンク数: ${audioQueue.length}, 再生中: ${isPlaying}`);
+      let waitCount = 0;
       while (audioQueue.length > 0 || isPlaying) {
         await new Promise(resolve => setTimeout(resolve, 100));
+        waitCount++;
+        if (waitCount % 10 === 0) {
+          console.log(`⏳ [待機中] ${waitCount * 100}ms経過, キュー: ${audioQueue.length}, 再生中: ${isPlaying}`);
+        }
       }
-      console.log(`✅ [デバッグ] 全チャンク再生完了。再生ループを停止します。`);
+      console.log(`✅ [全チャンク再生完了] 再生ループを停止します (待機時間: ${waitCount * 100}ms)`);
 
       // 全てのチャンク再生完了後、再生ループを停止
       playbackLoopRunning = false;
@@ -1248,11 +1284,68 @@ function RoleplayApp() {
       });
 
       try {
+        // リアルタイム文字起こしコールバックを設定
+        audioRecorderRef.setTranscriptCallback((transcript: string, isFinal: boolean) => {
+          if (transcript.trim()) {
+            if (!isFinal) {
+              // 暫定結果を左側に表示（録音中のリアルタイム表示）
+              console.log('📝 [リアルタイム暫定] ' + transcript);
+              setMessages(prev => {
+                // 最後のメッセージが暫定結果なら更新、なければ追加
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
+                  return [...prev.slice(0, -1), { ...lastMsg, text: transcript }];
+                } else {
+                  return [...prev, {
+                    id: `interim-${Date.now()}`,
+                    role: 'user',
+                    text: transcript,
+                    timestamp: new Date(),
+                  }];
+                }
+              });
+            } else {
+              // 最終結果：暫定メッセージを確定し、Refに保存
+              console.log('✅ [リアルタイム最終] ' + transcript);
+              webSpeechFinalTextRef.current = transcript;
+              setMessages(prev => {
+                const lastMsg = prev[prev.length - 1];
+                // 既に同じ最終メッセージが存在する場合は追加しない（重複防止）
+                if (lastMsg && lastMsg.role === 'user' &&
+                    !lastMsg.id.startsWith('interim-') &&
+                    lastMsg.text === transcript) {
+                  console.log('⚠️ [重複防止] 既に同じ最終メッセージが存在');
+                  return prev;
+                }
+                // 暫定メッセージを最終メッセージに変換
+                if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
+                  return [...prev.slice(0, -1), {
+                    id: `user-webspeech-${Date.now()}`,
+                    role: 'user',
+                    text: transcript,
+                    timestamp: new Date(),
+                  }];
+                } else {
+                  // 暫定メッセージがない場合は新規追加（通常は発生しない）
+                  console.warn('⚠️ [異常] 暫定メッセージなしで最終結果を受信');
+                  return [...prev, {
+                    id: `user-webspeech-${Date.now()}`,
+                    role: 'user',
+                    text: transcript,
+                    timestamp: new Date(),
+                  }];
+                }
+              });
+            }
+          }
+        });
+
         await audioRecorderRef.startVAD(
           // 音声検出時のコールバック
           () => {
             console.log('🎤 話し始めました');
             setIsRecording(true);
+            webSpeechFinalTextRef.current = null; // 録音開始時にクリア
           },
           // 音声停止時のコールバック（音声認識＆送信）
           async (audioBlob: Blob) => {
@@ -1269,7 +1362,77 @@ function RoleplayApp() {
             const t0 = performance.now();
             console.log(`[latency] t0: 録音停止 (${t0.toFixed(0)}ms)`);
 
-            // Whisper APIで音声認識
+            // 少し待ってWeb Speech APIの最終結果を取得（非同期処理のため）
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // Web Speech APIの最終結果があればそれを使用（表示もそのまま）
+            if (webSpeechFinalTextRef.current) {
+              const finalText = webSpeechFinalTextRef.current;
+              console.log(`✅ [Web Speech最終結果使用] "${finalText}"`);
+
+              // 音声認識中のフラグを立てる
+              setIsSending(true);
+              isSendingRef.current = true;
+
+              // Whisperをスキップして即座にAIに送信
+              const t1 = performance.now();
+              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (Whisperスキップ)`);
+
+              try {
+                await handleSendStream(finalText, true, t0, t1);
+              } catch (error) {
+                console.error('AI送信エラー:', error);
+                setIsSending(false);
+                isSendingRef.current = false;
+                if (isVADMode) {
+                  audioRecorderRef.resumeVAD();
+                }
+              }
+              return;
+            }
+
+            // Web Speech APIの最終結果がない場合、暫定結果を確認
+            const lastMessage = messagesRef.current[messagesRef.current.length - 1];
+            if (lastMessage && lastMessage.role === 'user' && lastMessage.id.startsWith('interim-')) {
+              const interimText = lastMessage.text;
+              console.log(`⚠️ [Web Speech最終結果なし] 暫定結果を使用: "${interimText}"`);
+
+              // 暫定メッセージを最終メッセージに変換
+              setMessages(prev => {
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg && lastMsg.id === lastMessage.id) {
+                  return [...prev.slice(0, -1), {
+                    id: `user-interim-final-${Date.now()}`,
+                    role: 'user',
+                    text: interimText,
+                    timestamp: new Date(),
+                  }];
+                }
+                return prev;
+              });
+
+              // 音声認識中のフラグを立てる
+              setIsSending(true);
+              isSendingRef.current = true;
+
+              const t1 = performance.now();
+              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (暫定結果使用)`);
+
+              try {
+                await handleSendStream(interimText, true, t0, t1);
+              } catch (error) {
+                console.error('AI送信エラー:', error);
+                setIsSending(false);
+                isSendingRef.current = false;
+                if (isVADMode) {
+                  audioRecorderRef.resumeVAD();
+                }
+              }
+              return;
+            }
+
+            // Web Speech APIの結果がない場合のみWhisperを使用（フォールバック）
+            console.log('⚠️ [Web Speech結果なし] Whisperをフォールバックとして使用');
             const formData = new FormData();
             const mimeType = audioBlob.type || 'audio/webm';
             let ext = mimeType.includes('webm') ? 'webm'
@@ -1295,9 +1458,6 @@ function RoleplayApp() {
               console.log(`[latency] t1: Whisper完了 (${t1.toFixed(0)}ms)`);
               console.log(`[latency] speech_end→whisper: ${(t1 - t0).toFixed(0)}ms`);
 
-              // 💬 字幕は空のままAI回答を待つ（最速で回答を表示）
-              // 不要な「考えている表現」は削除し、AI回答の最初のチャンクをできるだけ早く表示する
-
               if (!response.ok) {
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
               }
@@ -1305,8 +1465,24 @@ function RoleplayApp() {
               const result = JSON.parse(rawText);
 
               if (result.success && result.text) {
+                // Whisperの結果を表示（暫定メッセージがない場合のみ）
+                setMessages(prev => {
+                  const lastMsg = prev[prev.length - 1];
+                  if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
+                    // 暫定メッセージがある場合は更新しない（表示を維持）
+                    return prev;
+                  } else {
+                    // 暫定メッセージがない場合は新規追加
+                    return [...prev, {
+                      id: `user-${Date.now()}`,
+                      role: 'user',
+                      text: result.text,
+                      timestamp: new Date(),
+                    }];
+                  }
+                });
+
                 // VAD録音経由なので、vadMode=trueを明示的に渡す
-                // handleSendではなくhandleSendStreamを直接呼ぶ
                 await handleSendStream(result.text, true, t0, t1);
               } else {
                 setIsSending(false);
@@ -1645,29 +1821,7 @@ function RoleplayApp() {
         </div>
       )}
 
-      {/* VADモード中の音声検出表示（画面共有時は非表示にして画面が見えるようにする） */}
-      {isVADMode && isRecording && recordingState && !isScreenSharing && (
-        <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[60] bg-primary/20 backdrop-blur-xl border border-primary/30 rounded-2xl px-6 py-4 shadow-xl">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              {[...Array(10)].map((_, i) => (
-                <div
-                  key={i}
-                  className="wave-bar w-1 bg-primary rounded-full"
-                  style={{
-                    height: `${Math.max(20, recordingState.level * 0.5)}%`,
-                    minHeight: '8px',
-                    animationDelay: `${i * 0.05}s`,
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-sm font-medium text-primary">
-              {Math.floor(recordingState.duration / 60)}:{String(recordingState.duration % 60).padStart(2, '0')}
-            </span>
-          </div>
-        </div>
-      )}
+      {/* VADモード中の音声検出表示を非表示（リアルタイムコメント表示があるため不要） */}
 
       {/* 統合コントロールバー（音声中心UI） */}
       <footer className="fixed bottom-2 sm:bottom-4 inset-x-0 mx-auto z-[50] safe-area-bottom px-2 sm:px-0">
@@ -1846,13 +2000,9 @@ function RoleplayApp() {
       </footer>
 
       {/* 状態バー（画面共有時は非表示にして画面が見えるようにする） */}
-      {!isScreenSharing && (
+      {!isScreenSharing && !isRecording && (
         <div className="fixed bottom-0 left-0 right-0 bg-bg/80 backdrop-blur-sm border-t border-white/10 text-white text-xs px-4 py-2 text-center z-20 safe-area-bottom md:hidden">
-          {isRecording
-            ? `録音中... ${recordingState ? `${Math.floor(recordingState.duration / 60)}:${String(recordingState.duration % 60).padStart(2, '0')}` : ''}`
-            : isConnected
-            ? '準備完了'
-            : '接続中...'}
+          {isConnected ? '準備完了' : '接続中...'}
         </div>
       )}
 

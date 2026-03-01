@@ -39,6 +39,11 @@ export class AudioRecorder {
   private voiceStartTime: number = 0; // 音声検出開始時刻
   private voiceContinueDuration: number = 100; // 音声が継続する必要がある時間（ミリ秒）話始め検出強化：200→100ms
 
+  // リアルタイム文字起こし用（Web Speech API）
+  private recognition: any = null; // SpeechRecognition
+  private onTranscriptCallback?: (transcript: string, isFinal: boolean) => void; // リアルタイム文字起こしコールバック
+  private realtimeTranscriptionPaused: boolean = false; // AI音声再生中など、一時停止フラグ
+
   /**
    * 録音開始（モバイル対応強化）
    */
@@ -388,6 +393,9 @@ export class AudioRecorder {
       // VAD音量監視を開始
       this.startVADMonitoring();
 
+      // リアルタイム文字起こしを開始
+      this.startRealtimeTranscription();
+
       console.log('✅ VADモード開始（話すと自動的に録音開始）');
     } catch (error) {
       console.error('❌ VADモード開始エラー:', error);
@@ -722,6 +730,120 @@ export class AudioRecorder {
     this.stopLevelMeasurement();
     this.stopVAD();
     this.cleanupMedia();
+    this.stopRealtimeTranscription();
+  }
+
+  /**
+   * リアルタイム文字起こしコールバックを設定
+   */
+  setTranscriptCallback(callback: (transcript: string, isFinal: boolean) => void): void {
+    this.onTranscriptCallback = callback;
+  }
+
+  /**
+   * リアルタイム文字起こしを開始（Web Speech API）
+   */
+  startRealtimeTranscription(): void {
+    // Web Speech APIのサポート確認
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn('⚠️ このブラウザはWeb Speech APIをサポートしていません');
+      return;
+    }
+
+    try {
+      this.recognition = new SpeechRecognition();
+      this.recognition.lang = 'ja-JP';
+      this.recognition.continuous = true;
+      this.recognition.interimResults = true; // リアルタイム結果を取得
+      this.recognition.maxAlternatives = 1;
+
+      this.recognition.onresult = (event: any) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        // コールバックで結果を通知
+        if (this.onTranscriptCallback) {
+          if (finalTranscript) {
+            this.onTranscriptCallback(finalTranscript, true);
+          } else if (interimTranscript) {
+            this.onTranscriptCallback(interimTranscript, false);
+          }
+        }
+      };
+
+      this.recognition.onerror = (event: any) => {
+        if (event.error !== 'no-speech') {
+          console.warn('⚠️ 音声認識エラー:', event.error);
+        }
+      };
+
+      this.recognition.onend = () => {
+        // 自動再開（VADモード中、かつ一時停止中でない場合のみ）
+        if (this.vadEnabled && !this.vadPaused && !this.realtimeTranscriptionPaused) {
+          try {
+            this.recognition?.start();
+          } catch (e) {
+            // 既に開始している場合はエラーを無視
+          }
+        }
+      };
+
+      this.recognition.start();
+      console.log('✅ リアルタイム文字起こし開始');
+    } catch (error) {
+      console.warn('⚠️ リアルタイム文字起こし開始エラー:', error);
+    }
+  }
+
+  /**
+   * リアルタイム文字起こしを停止
+   */
+  stopRealtimeTranscription(): void {
+    if (this.recognition) {
+      try {
+        this.recognition.stop();
+        this.recognition = null;
+        console.log('⏹️ リアルタイム文字起こし停止');
+      } catch (error) {
+        // エラーを無視
+      }
+    }
+  }
+
+  /**
+   * リアルタイム文字起こしを一時停止（AI音声再生中など）
+   */
+  pauseRealtimeTranscription(): void {
+    this.realtimeTranscriptionPaused = true; // 自動再開を防ぐ
+    if (this.recognition) {
+      try {
+        this.recognition.stop();
+        console.log('⏸️ リアルタイム文字起こし一時停止（AI音声再生中）');
+      } catch (error) {
+        // エラーを無視
+      }
+    }
+  }
+
+  /**
+   * リアルタイム文字起こしを再開
+   */
+  resumeRealtimeTranscription(): void {
+    this.realtimeTranscriptionPaused = false; // 一時停止フラグを解除
+    if (this.vadEnabled && !this.vadPaused) {
+      this.startRealtimeTranscription();
+      console.log('▶️ リアルタイム文字起こし再開（AI音声再生完了）');
+    }
   }
 }
 
