@@ -1669,19 +1669,19 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             "overall": "総合評価（全体の印象と次回への具体的なアドバイス。100-200文字程度）",
             "detailedFeedback": {{
                 "questioning": {{
-                    "rationale": "質問力のスコアをこの点数にした理由（具体的な根拠）",
+                    "rationale": "質問力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
                     "examples": ["営業の具体的な質問例1", "営業の具体的な質問例2"]
                 }},
                 "listening": {{
-                    "rationale": "傾聴力のスコアをこの点数にした理由（具体的な根拠）",
+                    "rationale": "傾聴力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
                     "examples": ["傾聴の具体例1", "傾聴の具体例2"]
                 }},
                 "proposing": {{
-                    "rationale": "提案力のスコアをこの点数にした理由（具体的な根拠）",
+                    "rationale": "提案力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
                     "examples": ["提案の具体例1", "提案の具体例2"]
                 }},
                 "closing": {{
-                    "rationale": "クロージング力のスコアをこの点数にした理由（具体的な根拠）",
+                    "rationale": "クロージング力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
                     "examples": ["クロージングの具体例1"]
                 }}
             }},
@@ -1750,48 +1750,8 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             json_text = evaluation_text[start_idx:end_idx]
             evaluation = json.loads(json_text)
 
-            # デバッグ: detailedFeedbackの確認
-            logger.info(f"[評価生成] detailedFeedback存在確認: {('detailedFeedback' in evaluation)}")
-            if 'detailedFeedback' in evaluation:
-                logger.info(f"[評価生成] detailedFeedbackキー: {list(evaluation['detailedFeedback'].keys())}")
-            else:
-                logger.warning("[評価生成] ⚠️ detailedFeedbackが生成されませんでした - フォールバックデータを生成します")
-                # detailedFeedbackが欠けている場合、デフォルト値を設定（この時点では既に100点満点に変換済み）
-                scores = evaluation.get('scores', {"questioning": 60, "listening": 60, "proposing": 60, "closing": 60})
-                evaluation['detailedFeedback'] = {
-                    "questioning": {
-                        "rationale": f"質問力は{scores.get('questioning', 60)}点/100点です。基本的な質問は行えていますが、より深掘りした質問を心がけましょう。",
-                        "examples": ["顧客の課題について質問しています", "ニーズのヒアリングを試みています"]
-                    },
-                    "listening": {
-                        "rationale": f"傾聴力は{scores.get('listening', 60)}点/100点です。顧客の発言を受けて会話を進めていますが、さらに深く共感を示すことで信頼関係が構築できます。",
-                        "examples": ["顧客の回答を聞いています", "会話を継続しています"]
-                    },
-                    "proposing": {
-                        "rationale": f"提案力は{scores.get('proposing', 60)}点/100点です。サービスの説明は行えていますが、顧客の課題に紐づけた提案を意識しましょう。",
-                        "examples": ["サービスについて説明しています", "提案を試みています"]
-                    },
-                    "closing": {
-                        "rationale": f"クロージング力は{scores.get('closing', 60)}点/100点です。次のステップを提示することで、商談を前進させましょう。",
-                        "examples": ["会話をまとめようとしています"]
-                    }
-                }
-                logger.info("[評価生成] フォールバックdetailedFeedbackを生成しました")
-
-            # actionPlanのフォールバック処理
-            if 'actionPlan' not in evaluation or not evaluation['actionPlan']:
-                logger.warning("[評価生成] ⚠️ actionPlanが生成されませんでした - フォールバックデータを生成します")
-                evaluation['actionPlan'] = [
-                    "顧客の課題を深掘りする質問を増やしましょう",
-                    "提案時には具体的な事例や数値を示しましょう",
-                    "次のアクションを明確に提示してクロージングしましょう"
-                ]
-                logger.info("[評価生成] フォールバックactionPlanを生成しました")
-
-            # 基本情報を追加
-            evaluation['total_utterances'] = len(sales_utterances)
-
             # スコアを1-5点から100点満点に変換（フロントエンド互換性）
+            # 重要: detailedFeedbackフォールバック処理の前に変換する
             logger.info(f"[評価生成] evaluationキー一覧: {list(evaluation.keys())}")
             logger.info(f"[評価生成] 'scores' in evaluation: {'scores' in evaluation}")
             if 'scores' in evaluation:
@@ -1836,6 +1796,47 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 # totalを計算（4項目の合計、最大400点）
                 scores['total'] = scores['questioning'] + scores['listening'] + scores['proposing'] + scores['closing']
                 logger.info(f"[評価生成] 変換後スコア（制限適用後）: {scores}")
+
+            # デバッグ: detailedFeedbackの確認
+            logger.info(f"[評価生成] detailedFeedback存在確認: {('detailedFeedback' in evaluation)}")
+            if 'detailedFeedback' in evaluation:
+                logger.info(f"[評価生成] detailedFeedbackキー: {list(evaluation['detailedFeedback'].keys())}")
+            else:
+                logger.warning("[評価生成] ⚠️ detailedFeedbackが生成されませんでした - フォールバックデータを生成します")
+                # detailedFeedbackが欠けている場合、デフォルト値を設定（この時点では既に100点満点に変換済み）
+                scores = evaluation.get('scores', {"questioning": 60, "listening": 60, "proposing": 60, "closing": 60})
+                evaluation['detailedFeedback'] = {
+                    "questioning": {
+                        "rationale": f"5点満点中{round(scores.get('questioning', 60) / 20, 1)}点。基本的な質問は行えていますが、より深掘りした質問を心がけましょう。",
+                        "examples": ["顧客の課題について質問しています", "ニーズのヒアリングを試みています"]
+                    },
+                    "listening": {
+                        "rationale": f"5点満点中{round(scores.get('listening', 60) / 20, 1)}点。顧客の発言を受けて会話を進めていますが、さらに深く共感を示すことで信頼関係が構築できます。",
+                        "examples": ["顧客の回答を聞いています", "会話を継続しています"]
+                    },
+                    "proposing": {
+                        "rationale": f"5点満点中{round(scores.get('proposing', 60) / 20, 1)}点。サービスの説明は行えていますが、顧客の課題に紐づけた提案を意識しましょう。",
+                        "examples": ["サービスについて説明しています", "提案を試みています"]
+                    },
+                    "closing": {
+                        "rationale": f"5点満点中{round(scores.get('closing', 60) / 20, 1)}点。次のステップを提示することで、商談を前進させましょう。",
+                        "examples": ["会話をまとめようとしています"]
+                    }
+                }
+                logger.info("[評価生成] フォールバックdetailedFeedbackを生成しました")
+
+            # actionPlanのフォールバック処理
+            if 'actionPlan' not in evaluation or not evaluation['actionPlan']:
+                logger.warning("[評価生成] ⚠️ actionPlanが生成されませんでした - フォールバックデータを生成します")
+                evaluation['actionPlan'] = [
+                    "顧客の課題を深掘りする質問を増やしましょう",
+                    "提案時には具体的な事例や数値を示しましょう",
+                    "次のアクションを明確に提示してクロージングしましょう"
+                ]
+                logger.info("[評価生成] フォールバックactionPlanを生成しました")
+
+            # 基本情報を追加
+            evaluation['total_utterances'] = len(sales_utterances)
 
             # overallフィールドの正規化（フロントエンド互換性のため）
             if 'overall' not in evaluation or not evaluation['overall']:
@@ -1977,19 +1978,19 @@ def generate_evaluation_fallback(sales_utterances):
         'total_utterances': total_utterances,
         'detailedFeedback': {
             'questioning': {
-                'rationale': f"質問力は{questioning_score_100}点/100点です。質問数は{len(questions)}個でした。",
+                'rationale': f"5点満点中{round(questioning_score_100 / 20, 1)}点。質問数は{len(questions)}個でした。",
                 'examples': questions[:2] if questions else ["質問の具体例がありません"]
             },
             'listening': {
-                'rationale': f"傾聴力は{listening_score_100}点/100点です。傾聴表現は{len(listening_responses)}回検出されました。",
+                'rationale': f"5点満点中{round(listening_score_100 / 20, 1)}点。傾聴表現は{len(listening_responses)}回検出されました。",
                 'examples': listening_responses[:2] if listening_responses else ["傾聴の具体例がありません"]
             },
             'proposing': {
-                'rationale': f"提案力は{proposing_score_100}点/100点です。提案は{len(proposals)}回行われました。",
+                'rationale': f"5点満点中{round(proposing_score_100 / 20, 1)}点。提案は{len(proposals)}回行われました。",
                 'examples': proposals[:2] if proposals else ["提案の具体例がありません"]
             },
             'closing': {
-                'rationale': f"クロージング力は{closing_score_100}点/100点です。クロージング表現は{len(closings)}回検出されました。",
+                'rationale': f"5点満点中{round(closing_score_100 / 20, 1)}点。クロージング表現は{len(closings)}回検出されました。",
                 'examples': closings[:1] if closings else ["クロージングの具体例がありません"]
             }
         },
