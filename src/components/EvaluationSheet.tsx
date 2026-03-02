@@ -140,13 +140,13 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
         </div>
 
         {/* タブ */}
-        <div className="flex border-b border-slate-200 overflow-x-auto scrollbar-thin">
+        <div className="flex border-b border-slate-200 overflow-x-auto scrollbar-thin min-h-[48px]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+              className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab.id
                   ? 'text-primary border-b-2 border-primary'
                   : 'text-text-muted hover:text-text'
@@ -260,7 +260,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
               <div className="glass-card p-6 text-center border border-[#6C5CE7]/30">
                 <div className="text-sm font-medium text-slate-600 mb-2">総合スコア</div>
                 <div className="text-5xl font-bold text-[#6C5CE7] mb-1">
-                  {evaluation.scores.total}
+                  {Math.round(evaluation.scores.total / 4)}
                 </div>
                 <div className="text-sm text-slate-500">/ 100点</div>
               </div>

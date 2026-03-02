@@ -1464,6 +1464,9 @@ def get_mock_response(user_message):
 @apply_csrf
 @apply_rate_limit("3 per minute")  # GPT-4評価生成（コスト高）のためレート制限
 def evaluate_conversation():
+    logger.info("="*80)
+    logger.info("[エンドポイント] /api/evaluate が呼ばれました")
+    logger.info("="*80)
     try:
         data = request.get_json()
         conversation = data.get('conversation', [])
@@ -1487,7 +1490,10 @@ def evaluate_conversation():
             }), 400
 
         # 講評生成（Week 5改善版: シナリオ別Few-shot対応）
+        logger.info(f"[エンドポイント] generate_evaluation_with_gpt4を呼び出し（営業発言数: {len(sales_utterances)}）")
         evaluation = generate_evaluation_with_gpt4(sales_utterances, scenario_id)
+        logger.info(f"[エンドポイント] generate_evaluation_with_gpt4から戻りました。evaluationタイプ: {type(evaluation)}")
+        logger.info(f"[エンドポイント] evaluationキー: {list(evaluation.keys()) if isinstance(evaluation, dict) else 'N/A'}")
 
         # デバッグログ: 評価結果を出力
         logger.debug("\n" + "="*80)
@@ -1535,6 +1541,7 @@ def evaluate_conversation():
 
 def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
     """GPT-4を使用した営業スキル評価（Week 5改善版: シナリオ別Few-shot対応）"""
+    logger.info("[評価生成] ========== generate_evaluation_with_gpt4 開始 ==========")
     try:
         # 営業の発言を結合
         sales_text = " ".join(sales_utterances)
@@ -1613,12 +1620,20 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
         【評価項目】（5点満点で評価）
         {rubric_description}
 
-        【点数基準】
-        5点: 非常に優れている（プロレベル、模範的）
-        4点: 優れている（十分なスキル、わずかな改善余地）
-        3点: 平均的（基本はできているが、改善の余地あり）
-        2点: 要改善（基本スキルが不足、重要な改善点あり）
-        1点: 大幅な改善が必要（スキルがほとんど発揮されていない）
+        【点数基準】（必ず1, 2, 3, 4, 5のいずれかの整数で評価してください）
+        5点: 非常に優れている（プロレベル、完璧に近い、模範的な営業トーク）
+        4点: 優れている（実践的なスキルが十分にある、ベテランレベル）
+        3点: 平均的（基本スキルはあるが、明確な改善点が複数ある）
+        2点: 要改善（基本スキルが不足、営業としての最低限のレベルに達していない）
+        1点: 大幅な改善が必要（スキルがほとんど発揮されていない、練習が必要）
+
+        【重要な評価方針】
+        - 厳格に評価してください。曖昧な会話や不十分な対応は低評価とします
+        - 挨拶だけで終わった会話、具体的な提案がない会話は1-2点です
+        - 基本的な質問しかできていない場合は2-3点です
+        - 4-5点は本当に優秀な営業トークのみに付与してください
+
+        重要：スコアは必ず1から5の整数のみを使用してください。6以上の数値や小数点は使用しないでください。
 
         {few_shot_examples}
 
@@ -1636,11 +1651,10 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
         上記の指針に従って、以下のJSON形式で評価を出力してください：
         {{
             "scores": {{
-                "questioning": 数値（1-5）,
-                "listening": 数値（1-5）,
-                "proposing": 数値（1-5）,
-                "closing": 数値（1-5）,
-                "total": 数値（4項目の合計）
+                "questioning": 数値（1-5の整数のみ）,
+                "listening": 数値（1-5の整数のみ）,
+                "proposing": 数値（1-5の整数のみ）,
+                "closing": 数値（1-5の整数のみ）
             }},
             "strengths": [
                 "【質問力】具体的な発言を引用した良かった点",
@@ -1704,7 +1718,7 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
 【出力形式】
 以下のJSON形式で必ず回答してください：
 {
-  "scores": { "questioning": 数値, "listening": 数値, "proposing": 数値, "closing": 数値 },
+  "scores": { "questioning": 1-5の整数, "listening": 1-5の整数, "proposing": 1-5の整数, "closing": 1-5の整数 },
   "strengths": ["具体例を含む良かった点1", "具体例を含む良かった点2", "具体例を含む良かった点3"],
   "improvements": ["具体例を含む改善点1", "具体例を含む改善点2", "具体例を含む改善点3"],
   "overall": "総合評価コメント",
@@ -1742,23 +1756,23 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 logger.info(f"[評価生成] detailedFeedbackキー: {list(evaluation['detailedFeedback'].keys())}")
             else:
                 logger.warning("[評価生成] ⚠️ detailedFeedbackが生成されませんでした - フォールバックデータを生成します")
-                # detailedFeedbackが欠けている場合、デフォルト値を設定
-                scores = evaluation.get('scores', {"questioning": 50, "listening": 50, "proposing": 50, "closing": 50})
+                # detailedFeedbackが欠けている場合、デフォルト値を設定（この時点では既に100点満点に変換済み）
+                scores = evaluation.get('scores', {"questioning": 60, "listening": 60, "proposing": 60, "closing": 60})
                 evaluation['detailedFeedback'] = {
                     "questioning": {
-                        "rationale": f"質問力は{scores.get('questioning', 50)}点です。基本的な質問は行えていますが、より深掘りした質問を心がけましょう。",
+                        "rationale": f"質問力は{scores.get('questioning', 60)}点/100点です。基本的な質問は行えていますが、より深掘りした質問を心がけましょう。",
                         "examples": ["顧客の課題について質問しています", "ニーズのヒアリングを試みています"]
                     },
                     "listening": {
-                        "rationale": f"傾聴力は{scores.get('listening', 50)}点です。顧客の発言を受けて会話を進めていますが、さらに深く共感を示すことで信頼関係が構築できます。",
+                        "rationale": f"傾聴力は{scores.get('listening', 60)}点/100点です。顧客の発言を受けて会話を進めていますが、さらに深く共感を示すことで信頼関係が構築できます。",
                         "examples": ["顧客の回答を聞いています", "会話を継続しています"]
                     },
                     "proposing": {
-                        "rationale": f"提案力は{scores.get('proposing', 50)}点です。サービスの説明は行えていますが、顧客の課題に紐づけた提案を意識しましょう。",
+                        "rationale": f"提案力は{scores.get('proposing', 60)}点/100点です。サービスの説明は行えていますが、顧客の課題に紐づけた提案を意識しましょう。",
                         "examples": ["サービスについて説明しています", "提案を試みています"]
                     },
                     "closing": {
-                        "rationale": f"クロージング力は{scores.get('closing', 50)}点です。次のステップを提示することで、商談を前進させましょう。",
+                        "rationale": f"クロージング力は{scores.get('closing', 60)}点/100点です。次のステップを提示することで、商談を前進させましょう。",
                         "examples": ["会話をまとめようとしています"]
                     }
                 }
@@ -1777,6 +1791,52 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             # 基本情報を追加
             evaluation['total_utterances'] = len(sales_utterances)
 
+            # スコアを1-5点から100点満点に変換（フロントエンド互換性）
+            logger.info(f"[評価生成] evaluationキー一覧: {list(evaluation.keys())}")
+            logger.info(f"[評価生成] 'scores' in evaluation: {'scores' in evaluation}")
+            if 'scores' in evaluation:
+                scores = evaluation['scores']
+                logger.info(f"[評価生成] 変換前スコア: {scores}")
+
+                # 各スコアが1-5点スケールか100点満点スケールかを判定
+                # 最大値が5以下なら1-5点スケール（20倍）
+                # 最大値が20以下なら20点満点スケール（5倍）
+                # それ以外は既に100点満点
+                max_score = max(
+                    scores.get('questioning', 0),
+                    scores.get('listening', 0),
+                    scores.get('proposing', 0),
+                    scores.get('closing', 0)
+                )
+
+                if max_score <= 5:
+                    # 1-5点スケールの場合、20倍して100点満点に変換
+                    logger.info(f"[評価生成] 1-5点スケール検出（最大値: {max_score}） → 20倍で100点満点に変換")
+                    scores['questioning'] = scores.get('questioning', 3) * 20
+                    scores['listening'] = scores.get('listening', 3) * 20
+                    scores['proposing'] = scores.get('proposing', 3) * 20
+                    scores['closing'] = scores.get('closing', 3) * 20
+                elif max_score <= 20:
+                    # 20点満点スケールの場合、5倍して100点満点に変換
+                    logger.info(f"[評価生成] 20点満点スケール検出（最大値: {max_score}） → 5倍で100点満点に変換")
+                    scores['questioning'] = scores.get('questioning', 15) * 5
+                    scores['listening'] = scores.get('listening', 15) * 5
+                    scores['proposing'] = scores.get('proposing', 15) * 5
+                    scores['closing'] = scores.get('closing', 15) * 5
+                else:
+                    # 既に100点満点の場合はそのまま使用
+                    logger.info(f"[評価生成] 既に100点満点スケール（最大値: {max_score}） → そのまま使用")
+
+                # 各スコアを100点以内に制限（異常値対策）
+                scores['questioning'] = min(100, max(0, scores['questioning']))
+                scores['listening'] = min(100, max(0, scores['listening']))
+                scores['proposing'] = min(100, max(0, scores['proposing']))
+                scores['closing'] = min(100, max(0, scores['closing']))
+
+                # totalを計算（4項目の合計、最大400点）
+                scores['total'] = scores['questioning'] + scores['listening'] + scores['proposing'] + scores['closing']
+                logger.info(f"[評価生成] 変換後スコア（制限適用後）: {scores}")
+
             # overallフィールドの正規化（フロントエンド互換性のため）
             if 'overall' not in evaluation or not evaluation['overall']:
                 if 'overall_comment' in evaluation:
@@ -1794,16 +1854,21 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             return evaluation
         else:
             # JSON解析に失敗した場合はフォールバック
+            logger.warning("[評価生成] JSON解析失敗 - フォールバックを使用")
             return generate_evaluation_fallback(sales_utterances)
-            
+
     except Exception as e:
-        logger.error(f"GPT-4評価エラー: {e}")
+        logger.error(f"[評価生成] GPT-4評価エラー: {e}")
+        logger.error(f"[評価生成] エラー詳細: {type(e).__name__}")
+        import traceback
+        logger.error(f"[評価生成] トレースバック:\n{traceback.format_exc()}")
         # フォールバック: 従来の評価ロジック
         return generate_evaluation_fallback(sales_utterances)
 
 def generate_evaluation_fallback(sales_utterances):
     """フォールバック用の評価生成（従来のロジック）"""
-    
+    logger.info("[評価生成] ========== generate_evaluation_fallback 開始（フォールバック）==========")
+
     # 基本的な評価ロジック
     total_utterances = len(sales_utterances)
     
@@ -1888,13 +1953,20 @@ def generate_evaluation_fallback(sales_utterances):
     if not improvements:
         improvements = ["さらなる向上のため、継続的な練習を心がけましょう。"]
 
+    # スコアを1-5点から100点満点に変換（フロントエンド互換性）
+    questioning_score_100 = round(questioning_score * 20, 1)
+    listening_score_100 = round(listening_score * 20, 1)
+    proposing_score_100 = round(proposing_score * 20, 1)
+    closing_score_100 = round(closing_score * 20, 1)
+    total_score_100 = questioning_score_100 + listening_score_100 + proposing_score_100 + closing_score_100
+
     return {
         'scores': {
-            'questioning': round(questioning_score, 1),
-            'listening': round(listening_score, 1),
-            'proposing': round(proposing_score, 1),
-            'closing': round(closing_score, 1),
-            'total': round(total_score, 1)
+            'questioning': questioning_score_100,
+            'listening': listening_score_100,
+            'proposing': proposing_score_100,
+            'closing': closing_score_100,
+            'total': total_score_100
         },
         'overall': overall_comment,  # フロントエンドが期待するフィールド名
         'strengths': strengths,  # フロントエンドが期待するフィールド名
@@ -1905,19 +1977,19 @@ def generate_evaluation_fallback(sales_utterances):
         'total_utterances': total_utterances,
         'detailedFeedback': {
             'questioning': {
-                'rationale': f"質問力は{round(questioning_score, 1)}点です。質問数は{len(questions)}個でした。",
+                'rationale': f"質問力は{questioning_score_100}点/100点です。質問数は{len(questions)}個でした。",
                 'examples': questions[:2] if questions else ["質問の具体例がありません"]
             },
             'listening': {
-                'rationale': f"傾聴力は{round(listening_score, 1)}点です。傾聴表現は{len(listening_responses)}回検出されました。",
+                'rationale': f"傾聴力は{listening_score_100}点/100点です。傾聴表現は{len(listening_responses)}回検出されました。",
                 'examples': listening_responses[:2] if listening_responses else ["傾聴の具体例がありません"]
             },
             'proposing': {
-                'rationale': f"提案力は{round(proposing_score, 1)}点です。提案は{len(proposals)}回行われました。",
+                'rationale': f"提案力は{proposing_score_100}点/100点です。提案は{len(proposals)}回行われました。",
                 'examples': proposals[:2] if proposals else ["提案の具体例がありません"]
             },
             'closing': {
-                'rationale': f"クロージング力は{round(closing_score, 1)}点です。クロージング表現は{len(closings)}回検出されました。",
+                'rationale': f"クロージング力は{closing_score_100}点/100点です。クロージング表現は{len(closings)}回検出されました。",
                 'examples': closings[:1] if closings else ["クロージングの具体例がありません"]
             }
         },

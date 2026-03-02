@@ -78,6 +78,7 @@ function RoleplayApp() {
   const [isVADMode, setIsVADMode] = useState(false); // VAD（会話モード）のON/OFF
   const isVADModeRef = useRef(false); // VADモードのRef（クロージャー問題を回避）
   const webSpeechFinalTextRef = useRef<string | null>(null); // Web Speech APIの最終結果を保存
+  const lastProcessedFinalTextRef = useRef<string | null>(null); // 最後に処理した最終結果（重複防止用）
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
   const messagesRef = useRef<Message[]>([]); // messagesの最新値を保持（ステート更新タイミング問題を回避）
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
@@ -1307,16 +1308,18 @@ function RoleplayApp() {
             } else {
               // 最終結果：暫定メッセージを確定し、Refに保存
               console.log('✅ [リアルタイム最終] ' + transcript);
+
+              // 重複チェック：同じ最終結果を既に処理済みの場合はスキップ
+              if (lastProcessedFinalTextRef.current === transcript) {
+                console.log('⚠️ [重複防止] 同じ最終結果を既に処理済み、スキップ');
+                return;
+              }
+
+              lastProcessedFinalTextRef.current = transcript;
               webSpeechFinalTextRef.current = transcript;
+
               setMessages(prev => {
                 const lastMsg = prev[prev.length - 1];
-                // 既に同じ最終メッセージが存在する場合は追加しない（重複防止）
-                if (lastMsg && lastMsg.role === 'user' &&
-                    !lastMsg.id.startsWith('interim-') &&
-                    lastMsg.text === transcript) {
-                  console.log('⚠️ [重複防止] 既に同じ最終メッセージが存在');
-                  return prev;
-                }
                 // 暫定メッセージを最終メッセージに変換
                 if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
                   return [...prev.slice(0, -1), {
@@ -1346,6 +1349,7 @@ function RoleplayApp() {
             console.log('🎤 話し始めました');
             setIsRecording(true);
             webSpeechFinalTextRef.current = null; // 録音開始時にクリア
+            lastProcessedFinalTextRef.current = null; // 重複防止用もクリア
           },
           // 音声停止時のコールバック（音声認識＆送信）
           async (audioBlob: Blob) => {

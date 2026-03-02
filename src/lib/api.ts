@@ -225,11 +225,12 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
         strengths,
         improvements,
         scores: {
-          questioning: (evalData.scores?.questioning_skill || evalData.scores?.questioning || 0) * 20, // 5段階を100点満点に変換
-          listening: (evalData.scores?.listening_skill || evalData.scores?.listening || 0) * 20,
-          proposing: (evalData.scores?.proposal_skill || evalData.scores?.proposing || 0) * 20,
-          closing: (evalData.scores?.closing_skill || evalData.scores?.closing || 0) * 20,
-          total: (evalData.total_score || evalData.scores?.total || 0) * 20,
+          // バックエンドで既に100点満点に変換済み（1-5点 × 20）なので、ここでは変換不要
+          questioning: evalData.scores?.questioning_skill || evalData.scores?.questioning || 0,
+          listening: evalData.scores?.listening_skill || evalData.scores?.listening || 0,
+          proposing: evalData.scores?.proposal_skill || evalData.scores?.proposing || 0,
+          closing: evalData.scores?.closing_skill || evalData.scores?.closing || 0,
+          total: evalData.total_score || evalData.scores?.total || 0,
         },
         detailedFeedback: evalData.detailedFeedback,
         actionPlan: evalData.actionPlan,
