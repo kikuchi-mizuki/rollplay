@@ -6,23 +6,12 @@ import { useNavigate } from 'react-router-dom';
 /**
  * ヘッダーコンポーネント
  * @param isConnected - 接続状態（true: 接続済み、false: 未接続）
- * @param scenarios - シナリオ一覧
- * @param selectedScenarioId - 選択中のシナリオID
- * @param onScenarioChange - シナリオ変更時のコールバック
  */
 interface HeaderProps {
   isConnected?: boolean;
-  scenarios?: { id: string; title: string; enabled: boolean; category?: string }[];
-  selectedScenarioId?: string;
-  onScenarioChange?: (scenarioId: string) => void;
 }
 
-export function Header({
-  isConnected = true,
-  scenarios = [],
-  selectedScenarioId = '',
-  onScenarioChange
-}: HeaderProps) {
+export function Header({ isConnected = true }: HeaderProps) {
   const [showSettings, setShowSettings] = useState(false);
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -51,20 +40,6 @@ export function Header({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {scenarios.length > 0 && (
-              <select
-                value={selectedScenarioId}
-                onChange={(e) => onScenarioChange?.(e.target.value)}
-                className="px-3 py-1.5 text-sm bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
-                aria-label="シナリオを選択"
-              >
-                {scenarios.filter(s => s.enabled).map((scenario) => (
-                  <option key={scenario.id} value={scenario.id} className="bg-slate-800 text-white">
-                    {scenario.title}
-                  </option>
-                ))}
-              </select>
-            )}
             <button
               onClick={() => navigate('/history')}
               className="btn-icon text-white/80 hover:text-white"

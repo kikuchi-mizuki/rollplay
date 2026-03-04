@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface PersonaSelectorProps {
   isOpen: boolean;
-  onSelect: (personaId: string, difficulty?: 'beginner' | 'intermediate' | 'advanced', personaData?: Persona) => void;
+  onSelect: (personaId: string, scenarioId: string, difficulty?: 'beginner' | 'intermediate' | 'advanced', personaData?: Persona) => void;
   onClose: () => void;
 }
 
@@ -24,49 +24,80 @@ interface Persona {
   };
 }
 
+interface Scenario {
+  id: string;
+  title: string;
+  enabled: boolean;
+  category?: string;
+}
+
 /**
  * ペルソナ選択モーダルコンポーネント
  * 会話開始前に10個のペルソナから選択できる
  */
 export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorProps) {
   const [personas, setPersonas] = useState<Persona[]>([]);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRole, setSelectedRole] = useState<'sales' | 'director'>('sales');
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
 
   useEffect(() => {
     if (isOpen) {
-      // ペルソナ一覧を取得
-      fetch('/api/scenarios/personas')
-        .then(res => res.json())
-        .then(data => {
-          setPersonas(data.personas || []);
+      // シナリオ一覧とペルソナ一覧を取得
+      Promise.all([
+        fetch('/api/scenarios').then(res => res.json()),
+        fetch('/api/scenarios/personas').then(res => res.json())
+      ])
+        .then(([scenariosData, personasData]) => {
+          const fetchedScenarios = scenariosData || [];
+          setScenarios(fetchedScenarios);
+          setPersonas(personasData.personas || []);
+
+          // デフォルトシナリオを設定（営業の最初のシナリオ）
+          const salesScenarios = fetchedScenarios.filter((s: Scenario) => s.enabled && s.category === 'sales');
+          if (salesScenarios.length > 0) {
+            setSelectedScenarioId(salesScenarios[0].id);
+          }
+
           setLoading(false);
         })
         .catch(err => {
-          console.error('ペルソナ取得エラー:', err);
+          console.error('データ取得エラー:', err);
           setLoading(false);
         });
     }
   }, [isOpen]);
+
+  // ロール変更時にシナリオを自動切り替え
+  useEffect(() => {
+    if (scenarios.length > 0) {
+      const filteredScenarios = scenarios.filter(s => s.enabled && s.category === selectedRole);
+      if (filteredScenarios.length > 0 && !filteredScenarios.find(s => s.id === selectedScenarioId)) {
+        setSelectedScenarioId(filteredScenarios[0].id);
+      }
+    }
+  }, [selectedRole, scenarios]);
 
   const handleSelect = (personaId: string) => {
     setSelectedPersonaId(personaId);
   };
 
   const handleConfirm = () => {
-    if (selectedPersonaId) {
+    if (selectedPersonaId && selectedScenarioId) {
       const selectedPersona = personas.find(p => p.persona_id === selectedPersonaId);
-      onSelect(selectedPersonaId, selectedDifficulty, selectedPersona);
+      onSelect(selectedPersonaId, selectedScenarioId, selectedDifficulty, selectedPersona);
       onClose();
     }
   };
 
   const handleRandomSelect = () => {
-    if (personas.length > 0) {
+    if (personas.length > 0 && selectedScenarioId) {
       const randomIndex = Math.floor(Math.random() * personas.length);
       const randomPersona = personas[randomIndex];
-      onSelect(randomPersona.persona_id, selectedDifficulty, randomPersona);
+      onSelect(randomPersona.persona_id, selectedScenarioId, selectedDifficulty, randomPersona);
       onClose();
     }
   };
@@ -78,9 +109,9 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
       <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-5xl w-full h-[90vh] sm:max-h-[85vh] overflow-hidden border-t border-x sm:border border-gray-700 flex flex-col">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 sm:p-6 flex-shrink-0">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">顧客ペルソナを選択</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">ロープレ設定</h2>
           <p className="text-purple-100 text-xs sm:text-sm">
-            営業ロープレの相手となる顧客を選んでください（10パターン）
+            ロール・シナリオ・難易度・顧客を選択してください
           </p>
         </div>
 
@@ -92,9 +123,70 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
             </div>
           ) : (
             <>
+              {/* ロール選択 */}
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">1. ロール選択</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setSelectedRole('sales')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedRole === 'sales'
+                        ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/20'
+                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">💼</div>
+                      <div className={`font-semibold text-base ${selectedRole === 'sales' ? 'text-blue-400' : 'text-gray-300'}`}>
+                        営業として練習
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        クライアントへの提案営業
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setSelectedRole('director')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedRole === 'director'
+                        ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/20'
+                        : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🎬</div>
+                      <div className={`font-semibold text-base ${selectedRole === 'director' ? 'text-purple-400' : 'text-gray-300'}`}>
+                        ディレクターとして練習
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        制作要件のヒアリング・提案
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* シナリオ選択 */}
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">2. シナリオ選択</h3>
+                <select
+                  value={selectedScenarioId}
+                  onChange={(e) => setSelectedScenarioId(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
+                >
+                  {scenarios
+                    .filter(s => s.enabled && s.category === selectedRole)
+                    .map(scenario => (
+                      <option key={scenario.id} value={scenario.id}>
+                        {scenario.title}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
               {/* 難易度選択 */}
               <div className="mb-4 sm:mb-6">
-                <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">難易度レベル</h3>
+                <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">3. 難易度レベル</h3>
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   <button
                     onClick={() => setSelectedDifficulty('beginner')}
@@ -151,6 +243,11 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
                     </div>
                   </button>
                 </div>
+              </div>
+
+              {/* ペルソナ選択 */}
+              <div className="mb-3">
+                <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">4. 顧客ペルソナ選択</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">

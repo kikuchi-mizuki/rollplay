@@ -1709,12 +1709,7 @@ function RoleplayApp() {
 
   return (
     <div className="min-h-[100dvh] min-h-[100svh] flex flex-col">
-      <Header
-        isConnected={isConnected}
-        scenarios={scenarios}
-        selectedScenarioId={selectedScenarioId}
-        onScenarioChange={setSelectedScenarioId}
-      />
+      <Header isConnected={isConnected} />
 
       {/* 予算制限の告知バナー（利用額超過時のみ表示） */}
       {/* 現在は非表示。将来的にAPI側で予算超過を検知した場合にエラーメッセージで対応 */}
@@ -2073,9 +2068,10 @@ function RoleplayApp() {
       {/* ペルソナ選択モーダル */}
       <PersonaSelector
         isOpen={showPersonaSelector}
-        onSelect={(personaId, selectedDifficulty, personaData) => {
+        onSelect={(personaId, scenarioId, selectedDifficulty, personaData) => {
           selectedPersonaIdRef.current = personaId;
           setSelectedPersonaId(personaId);
+          setSelectedScenarioId(scenarioId);
           if (selectedDifficulty) {
             setDifficulty(selectedDifficulty);
           }
