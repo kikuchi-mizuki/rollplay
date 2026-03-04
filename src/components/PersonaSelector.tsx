@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getScenarios } from '../lib/api';
 
 interface PersonaSelectorProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
     if (isOpen) {
       // シナリオ一覧とペルソナ一覧を取得
       Promise.all([
-        fetch('/api/scenarios').then(res => res.json()),
+        getScenarios(),
         fetch('/api/scenarios/personas').then(res => res.json())
       ])
         .then(([scenariosData, personasData]) => {
