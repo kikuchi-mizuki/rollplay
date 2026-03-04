@@ -1593,24 +1593,56 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                     few_shot_examples += f"クロージング={poor_ex['evaluation']['scores']['closing_skill']}\n"
                     few_shot_examples += f"評価理由: {poor_ex['evaluation']['improvements'][0]}\n"
 
-        # Rubricから評価基準を構築
+        # シナリオIDに基づいてディレクター向けか営業向けかを判定
+        is_director = scenario_id and scenario_id.startswith('director_')
+
+        # Rubricから評価基準を構築（シナリオに応じて切り替え）
         rubric_description = ""
         if RUBRIC_DATA and 'evaluation_criteria' in RUBRIC_DATA:
             criteria_list = []
+            if is_director:
+                # ディレクター向けの4項目を抽出
+                target_ids = ['hearing_skill', 'planning_skill', 'director_communication_skill', 'project_management_skill']
+            else:
+                # 営業向けの4項目を抽出
+                target_ids = ['questioning_skill', 'listening_skill', 'proposal_skill', 'closing_skill']
+
             for criterion in RUBRIC_DATA['evaluation_criteria']:
-                name = criterion.get('name', '')
-                desc = criterion.get('description', '')
-                criteria_list.append(f"- {name}: {desc}")
+                criterion_id = criterion.get('id', '')
+                if criterion_id in target_ids:
+                    name = criterion.get('name', '')
+                    desc = criterion.get('description', '')
+                    criteria_list.append(f"- {name}: {desc}")
             rubric_description = "\n".join(criteria_list)
         else:
             # フォールバック: 簡易版
-            rubric_description = """- 質問力: 顧客のニーズ・課題を適切に引き出す質問
+            if is_director:
+                rubric_description = """- ヒアリング力: 制作要件を丁寧に聞き出し、情報を整理する能力
+- 企画提案力: クライアントの課題に対する具体的な解決策・方向性の提示
+- コミュニケーション力: 分かりやすい説明、共感、信頼関係の構築
+- プロジェクト管理力: 納期・予算・工程の確認と調整能力"""
+            else:
+                rubric_description = """- 質問力: 顧客のニーズ・課題を適切に引き出す質問
 - 傾聴力: 相手の発言を理解し、適切に受容・共感
 - 提案力: 顧客の課題に対する具体的な解決策を提示
 - クロージング力: 次のアクション・決定を促す適切なクロージング"""
 
         # GPT-4で評価を生成（Few-shot対応・具体的な講評生成）
-        evaluation_prompt = f"""
+        # ディレクター向けと営業向けでプロンプトを切り替え
+        if is_director:
+            role_name = "ディレクター"
+            evaluation_prompt = f"""
+        あなたはショート動画制作のプロフェッショナルディレクター育成コーチです。以下のディレクターの発言を分析して、具体的で実践的な評価を提供してください。
+
+        {scenario_context}
+        【ディレクターの発言】
+        {sales_text}
+
+        【評価項目】（5点満点で評価）
+        {rubric_description}"""
+        else:
+            role_name = "営業"
+            evaluation_prompt = f"""
         あなたはショート動画制作営業のプロフェッショナルコーチです。以下の営業の発言を分析して、具体的で実践的な評価を提供してください。
 
         {scenario_context}
@@ -1618,7 +1650,9 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
         {sales_text}
 
         【評価項目】（5点満点で評価）
-        {rubric_description}
+        {rubric_description}"""
+
+        evaluation_prompt += f"""
 
         【点数基準】（必ず1, 2, 3, 4, 5のいずれかの整数で評価してください）
         5点: 非常に優れている（プロレベル、完璧に近い、模範的な営業トーク）
@@ -1648,7 +1682,62 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
 
         4. **評価は厳しく、具体的に**（曖昧な褒め言葉は避ける）
 
-        上記の指針に従って、以下のJSON形式で評価を出力してください：
+        上記の指針に従って、以下のJSON形式で評価を出力してください："""
+
+        # JSON出力フォーマットをディレクター向けと営業向けで切り替え
+        if is_director:
+            evaluation_prompt += """
+        {{
+            "scores": {{
+                "hearing": 数値（1-5の整数のみ）,
+                "planning": 数値（1-5の整数のみ）,
+                "communication": 数値（1-5の整数のみ）,
+                "project_management": 数値（1-5の整数のみ）
+            }},
+            "strengths": [
+                "【ヒアリング力】具体的な発言を引用した良かった点",
+                "【企画提案力】具体的な発言を引用した良かった点",
+                "【コミュニケーション力】具体的な発言を引用した良かった点"
+            ],
+            "improvements": [
+                "【ヒアリング力】具体的な発言を引用した改善点と改善方法",
+                "【企画提案力】具体的な発言を引用した改善点と改善方法",
+                "【コミュニケーション力】具体的な発言を引用した改善点と改善方法"
+            ],
+            "overall": "総合評価（全体の印象と次回への具体的なアドバイス。100-200文字程度）",
+            "detailedFeedback": {{
+                "hearing": {{
+                    "rationale": "ヒアリング力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
+                    "examples": ["ディレクターの具体的なヒアリング例1", "ディレクターの具体的なヒアリング例2"]
+                }},
+                "planning": {{
+                    "rationale": "企画提案力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
+                    "examples": ["企画提案の具体例1", "企画提案の具体例2"]
+                }},
+                "communication": {{
+                    "rationale": "コミュニケーション力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
+                    "examples": ["コミュニケーションの具体例1", "コミュニケーションの具体例2"]
+                }},
+                "project_management": {{
+                    "rationale": "プロジェクト管理力のスコアをこの点数にした理由。必ず「5点満点中X点」という表現を含めてください。",
+                    "examples": ["プロジェクト管理の具体例1"]
+                }}
+            }},
+            "actionPlan": [
+                "次回のロープレで実践すべき具体的なアクション1",
+                "次回のロープレで実践すべき具体的なアクション2",
+                "次回のロープレで実践すべき具体的なアクション3"
+            ],
+            "analysis": {{
+                "hearing_count": 数値,
+                "planning_count": 数値,
+                "communication_count": 数値,
+                "project_management_count": 数値,
+                "conversation_flow": "会話の流れの分析（挨拶→要件ヒアリング→方向性提示→工程確認のどの段階まで進んだか）"
+            }}
+        }}"""
+        else:
+            evaluation_prompt += """
         {{
             "scores": {{
                 "questioning": 数値（1-5の整数のみ）,
@@ -1697,7 +1786,9 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 "closings_count": 数値,
                 "conversation_flow": "会話の流れの分析（挨拶→ヒアリング→提案→クロージングのどの段階まで進んだか）"
             }}
-        }}
+        }}"""
+
+        evaluation_prompt += """
 
         【注意】
         - strengths（良かった点）には最低3項目、最大5項目を記載
@@ -1750,6 +1841,20 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
             json_text = evaluation_text[start_idx:end_idx]
             evaluation = json.loads(json_text)
 
+            # ディレクター向けのスコアキー名を営業向けにマッピング（フロントエンド互換性）
+            if 'scores' in evaluation:
+                scores = evaluation['scores']
+
+                # ディレクター向けのキー名を営業向けのキー名に変換
+                if 'hearing' in scores:
+                    scores['questioning'] = scores.pop('hearing')
+                if 'planning' in scores:
+                    scores['proposing'] = scores.pop('planning')
+                if 'communication' in scores:
+                    scores['listening'] = scores.pop('communication')
+                if 'project_management' in scores:
+                    scores['closing'] = scores.pop('project_management')
+
             # スコアを1-5点から100点満点に変換（フロントエンド互換性）
             # 重要: detailedFeedbackフォールバック処理の前に変換する
             logger.info(f"[評価生成] evaluationキー一覧: {list(evaluation.keys())}")
@@ -1796,6 +1901,18 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
                 # totalを計算（4項目の合計、最大400点）
                 scores['total'] = scores['questioning'] + scores['listening'] + scores['proposing'] + scores['closing']
                 logger.info(f"[評価生成] 変換後スコア（制限適用後）: {scores}")
+
+            # ディレクター向けのdetailedFeedbackキー名を営業向けにマッピング（フロントエンド互換性）
+            if 'detailedFeedback' in evaluation:
+                feedback = evaluation['detailedFeedback']
+                if 'hearing' in feedback:
+                    feedback['questioning'] = feedback.pop('hearing')
+                if 'planning' in feedback:
+                    feedback['proposing'] = feedback.pop('planning')
+                if 'communication' in feedback:
+                    feedback['listening'] = feedback.pop('communication')
+                if 'project_management' in feedback:
+                    feedback['closing'] = feedback.pop('project_management')
 
             # デバッグ: detailedFeedbackの確認
             logger.info(f"[評価生成] detailedFeedback存在確認: {('detailedFeedback' in evaluation)}")

@@ -81,6 +81,87 @@ evaluation_criteria:
         label: "自然で効果的なクロージング"
         description: "顧客が納得できる自然なクロージング"
 
+  # ディレクター向け評価項目
+  - id: "hearing_skill"
+    name: "ヒアリング力"
+    description: "制作要件を丁寧に聞き出し、情報を整理する能力"
+    levels:
+      - score: 1
+        label: "ヒアリング不足"
+        description: "必要な情報を聞き出せていない"
+      - score: 2
+        label: "表面的なヒアリング"
+        description: "基本的な質問のみで深掘りできていない"
+      - score: 3
+        label: "基本的なヒアリング"
+        description: "目的・ターゲットなど基本情報は聞けている"
+      - score: 4
+        label: "網羅的なヒアリング"
+        description: "必要な要件を網羅的に聞き出している"
+      - score: 5
+        label: "戦略的なヒアリング"
+        description: "背景・真の課題まで引き出し、構造的に整理"
+
+  - id: "planning_skill"
+    name: "企画提案力"
+    description: "クライアントの課題に対する具体的な解決策・方向性の提示"
+    levels:
+      - score: 1
+        label: "提案なし"
+        description: "方向性の示唆がない"
+      - score: 2
+        label: "抽象的な提案"
+        description: "曖昧で具体性のない提案"
+      - score: 3
+        label: "基本的な提案"
+        description: "一般的な解決策を提示"
+      - score: 4
+        label: "具体的な提案"
+        description: "クライアントの課題に即した具体的な提案"
+      - score: 5
+        label: "戦略的な提案"
+        description: "課題の本質を捉え、最適化された解決策を提示"
+
+  - id: "director_communication_skill"
+    name: "コミュニケーション力"
+    description: "分かりやすい説明、共感、信頼関係の構築"
+    levels:
+      - score: 1
+        label: "コミュニケーション不足"
+        description: "専門用語が多く、説明が不十分"
+      - score: 2
+        label: "一方的な説明"
+        description: "クライアント目線が欠けている"
+      - score: 3
+        label: "基本的な説明"
+        description: "分かりやすい説明を心がけている"
+      - score: 4
+        label: "共感的なコミュニケーション"
+        description: "相手の理解度を確認しながら丁寧に説明"
+      - score: 5
+        label: "信頼構築できる対話"
+        description: "専門性と分かりやすさを両立し、安心感を提供"
+
+  - id: "project_management_skill"
+    name: "プロジェクト管理力"
+    description: "納期・予算・工程の確認と調整能力"
+    levels:
+      - score: 1
+        label: "管理視点なし"
+        description: "スケジュール・予算の確認がない"
+      - score: 2
+        label: "形式的な確認"
+        description: "聞くだけで具体性がない"
+      - score: 3
+        label: "基本的な確認"
+        description: "納期・予算を確認している"
+      - score: 4
+        label: "具体的な工程提示"
+        description: "スケジュール感を具体的に示している"
+      - score: 5
+        label: "柔軟な調整力"
+        description: "制約条件を理解し、最適な工程を提案"
+
 output_format:
   score_total: true
   score_average: true
