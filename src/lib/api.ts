@@ -100,7 +100,7 @@ async function addCsrfTokenToHeaders(headers: HeadersInit = {}): Promise<Headers
 /**
  * シナリオ一覧を取得
  */
-export async function getScenarios(): Promise<{ id: string; title: string; enabled: boolean }[]> {
+export async function getScenarios(): Promise<{ id: string; title: string; enabled: boolean; category?: string }[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/scenarios`);
     const result = await response.json();

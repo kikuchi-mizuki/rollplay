@@ -57,7 +57,7 @@ function RoleplayApp() {
   const [mediaSubtitle, setMediaSubtitle] = useState<string>('');
   const [videoSrc, setVideoSrc] = useState<string | undefined>(); // 動画のURL
   const [imageSrc, setImageSrc] = useState<string | undefined>(getDefaultExpression('avatar_03')); // アバター画像（デフォルト表情）
-  const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean }[]>([]);
+  const [scenarios, setScenarios] = useState<{ id: string; title: string; enabled: boolean; category?: string }[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
   const [conversationId, setConversationId] = useState<string | null>(null); // 会話ID（ペルソナ固定用）
   const [currentPersona, setCurrentPersona] = useState<Persona | null>(null); // 現在のペルソナ情報（会話内固定）

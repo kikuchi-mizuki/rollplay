@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
  */
 interface HeaderProps {
   isConnected?: boolean;
-  scenarios?: { id: string; title: string; enabled: boolean }[];
+  scenarios?: { id: string; title: string; enabled: boolean; category?: string }[];
   selectedScenarioId?: string;
   onScenarioChange?: (scenarioId: string) => void;
 }
