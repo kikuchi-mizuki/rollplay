@@ -100,10 +100,10 @@ export function MediaPanel({
           </div>
         )}
 
-        {/* 字幕（2行表示、自動スクロール） - z-30で最前面に表示 */}
+        {/* 字幕（全文表示、スクロール可能） - z-30で最前面に表示 */}
         {subtitle && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm z-30">
-            <div className="line-clamp-2 transition-all duration-300">
+          <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm z-30 max-h-32 overflow-y-auto">
+            <div className="transition-all duration-300">
               {subtitle}
             </div>
           </div>
