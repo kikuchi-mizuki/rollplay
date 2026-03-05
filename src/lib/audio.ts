@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 65; // 音声検出閾値（0-100）話始め検出強化：70→65
+  private vadThreshold: number = 50; // 音声検出閾値（0-100）安定性向上：65→50
   private vadInterruptThreshold: number = 92; // 割り込み検出閾値（AI話し中の割り込みを検出）※明確な割り込みのみ
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
@@ -37,7 +37,7 @@ export class AudioRecorder {
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
-  private voiceContinueDuration: number = 100; // 音声が継続する必要がある時間（ミリ秒）話始め検出強化：200→100ms
+  private voiceContinueDuration: number = 50; // 音声が継続する必要がある時間（ミリ秒）安定性向上：100→50ms
 
   // リアルタイム文字起こし用（Web Speech API）
   private recognition: any = null; // SpeechRecognition
@@ -381,14 +381,17 @@ export class AudioRecorder {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       this.audioContext = new AudioContextClass();
 
+      console.log(`🔊 AudioContext state: ${this.audioContext.state}`);
       if (this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
+        console.log(`✅ AudioContext resumed: ${this.audioContext.state}`);
       }
 
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = 256;
       this.microphone = this.audioContext.createMediaStreamSource(this.stream);
       this.microphone.connect(this.analyser);
+      console.log('✅ Analyser connected to microphone');
 
       // VAD音量監視を開始
       this.startVADMonitoring();
@@ -482,10 +485,21 @@ export class AudioRecorder {
     const bufferLength = this.analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    this.levelInterval = window.setInterval(() => {
+    this.levelInterval = window.setInterval(async () => {
       if (!this.analyser || !this.vadEnabled) {
         this.stopVADMonitoring();
         return;
+      }
+
+      // AudioContextが停止している場合は再開
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        console.log('⚠️ AudioContext suspended - resuming...');
+        try {
+          await this.audioContext.resume();
+          console.log('✅ AudioContext resumed');
+        } catch (err) {
+          console.error('❌ AudioContext resume failed:', err);
+        }
       }
 
       this.analyser.getByteFrequencyData(dataArray);
@@ -501,9 +515,9 @@ export class AudioRecorder {
       const level = (max / 255) * 100;
       this.state.level = level;
 
-      // 音声レベルを定期的にログ出力（5秒ごと）
-      if (!this._lastLogTime || Date.now() - this._lastLogTime > 5000) {
-        console.log(`📊 現在の音声レベル: ${level.toFixed(1)} (閾値: ${this.vadThreshold}, 録音中: ${this.isVadRecording})`);
+      // 音声レベルを定期的にログ出力（2秒ごとに変更して頻度を上げる）
+      if (!this._lastLogTime || Date.now() - this._lastLogTime > 2000) {
+        console.log(`📊 音声レベル: ${level.toFixed(1)} / 閾値: ${this.vadThreshold} / 録音中: ${this.isVadRecording} / AC state: ${this.audioContext?.state}`);
         this._lastLogTime = Date.now();
       }
 
