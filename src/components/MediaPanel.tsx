@@ -1,6 +1,7 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { CameraPip } from './CameraPip';
+import { useState, useEffect } from 'react';
 
 /**
  * メディアパネルコンポーネント（映像プレビュー領域）
@@ -56,6 +57,58 @@ export function MediaPanel({
   onBlurIntensityChange,
   onBlurredStreamReady,
 }: MediaPanelProps) {
+  // 字幕を文単位で分割して順次表示
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [sentences, setSentences] = useState<string[]>([]);
+
+  // 文単位で分割する関数
+  const splitIntoSentences = (text: string): string[] => {
+    if (!text) return [];
+    // 句点・感嘆符・疑問符で分割（ただし、後ろに文字が続く場合は分割しない）
+    const parts = text.split(/([。！？])/);
+    const sentences: string[] = [];
+
+    for (let i = 0; i < parts.length; i += 2) {
+      const sentence = parts[i] + (parts[i + 1] || '');
+      if (sentence.trim()) {
+        sentences.push(sentence.trim());
+      }
+    }
+
+    return sentences.length > 0 ? sentences : [text];
+  };
+
+  // subtitleが変更されたら文を分割
+  useEffect(() => {
+    if (subtitle) {
+      const newSentences = splitIntoSentences(subtitle);
+      setSentences(newSentences);
+      setCurrentSentenceIndex(0);
+    } else {
+      setSentences([]);
+      setCurrentSentenceIndex(0);
+    }
+  }, [subtitle]);
+
+  // 2秒ごとに次の文を表示
+  useEffect(() => {
+    if (sentences.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentSentenceIndex((prev) => {
+        if (prev >= sentences.length - 1) {
+          return 0; // 最後まで表示したら最初に戻る
+        }
+        return prev + 1;
+      });
+    }, 2000); // 2秒ごと
+
+    return () => clearInterval(interval);
+  }, [sentences]);
+
+  // 現在表示する字幕
+  const displayedSubtitle = sentences.length > 0 ? sentences[currentSentenceIndex] : subtitle;
+
   return (
     <div className="h-full w-full flex flex-col overflow-hidden relative">
       {/* メディアコンテンツ */}
@@ -100,11 +153,11 @@ export function MediaPanel({
           </div>
         )}
 
-        {/* 字幕（全文表示、スクロール可能） - z-30で最前面に表示 */}
-        {subtitle && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm z-30 max-h-32 overflow-y-auto">
-            <div className="transition-all duration-300">
-              {subtitle}
+        {/* 字幕（1〜2行表示、文単位で自動切り替え） - z-30で最前面に表示 */}
+        {displayedSubtitle && (
+          <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white px-4 py-3 text-sm text-center backdrop-blur-sm z-30">
+            <div className="line-clamp-2 transition-all duration-300">
+              {displayedSubtitle}
             </div>
           </div>
         )}
