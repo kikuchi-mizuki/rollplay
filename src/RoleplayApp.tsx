@@ -2039,6 +2039,7 @@ function RoleplayApp() {
         isOpen={showEvaluation}
         evaluation={evaluation}
         messages={messages}
+        scenarioId={selectedScenarioId}
         onClose={() => {
           setShowEvaluation(false);
           setEvaluation(null);

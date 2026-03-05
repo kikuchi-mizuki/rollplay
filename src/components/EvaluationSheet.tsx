@@ -3,6 +3,27 @@ import { useState, useEffect } from 'react';
 import { Evaluation, Message } from '../types';
 import { downloadSingleEvaluationCSV } from '../lib/csv';
 
+// 評価項目名のマッピング（営業 vs ディレクター）
+const SKILL_LABELS = {
+  sales: {
+    questioning: '質問力',
+    listening: '傾聴力',
+    proposing: '提案力',
+    closing: 'クロージング力'
+  },
+  director: {
+    questioning: 'ヒアリング力',  // バックエンドでhearingからマッピング済み
+    listening: 'コミュニケーション力',  // バックエンドでcommunicationからマッピング済み
+    proposing: '企画提案力',  // バックエンドでplanningからマッピング済み
+    closing: 'プロジェクト管理力'  // バックエンドでproject_managementからマッピング済み
+  }
+};
+
+function getSkillLabel(skillKey: 'questioning' | 'listening' | 'proposing' | 'closing', scenarioId?: string): string {
+  const isDirector = scenarioId?.startsWith('director_');
+  return isDirector ? SKILL_LABELS.director[skillKey] : SKILL_LABELS.sales[skillKey];
+}
+
 /**
  * 講評シートコンポーネント（下からスライドイン）
  * @param isOpen - シートの表示状態
@@ -15,9 +36,10 @@ interface EvaluationSheetProps {
   evaluation: Evaluation | null;
   messages?: Message[];
   onClose: () => void;
+  scenarioId?: string;
 }
 
-export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: EvaluationSheetProps) {
+export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, scenarioId }: EvaluationSheetProps) {
   const [activeTab, setActiveTab] = useState<'overall' | 'strengths' | 'improvements' | 'scores' | 'detailed'>(
     'overall'
   );
@@ -69,7 +91,7 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
       `【総評】\n${evaluation.overall}`,
       `\n【良かった点】\n${evaluation.strengths.map((s, i) => `${i + 1}. ${s}`).join('\n')}`,
       `\n【改善点】\n${evaluation.improvements.map((s, i) => `${i + 1}. ${s}`).join('\n')}`,
-      `\n【スコア】\n質問力: ${evaluation.scores.questioning}\n傾聴力: ${evaluation.scores.listening}\n提案力: ${evaluation.scores.proposing}\nクロージング力: ${evaluation.scores.closing}\n総合: ${evaluation.scores.total}`,
+      `\n【スコア】\n${getSkillLabel('questioning', scenarioId)}: ${evaluation.scores.questioning}\n${getSkillLabel('listening', scenarioId)}: ${evaluation.scores.listening}\n${getSkillLabel('proposing', scenarioId)}: ${evaluation.scores.proposing}\n${getSkillLabel('closing', scenarioId)}: ${evaluation.scores.closing}\n総合: ${evaluation.scores.total}`,
     ].join('\n');
 
     try {
@@ -191,10 +213,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
             <div>
               {/* スコアカード */}
               <div className="space-y-4 mb-6">
-                {/* 質問力 */}
+                {/* スキル1 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-600">質問力</div>
+                    <div className="text-sm font-medium text-slate-600">{getSkillLabel('questioning', scenarioId)}</div>
                     <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.questioning}
                     </div>
@@ -207,10 +229,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                   </div>
                 </div>
 
-                {/* 傾聴力 */}
+                {/* スキル2 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-600">傾聴力</div>
+                    <div className="text-sm font-medium text-slate-600">{getSkillLabel('listening', scenarioId)}</div>
                     <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.listening}
                     </div>
@@ -223,10 +245,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                   </div>
                 </div>
 
-                {/* 提案力 */}
+                {/* スキル3 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-600">提案力</div>
+                    <div className="text-sm font-medium text-slate-600">{getSkillLabel('proposing', scenarioId)}</div>
                     <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.proposing}
                     </div>
@@ -239,10 +261,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                   </div>
                 </div>
 
-                {/* クロージング力 */}
+                {/* スキル4 */}
                 <div className="glass-card p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-sm font-medium text-slate-600">クロージング力</div>
+                    <div className="text-sm font-medium text-slate-600">{getSkillLabel('closing', scenarioId)}</div>
                     <div className="text-2xl font-bold text-slate-900">
                       {evaluation.scores.closing}
                     </div>
@@ -288,10 +310,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
 
           {activeTab === 'detailed' && (
             <div className="space-y-6">
-              {/* 質問力の詳細 */}
+              {/* スキル1の詳細 */}
               {evaluation.detailedFeedback?.questioning && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-slate-900 mb-4">質問力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">{getSkillLabel('questioning', scenarioId)}</h3>
                   {evaluation.detailedFeedback.questioning.rationale && (
                     <div className="mb-4">
                       <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
@@ -315,10 +337,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 </div>
               )}
 
-              {/* 傾聴力の詳細 */}
+              {/* スキル2の詳細 */}
               {evaluation.detailedFeedback?.listening && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-slate-900 mb-4">傾聴力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">{getSkillLabel('listening', scenarioId)}</h3>
                   {evaluation.detailedFeedback.listening.rationale && (
                     <div className="mb-4">
                       <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
@@ -342,10 +364,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 </div>
               )}
 
-              {/* 提案力の詳細 */}
+              {/* スキル3の詳細 */}
               {evaluation.detailedFeedback?.proposing && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-slate-900 mb-4">提案力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">{getSkillLabel('proposing', scenarioId)}</h3>
                   {evaluation.detailedFeedback.proposing.rationale && (
                     <div className="mb-4">
                       <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
@@ -369,10 +391,10 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose }: 
                 </div>
               )}
 
-              {/* クロージング力の詳細 */}
+              {/* スキル4の詳細 */}
               {evaluation.detailedFeedback?.closing && (
                 <div className="glass-card p-5">
-                  <h3 className="text-base font-semibold text-slate-900 mb-4">クロージング力</h3>
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">{getSkillLabel('closing', scenarioId)}</h3>
                   {evaluation.detailedFeedback.closing.rationale && (
                     <div className="mb-4">
                       <h4 className="text-sm font-medium text-slate-700 mb-2">評価理由</h4>
