@@ -6,9 +6,11 @@ import { EmptyState } from './EmptyState';
 /**
  * メッセージリストコンポーネント
  * @param messages - 表示するメッセージの配列
+ * @param scenarioId - 現在のシナリオID
  */
 interface MessageListProps {
   messages: Message[];
+  scenarioId?: string;
 }
 
 /**
@@ -69,7 +71,7 @@ function groupMessages(messages: Message[]): (Message & { group: 'top' | 'middle
   return grouped;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({ messages, scenarioId }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -86,7 +88,7 @@ export function MessageList({ messages }: MessageListProps) {
   const groupedMessages = groupMessages(messages);
 
   if (messages.length === 0) {
-    return <EmptyState />;
+    return <EmptyState scenarioId={scenarioId} />;
   }
 
   return (

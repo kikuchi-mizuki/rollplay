@@ -1794,7 +1794,7 @@ function RoleplayApp() {
 
           {/* チャットパネル */}
           <div className="card flex flex-col justify-center items-center w-full flex-1 overflow-hidden relative animate-floatIn">
-            <ChatPanel messages={messages} />
+            <ChatPanel messages={messages} scenarioId={selectedScenarioId} />
           </div>
         </section>
       </main>
