@@ -98,6 +98,13 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
     if (personas.length > 0 && selectedScenarioId) {
       const randomIndex = Math.floor(Math.random() * personas.length);
       const randomPersona = personas[randomIndex];
+
+      // デバッグ: 選択されたシナリオを確認
+      const selectedScenario = scenarios.find(s => s.id === selectedScenarioId);
+      console.log('[おまかせ] 選択されたシナリオID:', selectedScenarioId);
+      console.log('[おまかせ] 選択されたシナリオ:', selectedScenario);
+      console.log('[おまかせ] ランダムペルソナ:', randomPersona.persona_name);
+
       onSelect(randomPersona.persona_id, selectedScenarioId, selectedDifficulty, randomPersona);
       onClose();
     }

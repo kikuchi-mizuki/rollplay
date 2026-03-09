@@ -2388,9 +2388,15 @@ function RoleplayApp() {
       <PersonaSelector
         isOpen={showPersonaSelector}
         onSelect={(personaId, scenarioId, selectedDifficulty, personaData) => {
+          console.log('[RoleplayApp] PersonaSelectorから受け取ったscenarioId:', scenarioId);
+          console.log('[RoleplayApp] PersonaSelectorから受け取ったpersonaId:', personaId);
+
           selectedPersonaIdRef.current = personaId;
           setSelectedPersonaId(personaId);
           setSelectedScenarioId(scenarioId);
+
+          console.log('[RoleplayApp] setSelectedScenarioId実行後、selectedScenarioId:', scenarioId);
+
           if (selectedDifficulty) {
             setDifficulty(selectedDifficulty);
           }
