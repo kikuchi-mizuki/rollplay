@@ -610,6 +610,7 @@ function RoleplayApp() {
     let firstTokenReceived = false;
     let firstAudioPlayed = false;
     let t2: number | undefined; // GPT最初のトークン受信時刻
+    let timeoutId: NodeJS.Timeout | null = null; // タイムアウトID（応答遅延検出用）
 
     try {
       // 音声チャンクキュー
@@ -857,10 +858,30 @@ function RoleplayApp() {
 
       streamReader = reader; // readerを保存（割り込み時に中断するため）
 
+      // タイムアウト処理（最初のチャンク受信）
+      const FIRST_CHUNK_TIMEOUT = 10000; // 10秒
+      let firstChunkReceived = false;
+      const timeoutId = setTimeout(() => {
+        if (!firstChunkReceived) {
+          console.error('⏱️ タイムアウト: 10秒以内にAI応答がありませんでした');
+          setMessages((prev) =>
+            prev.map(msg =>
+              msg.id === botMessageId
+                ? { ...msg, text: 'タイムアウト：応答に時間がかかりすぎています。もう一度お試しください。' }
+                : msg
+            )
+          );
+          reader.cancel();
+        }
+      }, FIRST_CHUNK_TIMEOUT);
+
       let buffer = '';
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {
+          clearTimeout(timeoutId);
+          break;
+        }
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n\n');
@@ -873,6 +894,7 @@ function RoleplayApp() {
               const data = JSON.parse(jsonStr);
 
               if (data.error) {
+                clearTimeout(timeoutId); // タイムアウトをクリア
                 console.error('ストリーミングエラー:', data.error);
                 // デバッグ用：詳細なエラー情報を表示
                 console.error('エラー詳細:', JSON.stringify(data, null, 2));
@@ -906,6 +928,13 @@ function RoleplayApp() {
 
               if (data.audio) {
                 const audioChunkReceiveTime = performance.now();
+
+                // 最初のチャンク受信時にタイムアウトをクリア
+                if (!firstChunkReceived) {
+                  firstChunkReceived = true;
+                  clearTimeout(timeoutId);
+                  console.log('✅ 最初のチャンク受信、タイムアウトクリア');
+                }
 
                 // ⏱️ GPT最初のトークン受信
                 if (!firstTokenReceived && t1) {
@@ -1051,6 +1080,7 @@ function RoleplayApp() {
       // }
 
     } catch (error) {
+      if (timeoutId) clearTimeout(timeoutId); // タイムアウトをクリア
       console.error('ストリーミング送信エラー:', error);
       const errorMessage = error instanceof Error ? error.message : 'メッセージの送信に失敗しました';
       setToast({

@@ -1262,24 +1262,24 @@ def chat_stream():
                 messages.append({"role": "user", "content": user_message})
                 logger.debug(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
 
-                # GPT-4o-miniストリーミング応答（超高速＋自然な会話）
+                # GPT-4o-miniストリーミング応答（極限設定＋最速応答）
                 messages.append({
                     "role": "system",
-                    "content": "日本語のみ使用。1-2文で簡潔に応答。"
+                    "content": "日本語のみ。1文で即答。"
                 })
 
                 # ⏱️ パフォーマンス計測: GPT呼び出し開始
                 perf_gpt_start = time.time()
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=60）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=60）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=30、極限設定）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=30、極限設定）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=60,          # 超高速化: 80→60（テンポ重視、瞬時応答）
-                    temperature=0.3,        # 超高速化: 0.4→0.3（決定速度最大化）
-                    presence_penalty=0.3,   # 新しいトピックを促進
-                    frequency_penalty=0.3,  # 繰り返しを減らす
+                    max_tokens=30,          # 極限設定: 60→30（最速応答、1文のみ）
+                    temperature=0.2,        # 極限設定: 0.3→0.2（決定速度最大化）
+                    presence_penalty=0.2,   # 新しいトピックを促進
+                    frequency_penalty=0.2,  # 繰り返しを減らす
                     stream=True  # ストリーミング有効化
                 )
 
