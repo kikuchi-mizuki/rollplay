@@ -1519,10 +1519,10 @@ function RoleplayApp() {
                   newText: transcript
                 });
 
-                // 重複チェック：直近のユーザーメッセージを確認（最後の2件）
-                const recentUserMessages = prev.filter(m => m.role === 'user').slice(-2);
+                // 🚨 重複チェック強化：直近5件のユーザーメッセージを確認（ボット応答を挟んでも検出）
+                const recentUserMessages = prev.filter(m => m.role === 'user').slice(-5);
                 if (recentUserMessages.some(m => m.text === transcript)) {
-                  console.warn('⚠️ [重複防止] 直近2件に同じテキストのメッセージが存在、スキップ');
+                  console.warn('⚠️ [重複防止] 直近5件に同じテキストのメッセージが存在、スキップ');
                   return prev;
                 }
 
@@ -1536,14 +1536,9 @@ function RoleplayApp() {
                     timestamp: new Date(),
                   }];
                 } else {
-                  // 暫定メッセージがない場合は新規追加（通常は発生しない）
-                  console.warn('⚠️ [異常] 暫定メッセージなしで最終結果を受信 - 新規追加');
-                  return [...prev, {
-                    id: `user-webspeech-${Date.now()}`,
-                    role: 'user',
-                    text: transcript,
-                    timestamp: new Date(),
-                  }];
+                  // 暫定メッセージがない場合 - 重複チェックで既に弾かれているはず
+                  console.warn('⚠️ [異常] 暫定メッセージなしで最終結果を受信 - 重複チェック済みのためスキップ');
+                  return prev;
                 }
               });
 
@@ -1609,6 +1604,13 @@ function RoleplayApp() {
               // 暫定メッセージを最終メッセージに変換
               setMessages(prev => {
                 const lastMsg = prev[prev.length - 1];
+
+                // 🚨 重複チェック強化：直近5件のユーザーメッセージを確認
+                const recentUserMessages = prev.filter(m => m.role === 'user').slice(-5);
+                if (recentUserMessages.some(m => m.text === interimText && !m.id.startsWith('interim-'))) {
+                  console.warn('⚠️ [重複防止] 暫定結果が直近5件に既に存在、スキップ');
+                  return prev;
+                }
 
                 // 重複チェック：既に最終メッセージになっている場合はスキップ
                 if (lastMsg && lastMsg.role === 'user' &&
@@ -1695,14 +1697,16 @@ function RoleplayApp() {
                 setMessages(prev => {
                   const lastMsg = prev[prev.length - 1];
 
-                  // 重複チェック：既に同じテキストのユーザーメッセージがある場合はスキップ
-                  if (lastMsg && lastMsg.role === 'user' && lastMsg.text === result.text) {
-                    console.warn('⚠️ [重複防止] Whisper結果が既存メッセージと同じ、スキップ');
+                  // 🚨 重複チェック強化：直近5件のユーザーメッセージを確認
+                  const recentUserMessages = prev.filter(m => m.role === 'user').slice(-5);
+                  if (recentUserMessages.some(m => m.text === result.text)) {
+                    console.warn('⚠️ [重複防止] Whisper結果が直近5件に存在、スキップ');
                     return prev;
                   }
 
                   if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
                     // 暫定メッセージがある場合は更新しない（表示を維持）
+                    console.warn('⚠️ [重複防止] 暫定メッセージが既に存在、スキップ');
                     return prev;
                   } else {
                     // 暫定メッセージがない場合は新規追加
