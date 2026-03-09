@@ -1849,6 +1849,8 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
 【必須】良かった点（strengths）を必ず3つ以上見つけて記載してください。小さな良い点でも評価対象です。"""
 
         logger.info(f"[評価生成] GPT-4呼び出し開始（ディレクター: {is_director}, 会話文字数: {len(conversation_text)}）")
+        logger.info(f"[評価生成] 会話データ:\n{conversation_text}")
+        logger.info(f"[評価生成] プロンプト文字数: {len(evaluation_prompt)}")
 
         response = openai_client.chat.completions.create(
             model="gpt-4",
