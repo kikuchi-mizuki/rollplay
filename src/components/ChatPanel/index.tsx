@@ -12,7 +12,7 @@ interface ChatPanelProps {
   scenarioId?: string;
 }
 
-const ChatPanelComponent: React.FC<ChatPanelProps> = ({ messages, scenarioId }) => {
+const ChatPanelComponent = ({ messages, scenarioId }: ChatPanelProps) => {
   return (
     <div className="h-full w-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-hidden">

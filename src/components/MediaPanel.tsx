@@ -40,7 +40,7 @@ interface MediaPanelProps {
   onBlurredStreamReady?: (stream: MediaStream | null) => void; // 背景ぼかし済みストリームを親に通知
 }
 
-const MediaPanelComponent: React.FC<MediaPanelProps> = ({
+const MediaPanelComponent = ({
   videoSrc,
   imageSrc,
   subtitle,
@@ -56,7 +56,7 @@ const MediaPanelComponent: React.FC<MediaPanelProps> = ({
   onBackgroundModeChange,
   onBlurIntensityChange,
   onBlurredStreamReady,
-}: MediaPanelProps) {
+}: MediaPanelProps) => {
   // 字幕を文単位で分割して順次表示
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [sentences, setSentences] = useState<string[]>([]);
