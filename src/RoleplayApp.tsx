@@ -315,20 +315,25 @@ function RoleplayApp() {
       fullMessagesForEvaluation.current = [];
       console.log(`[講評用履歴] リセット: 0件`);
     } else if (messages.length > 0) {
-      // メッセージがある場合：新しいメッセージを追加（トリミング対応）
-      const lastEvaluationMsg = fullMessagesForEvaluation.current[fullMessagesForEvaluation.current.length - 1];
-      const lastCurrentMsg = messages[messages.length - 1];
+      // メッセージがある場合：新しいメッセージを追加
+      // 暫定メッセージ（interim-）は除外し、テキストベースで重複チェック
+      const existingTexts = new Set(
+        fullMessagesForEvaluation.current.map(m => `${m.role}:${m.text}`)
+      );
 
-      // 最後のメッセージが異なる場合のみ追加（新しいメッセージが来た）
-      if (!lastEvaluationMsg || lastCurrentMsg.id !== lastEvaluationMsg.id) {
-        // messagesの中で、fullMessagesForEvaluationにまだ追加されていないメッセージを探す
-        const existingIds = new Set(fullMessagesForEvaluation.current.map(m => m.id));
-        const newMessages = messages.filter(m => !existingIds.has(m.id));
-
-        if (newMessages.length > 0) {
-          fullMessagesForEvaluation.current = [...fullMessagesForEvaluation.current, ...newMessages];
-          console.log(`[講評用履歴] 追加: ${newMessages.length}件, 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）`);
+      const newMessages = messages.filter(m => {
+        // 暫定メッセージは除外
+        if (m.id.startsWith('interim-')) {
+          return false;
         }
+        // テキストベースで重複チェック
+        const key = `${m.role}:${m.text}`;
+        return !existingTexts.has(key);
+      });
+
+      if (newMessages.length > 0) {
+        fullMessagesForEvaluation.current = [...fullMessagesForEvaluation.current, ...newMessages];
+        console.log(`[講評用履歴] 追加: ${newMessages.length}件, 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）`);
       }
     }
   }, [messages]);
