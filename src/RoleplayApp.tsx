@@ -859,7 +859,23 @@ function RoleplayApp() {
                 // デバッグ用：詳細なエラー情報を表示
                 console.error('エラー詳細:', JSON.stringify(data, null, 2));
                 setToast({ message: `エラー: ${data.error}`, type: 'error' });
-                continue;
+
+                // チャット欄にもエラーメッセージを表示（ユーザーが気づきやすいように）
+                setMessages((prev) =>
+                  prev.map(msg =>
+                    msg.id === botMessageId
+                      ? { ...msg, text: `エラーが発生しました: ${data.error}` }
+                      : msg
+                  )
+                );
+
+                // ストリームを中断して終了
+                playbackLoopRunning = false;
+                if (resolveWaiter) {
+                  (resolveWaiter as () => void)();
+                  resolveWaiter = null;
+                }
+                break;
               }
 
               // 最終チャンクでペルソナ情報を受信（新規会話時のみ）
@@ -1018,9 +1034,24 @@ function RoleplayApp() {
 
     } catch (error) {
       console.error('ストリーミング送信エラー:', error);
+      const errorMessage = error instanceof Error ? error.message : 'メッセージの送信に失敗しました';
       setToast({
-        message: 'メッセージの送信に失敗しました。もう一度お試しください。',
+        message: `エラー: ${errorMessage}`,
         type: 'error',
+      });
+
+      // チャット欄にもエラーメッセージを表示（botメッセージを更新）
+      setMessages((prev) => {
+        const lastMsg = prev[prev.length - 1];
+        // 最後のメッセージがbotメッセージ（プレースホルダー）の場合は更新
+        if (lastMsg && lastMsg.role === 'bot' && lastMsg.text === '...') {
+          return prev.map((msg, idx) =>
+            idx === prev.length - 1
+              ? { ...msg, text: `応答生成に失敗しました: ${errorMessage}` }
+              : msg
+          );
+        }
+        return prev;
       });
 
       // エラー時は割り込みモードを無効化してVADを再開
@@ -1424,6 +1455,12 @@ function RoleplayApp() {
                 return;
               }
 
+              // 録音停止後に遅延して最終結果が来た場合はスキップ（重複防止）
+              if (!isRecording && !audioRecorderRef.isVADRecording()) {
+                console.warn('⚠️ [重複防止] 録音停止後の遅延最終結果、スキップ');
+                return;
+              }
+
               lastProcessedFinalTextRef.current = transcript;
               webSpeechFinalTextRef.current = transcript;
 
@@ -1445,6 +1482,13 @@ function RoleplayApp() {
                     lastMsg.id.startsWith('user-webspeech-') &&
                     lastMsg.text === transcript) {
                   console.warn('⚠️ [重複防止] 同じテキストの最終メッセージが既に存在、スキップ');
+                  return prev;
+                }
+
+                // さらに強力な重複チェック：直近の全ユーザーメッセージを確認
+                const recentUserMessages = prev.filter(m => m.role === 'user').slice(-3);
+                if (recentUserMessages.some(m => m.text === transcript)) {
+                  console.warn('⚠️ [重複防止] 直近3件に同じテキストのメッセージが存在、スキップ');
                   return prev;
                 }
 

@@ -859,6 +859,13 @@ export class AudioRecorder {
       console.log('▶️ リアルタイム文字起こし再開（AI音声再生完了）');
     }
   }
+
+  /**
+   * VAD録音中かどうかを取得
+   */
+  isVADRecording(): boolean {
+    return this.isVadRecording;
+  }
 }
 
 /**
