@@ -1663,6 +1663,17 @@ function RoleplayApp() {
                    : 'bin';
             formData.append('audio', audioBlob, `recording.${ext}`);
 
+            // 会話履歴を追加（直近6メッセージ = 3往復）
+            const isDirector = selectedScenarioId?.startsWith('director_');
+            const userSpeaker = isDirector ? 'ディレクター' : '営業';
+            const aiSpeaker = isDirector ? 'お客様' : '顧客';
+            const recentHistory = messagesRef.current.slice(-6).map(msg => ({
+              speaker: msg.role === 'user' ? userSpeaker : aiSpeaker,
+              text: msg.text
+            }));
+            formData.append('history', JSON.stringify(recentHistory));
+            console.log(`[Whisper文脈] 会話履歴を送信: ${recentHistory.length}件`);
+
             // 音声認識中のフラグを立てる（VAD重複防止のため、handleSend完了までtrueを維持）
             setIsSending(true);
             isSendingRef.current = true;

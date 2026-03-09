@@ -382,13 +382,40 @@ def transcribe():
         if not openai_client:
             return jsonify(success=False, error='OpenAIクライアント未初期化'), 500
 
+        # 会話履歴を取得（フロントエンドから送信される）
+        history_json = request.form.get('history', '[]')
+        try:
+            history = json.loads(history_json) if history_json else []
+        except json.JSONDecodeError:
+            logger.warning(f"[Whisper] 会話履歴のJSON解析失敗: {history_json[:100]}")
+            history = []
+
         # Whisperで音声認識（ビジネス用語認識精度向上・速度最適化）
-        # promptを最重要単語のみに削減（精度維持・速度向上）
+        # promptにビジネス用語 + 会話の文脈を追加
         business_prompt = (
             "御社、貴社、費用、予算、実績、課題、提案、検討、ROI、動画制作、ショート動画、SNS、Instagram、YouTube、TikTok、"
             "外注、制作会社、キックオフミーティング、ヒアリング、見積もり、納期、事例、CVR、ターゲット層、訴求力、効果測定"
         )
-        logger.debug(f"[Whisper設定] prompt: 最重要ビジネス用語（最適化版）, temperature: 0")
+
+        # 会話の文脈を追加（直近3往復まで、最大200文字）
+        if history and len(history) > 0:
+            recent_messages = history[-6:]  # 直近3往復（6メッセージ）
+            context_parts = []
+            for msg in recent_messages:
+                speaker = msg.get('speaker', '不明')
+                text = msg.get('text', '')
+                if text:
+                    context_parts.append(f"{speaker}「{text}」")
+
+            if context_parts:
+                context_text = "、".join(context_parts)
+                # 文脈が長すぎる場合は切り詰め（Whisperのpromptは224トークンまで、約200文字）
+                if len(context_text) > 200:
+                    context_text = context_text[-200:]
+                business_prompt = f"{business_prompt}。会話の流れ: {context_text}"
+                logger.debug(f"[Whisper設定] 会話文脈を追加: {context_text[:100]}...")
+
+        logger.debug(f"[Whisper設定] prompt長: {len(business_prompt)}文字, temperature: 0")
 
         try:
             # ⏱️ パフォーマンス計測: Whisper API呼び出し
