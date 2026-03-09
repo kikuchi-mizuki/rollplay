@@ -384,7 +384,10 @@ def transcribe():
 
         # Whisperで音声認識（ビジネス用語認識精度向上・速度最適化）
         # promptを最重要単語のみに削減（精度維持・速度向上）
-        business_prompt = "御社、貴社、費用、予算、実績、課題、提案、検討、ROI、動画制作、ショート動画、SNS、Instagram、YouTube、TikTok"
+        business_prompt = (
+            "御社、貴社、費用、予算、実績、課題、提案、検討、ROI、動画制作、ショート動画、SNS、Instagram、YouTube、TikTok、"
+            "外注、制作会社、キックオフミーティング、ヒアリング、見積もり、納期、事例、CVR、ターゲット層、訴求力、効果測定"
+        )
         logger.debug(f"[Whisper設定] prompt: 最重要ビジネス用語（最適化版）, temperature: 0")
 
         try:
@@ -528,9 +531,11 @@ def transcribe_with_whisper(audio_bytes):
             # プロンプトで文脈を提供（精度向上）
             # 文章形式の方が効果的：前のセグメントのスタイルを継続
             context_prompt = (
-                "御社の事業内容について伺います。SNS動画制作、ショート動画、"
+                "御社、貴社の事業内容について伺います。御社のSNS動画制作、ショート動画、"
                 "TikTok、Instagram、YouTubeを活用したマーケティング、集客、"
                 "ブランディングについて相談させていただきます。"
+                "外注、制作会社、キックオフミーティング、ヒアリング、提案、見積もり、"
+                "納期、実績、事例、CVR、ROI、ターゲット層、訴求力、効果測定。"
             )
             logger.debug(f"[Whisper設定] prompt: {context_prompt[:50]}..., temperature: 0")
             with open(mp3_path, 'rb') as audio_file:
