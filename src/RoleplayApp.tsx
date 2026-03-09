@@ -82,6 +82,7 @@ function RoleplayApp() {
   const lastProcessedFinalTextRef = useRef<string | null>(null); // 最後に処理した最終結果（重複防止用）
   const isSendingRef = useRef(false); // isSendingのRef（VAD重複防止のため）
   const messagesRef = useRef<Message[]>([]); // messagesの最新値を保持（ステート更新タイミング問題を回避）
+  const fullMessagesForEvaluation = useRef<Message[]>([]); // 講評用の全会話履歴（制限なし）
   const currentAudioRef = useRef<HTMLAudioElement | null>(null); // 現在再生中の音声（後方互換性のため残す）
   const audioContextRef = useRef<AudioContext | null>(null); // Web Audio API用のAudioContext
   const currentAudioSourceRef = useRef<AudioBufferSourceNode | null>(null); // 現在再生中のAudioBufferSource
@@ -307,6 +308,19 @@ function RoleplayApp() {
   // messagesステートの変更をRefに同期（ステート更新タイミング問題を回避）
   useEffect(() => {
     messagesRef.current = messages;
+
+    // 講評用の全会話履歴も更新（制限なし）
+    // messages が増えた場合のみ追加（減った場合はリセットとみなす）
+    if (messages.length > fullMessagesForEvaluation.current.length) {
+      // 新しいメッセージが追加された場合
+      const newMessages = messages.slice(fullMessagesForEvaluation.current.length);
+      fullMessagesForEvaluation.current = [...fullMessagesForEvaluation.current, ...newMessages];
+      console.log(`[講評用履歴] 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）`);
+    } else if (messages.length < fullMessagesForEvaluation.current.length) {
+      // メッセージがリセットされた場合（クリアまたはシナリオ変更）
+      fullMessagesForEvaluation.current = [...messages];
+      console.log(`[講評用履歴] リセット: ${fullMessagesForEvaluation.current.length}件`);
+    }
   }, [messages]);
 
   // imageSrc（アバター表情）の変更をRefに同期（録画中の表情変化に対応）
@@ -433,6 +447,7 @@ function RoleplayApp() {
       // シナリオが切り替わったら会話をリセット
       setMessages([]);
       messagesRef.current = []; // Refも同期
+      fullMessagesForEvaluation.current = []; // 講評用履歴もリセット
       setEvaluation(null);
       setShowEvaluation(false);
       setConversationId(null);
@@ -1695,6 +1710,7 @@ function RoleplayApp() {
   const handleConfirmClear = () => {
     setMessages([]);
     messagesRef.current = []; // Refも同期
+    fullMessagesForEvaluation.current = []; // 講評用履歴もリセット
     setShowClearConfirm(false);
     setMediaSubtitle('');
     setConversationId(null); // 会話IDをリセット
@@ -1754,8 +1770,9 @@ function RoleplayApp() {
       // 講評を取得（Week 5: シナリオIDを渡す）
       try {
         setSavingProgress('evaluating');
-        console.log('📊 講評を取得中...');
-        evalData = await getEvaluation(messages, selectedScenarioId);
+        console.log(`📊 講評を取得中...（全会話: ${fullMessagesForEvaluation.current.length}件、表示: ${messages.length}件）`);
+        // 講評は全会話履歴を使用（表示制限の影響を受けない）
+        evalData = await getEvaluation(fullMessagesForEvaluation.current, selectedScenarioId);
         setEvaluation(evalData);
         setShowEvaluation(true);
         console.log('✅ 講評を取得しました');
