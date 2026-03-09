@@ -7,6 +7,7 @@ import os
 import tempfile
 from datetime import datetime
 from flask import Blueprint, request, jsonify, Response
+from openai import RateLimitError
 
 # ロガー取得
 logger = logging.getLogger(__name__)
@@ -470,6 +471,15 @@ def transcribe():
     except OSError as e:
         logger.error(f"ファイルI/O: {e}")
         return jsonify(success=False, error='音声ファイルの処理中にエラーが発生しました'), 500
+    except RateLimitError as e:
+        # OpenAI APIクォータ超過
+        logger.error(f"音声認識 - クォータ超過: {e}")
+        # insufficient_quotaの場合は専用メッセージ
+        error_str = str(e)
+        if 'insufficient_quota' in error_str or 'exceeded your current quota' in error_str:
+            return jsonify(success=False, error='月額利用料の上限に達しましたので、担当にご連絡ください'), 429
+        else:
+            return jsonify(success=False, error='APIの利用制限に達しました。しばらく待ってから再度お試しください'), 429
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
         logger.error(f"予期しないエラー: {type(e).__name__}: {e}")

@@ -1571,11 +1571,18 @@ function RoleplayApp() {
               console.log(`[latency] t1: Whisper完了 (${t1.toFixed(0)}ms)`);
               console.log(`[latency] speech_end→whisper: ${(t1 - t0).toFixed(0)}ms`);
 
-              if (!response.ok) {
+              let result;
+              try {
+                result = JSON.parse(rawText);
+              } catch (parseError) {
+                console.error('JSON解析エラー:', parseError, 'rawText:', rawText);
                 throw new Error(`サーバーエラー (${response.status}): ${rawText || '応答なし'}`);
               }
 
-              const result = JSON.parse(rawText);
+              if (!response.ok) {
+                // エラーレスポンスの場合、エラーメッセージを表示
+                throw new Error(result.error || `サーバーエラー (${response.status})`);
+              }
 
               if (result.success && result.text) {
                 // Whisperの結果を表示（暫定メッセージがない場合のみ）
@@ -1614,8 +1621,10 @@ function RoleplayApp() {
                 audioRecorderRef.resumeVAD();
                 console.log('🔓 VAD再開（音声認識エラー時）');
               }
+              // エラーメッセージを適切に表示
+              const errorMessage = error instanceof Error ? error.message : '音声認識に失敗しました。';
               setToast({
-                message: '音声認識に失敗しました。',
+                message: errorMessage,
                 type: 'error',
               });
             }

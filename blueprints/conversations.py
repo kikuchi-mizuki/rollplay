@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, jsonify, request, Response
+from openai import RateLimitError
 from utils.validation import (
     validate_json_size,
     validate_string_field,
@@ -1411,17 +1412,24 @@ def chat_stream():
             except ValueError as e:
                 # 入力値エラー（JSON解析、不正な値など）
                 logger.error(f"チャットストリーム - 入力値が不正: {e}")
-                yield f"data: {json.dumps({'error': f'メッセージの形式が不正です: {str(e)}'})}\n\n"
+                yield f"data: {json.dumps({'error': 'メッセージの形式が不正です'})}\n\n"
             except TimeoutError as e:
                 # OpenAI APIタイムアウト
                 logger.error(f"チャットストリーム - タイムアウト: {e}")
-                yield f"data: {json.dumps({'error': f'応答生成がタイムアウトしました: {str(e)}'})}\n\n"
+                yield f"data: {json.dumps({'error': '応答生成がタイムアウトしました。もう一度お試しください'})}\n\n"
+            except RateLimitError as e:
+                # OpenAI APIクォータ超過
+                logger.error(f"チャットストリーム - クォータ超過: {e}")
+                # insufficient_quotaの場合は専用メッセージ
+                error_str = str(e)
+                if 'insufficient_quota' in error_str or 'exceeded your current quota' in error_str:
+                    yield f"data: {json.dumps({'error': '月額利用料の上限に達しましたので、担当にご連絡ください'})}\n\n"
+                else:
+                    yield f"data: {json.dumps({'error': 'APIの利用制限に達しました。しばらく待ってから再度お試しください'})}\n\n"
             except Exception as e:
                 # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
                 logger.exception(f"チャットストリーム - 予期しないエラー: {type(e).__name__}: {e}")
-                # デバッグ用：詳細なエラー情報を返す（本番では削除すべき）
-                error_detail = f"{type(e).__name__}: {str(e)}"
-                yield f"data: {json.dumps({'error': f'応答生成中にエラーが発生しました: {error_detail}'})}\n\n"
+                yield f"data: {json.dumps({'error': '応答生成中にエラーが発生しました。もう一度お試しください'})}\n\n"
 
         # 使用量を記録（ストリーミング開始時点で記録）
         if require_budget:
