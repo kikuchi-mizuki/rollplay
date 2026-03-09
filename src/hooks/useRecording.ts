@@ -67,6 +67,15 @@ export function useRecording(streams: RecordingStreams) {
   const compositeStreamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
 
+  // メモリリーク防止：録画用AudioContextとMediaStreamの参照を保持
+  const mixerAudioContextRef = useRef<AudioContext | null>(null);
+  const clonedAudioTracksRef = useRef<MediaStreamTrack[]>([]);
+  const audioSourceNodesRef = useRef<MediaStreamAudioSourceNode[]>([]);
+
+  // メモリリーク防止：Canvas描画で使用するVideo要素の参照を保持
+  const cameraVideoElementRef = useRef<HTMLVideoElement | null>(null);
+  const screenVideoElementRef = useRef<HTMLVideoElement | null>(null);
+
   /**
    * 録画時間をカウントアップ（1秒ごと）
    */
@@ -140,6 +149,7 @@ export function useRecording(streams: RecordingStreams) {
     cameraVideo.autoplay = true;
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
+    cameraVideoElementRef.current = cameraVideo; // メモリリーク防止：参照を保存
 
     // video要素を作成（画面共有用 - 途中から開始される可能性あり）
     let screenVideo: HTMLVideoElement | null = null;
@@ -186,6 +196,7 @@ export function useRecording(streams: RecordingStreams) {
         screenVideo.autoplay = true;
         screenVideo.muted = true;
         screenVideo.playsInline = true;
+        screenVideoElementRef.current = screenVideo; // メモリリーク防止：参照を保存
 
         screenVideo.onloadedmetadata = () => {
           console.log('✅ [録画中] 画面共有video準備完了');
@@ -385,6 +396,7 @@ export function useRecording(streams: RecordingStreams) {
 
     // AudioContextを作成（音声ミキシング用）
     const mixerContext = new AudioContext();
+    mixerAudioContextRef.current = mixerContext; // メモリリーク防止：参照を保存
 
     // ミキサーGainNodeを作成
     const mixerGain = mixerContext.createGain();
@@ -402,8 +414,11 @@ export function useRecording(streams: RecordingStreams) {
     if (cameraAudioTracks.length > 0) {
       try {
         // カメラ音声用のMediaStreamを作成（クローンしたトラックを使用）
-        const cameraAudioStream = new MediaStream(cameraAudioTracks.map(t => t.clone()));
+        const clonedTracks = cameraAudioTracks.map(t => t.clone());
+        clonedAudioTracksRef.current.push(...clonedTracks); // メモリリーク防止：クローントラックを保存
+        const cameraAudioStream = new MediaStream(clonedTracks);
         const cameraSource = mixerContext.createMediaStreamSource(cameraAudioStream);
+        audioSourceNodesRef.current.push(cameraSource); // メモリリーク防止：ソースノードを保存
         cameraSource.connect(mixerGain);
         cameraSourceConnected = true;
         console.log('  ✅ カメラ音声をミキサーに接続');
@@ -419,6 +434,7 @@ export function useRecording(streams: RecordingStreams) {
       if (aiAudioTracks.length > 0) {
         try {
           const aiSource = mixerContext.createMediaStreamSource(aiStream);
+          audioSourceNodesRef.current.push(aiSource); // メモリリーク防止：ソースノードを保存
           aiSource.connect(mixerGain);
           aiSourceConnected = true;
           console.log('  ✅ AI音声をミキサーに接続');
@@ -515,6 +531,7 @@ export function useRecording(streams: RecordingStreams) {
     cameraVideo.autoplay = true;
     cameraVideo.muted = true;
     cameraVideo.playsInline = true;
+    cameraVideoElementRef.current = cameraVideo; // メモリリーク防止：参照を保存
 
     // アバター画像を読み込み（存在する場合）
     let avatarImage: HTMLImageElement | null = null;
@@ -1126,6 +1143,51 @@ export function useRecording(streams: RecordingStreams) {
         console.log('  Canvas要素をクリーンアップ');
       }
 
+      // 録画用AudioContextのクリーンアップ（メモリリーク防止）
+      if (audioSourceNodesRef.current.length > 0) {
+        audioSourceNodesRef.current.forEach(node => {
+          try {
+            node.disconnect();
+          } catch (err) {
+            // 既にdisconnect済みの場合は無視
+          }
+        });
+        audioSourceNodesRef.current = [];
+        console.log('  AudioSourceNodesをクリーンアップ');
+      }
+
+      if (clonedAudioTracksRef.current.length > 0) {
+        clonedAudioTracksRef.current.forEach(track => {
+          track.stop();
+        });
+        clonedAudioTracksRef.current = [];
+        console.log('  クローンされた音声トラックを停止');
+      }
+
+      if (mixerAudioContextRef.current) {
+        mixerAudioContextRef.current.close().then(() => {
+          console.log('  録画用AudioContextをクローズ');
+        }).catch(err => {
+          console.warn('  録画用AudioContextクローズエラー（無視可能）:', err);
+        });
+        mixerAudioContextRef.current = null;
+      }
+
+      // Video要素のクリーンアップ（メモリリーク防止）
+      if (cameraVideoElementRef.current) {
+        cameraVideoElementRef.current.pause();
+        cameraVideoElementRef.current.srcObject = null;
+        cameraVideoElementRef.current = null;
+        console.log('  カメラVideo要素をクリーンアップ');
+      }
+
+      if (screenVideoElementRef.current) {
+        screenVideoElementRef.current.pause();
+        screenVideoElementRef.current.srcObject = null;
+        screenVideoElementRef.current = null;
+        console.log('  画面共有Video要素をクリーンアップ');
+      }
+
       return;
     }
 
@@ -1162,6 +1224,51 @@ export function useRecording(streams: RecordingStreams) {
       }
 
       canvasRef.current = null;
+
+      // 録画用AudioContextのクリーンアップ（メモリリーク防止）
+      if (audioSourceNodesRef.current.length > 0) {
+        audioSourceNodesRef.current.forEach(node => {
+          try {
+            node.disconnect();
+          } catch (err) {
+            // 既にdisconnect済みの場合は無視
+          }
+        });
+        audioSourceNodesRef.current = [];
+        console.log('  AudioSourceNodesをクリーンアップ');
+      }
+
+      if (clonedAudioTracksRef.current.length > 0) {
+        clonedAudioTracksRef.current.forEach(track => {
+          track.stop();
+        });
+        clonedAudioTracksRef.current = [];
+        console.log('  クローンされた音声トラックを停止');
+      }
+
+      if (mixerAudioContextRef.current) {
+        mixerAudioContextRef.current.close().then(() => {
+          console.log('  録画用AudioContextをクローズ');
+        }).catch(err => {
+          console.warn('  録画用AudioContextクローズエラー（無視可能）:', err);
+        });
+        mixerAudioContextRef.current = null;
+      }
+
+      // Video要素のクリーンアップ（メモリリーク防止）
+      if (cameraVideoElementRef.current) {
+        cameraVideoElementRef.current.pause();
+        cameraVideoElementRef.current.srcObject = null;
+        cameraVideoElementRef.current = null;
+        console.log('  カメラVideo要素をクリーンアップ');
+      }
+
+      if (screenVideoElementRef.current) {
+        screenVideoElementRef.current.pause();
+        screenVideoElementRef.current.srcObject = null;
+        screenVideoElementRef.current = null;
+        console.log('  画面共有Video要素をクリーンアップ');
+      }
     }
   }, [isRecording]);
 

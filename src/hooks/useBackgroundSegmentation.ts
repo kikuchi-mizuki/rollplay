@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as bodyPix from '@tensorflow-models/body-pix';
-import '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs';
 
 /**
  * 背景セグメンテーション用カスタムフック (BodyPix版)
@@ -42,6 +42,10 @@ export function useBackgroundSegmentation({
   const frameCountRef = useRef(0);
   const lastLogTimeRef = useRef(Date.now());
 
+  // メモリリーク防止：フレームレート制限（30fps→15fps）
+  const lastFrameTimeRef = useRef(0);
+  const TARGET_FRAME_INTERVAL = 1000 / 15; // 15fps（メモリチャーン削減）
+
   // BodyPixモデルの初期化
   useEffect(() => {
     if (!enabled) {
@@ -79,7 +83,19 @@ export function useBackgroundSegmentation({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      modelRef.current = null;
+      // メモリリーク防止：BodyPixモデルを明示的にdispose
+      if (modelRef.current) {
+        try {
+          // BodyPixモデルはTensorFlow.jsのモデルなので、disposeメソッドを持つ
+          if (typeof (modelRef.current as any).dispose === 'function') {
+            (modelRef.current as any).dispose();
+            console.log('[BodyPix] モデルをdisposeしました');
+          }
+        } catch (err) {
+          console.warn('[BodyPix] モデルdisposeエラー（無視可能）:', err);
+        }
+        modelRef.current = null;
+      }
       setIsReady(false);
     };
   }, [enabled]);
@@ -100,6 +116,14 @@ export function useBackgroundSegmentation({
         animationFrameRef.current = requestAnimationFrame(processFrame);
         return;
       }
+
+      // フレームレート制限（メモリチャーン削減）
+      const now = performance.now();
+      if (now - lastFrameTimeRef.current < TARGET_FRAME_INTERVAL) {
+        animationFrameRef.current = requestAnimationFrame(processFrame);
+        return;
+      }
+      lastFrameTimeRef.current = now;
 
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -142,11 +166,14 @@ export function useBackgroundSegmentation({
         frameCountRef.current++;
         const now = Date.now();
         if (now - lastLogTimeRef.current >= 2000) { // 2秒ごとにログ
+          // TensorFlowメモリ使用量を取得（メモリリーク監視）
+          const memInfo = tf.memory();
           console.log('[BodyPix] パフォーマンス統計:', {
             fps: (frameCountRef.current / 2).toFixed(1),
             avgSegTime: segDuration.toFixed(1) + 'ms',
             personRatio: (personRatio * 100).toFixed(1) + '%',
-            resolution: `${canvas.width}x${canvas.height}`
+            resolution: `${canvas.width}x${canvas.height}`,
+            tfMemory: `${(memInfo.numBytes / 1024 / 1024).toFixed(1)}MB (${memInfo.numTensors} tensors)`
           });
           frameCountRef.current = 0;
           lastLogTimeRef.current = now;
@@ -196,6 +223,17 @@ export function useBackgroundSegmentation({
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+      }
+      // Canvas要素のクリーンアップ（メモリリーク防止）
+      if (canvasRef.current) {
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+        canvasRef.current = null;
+        console.log('[BodyPix] Canvas要素をクリーンアップ');
       }
     };
   }, [isReady, enabled, videoRef, backgroundMode, blurIntensity]);

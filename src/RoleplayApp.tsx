@@ -469,6 +469,32 @@ function RoleplayApp() {
         keepAliveOscillatorRef.current = null;
       }
 
+      // GainNodeとAnalyserNodeをdisconnect（メモリリーク防止）
+      if (aiMixerGainNodeRef.current) {
+        try {
+          aiMixerGainNodeRef.current.disconnect();
+          console.log('🧹 AI Mixer GainNodeをdisconnect');
+        } catch (err) {
+          // 既にdisconnect済みの場合はエラーを無視
+        }
+        aiMixerGainNodeRef.current = null;
+      }
+
+      if (analyserNodeRef.current) {
+        try {
+          analyserNodeRef.current.disconnect();
+          console.log('🧹 AnalyserNodeをdisconnect');
+        } catch (err) {
+          // 既にdisconnect済みの場合はエラーを無視
+        }
+        analyserNodeRef.current = null;
+      }
+
+      if (audioDestinationRef.current) {
+        // MediaStreamDestinationNodeは自動的にクリーンアップされるが、参照をクリア
+        audioDestinationRef.current = null;
+      }
+
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         console.log('🧹 AudioContextをクローズします');
         audioContextRef.current.close().catch((err) => {
