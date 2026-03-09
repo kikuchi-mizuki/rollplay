@@ -23,7 +23,7 @@ export class AudioRecorder {
   // VAD（音声自動検出）用
   private vadEnabled: boolean = false;
   private vadPaused: boolean = false; // VAD一時停止フラグ（AI音声再生中など）
-  private vadThreshold: number = 35; // 音声検出閾値（0-100）極限設定：35
+  private vadThreshold: number = 30; // 音声検出閾値（0-100）超高速設定：30
   private vadInterruptThreshold: number = 92; // 割り込み検出閾値（AI話し中の割り込みを検出）※明確な割り込みのみ
   private isInterruptMode: boolean = false; // 割り込みモード（AI話し中）
   private onInterruptCallback?: () => void; // 割り込み検出時のコールバック
@@ -33,7 +33,7 @@ export class AudioRecorder {
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 400; // 最低録音時間（ミリ秒）極限設定：400ms
+  private minRecordingDuration: number = 300; // 最低録音時間（ミリ秒）超高速設定：300ms
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
@@ -592,8 +592,8 @@ export class AudioRecorder {
         if (this.isVadRecording && !this.silenceTimeout) {
           // 現在の発話時間を計算
           const currentSpeechDuration = Date.now() - this.recordingStartTime;
-          // 1秒未満の短い発話なら50ms、それ以上なら150msで無音検出（極限設定）
-          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 50 : 150;
+          // 1秒未満の短い発話なら30ms、それ以上なら100msで無音検出（超高速設定）
+          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 30 : 100;
 
           console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, 発話時間: ${currentSpeechDuration}ms, 無音検出: ${dynamicSilenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
