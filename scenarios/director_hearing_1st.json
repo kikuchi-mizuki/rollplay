@@ -1,5 +1,6 @@
 {
   "id": "director_hearing_1st",
+  "category": "director",
   "title": "【ディレクター】初回ヒアリング（制作要件の聞き出し）",
   "description": "クライアントとの初回ヒアリング。ディレクターは制作の目的、ターゲット、納期、予算などの要件を丁寧に聞き出し、制作の方向性を固める段階。",
   "persona_variations": [
