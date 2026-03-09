@@ -2393,7 +2393,13 @@ function RoleplayApp() {
 
           selectedPersonaIdRef.current = personaId;
           setSelectedPersonaId(personaId);
-          setSelectedScenarioId(scenarioId);
+
+          // シナリオIDが変更された場合のみsetSelectedScenarioIdを呼ぶ
+          // （同じシナリオIDの場合はuseEffectでペルソナがリセットされないようにする）
+          if (scenarioId !== selectedScenarioId) {
+            setSelectedScenarioId(scenarioId);
+            console.log('[RoleplayApp] シナリオIDが変更されました:', scenarioId);
+          }
 
           console.log('[RoleplayApp] setSelectedScenarioId実行後、selectedScenarioId:', scenarioId);
 
