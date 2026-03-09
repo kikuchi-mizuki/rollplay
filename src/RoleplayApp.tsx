@@ -1455,12 +1455,6 @@ function RoleplayApp() {
                 return;
               }
 
-              // 録音停止後に遅延して最終結果が来た場合はスキップ（重複防止）
-              if (!isRecording && !audioRecorderRef.isVADRecording()) {
-                console.warn('⚠️ [重複防止] 録音停止後の遅延最終結果、スキップ');
-                return;
-              }
-
               lastProcessedFinalTextRef.current = transcript;
               webSpeechFinalTextRef.current = transcript;
 
@@ -1477,18 +1471,10 @@ function RoleplayApp() {
                   newText: transcript
                 });
 
-                // 重複チェック：既に同じテキストの最終メッセージがある場合はスキップ
-                if (lastMsg && lastMsg.role === 'user' &&
-                    lastMsg.id.startsWith('user-webspeech-') &&
-                    lastMsg.text === transcript) {
-                  console.warn('⚠️ [重複防止] 同じテキストの最終メッセージが既に存在、スキップ');
-                  return prev;
-                }
-
-                // さらに強力な重複チェック：直近の全ユーザーメッセージを確認
-                const recentUserMessages = prev.filter(m => m.role === 'user').slice(-3);
+                // 重複チェック：直近のユーザーメッセージを確認（最後の2件）
+                const recentUserMessages = prev.filter(m => m.role === 'user').slice(-2);
                 if (recentUserMessages.some(m => m.text === transcript)) {
-                  console.warn('⚠️ [重複防止] 直近3件に同じテキストのメッセージが存在、スキップ');
+                  console.warn('⚠️ [重複防止] 直近2件に同じテキストのメッセージが存在、スキップ');
                   return prev;
                 }
 
