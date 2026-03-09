@@ -174,6 +174,7 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       return acc;
     }, {} as Record<string, number>);
     console.log(`[講評API] history内の役割分布:`, roleCounts);
+    console.log(`[講評API] history詳細 (最初の10件):`, history.slice(0, 10).map(m => ({ role: m.role, text: m.text.substring(0, 30) })));
     logger.info(`[講評API] history内の役割分布: ${JSON.stringify(roleCounts)}`);
 
     logger.info(`[講評API] シナリオ判定: scenarioId=${scenarioId}, isDirector=${isDirector}, userSpeaker=${userSpeaker}`);

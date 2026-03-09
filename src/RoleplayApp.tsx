@@ -333,7 +333,11 @@ function RoleplayApp() {
 
       if (newMessages.length > 0) {
         fullMessagesForEvaluation.current = [...fullMessagesForEvaluation.current, ...newMessages];
-        console.log(`[講評用履歴] 追加: ${newMessages.length}件, 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）`);
+        const roleCounts = fullMessagesForEvaluation.current.reduce((acc, m) => {
+          acc[m.role] = (acc[m.role] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        console.log(`[講評用履歴] 追加: ${newMessages.length}件, 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）, 役割分布:`, roleCounts);
       }
     }
   }, [messages]);
@@ -1857,9 +1861,41 @@ function RoleplayApp() {
       // 講評を取得（Week 5: シナリオIDを渡す）
       try {
         setSavingProgress('evaluating');
-        console.log(`📊 講評を取得中...（全会話: ${fullMessagesForEvaluation.current.length}件、表示: ${messages.length}件）`);
-        // 講評は全会話履歴を使用（表示制限の影響を受けない）
-        evalData = await getEvaluation(fullMessagesForEvaluation.current, selectedScenarioId);
+
+        // 暫定メッセージを最終メッセージに変換して講評用履歴を作成
+        const finalizedMessages = messages.map(msg => {
+          if (msg.id.startsWith('interim-')) {
+            // 暫定メッセージを最終メッセージに変換
+            return {
+              ...msg,
+              id: `user-finalized-${Date.now()}-${Math.random()}`,
+            };
+          }
+          return msg;
+        });
+
+        // 講評用履歴に暫定メッセージの最終版が含まれていない場合は追加
+        const existingTexts = new Set(
+          fullMessagesForEvaluation.current.map(m => `${m.role}:${m.text}`)
+        );
+        const newFinalizedMessages = finalizedMessages.filter(m => {
+          const key = `${m.role}:${m.text}`;
+          return !existingTexts.has(key);
+        });
+
+        const completeHistory = [...fullMessagesForEvaluation.current, ...newFinalizedMessages];
+
+        console.log(`📊 講評を取得中...（完全履歴: ${completeHistory.length}件、保存済み: ${fullMessagesForEvaluation.current.length}件、追加: ${newFinalizedMessages.length}件）`);
+
+        // 役割分布を確認
+        const roleCounts = completeHistory.reduce((acc, m) => {
+          acc[m.role] = (acc[m.role] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        console.log(`📊 講評用履歴の役割分布:`, roleCounts);
+
+        // 講評は完全な会話履歴を使用（暫定メッセージも最終化して含める）
+        evalData = await getEvaluation(completeHistory, selectedScenarioId);
         setEvaluation(evalData);
         setShowEvaluation(true);
         console.log('✅ 講評を取得しました');
