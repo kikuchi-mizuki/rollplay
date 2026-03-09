@@ -310,16 +310,26 @@ function RoleplayApp() {
     messagesRef.current = messages;
 
     // 講評用の全会話履歴も更新（制限なし）
-    // messages が増えた場合のみ追加（減った場合はリセットとみなす）
-    if (messages.length > fullMessagesForEvaluation.current.length) {
-      // 新しいメッセージが追加された場合
-      const newMessages = messages.slice(fullMessagesForEvaluation.current.length);
-      fullMessagesForEvaluation.current = [...fullMessagesForEvaluation.current, ...newMessages];
-      console.log(`[講評用履歴] 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）`);
-    } else if (messages.length < fullMessagesForEvaluation.current.length) {
-      // メッセージがリセットされた場合（クリアまたはシナリオ変更）
-      fullMessagesForEvaluation.current = [...messages];
-      console.log(`[講評用履歴] リセット: ${fullMessagesForEvaluation.current.length}件`);
+    if (messages.length === 0) {
+      // メッセージが空（クリアまたはシナリオ変更）の場合のみリセット
+      fullMessagesForEvaluation.current = [];
+      console.log(`[講評用履歴] リセット: 0件`);
+    } else if (messages.length > 0) {
+      // メッセージがある場合：新しいメッセージを追加（トリミング対応）
+      const lastEvaluationMsg = fullMessagesForEvaluation.current[fullMessagesForEvaluation.current.length - 1];
+      const lastCurrentMsg = messages[messages.length - 1];
+
+      // 最後のメッセージが異なる場合のみ追加（新しいメッセージが来た）
+      if (!lastEvaluationMsg || lastCurrentMsg.id !== lastEvaluationMsg.id) {
+        // messagesの中で、fullMessagesForEvaluationにまだ追加されていないメッセージを探す
+        const existingIds = new Set(fullMessagesForEvaluation.current.map(m => m.id));
+        const newMessages = messages.filter(m => !existingIds.has(m.id));
+
+        if (newMessages.length > 0) {
+          fullMessagesForEvaluation.current = [...fullMessagesForEvaluation.current, ...newMessages];
+          console.log(`[講評用履歴] 追加: ${newMessages.length}件, 全件数: ${fullMessagesForEvaluation.current.length}件（表示: ${messages.length}件）`);
+        }
+      }
     }
   }, [messages]);
 
