@@ -756,8 +756,8 @@ function RoleplayApp() {
               const playDuration = performance.now() - playStartTime;
               console.log(`✅ [再生完了] "${chunkText}" (再生時間: ${playDuration.toFixed(0)}ms)`);
 
-              // チャンク間に自然な間隔を追加（速度最優先：50ms）
-              await new Promise(resolve => setTimeout(resolve, 50));
+              // チャンク間隔なし（極限設定：0ms待機、連続再生）
+              // await new Promise(resolve => setTimeout(resolve, 0));
             } catch (error) {
               console.error(`❌ [音声再生エラー] "${chunkText}"`, error);
               console.error(`[エラー詳細] タイプ: ${error instanceof Error ? error.message : String(error)}`);
@@ -1525,40 +1525,11 @@ function RoleplayApp() {
             const t0 = performance.now();
             console.log(`[latency] t0: 録音停止 (${t0.toFixed(0)}ms)`);
 
-            // 少し待ってWeb Speech APIの最終結果を取得（非同期処理のため）速度最優先
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            // Web Speech APIの最終結果があればそれを使用（速度優先）
-            if (webSpeechFinalTextRef.current) {
-              const finalText = webSpeechFinalTextRef.current.trim();
-              console.log(`✅ [Web Speech最終結果使用] "${finalText}"`);
-
-              // 音声認識中のフラグを立てる
-              setIsSending(true);
-              isSendingRef.current = true;
-
-              // Whisperをスキップして即座にAIに送信
-              const t1 = performance.now();
-              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (Whisperスキップ)`);
-
-              try {
-                await handleSendStream(finalText, true, t0, t1);
-              } catch (error) {
-                console.error('AI送信エラー:', error);
-                setIsSending(false);
-                isSendingRef.current = false;
-                if (isVADMode) {
-                  audioRecorderRef.resumeVAD();
-                }
-              }
-              return;
-            }
-
-            // Web Speech APIの最終結果がない場合、暫定結果を確認
+            // 暫定結果を即座に使用（極限設定：待機時間0ms）
             const lastMessage = messagesRef.current[messagesRef.current.length - 1];
             if (lastMessage && lastMessage.role === 'user' && lastMessage.id.startsWith('interim-')) {
               const interimText = lastMessage.text.trim();
-              console.log(`⚠️ [Web Speech最終結果なし] 暫定結果を使用: "${interimText}"`);
+              console.log(`🚀 [極限設定] 暫定結果を即座に使用: "${interimText}"`);
 
               // 暫定メッセージを最終メッセージに変換
               setMessages(prev => {
@@ -1589,7 +1560,7 @@ function RoleplayApp() {
               isSendingRef.current = true;
 
               const t1 = performance.now();
-              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (暫定結果使用)`);
+              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (極限設定：即座送信)`);
 
               try {
                 await handleSendStream(interimText, true, t0, t1);
