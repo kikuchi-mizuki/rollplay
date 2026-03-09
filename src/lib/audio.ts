@@ -885,6 +885,24 @@ export class AudioRecorder {
   isVADRecording(): boolean {
     return this.isVadRecording;
   }
+
+  /**
+   * VAD録音を強制停止（Web Speech APIの最終結果受信時など）
+   */
+  forceStopVADRecording(): void {
+    if (this.isVadRecording) {
+      console.log('🛑 [強制停止] Web Speech最終結果により録音を即座に停止');
+
+      // 無音タイマーをクリア
+      if (this.silenceTimeout) {
+        clearTimeout(this.silenceTimeout);
+        this.silenceTimeout = null;
+      }
+
+      // 録音停止
+      this.stopVADRecording();
+    }
+  }
 }
 
 /**

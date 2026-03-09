@@ -1546,6 +1546,10 @@ function RoleplayApp() {
                   }];
                 }
               });
+
+              // 🚀 Web Speech最終結果を受信したら即座に録音停止（VADの無音検出を待たない）
+              console.log('🚀 [超高速] Web Speech最終結果により録音を即座に停止');
+              audioRecorderRef.forceStopVADRecording();
             }
           }
         });
