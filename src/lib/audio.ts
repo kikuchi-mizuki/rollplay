@@ -33,7 +33,7 @@ export class AudioRecorder {
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 800; // 最低録音時間（ミリ秒）反応速度改善：1800→800ms
+  private minRecordingDuration: number = 1200; // 最低録音時間（ミリ秒）精度改善：800→1200ms（音声途切れ防止）
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
@@ -67,6 +67,7 @@ export class AudioRecorder {
             echoCancellation: true,
             noiseSuppression: true,
             autoGainControl: true,
+            sampleRate: 48000, // 高音質サンプリングレート（音声認識精度向上）
           }
         });
         console.log('✅ マイクアクセス許可取得');
@@ -591,8 +592,8 @@ export class AudioRecorder {
         if (this.isVadRecording && !this.silenceTimeout) {
           // 現在の発話時間を計算
           const currentSpeechDuration = Date.now() - this.recordingStartTime;
-          // 1秒未満の短い発話なら150ms、それ以上なら300msで無音検出（反応速度改善）
-          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 150 : 300;
+          // 1秒未満の短い発話なら200ms、それ以上なら350msで無音検出（精度重視）
+          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 200 : 350;
 
           console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, 発話時間: ${currentSpeechDuration}ms, 無音検出: ${dynamicSilenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
@@ -770,16 +771,30 @@ export class AudioRecorder {
       this.recognition.lang = 'ja-JP';
       this.recognition.continuous = true;
       this.recognition.interimResults = true; // リアルタイム結果を取得
-      this.recognition.maxAlternatives = 1;
+      this.recognition.maxAlternatives = 3; // 複数の候補を取得して精度向上
 
       this.recognition.onresult = (event: any) => {
         let interimTranscript = '';
         let finalTranscript = '';
+        let confidence = 0;
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
+          const result = event.results[i];
+
+          // 信頼度スコアが最も高い候補を選択
+          let bestAlternative = result[0];
+          for (let j = 1; j < result.length; j++) {
+            if (result[j].confidence > bestAlternative.confidence) {
+              bestAlternative = result[j];
+            }
+          }
+
+          const transcript = bestAlternative.transcript;
+          confidence = bestAlternative.confidence || 0;
+
+          if (result.isFinal) {
             finalTranscript += transcript;
+            console.log(`[Web Speech] 信頼度: ${(confidence * 100).toFixed(1)}% - "${transcript}"`);
           } else {
             interimTranscript += transcript;
           }
@@ -788,6 +803,10 @@ export class AudioRecorder {
         // コールバックで結果を通知
         if (this.onTranscriptCallback) {
           if (finalTranscript) {
+            // 信頼度が低い場合は警告（Whisperフォールバックのヒント）
+            if (confidence < 0.7) {
+              console.warn(`⚠️ Web Speech信頼度低: ${(confidence * 100).toFixed(1)}% - Whisperフォールバック推奨`);
+            }
             this.onTranscriptCallback(finalTranscript, true);
           } else if (interimTranscript) {
             this.onTranscriptCallback(interimTranscript, false);

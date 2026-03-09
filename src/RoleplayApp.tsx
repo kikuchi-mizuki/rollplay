@@ -1525,83 +1525,97 @@ function RoleplayApp() {
             const t0 = performance.now();
             console.log(`[latency] t0: 録音停止 (${t0.toFixed(0)}ms)`);
 
-            // 少し待ってWeb Speech APIの最終結果を取得（非同期処理のため）反応速度改善：300ms→100ms
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // 少し待ってWeb Speech APIの最終結果を取得（非同期処理のため）精度改善：100ms→200ms
+            await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Web Speech APIの最終結果があればそれを使用（表示もそのまま）
+            // Web Speech APIの最終結果があればそれを使用（ただし、非常に短い場合はWhisperで確認）
             if (webSpeechFinalTextRef.current) {
-              const finalText = webSpeechFinalTextRef.current;
-              console.log(`✅ [Web Speech最終結果使用] "${finalText}"`);
+              const finalText = webSpeechFinalTextRef.current.trim();
 
-              // 音声認識中のフラグを立てる
-              setIsSending(true);
-              isSendingRef.current = true;
+              // 非常に短いテキスト（5文字未満）の場合は、Whisperで再確認して精度向上
+              if (finalText.length < 5) {
+                console.warn(`⚠️ [Web Speech結果が短い] "${finalText}" (${finalText.length}文字) - Whisperで確認します`);
+                // Whisperフォールバックに進む（下記のコードで処理）
+              } else {
+                console.log(`✅ [Web Speech最終結果使用] "${finalText}"`);
 
-              // Whisperをスキップして即座にAIに送信
-              const t1 = performance.now();
-              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (Whisperスキップ)`);
+                // 音声認識中のフラグを立てる
+                setIsSending(true);
+                isSendingRef.current = true;
 
-              try {
-                await handleSendStream(finalText, true, t0, t1);
-              } catch (error) {
-                console.error('AI送信エラー:', error);
-                setIsSending(false);
-                isSendingRef.current = false;
-                if (isVADMode) {
-                  audioRecorderRef.resumeVAD();
+                // Whisperをスキップして即座にAIに送信
+                const t1 = performance.now();
+                console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (Whisperスキップ)`);
+
+                try {
+                  await handleSendStream(finalText, true, t0, t1);
+                } catch (error) {
+                  console.error('AI送信エラー:', error);
+                  setIsSending(false);
+                  isSendingRef.current = false;
+                  if (isVADMode) {
+                    audioRecorderRef.resumeVAD();
+                  }
                 }
+                return;
               }
-              return;
             }
 
             // Web Speech APIの最終結果がない場合、暫定結果を確認
             const lastMessage = messagesRef.current[messagesRef.current.length - 1];
             if (lastMessage && lastMessage.role === 'user' && lastMessage.id.startsWith('interim-')) {
-              const interimText = lastMessage.text;
-              console.log(`⚠️ [Web Speech最終結果なし] 暫定結果を使用: "${interimText}"`);
+              const interimText = lastMessage.text.trim();
 
-              // 暫定メッセージを最終メッセージに変換
-              setMessages(prev => {
-                const lastMsg = prev[prev.length - 1];
+              // 暫定結果も短すぎる場合はWhisperで確認
+              if (interimText.length < 5) {
+                console.warn(`⚠️ [暫定結果が短い] "${interimText}" (${interimText.length}文字) - Whisperで確認します`);
+                // Whisperフォールバックに進む（下記のコードで処理）
+              } else {
+                console.log(`⚠️ [Web Speech最終結果なし] 暫定結果を使用: "${interimText}"`);
 
-                // 重複チェック：既に最終メッセージになっている場合はスキップ
-                if (lastMsg && lastMsg.role === 'user' &&
-                    !lastMsg.id.startsWith('interim-') &&
-                    lastMsg.text === interimText) {
-                  console.warn('⚠️ [重複防止] 暫定結果が既に最終メッセージになっている、スキップ');
+                // 暫定メッセージを最終メッセージに変換
+                setMessages(prev => {
+                  const lastMsg = prev[prev.length - 1];
+
+                  // 重複チェック：既に最終メッセージになっている場合はスキップ
+                  if (lastMsg && lastMsg.role === 'user' &&
+                      !lastMsg.id.startsWith('interim-') &&
+                      lastMsg.text === interimText) {
+                    console.warn('⚠️ [重複防止] 暫定結果が既に最終メッセージになっている、スキップ');
+                    return prev;
+                  }
+
+                  if (lastMsg && lastMsg.id === lastMessage.id) {
+                    console.log('[デバッグ] 暫定メッセージを最終メッセージに変換');
+                    return [...prev.slice(0, -1), {
+                      id: `user-interim-final-${Date.now()}`,
+                      role: 'user',
+                      text: interimText,
+                      timestamp: new Date(),
+                    }];
+                  }
                   return prev;
+                });
+
+                // 音声認識中のフラグを立てる
+                setIsSending(true);
+                isSendingRef.current = true;
+
+                const t1 = performance.now();
+                console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (暫定結果使用)`);
+
+                try {
+                  await handleSendStream(interimText, true, t0, t1);
+                } catch (error) {
+                  console.error('AI送信エラー:', error);
+                  setIsSending(false);
+                  isSendingRef.current = false;
+                  if (isVADMode) {
+                    audioRecorderRef.resumeVAD();
+                  }
                 }
-
-                if (lastMsg && lastMsg.id === lastMessage.id) {
-                  console.log('[デバッグ] 暫定メッセージを最終メッセージに変換');
-                  return [...prev.slice(0, -1), {
-                    id: `user-interim-final-${Date.now()}`,
-                    role: 'user',
-                    text: interimText,
-                    timestamp: new Date(),
-                  }];
-                }
-                return prev;
-              });
-
-              // 音声認識中のフラグを立てる
-              setIsSending(true);
-              isSendingRef.current = true;
-
-              const t1 = performance.now();
-              console.log(`[latency] speech_end→AI送信: ${(t1 - t0).toFixed(0)}ms (暫定結果使用)`);
-
-              try {
-                await handleSendStream(interimText, true, t0, t1);
-              } catch (error) {
-                console.error('AI送信エラー:', error);
-                setIsSending(false);
-                isSendingRef.current = false;
-                if (isVADMode) {
-                  audioRecorderRef.resumeVAD();
-                }
+                return;
               }
-              return;
             }
 
             // Web Speech APIの結果がない場合のみWhisperを使用（フォールバック）
