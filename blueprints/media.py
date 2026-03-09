@@ -417,7 +417,7 @@ def transcribe():
             ]
             if any(pattern in text for pattern in noise_patterns):
                 logger.warning(f"[誤認識フィルタ] YouTube定型文を検出: {text}")
-                return jsonify(success=False, error='誤認識の可能性があります。もう一度お試しください。'), 400
+                return jsonify(success=False, error='音声が認識できませんでした。もう一度お試しください。'), 400
 
             # 使用量を記録
             if require_budget:
@@ -454,7 +454,7 @@ def transcribe():
                 ]
                 if any(pattern in text for pattern in noise_patterns):
                     logger.warning(f"[誤認識フィルタ] YouTube定型文を検出: {text}")
-                    return jsonify(success=False, error='誤認識の可能性があります。もう一度お試しください。'), 400
+                    return jsonify(success=False, error='音声が認識できませんでした。もう一度お試しください。'), 400
 
                 # 使用量を記録
                 if require_budget:
