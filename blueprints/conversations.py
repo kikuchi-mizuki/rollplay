@@ -1490,6 +1490,14 @@ def evaluate_conversation():
         conversation = data.get('conversation', [])
         scenario_id = data.get('scenario_id')  # シナリオIDを取得
 
+        # デバッグ: 受信したデータをログ出力
+        logger.info(f"[エンドポイント] 受信データ: conversation length={len(conversation)}, scenario_id={scenario_id}")
+        if len(conversation) == 0:
+            logger.error("[エンドポイント] ⚠️ 会話データが空です！")
+        else:
+            logger.info(f"[エンドポイント] 最初のメッセージ: {conversation[0]}")
+            logger.info(f"[エンドポイント] 最後のメッセージ: {conversation[-1]}")
+
         # 入力値検証
         if len(conversation) > MAX_HISTORY_LENGTH:
             logger.warning(f"評価対象会話が長すぎます: {len(conversation)}件 (最大{MAX_HISTORY_LENGTH}件)")

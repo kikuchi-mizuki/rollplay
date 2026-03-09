@@ -176,6 +176,15 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
       text: msg.text
     }));
 
+    // デバッグ: 送信するデータをログ出力
+    logger.info(`[講評API] 送信データ: conversation.length=${conversation.length}, history.length=${history.length}`);
+    if (conversation.length === 0) {
+      logger.error('[講評API] ⚠️ 会話データが空です！');
+    } else {
+      logger.info(`[講評API] 最初のメッセージ: ${JSON.stringify(conversation[0])}`);
+      logger.info(`[講評API] 最後のメッセージ: ${JSON.stringify(conversation[conversation.length - 1])}`);
+    }
+
     // CSRFトークンを追加
     const headers = await addCsrfTokenToHeaders({
       'Content-Type': 'application/json',
