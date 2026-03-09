@@ -2035,6 +2035,258 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         logger.error(f"[評価生成] トレースバック:\n{traceback.format_exc()}")
         # エラーを再スロー（フォールバックは使用しない）
         raise
+
+def generate_evaluation_fallback(sales_utterances):
+    """フォールバック用の評価生成（従来のロジック）"""
+    logger.info("[評価生成] ========== generate_evaluation_fallback 開始（フォールバック）==========")
+
+    # 基本的な評価ロジック
+    total_utterances = len(sales_utterances)
+    
+    # 質問力の評価（より詳細な分析）
+    question_words = ['何', 'どの', 'なぜ', 'どうして', 'いつ', 'どこ', '誰', 'いくつ', 'いくら', 'どのように', 'なぜ', 'どうやって']
+    open_questions = ['どのように', 'なぜ', 'どうして', 'どのような']
+    questions = [utterance for utterance in sales_utterances 
+                if any(word in utterance for word in question_words)]
+    open_questions_count = len([utterance for utterance in sales_utterances 
+                               if any(word in utterance for word in open_questions)])
+    
+    questioning_score = min(5, (len(questions) * 1.5) + (open_questions_count * 0.5))
+    
+    # 傾聴力の評価（より多様な表現を検出）
+    listening_words = ['そうですね', 'なるほど', '確かに', 'おっしゃる通り', '理解しました', '承知いたしました', 
+                      'お聞かせください', '詳しく教えてください', '興味深いですね', 'それは大変ですね']
+    listening_responses = [utterance for utterance in sales_utterances 
+                          if any(word in utterance for word in listening_words)]
+    listening_score = min(5, len(listening_responses) * 1.5)
+    
+    # 提案力の評価（より具体的な提案表現）
+    proposal_words = ['提案', 'おすすめ', '解決', '改善', 'サービス', 'プラン', '案', '方法', 'ソリューション', 
+                     'お手伝い', 'サポート', 'ご提供', 'ご案内']
+    proposals = [utterance for utterance in sales_utterances 
+                if any(word in utterance for word in proposal_words)]
+    proposing_score = min(5, len(proposals) * 1.5)
+    
+    # クロージング力の評価（より多様なクロージング表現）
+    closing_words = ['いかがでしょうか', '検討', 'お時間', 'ご連絡', '次回', '後日', 'ご検討', 'お考え', 
+                    'お決め', 'お返事', 'ご返答', 'お待ち', 'お聞かせ']
+    closings = [utterance for utterance in sales_utterances 
+               if any(word in utterance for word in closing_words)]
+    closing_score = min(5, len(closings) * 1.5)
+    
+    # 感情分析（簡易版）
+    positive_words = ['ありがとう', '感謝', '嬉しい', '素晴らしい', '良い', '助かります', '心強い']
+    negative_words = ['困って', '大変', '難しい', '問題', '課題', '悩み']
+    
+    positive_count = len([utterance for utterance in sales_utterances 
+                         if any(word in utterance for word in positive_words)])
+    negative_count = len([utterance for utterance in sales_utterances 
+                         if any(word in utterance for word in negative_words)])
+    
+    # 会話の流れ分析
+    conversation_flow = analyze_conversation_flow(sales_utterances)
+    
+    # 総合スコア（重み付け）
+    total_score = (questioning_score * 0.25 + listening_score * 0.25 + 
+                  proposing_score * 0.3 + closing_score * 0.2)
+    
+    # 高度な評価コメント生成
+    comments = generate_advanced_comments(questioning_score, listening_score, proposing_score, 
+                                        closing_score, conversation_flow, positive_count, negative_count)
+    
+    # 総合評価（より詳細）
+    overall_comment = generate_overall_comment(total_score, conversation_flow, positive_count, negative_count)
+    
+    # 改善提案
+    improvement_suggestions = generate_improvement_suggestions(questioning_score, listening_score, 
+                                                             proposing_score, closing_score, conversation_flow)
+    
+    # フロントエンド互換性のため、strengths と improvements を追加
+    strengths = []
+    improvements = []
+
+    # commentsから良かった点を抽出
+    if comments:
+        for comment in comments:
+            if '✅' in comment or '👍' in comment or '⭐' in comment or '良い' in comment or '優秀' in comment:
+                strengths.append(comment)
+            else:
+                improvements.append(comment)
+
+    # improvement_suggestionsをimprovementsに追加
+    if improvement_suggestions:
+        improvements.extend(improvement_suggestions)
+
+    # 最低限のコメントを保証
+    if not strengths:
+        strengths = [overall_comment if overall_comment else "評価を実施しました。"]
+
+    if not improvements:
+        improvements = ["さらなる向上のため、継続的な練習を心がけましょう。"]
+
+    # スコアを1-5点から100点満点に変換（フロントエンド互換性）
+    questioning_score_100 = round(questioning_score * 20, 1)
+    listening_score_100 = round(listening_score * 20, 1)
+    proposing_score_100 = round(proposing_score * 20, 1)
+    closing_score_100 = round(closing_score * 20, 1)
+    total_score_100 = questioning_score_100 + listening_score_100 + proposing_score_100 + closing_score_100
+
+    return {
+        'scores': {
+            'questioning': questioning_score_100,
+            'listening': listening_score_100,
+            'proposing': proposing_score_100,
+            'closing': closing_score_100,
+            'total': total_score_100
+        },
+        'overall': overall_comment,  # フロントエンドが期待するフィールド名
+        'strengths': strengths,  # フロントエンドが期待するフィールド名
+        'improvements': improvements,  # フロントエンドが期待するフィールド名
+        'comments': comments,
+        'overall_comment': overall_comment,  # 後方互換性のため維持
+        'improvement_suggestions': improvement_suggestions,  # 後方互換性のため維持
+        'total_utterances': total_utterances,
+        'detailedFeedback': {
+            'questioning': {
+                'rationale': f"5点満点中{round(questioning_score_100 / 20, 1)}点。質問数は{len(questions)}個でした。",
+                'examples': questions[:2] if questions else ["質問の具体例がありません"]
+            },
+            'listening': {
+                'rationale': f"5点満点中{round(listening_score_100 / 20, 1)}点。傾聴表現は{len(listening_responses)}回検出されました。",
+                'examples': listening_responses[:2] if listening_responses else ["傾聴の具体例がありません"]
+            },
+            'proposing': {
+                'rationale': f"5点満点中{round(proposing_score_100 / 20, 1)}点。提案は{len(proposals)}回行われました。",
+                'examples': proposals[:2] if proposals else ["提案の具体例がありません"]
+            },
+            'closing': {
+                'rationale': f"5点満点中{round(closing_score_100 / 20, 1)}点。クロージング表現は{len(closings)}回検出されました。",
+                'examples': closings[:1] if closings else ["クロージングの具体例がありません"]
+            }
+        },
+        'actionPlan': improvement_suggestions[:3] if improvement_suggestions else [
+            "顧客の課題を深掘りする質問を増やしましょう",
+            "提案時には具体的な事例や数値を示しましょう",
+            "次のアクションを明確に提示してクロージングしましょう"
+        ],
+        'analysis': {
+            'questions_count': len(questions),
+            'open_questions_count': open_questions_count,
+            'listening_responses_count': len(listening_responses),
+            'proposals_count': len(proposals),
+            'closings_count': len(closings),
+            'positive_expressions': positive_count,
+            'negative_expressions': negative_count,
+            'conversation_flow': conversation_flow
+        }
+    }
+
+def analyze_conversation_flow(utterances):
+    """会話の流れを分析"""
+    if len(utterances) < 2:
+        return "短い会話"
+    
+    # 会話の段階を分析
+    stages = {
+        'greeting': 0,  # 挨拶
+        'needs_analysis': 0,  # ニーズ分析
+        'proposal': 0,  # 提案
+        'objection_handling': 0,  # 反対意見対応
+        'closing': 0  # クロージング
+    }
+    
+    for utterance in utterances:
+        if any(word in utterance for word in ['こんにちは', 'はじめまして', 'お忙しい中']):
+            stages['greeting'] += 1
+        elif any(word in utterance for word in ['困って', '課題', '問題', '悩み', 'どのような']):
+            stages['needs_analysis'] += 1
+        elif any(word in utterance for word in ['提案', 'おすすめ', '解決', 'サービス']):
+            stages['proposal'] += 1
+        elif any(word in utterance for word in ['でも', 'しかし', '心配', '不安']):
+            stages['objection_handling'] += 1
+        elif any(word in utterance for word in ['いかがでしょうか', '検討', 'お時間']):
+            stages['closing'] += 1
+    
+    # 最も多い段階を特定
+    max_stage = max(stages, key=stages.get)
+    return max_stage
+
+def generate_advanced_comments(questioning, listening, proposing, closing, flow, positive, negative):
+    """高度な評価コメントを生成"""
+    comments = []
+    
+    # 質問力の詳細評価
+    if questioning >= 4:
+        comments.append("✅ 相手の課題を積極的に引き出せており、オープンクエスチョンも効果的に使用しています")
+    elif questioning >= 2:
+        comments.append("⚠️ 質問はできていますが、より深掘りするためのオープンクエスチョンを増やしましょう")
+    else:
+        comments.append("❌ 質問が不足しています。相手のニーズを理解するために積極的に質問しましょう")
+    
+    # 傾聴力の詳細評価
+    if listening >= 4:
+        comments.append("✅ 相手の話をよく聞き、共感を示す表現が豊富です")
+    elif listening >= 2:
+        comments.append("⚠️ 基本的な傾聴はできていますが、より多様な共感表現を使いましょう")
+    else:
+        comments.append("❌ 傾聴力が不足しています。相手の話に共感する表現を増やしましょう")
+    
+    # 提案力の詳細評価
+    if proposing >= 4:
+        comments.append("✅ 具体的で魅力的な提案ができています")
+    elif proposing >= 2:
+        comments.append("⚠️ 提案はしていますが、より具体的なベネフィットを伝えましょう")
+    else:
+        comments.append("❌ 提案力が不足しています。相手の課題に対する解決策を明確に提示しましょう")
+    
+    # クロージング力の詳細評価
+    if closing >= 4:
+        comments.append("✅ 次のアクションを明確に促せており、クロージングが上手です")
+    elif closing >= 2:
+        comments.append("⚠️ クロージングはしていますが、より具体的な次のステップを提案しましょう")
+    else:
+        comments.append("❌ クロージングが不足しています。会話の終わりに次のアクションを明確にしましょう")
+    
+    # 会話の流れに関するコメント
+    if flow == 'greeting':
+        comments.append("💡 挨拶段階で止まっています。ニーズ分析に進みましょう")
+    elif flow == 'needs_analysis':
+        comments.append("💡 ニーズ分析はできています。提案段階に進みましょう")
+    elif flow == 'proposal':
+        comments.append("💡 提案はできています。クロージングに進みましょう")
+    elif flow == 'closing':
+        comments.append("💡 良い会話の流れです。クロージングまで到達できています")
+    
+    # 感情分析に関するコメント
+    if positive > negative:
+        comments.append("😊 ポジティブな表現が多く、良い関係性を築けています")
+    elif negative > positive:
+        comments.append("😟 ネガティブな表現が多いです。よりポジティブなアプローチを心がけましょう")
+    
+    return comments
+
+def generate_overall_comment(total_score, flow, positive, negative):
+    """総合評価コメントを生成"""
+    if total_score >= 4.5:
+        return "🌟 素晴らしい営業スキルです！プロレベルの対応ができています。"
+    elif total_score >= 4:
+        return "⭐ 優秀な営業スキルです。さらに磨きをかけて完璧を目指しましょう。"
+    elif total_score >= 3:
+        return "👍 良い営業スキルです。継続的な練習でさらに向上させましょう。"
+    elif total_score >= 2:
+        return "📈 基本的な営業スキルはあります。弱点を克服してレベルアップしましょう。"
+    else:
+        return "🎯 営業スキルの基礎を固めましょう。一つずつ確実に身につけていきましょう。"
+
+def generate_improvement_suggestions(questioning, listening, proposing, closing, flow):
+    """改善提案を生成"""
+    suggestions = []
+    
+    if questioning < 3:
+        suggestions.append("📝 質問力向上: 5W1H（何・誰・いつ・どこ・なぜ・どのように）を意識した質問を練習しましょう")
+    
+    if listening < 3:
+        suggestions.append("👂 傾聴力向上: 相手の話を聞く際は「なるほど」「そうですね」などの相づちを意識しましょう")
     
     if proposing < 3:
         suggestions.append("💡 提案力向上: 相手の課題に対する具体的な解決策とベネフィットを明確に伝えましょう")
