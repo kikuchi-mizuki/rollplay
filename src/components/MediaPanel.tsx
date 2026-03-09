@@ -1,7 +1,7 @@
 import { Play } from 'lucide-react';
 import { RecordingState } from '../types';
 import { CameraPip } from './CameraPip';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 
 /**
  * メディアパネルコンポーネント（映像プレビュー領域）
@@ -40,7 +40,7 @@ interface MediaPanelProps {
   onBlurredStreamReady?: (stream: MediaStream | null) => void; // 背景ぼかし済みストリームを親に通知
 }
 
-export function MediaPanel({
+const MediaPanelComponent: React.FC<MediaPanelProps> = ({
   videoSrc,
   imageSrc,
   subtitle,
@@ -193,5 +193,8 @@ export function MediaPanel({
       </div>
     </div>
   );
-}
+};
+
+// React.memoでラップして不要な再レンダリングを防止
+export const MediaPanel = memo(MediaPanelComponent);
 

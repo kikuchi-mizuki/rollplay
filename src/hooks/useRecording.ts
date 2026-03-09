@@ -1115,6 +1115,17 @@ export function useRecording(streams: RecordingStreams) {
         compositeStreamRef.current = null;
       }
 
+      // Canvas要素のメモリリーク防止：明示的にクリア
+      if (canvasRef.current) {
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+        console.log('  Canvas要素をクリーンアップ');
+      }
+
       return;
     }
 
@@ -1136,6 +1147,18 @@ export function useRecording(streams: RecordingStreams) {
         compositeStreamRef.current.getTracks().forEach(track => track.stop());
         compositeStreamRef.current = null;
         console.log('  Canvas合成ストリーム停止');
+      }
+
+      // Canvas要素のメモリリーク防止：明示的にクリア
+      if (canvasRef.current) {
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
+        // Canvas サイズを0にしてメモリ解放を促進
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+        console.log('  Canvas要素をクリーンアップ');
       }
 
       canvasRef.current = null;

@@ -37,9 +37,11 @@ interface EvaluationSheetProps {
   messages?: Message[];
   onClose: () => void;
   scenarioId?: string;
+  isLoading?: boolean;
+  savingProgress?: 'idle' | 'evaluating' | 'saving-conversation' | 'saving-evaluation' | 'uploading-recording' | 'completed';
 }
 
-export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, scenarioId }: EvaluationSheetProps) {
+export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, scenarioId, isLoading = false, savingProgress = 'idle' }: EvaluationSheetProps) {
   const [activeTab, setActiveTab] = useState<'overall' | 'strengths' | 'improvements' | 'scores' | 'detailed'>(
     'overall'
   );
@@ -160,6 +162,38 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, sc
             </button>
           </div>
         </div>
+
+        {/* 保存進捗インジケータ */}
+        {(isLoading || savingProgress !== 'idle') && (
+          <div className="px-4 md:px-6 py-3 bg-blue-50 border-b border-blue-200">
+            <div className="flex items-center gap-3">
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-primary mb-1">
+                  {savingProgress === 'evaluating' && '講評を生成中...'}
+                  {savingProgress === 'saving-conversation' && '会話を保存中...'}
+                  {savingProgress === 'saving-evaluation' && '評価を保存中...'}
+                  {savingProgress === 'uploading-recording' && '録画データをアップロード中...'}
+                  {savingProgress === 'completed' && '保存完了'}
+                  {savingProgress === 'idle' && isLoading && '処理中...'}
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-1.5">
+                  <div
+                    className="bg-primary h-1.5 rounded-full transition-all duration-500"
+                    style={{
+                      width:
+                        savingProgress === 'evaluating' ? '25%' :
+                        savingProgress === 'saving-conversation' ? '50%' :
+                        savingProgress === 'saving-evaluation' ? '75%' :
+                        savingProgress === 'uploading-recording' ? '90%' :
+                        savingProgress === 'completed' ? '100%' : '10%'
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* タブ */}
         <div className="flex border-b border-slate-200 overflow-x-auto scrollbar-thin min-h-[48px]">

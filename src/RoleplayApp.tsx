@@ -51,6 +51,7 @@ function RoleplayApp() {
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [isLoadingEvaluation, setIsLoadingEvaluation] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<'idle' | 'evaluating' | 'saving-conversation' | 'saving-evaluation' | 'uploading-recording' | 'completed'>('idle');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error' | 'info' } | null>(null);
   const [isConnected] = useState(true);
@@ -87,6 +88,7 @@ function RoleplayApp() {
   const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null); // AI音声出力のキャプチャ用（録画用）
   const aiMixerGainNodeRef = useRef<GainNode | null>(null); // AI音声ミキサー用GainNode（常時接続）
   const analyserNodeRef = useRef<AnalyserNode | null>(null); // AnalyserNode（音声波形確認用）
+  const keepAliveOscillatorRef = useRef<OscillatorNode | null>(null); // MediaStreamDestinationをアクティブに保つためのOscillator
   const [aiAudioStream, setAiAudioStream] = useState<MediaStream | null>(null); // AI音声出力のMediaStream（録画用）
   const avatarImageSrcRef = useRef<string | undefined>(imageSrc); // アバター画像のRef（録画中の表情変化に対応）
   const screenStreamRef = useRef<MediaStream | null>(null); // 画面共有のRef（録画中の画面共有開始に対応）
@@ -209,6 +211,7 @@ function RoleplayApp() {
       oscillator.connect(silenceGain);
       silenceGain.connect(recordingDestination); // 録画用のみに接続（スピーカーには出力しない）
       oscillator.start();
+      keepAliveOscillatorRef.current = oscillator; // クリーンアップ用に参照を保存
       console.log('🔇 MediaStreamDestinationをアクティブ化（20Hz/0.00001音量・録画専用）');
 
       setAudioInitialized(true);
@@ -454,6 +457,18 @@ function RoleplayApp() {
   // AudioContextのクリーンアップ（メモリリーク防止）
   useEffect(() => {
     return () => {
+      // Keep-alive Oscillatorを停止
+      if (keepAliveOscillatorRef.current) {
+        try {
+          keepAliveOscillatorRef.current.stop();
+          keepAliveOscillatorRef.current.disconnect();
+          console.log('🧹 Keep-alive Oscillatorを停止しました');
+        } catch (err) {
+          // 既に停止済みの場合はエラーを無視
+        }
+        keepAliveOscillatorRef.current = null;
+      }
+
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         console.log('🧹 AudioContextをクローズします');
         audioContextRef.current.close().catch((err) => {
@@ -472,6 +487,45 @@ function RoleplayApp() {
       }
     };
   }, []);
+
+  // 自動保存機能：5分ごとに会話を保存（データ損失防止）
+  useEffect(() => {
+    // conversationIdが既にある場合はスキップ（既に保存済み）
+    if (conversationId) {
+      return;
+    }
+
+    // メッセージが少なすぎる場合はスキップ
+    if (messages.length < 3) {
+      return;
+    }
+
+    const AUTO_SAVE_INTERVAL = 5 * 60 * 1000; // 5分
+    console.log('⏰ 自動保存タイマーを設定（5分間隔）');
+
+    const timerId = setInterval(() => {
+      // 再チェック：conversationIdがある場合はスキップ
+      if (conversationId) {
+        console.log('⏭️ 既に保存済みのため、自動保存をスキップ');
+        return;
+      }
+
+      if (messagesRef.current.length >= 3 && user && profile?.store_id) {
+        console.log('💾 自動保存を実行中...', {
+          messageCount: messagesRef.current.length,
+        });
+        saveConversationHistory().catch((err) => {
+          console.error('❌ 自動保存エラー:', err);
+        });
+      }
+    }, AUTO_SAVE_INTERVAL);
+
+    return () => {
+      clearInterval(timerId);
+      console.log('🧹 自動保存タイマーをクリア');
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, messages.length, user, profile?.store_id]);
 
   /**
    * ストリーミング対応の音声再生
@@ -541,6 +595,12 @@ function RoleplayApp() {
       const stopAllAudio = () => {
         console.log('🛑 全音声停止（割り込み）');
 
+        // メモリリーク防止：音声キューをクリア
+        if (audioQueue.length > 0) {
+          console.log(`🗑️ 音声キューをクリア: ${audioQueue.length}個のチャンク`);
+          audioQueue.length = 0; // 配列を空にしてメモリ解放
+        }
+
         // SSEストリームを中断
         if (streamReader) {
           streamReader.cancel();
@@ -551,10 +611,23 @@ function RoleplayApp() {
         // Web Audio APIのソースを停止
         if (currentAudioSourceRef.current) {
           try {
-            currentAudioSourceRef.current.stop();
-            currentAudioSourceRef.current.onended = null;
+            const source = currentAudioSourceRef.current;
+
+            // メモリリーク防止：停止前に明示的にクリーンアップ
+            // onendedコールバックが実行される前にnullに設定されるのを防ぐ
+            source.stop();
+
+            // 明示的にdisconnectとバッファクリア（onendedと同じ処理）
+            try {
+              source.disconnect();
+              source.buffer = null;
+            } catch (disconnectError) {
+              // 既にdisconnect済みの場合はエラーを無視
+            }
+
+            source.onended = null;
             currentAudioSourceRef.current = null;
-            console.log('🔇 Web Audio API音声停止');
+            console.log('🔇 Web Audio API音声停止（クリーンアップ完了）');
           } catch (e) {
             // 既に停止している場合はエラーを無視
             console.log('⚠️ 音声は既に停止済み');
@@ -812,6 +885,14 @@ function RoleplayApp() {
                 // 再生ループが自動的に取り出して再生する（オーバーラップ）
                 audioQueue.push({ audio: bytes.buffer, text: data.text || '' });
                 fullText += data.text || '';
+
+                // メモリリーク防止：キューサイズ上限チェック（異常な蓄積を防ぐ）
+                const MAX_QUEUE_SIZE = 50; // 通常は10個以下のはずだが、安全のため50に設定
+                if (audioQueue.length > MAX_QUEUE_SIZE) {
+                  console.warn(`⚠️ 音声キューが上限を超えました（${audioQueue.length}個）。古いチャンクを削除します。`);
+                  audioQueue.shift(); // 最も古いチャンクを削除
+                }
+
                 console.log(`📊 [キュー状態] 現在のキューサイズ: ${audioQueue.length}`);
 
                 // イベント駆動型キュー：待機中のループを即座に起こす
@@ -1587,14 +1668,18 @@ function RoleplayApp() {
     }
 
     setIsLoadingEvaluation(true);
+    setSavingProgress('idle');
     let evalData: Evaluation | null = null;
 
     try {
       // 講評を取得（Week 5: シナリオIDを渡す）
       try {
+        setSavingProgress('evaluating');
+        console.log('📊 講評を取得中...');
         evalData = await getEvaluation(messages, selectedScenarioId);
         setEvaluation(evalData);
         setShowEvaluation(true);
+        console.log('✅ 講評を取得しました');
       } catch (error) {
         console.error('講評取得エラー:', error);
         setToast({
@@ -1607,11 +1692,16 @@ function RoleplayApp() {
       if (user && profile?.store_id) {
         try {
         // 会話を保存（共通ヘルパー関数を使用）
+        setSavingProgress('saving-conversation');
+        console.log('💾 会話を保存中...');
         const newConversationId = await saveConversationHistory();
+        console.log('✅ 会話を保存しました');
 
         if (newConversationId) {
           // 評価を保存（講評取得に成功した場合のみ）
           if (evalData) {
+            setSavingProgress('saving-evaluation');
+            console.log('💾 評価を保存中...');
             await saveEvaluation({
               conversationId: newConversationId,
               userId: user.id,
@@ -1634,6 +1724,7 @@ function RoleplayApp() {
           // 録画データがある場合はアップロード
           if (recordingData) {
             try {
+              setSavingProgress('uploading-recording');
               console.log('📤 録画データをアップロード中...', {
                 blobSize: recordingData.blob.size,
                 blobType: recordingData.blob.type,
@@ -1651,6 +1742,7 @@ function RoleplayApp() {
 
               if (uploadResult.success) {
                 console.log('✅ 録画データをアップロードしました');
+                setSavingProgress('completed');
                 const successMessage = evalData
                   ? '会話・評価・録画を保存しました'
                   : '会話と録画を保存しました';
@@ -1681,6 +1773,7 @@ function RoleplayApp() {
             }
           } else {
             console.warn('⚠️ 録画データがありません。録画を停止していない可能性があります。');
+            setSavingProgress('completed');
             const successMessage = evalData
               ? '会話と評価を保存しました（録画データなし）'
               : '会話を保存しました（録画データなし）';
@@ -1704,6 +1797,10 @@ function RoleplayApp() {
       }
     } finally {
       setIsLoadingEvaluation(false);
+      // 保存処理完了後、3秒後に進捗状態をリセット
+      setTimeout(() => {
+        setSavingProgress('idle');
+      }, 3000);
     }
   };
 
@@ -2040,6 +2137,8 @@ function RoleplayApp() {
         evaluation={evaluation}
         messages={messages}
         scenarioId={selectedScenarioId}
+        isLoading={isLoadingEvaluation}
+        savingProgress={savingProgress}
         onClose={() => {
           setShowEvaluation(false);
           setEvaluation(null);

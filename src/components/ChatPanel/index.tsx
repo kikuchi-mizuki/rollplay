@@ -1,5 +1,6 @@
 import { Message } from '../../types';
 import { MessageList } from './MessageList';
+import { memo } from 'react';
 
 /**
  * チャットパネルコンポーネント
@@ -11,7 +12,7 @@ interface ChatPanelProps {
   scenarioId?: string;
 }
 
-export function ChatPanel({ messages, scenarioId }: ChatPanelProps) {
+const ChatPanelComponent: React.FC<ChatPanelProps> = ({ messages, scenarioId }) => {
   return (
     <div className="h-full w-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-hidden">
@@ -19,5 +20,8 @@ export function ChatPanel({ messages, scenarioId }: ChatPanelProps) {
       </div>
     </div>
   );
-}
+};
+
+// React.memoでラップして不要な再レンダリングを防止
+export const ChatPanel = memo(ChatPanelComponent);
 
