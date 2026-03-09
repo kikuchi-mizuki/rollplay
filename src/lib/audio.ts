@@ -33,7 +33,7 @@ export class AudioRecorder {
   private isVadRecording: boolean = false;
   private onVadStartCallback?: () => void;
   private onVadStopCallback?: (blob: Blob) => void;
-  private minRecordingDuration: number = 1200; // 最低録音時間（ミリ秒）精度改善：800→1200ms（音声途切れ防止）
+  private minRecordingDuration: number = 1000; // 最低録音時間（ミリ秒）速度と精度のバランス：1000ms
   private recordingStartTime: number = 0;
   private _lastLogTime: number = 0; // ログ出力の間隔制御用
   private voiceStartTime: number = 0; // 音声検出開始時刻
@@ -592,8 +592,8 @@ export class AudioRecorder {
         if (this.isVadRecording && !this.silenceTimeout) {
           // 現在の発話時間を計算
           const currentSpeechDuration = Date.now() - this.recordingStartTime;
-          // 1秒未満の短い発話なら200ms、それ以上なら350msで無音検出（精度重視）
-          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 200 : 350;
+          // 1秒未満の短い発話なら180ms、それ以上なら320msで無音検出（速度と精度のバランス）
+          const dynamicSilenceDuration = currentSpeechDuration < 1000 ? 180 : 320;
 
           console.log(`⏱️ 無音検出開始 (レベル: ${level.toFixed(1)}, 発話時間: ${currentSpeechDuration}ms, 無音検出: ${dynamicSilenceDuration}ms後に停止)`);
           this.silenceTimeout = window.setTimeout(() => {
