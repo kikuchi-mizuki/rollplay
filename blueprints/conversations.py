@@ -1515,18 +1515,65 @@ def evaluate_conversation():
                 'error': f'会話が長すぎます（最大{MAX_HISTORY_LENGTH}件）'
             }), 400
 
-        # ユーザーの発言があるか確認（シナリオに応じて適切なspeakerをチェック）
-        is_director_scenario = scenario_id and (scenario_id.startswith('director_') or 'director' in scenario_id)
-        expected_speaker = 'ディレクター' if is_director_scenario else '営業'
+        # 会話データのspeaker一覧を取得
+        all_speakers = [msg.get('speaker', 'UNKNOWN') for msg in conversation]
+        unique_speakers = list(set(all_speakers))
+        logger.info(f"[エンドポイント] 会話データに含まれるspeaker一覧: {unique_speakers}")
+        logger.info(f"[エンドポイント] 全speaker: {all_speakers}")
+        print(f"[エンドポイント] 会話データに含まれるspeaker一覧: {unique_speakers}", flush=True)
+
+        # シナリオIDからの判定とデータからの判定を組み合わせる
+        is_director_scenario_from_id = scenario_id and (scenario_id.startswith('director_') or 'director' in scenario_id)
+
+        # データから実際のユーザーspeaker名を推定（'ディレクター'または'営業'）
+        # まず候補のspeaker名でカウントを取る
+        director_count = sum(1 for msg in conversation if msg.get('speaker') == 'ディレクター')
+        sales_count = sum(1 for msg in conversation if msg.get('speaker') == '営業')
+
+        # データから判定：どちらのspeakerが多いか
+        actual_user_speaker = None
+        if director_count > 0 and sales_count == 0:
+            actual_user_speaker = 'ディレクター'
+        elif sales_count > 0 and director_count == 0:
+            actual_user_speaker = '営業'
+        elif director_count > 0 or sales_count > 0:
+            # 両方ある場合は多い方を採用
+            actual_user_speaker = 'ディレクター' if director_count >= sales_count else '営業'
+
+        # シナリオIDからの判定とデータからの判定を統合
+        if actual_user_speaker:
+            # データから判定できた場合は、それを優先（より確実）
+            expected_speaker = actual_user_speaker
+            is_director_scenario = (expected_speaker == 'ディレクター')
+            logger.info(f"[エンドポイント] データからspeakerを判定: '{expected_speaker}' (ディレクター: {director_count}件, 営業: {sales_count}件)")
+        else:
+            # データから判定できない場合は、シナリオIDから判定
+            expected_speaker = 'ディレクター' if is_director_scenario_from_id else '営業'
+            is_director_scenario = is_director_scenario_from_id
+            logger.info(f"[エンドポイント] シナリオIDからspeakerを判定: '{expected_speaker}' (scenario_id={scenario_id})")
 
         user_utterances = [msg['text'] for msg in conversation if msg['speaker'] == expected_speaker]
 
-        logger.info(f"[エンドポイント] シナリオ判定: scenario_id={scenario_id}, is_director={is_director_scenario}, expected_speaker={expected_speaker}")
+        logger.info(f"[エンドポイント] 最終判定: scenario_id={scenario_id}, is_director={is_director_scenario}, expected_speaker={expected_speaker}")
+        logger.info(f"[エンドポイント] 期待されるspeaker: '{expected_speaker}', 見つかった発言数: {len(user_utterances)}")
 
         if not user_utterances:
+            # より詳細なエラーメッセージを返す
+            error_msg = f'{expected_speaker}の発言が見つかりません。'
+            error_msg += f' 会話データに含まれるspeaker: {unique_speakers}'
+            error_msg += f' (scenario_id={scenario_id}, is_director={is_director_scenario})'
+            logger.error(f"[エンドポイント] {error_msg}")
+
+            # ユーザーにわかりやすいエラーメッセージを返す
+            user_error_msg = f'{expected_speaker}の発言が見つかりません'
+            if director_count == 0 and sales_count == 0:
+                # どちらも見つからない場合は、会話データの形式が不正
+                user_error_msg = '会話データの形式が不正です。ページを再読み込みしてください。'
+                logger.error(f"[エンドポイント] ⚠️ 会話データに'ディレクター'も'営業'も含まれていません。unique_speakers={unique_speakers}")
+
             return jsonify({
                 'success': False,
-                'error': f'{expected_speaker}の発言が見つかりません'
+                'error': user_error_msg
             }), 400
 
         # 講評生成（Week 5改善版: シナリオ別Few-shot対応）

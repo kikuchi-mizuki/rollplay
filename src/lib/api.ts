@@ -168,6 +168,14 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
     const userSpeaker = isDirector ? 'ディレクター' : '営業';
     const assistantSpeaker = isDirector ? 'お客様' : '顧客';
 
+    // デバッグ: historyの役割分布を確認
+    const roleCounts = history.reduce((acc, msg) => {
+      acc[msg.role] = (acc[msg.role] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    console.log(`[講評API] history内の役割分布:`, roleCounts);
+    logger.info(`[講評API] history内の役割分布: ${JSON.stringify(roleCounts)}`);
+
     logger.info(`[講評API] シナリオ判定: scenarioId=${scenarioId}, isDirector=${isDirector}, userSpeaker=${userSpeaker}`);
 
     // 会話履歴をFlask形式に変換
@@ -178,15 +186,24 @@ export async function getEvaluation(history: Message[], scenarioId?: string): Pr
 
     // デバッグ: 送信するデータをログ出力（console.logで確実に出力）
     console.log(`[講評API] 送信データ: conversation.length=${conversation.length}, history.length=${history.length}`);
+    console.log(`[講評API] scenarioId=${scenarioId}, isDirector=${isDirector}, userSpeaker=${userSpeaker}`);
     logger.info(`[講評API] 送信データ: conversation.length=${conversation.length}, history.length=${history.length}`);
+    logger.info(`[講評API] scenarioId=${scenarioId}, isDirector=${isDirector}, userSpeaker=${userSpeaker}`);
+
     if (conversation.length === 0) {
       console.error('[講評API] ⚠️ 会話データが空です！');
       logger.error('[講評API] ⚠️ 会話データが空です！');
     } else {
       console.log(`[講評API] 最初のメッセージ:`, conversation[0]);
       console.log(`[講評API] 最後のメッセージ:`, conversation[conversation.length - 1]);
+      // speaker一覧を出力
+      const speakers = conversation.map(msg => msg.speaker);
+      const uniqueSpeakers = [...new Set(speakers)];
+      console.log(`[講評API] 会話に含まれるspeaker一覧:`, uniqueSpeakers);
+      console.log(`[講評API] 全speaker:`, speakers);
       logger.info(`[講評API] 最初のメッセージ: ${JSON.stringify(conversation[0])}`);
       logger.info(`[講評API] 最後のメッセージ: ${JSON.stringify(conversation[conversation.length - 1])}`);
+      logger.info(`[講評API] 会話に含まれるspeaker一覧: ${JSON.stringify(uniqueSpeakers)}`);
     }
 
     // CSRFトークンを追加
