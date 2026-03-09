@@ -1484,7 +1484,7 @@ def evaluate_conversation():
                 'error': f'会話が長すぎます（最大{MAX_HISTORY_LENGTH}件）'
             }), 400
 
-        # 営業の発言のみを抽出
+        # 営業の発言があるか確認
         sales_utterances = [msg['text'] for msg in conversation if msg['speaker'] == '営業']
 
         if not sales_utterances:
@@ -1494,8 +1494,9 @@ def evaluate_conversation():
             }), 400
 
         # 講評生成（Week 5改善版: シナリオ別Few-shot対応）
-        logger.info(f"[エンドポイント] generate_evaluation_with_gpt4を呼び出し（営業発言数: {len(sales_utterances)}）")
-        evaluation = generate_evaluation_with_gpt4(sales_utterances, scenario_id)
+        # 会話全体（営業と顧客のやり取り）を渡して文脈を評価
+        logger.info(f"[エンドポイント] generate_evaluation_with_gpt4を呼び出し（会話全体: {len(conversation)}件、営業発言数: {len(sales_utterances)}）")
+        evaluation = generate_evaluation_with_gpt4(conversation, scenario_id)
         logger.info(f"[エンドポイント] generate_evaluation_with_gpt4から戻りました。evaluationタイプ: {type(evaluation)}")
         logger.info(f"[エンドポイント] evaluationキー: {list(evaluation.keys()) if isinstance(evaluation, dict) else 'N/A'}")
 
@@ -1543,11 +1544,18 @@ def evaluate_conversation():
             'error': '評価生成中にエラーが発生しました。もう一度お試しください'
         }), 500
 
-def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
-    """GPT-4を使用した営業スキル評価（Week 5改善版: シナリオ別Few-shot対応）"""
+def generate_evaluation_with_gpt4(conversation, scenario_id=None):
+    """GPT-4を使用した営業スキル評価（Week 5改善版: シナリオ別Few-shot対応、会話全体を評価）"""
     logger.info("[評価生成] ========== generate_evaluation_with_gpt4 開始 ==========")
     try:
-        # 営業の発言を結合
+        # 会話全体をフォーマット（営業と顧客のやり取り）
+        conversation_text = "\n".join([
+            f"{msg['speaker']}: {msg['text']}"
+            for msg in conversation
+        ])
+
+        # 営業の発言のみも抽出（後方互換性のため）
+        sales_utterances = [msg['text'] for msg in conversation if msg['speaker'] == '営業']
         sales_text = " ".join(sales_utterances)
 
         # シナリオ情報とFew-shotサンプルを読み込む
@@ -1631,27 +1639,27 @@ def generate_evaluation_with_gpt4(sales_utterances, scenario_id=None):
 - 提案力: 顧客の課題に対する具体的な解決策を提示
 - クロージング力: 次のアクション・決定を促す適切なクロージング"""
 
-        # GPT-4で評価を生成（Few-shot対応・具体的な講評生成）
+        # GPT-4で評価を生成（Few-shot対応・具体的な講評生成・会話全体を評価）
         # ディレクター向けと営業向けでプロンプトを切り替え
         if is_director:
             role_name = "ディレクター"
             evaluation_prompt = f"""
-        あなたはショート動画制作のプロフェッショナルディレクター育成コーチです。以下のディレクターの発言を分析して、具体的で実践的な評価を提供してください。
+        あなたはショート動画制作のプロフェッショナルディレクター育成コーチです。以下の会話全体（ディレクターとクライアントのやり取り）を分析して、具体的で実践的な評価を提供してください。
 
         {scenario_context}
-        【ディレクターの発言】
-        {sales_text}
+        【会話全体】
+        {conversation_text}
 
         【評価項目】（5点満点で評価）
         {rubric_description}"""
         else:
             role_name = "営業"
             evaluation_prompt = f"""
-        あなたはショート動画制作営業のプロフェッショナルコーチです。以下の営業の発言を分析して、具体的で実践的な評価を提供してください。
+        あなたはショート動画制作営業のプロフェッショナルコーチです。以下の会話全体（営業と顧客のやり取り）を分析して、具体的で実践的な評価を提供してください。
 
         {scenario_context}
-        【営業の発言】
-        {sales_text}
+        【会話全体】
+        {conversation_text}
 
         【評価項目】（5点満点で評価）
         {rubric_description}"""
