@@ -2387,6 +2387,7 @@ function RoleplayApp() {
       {/* ペルソナ選択モーダル */}
       <PersonaSelector
         isOpen={showPersonaSelector}
+        initialScenarioId={selectedScenarioId}
         onSelect={(personaId, scenarioId, selectedDifficulty, personaData) => {
           console.log('[RoleplayApp] PersonaSelectorから受け取ったscenarioId:', scenarioId);
           console.log('[RoleplayApp] PersonaSelectorから受け取ったpersonaId:', personaId);

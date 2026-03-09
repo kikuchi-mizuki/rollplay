@@ -5,6 +5,7 @@ interface PersonaSelectorProps {
   isOpen: boolean;
   onSelect: (personaId: string, scenarioId: string, difficulty?: 'beginner' | 'intermediate' | 'advanced', personaData?: Persona) => void;
   onClose: () => void;
+  initialScenarioId?: string; // 現在選択されているシナリオID
 }
 
 interface Persona {
@@ -36,7 +37,7 @@ interface Scenario {
  * ペルソナ選択モーダルコンポーネント
  * 会話開始前に10個のペルソナから選択できる
  */
-export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorProps) {
+export function PersonaSelector({ isOpen, onSelect, onClose, initialScenarioId }: PersonaSelectorProps) {
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,10 +58,20 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
           setScenarios(fetchedScenarios);
           setPersonas(personasData.personas || []);
 
-          // デフォルトシナリオを設定（営業の最初のシナリオ）
-          const salesScenarios = fetchedScenarios.filter((s: Scenario) => s.enabled && s.category === 'sales');
-          if (salesScenarios.length > 0) {
-            setSelectedScenarioId(salesScenarios[0].id);
+          // デフォルトシナリオを設定
+          // initialScenarioIdが提供されている場合はそれを使用、そうでなければ営業の最初のシナリオ
+          if (initialScenarioId) {
+            setSelectedScenarioId(initialScenarioId);
+            // initialScenarioIdのカテゴリーに基づいてロールを設定
+            const initialScenario = fetchedScenarios.find((s: Scenario) => s.id === initialScenarioId);
+            if (initialScenario && initialScenario.category) {
+              setSelectedRole(initialScenario.category as 'sales' | 'director');
+            }
+          } else {
+            const salesScenarios = fetchedScenarios.filter((s: Scenario) => s.enabled && s.category === 'sales');
+            if (salesScenarios.length > 0) {
+              setSelectedScenarioId(salesScenarios[0].id);
+            }
           }
 
           setLoading(false);
@@ -70,7 +81,7 @@ export function PersonaSelector({ isOpen, onSelect, onClose }: PersonaSelectorPr
           setLoading(false);
         });
     }
-  }, [isOpen]);
+  }, [isOpen, initialScenarioId]);
 
   // ロール変更時にシナリオを自動切り替え
   useEffect(() => {
