@@ -1548,15 +1548,11 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
     """GPT-4を使用した営業スキル評価（Week 5改善版: シナリオ別Few-shot対応、会話全体を評価）"""
     logger.info("[評価生成] ========== generate_evaluation_with_gpt4 開始 ==========")
     try:
-        # 会話全体をフォーマット（営業と顧客のやり取り）
+        # 会話全体をフォーマット
         conversation_text = "\n".join([
             f"{msg['speaker']}: {msg['text']}"
             for msg in conversation
         ])
-
-        # 営業の発言のみも抽出（後方互換性のため）
-        sales_utterances = [msg['text'] for msg in conversation if msg['speaker'] == '営業']
-        sales_text = " ".join(sales_utterances)
 
         # シナリオ情報とFew-shotサンプルを読み込む
         scenario_context = ""
@@ -1611,6 +1607,14 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         # シナリオのcategoryフィールドに基づいてディレクター向けか営業向けかを判定
         is_director = scenario_obj and scenario_obj.get('category') == 'director'
         logger.info(f"[評価生成] is_director判定: {is_director}, シナリオカテゴリ: {scenario_obj.get('category') if scenario_obj else 'N/A'}")
+
+        # ユーザーの発言を抽出（シナリオに応じて適切なspeakerを使用）
+        user_speaker = 'ディレクター' if is_director else '営業'
+        user_utterances = [msg['text'] for msg in conversation if msg['speaker'] == user_speaker]
+        user_text = " ".join(user_utterances)
+
+        logger.info(f"[評価生成] 抽出した発言数: {len(user_utterances)}, speaker={user_speaker}")
+        logger.info(f"[評価生成] 会話履歴の詳細: {conversation}")
 
         # Rubricから評価基準を構築（シナリオに応じて切り替え）
         rubric_description = ""

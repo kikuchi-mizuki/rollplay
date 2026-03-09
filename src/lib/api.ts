@@ -163,9 +163,16 @@ export async function sendMessage(message: string, history: Message[], scenarioI
  */
 export async function getEvaluation(history: Message[], scenarioId?: string): Promise<Evaluation> {
   try {
+    // シナリオIDからカテゴリを判定（director_で始まるものはディレクター）
+    const isDirector = scenarioId?.startsWith('director_') || scenarioId?.includes('director');
+    const userSpeaker = isDirector ? 'ディレクター' : '営業';
+    const assistantSpeaker = isDirector ? 'お客様' : '顧客';
+
+    logger.info(`[講評API] シナリオ判定: scenarioId=${scenarioId}, isDirector=${isDirector}, userSpeaker=${userSpeaker}`);
+
     // 会話履歴をFlask形式に変換
     const conversation = history.map(msg => ({
-      speaker: msg.role === 'user' ? '営業' : '顧客',
+      speaker: msg.role === 'user' ? userSpeaker : assistantSpeaker,
       text: msg.text
     }));
 
