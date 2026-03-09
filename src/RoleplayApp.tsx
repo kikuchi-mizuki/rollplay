@@ -856,7 +856,9 @@ function RoleplayApp() {
 
               if (data.error) {
                 console.error('ストリーミングエラー:', data.error);
-                setToast({ message: 'エラーが発生しました', type: 'error' });
+                // デバッグ用：詳細なエラー情報を表示
+                console.error('エラー詳細:', JSON.stringify(data, null, 2));
+                setToast({ message: `エラー: ${data.error}`, type: 'error' });
                 continue;
               }
 
