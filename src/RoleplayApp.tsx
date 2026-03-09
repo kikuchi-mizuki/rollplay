@@ -575,13 +575,13 @@ function RoleplayApp() {
         timestamp: new Date(),
       };
 
-      // 長時間会話での安定性向上：メッセージ数を制限（最大50件）
+      // 長時間会話での安定性向上：メッセージ数を制限（最大30件）
       setMessages((prev) => {
         const newMessages = [...prev, userMessage];
-        const MAX_MESSAGES = 50;
+        const MAX_MESSAGES = 30; // 50→30に削減（メモリ最適化）
 
         if (newMessages.length > MAX_MESSAGES) {
-          // 古いメッセージを削除（最新50件のみ保持）
+          // 古いメッセージを削除（最新30件のみ保持）
           const trimmed = newMessages.slice(-MAX_MESSAGES);
           console.log(`[メモリ最適化] メッセージ履歴をトリミング: ${newMessages.length} → ${trimmed.length}件`);
           return trimmed;
@@ -795,9 +795,12 @@ function RoleplayApp() {
       playbackLoop();
 
       // 🔍 デバッグ: 送信する会話履歴を確認（プレースホルダーを含めないhistoryBeforeBotを使用）
-      const historyToSend = historyBeforeBot.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text }));
+      // 🚀 速度最適化: 会話履歴を最新12件に制限（GPT処理時間を一定に保つ）
+      const MAX_HISTORY_TO_SEND = 12;
+      const recentHistory = historyBeforeBot.slice(-MAX_HISTORY_TO_SEND);
+      const historyToSend = recentHistory.map(m => ({ speaker: m.role === 'user' ? '営業' : '顧客', text: m.text }));
       const personaToSend = currentPersonaRef.current; // Refから最新値を取得（クロージャー問題を回避）
-      console.log(`[会話履歴送信] 件数: ${historyToSend.length}`);
+      console.log(`[会話履歴送信] 全件数: ${historyBeforeBot.length}, 送信件数: ${historyToSend.length}件（最新${MAX_HISTORY_TO_SEND}件）`);
       console.log(`[API送信] conversation_id: ${conversationId}, persona: ${personaToSend ? 'あり' : 'なし'}`);
       if (personaToSend) {
         console.log(`[API送信] persona.voice_name: ${personaToSend.voice_name}, persona.speaking_rate: ${personaToSend.speaking_rate}`);
