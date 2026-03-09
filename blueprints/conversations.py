@@ -1561,11 +1561,14 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         # シナリオ情報とFew-shotサンプルを読み込む
         scenario_context = ""
         few_shot_examples = ""
+        scenario_obj = None
 
         if scenario_id:
             # シナリオ情報を読み込む
             scenario_obj = load_scenario_object(scenario_id)
+            logger.info(f"[評価生成] シナリオID: {scenario_id}, ロード結果: {scenario_obj is not None}")
             if scenario_obj:
+                logger.info(f"[評価生成] シナリオタイトル: {scenario_obj.get('title', 'N/A')}, カテゴリ: {scenario_obj.get('category', 'N/A')}")
                 scenario_title = scenario_obj.get('title', '')
                 scenario_context = f"\n【シナリオ】: {scenario_title}\n"
                 scenario_context += f"【シナリオの重点評価項目】:\n"
@@ -1605,8 +1608,9 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
                     few_shot_examples += f"クロージング={poor_ex['evaluation']['scores']['closing_skill']}\n"
                     few_shot_examples += f"評価理由: {poor_ex['evaluation']['improvements'][0]}\n"
 
-        # シナリオIDに基づいてディレクター向けか営業向けかを判定
-        is_director = scenario_id and scenario_id.startswith('director_')
+        # シナリオのcategoryフィールドに基づいてディレクター向けか営業向けかを判定
+        is_director = scenario_obj and scenario_obj.get('category') == 'director'
+        logger.info(f"[評価生成] is_director判定: {is_director}, シナリオカテゴリ: {scenario_obj.get('category') if scenario_obj else 'N/A'}")
 
         # Rubricから評価基準を構築（シナリオに応じて切り替え）
         rubric_description = ""
@@ -1809,33 +1813,26 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         - 評価は実践的で、次回のロープレで即実行できる内容にする
         """
         
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": """【最重要指示】あなたの出力は必ず有効なJSON形式のみとしてください。説明文や前置きは一切不要です。
+        # システムメッセージもディレクター/営業で切り替え
+        if is_director:
+            system_message = """【最重要指示】あなたの出力は必ず有効なJSON形式のみとしてください。説明文や前置きは一切不要です。
+
+あなたはショート動画制作ディレクターのプロフェッショナルコーチです。
+10年以上のディレクター経験を持ち、1000件以上のロープレを評価してきました。
+ディレクターの発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。"""
+        else:
+            system_message = """【最重要指示】あなたの出力は必ず有効なJSON形式のみとしてください。説明文や前置きは一切不要です。
 
 あなたはショート動画制作営業のプロフェッショナルコーチです。
 10年以上の営業経験を持ち、1000件以上のロープレを評価してきました。
-営業の発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。
+営業の発言を詳細に分析し、具体的な発言を引用しながら、実践的で的確な評価を提供してください。"""
 
-【出力形式】
-以下のJSON形式で必ず回答してください：
-{
-  "scores": { "questioning": 1-5の整数, "listening": 1-5の整数, "proposing": 1-5の整数, "closing": 1-5の整数 },
-  "strengths": ["具体例を含む良かった点1", "具体例を含む良かった点2", "具体例を含む良かった点3"],
-  "improvements": ["具体例を含む改善点1", "具体例を含む改善点2", "具体例を含む改善点3"],
-  "overall": "総合評価コメント",
-  "detailedFeedback": {
-    "questioning": { "rationale": "スコア理由", "examples": ["例1", "例2"] },
-    "listening": { "rationale": "スコア理由", "examples": ["例1", "例2"] },
-    "proposing": { "rationale": "スコア理由", "examples": ["例1", "例2"] },
-    "closing": { "rationale": "スコア理由", "examples": ["例1"] }
-  },
-  "actionPlan": ["アクション1", "アクション2", "アクション3"],
-  "analysis": { "questions_count": 数値, "listening_responses_count": 数値, "proposals_count": 数値, "closings_count": 数値, "conversation_flow": "分析" }
-}
+        logger.info(f"[評価生成] GPT-4呼び出し開始（ディレクター: {is_director}, 会話文字数: {len(conversation_text)}）")
 
-【重要】detailedFeedbackフィールドは必須です。questioning, listening, proposing, closingの4つすべてにrationaleとexamplesを必ず含めてください。"""},
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": system_message},
                 {"role": "user", "content": evaluation_prompt}
             ],
             max_tokens=2500,  # 詳細フィードバックのためトークン数を増量
