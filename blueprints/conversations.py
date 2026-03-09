@@ -1262,12 +1262,6 @@ def chat_stream():
                 messages.append({"role": "user", "content": user_message})
                 logger.debug(f"[会話履歴デバッグ] GPTに送るメッセージ数: {len(messages)} (system込み)")
 
-                # GPT-4o-miniストリーミング応答（最適化設定）
-                messages.append({
-                    "role": "system",
-                    "content": "日本語のみ。1-2文で簡潔に応答。"
-                })
-
                 # ⏱️ パフォーマンス計測: GPT呼び出し開始
                 perf_gpt_start = time.time()
 
