@@ -1427,10 +1427,30 @@ function RoleplayApp() {
               lastProcessedFinalTextRef.current = transcript;
               webSpeechFinalTextRef.current = transcript;
 
+              console.log('[デバッグ] 最終メッセージを追加する前のmessages数:', messagesRef.current.length);
+
               setMessages(prev => {
                 const lastMsg = prev[prev.length - 1];
+                console.log('[デバッグ] 最終メッセージ追加処理:', {
+                  hasLastMsg: !!lastMsg,
+                  lastMsgRole: lastMsg?.role,
+                  lastMsgId: lastMsg?.id,
+                  lastMsgText: lastMsg?.text,
+                  isInterim: lastMsg?.id.startsWith('interim-'),
+                  newText: transcript
+                });
+
+                // 重複チェック：既に同じテキストの最終メッセージがある場合はスキップ
+                if (lastMsg && lastMsg.role === 'user' &&
+                    lastMsg.id.startsWith('user-webspeech-') &&
+                    lastMsg.text === transcript) {
+                  console.warn('⚠️ [重複防止] 同じテキストの最終メッセージが既に存在、スキップ');
+                  return prev;
+                }
+
                 // 暫定メッセージを最終メッセージに変換
                 if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
+                  console.log('[デバッグ] 暫定メッセージを最終メッセージに置き換え');
                   return [...prev.slice(0, -1), {
                     id: `user-webspeech-${Date.now()}`,
                     role: 'user',
@@ -1439,7 +1459,7 @@ function RoleplayApp() {
                   }];
                 } else {
                   // 暫定メッセージがない場合は新規追加（通常は発生しない）
-                  console.warn('⚠️ [異常] 暫定メッセージなしで最終結果を受信');
+                  console.warn('⚠️ [異常] 暫定メッセージなしで最終結果を受信 - 新規追加');
                   return [...prev, {
                     id: `user-webspeech-${Date.now()}`,
                     role: 'user',
@@ -1513,7 +1533,17 @@ function RoleplayApp() {
               // 暫定メッセージを最終メッセージに変換
               setMessages(prev => {
                 const lastMsg = prev[prev.length - 1];
+
+                // 重複チェック：既に最終メッセージになっている場合はスキップ
+                if (lastMsg && lastMsg.role === 'user' &&
+                    !lastMsg.id.startsWith('interim-') &&
+                    lastMsg.text === interimText) {
+                  console.warn('⚠️ [重複防止] 暫定結果が既に最終メッセージになっている、スキップ');
+                  return prev;
+                }
+
                 if (lastMsg && lastMsg.id === lastMessage.id) {
+                  console.log('[デバッグ] 暫定メッセージを最終メッセージに変換');
                   return [...prev.slice(0, -1), {
                     id: `user-interim-final-${Date.now()}`,
                     role: 'user',
@@ -1588,11 +1618,19 @@ function RoleplayApp() {
                 // Whisperの結果を表示（暫定メッセージがない場合のみ）
                 setMessages(prev => {
                   const lastMsg = prev[prev.length - 1];
+
+                  // 重複チェック：既に同じテキストのユーザーメッセージがある場合はスキップ
+                  if (lastMsg && lastMsg.role === 'user' && lastMsg.text === result.text) {
+                    console.warn('⚠️ [重複防止] Whisper結果が既存メッセージと同じ、スキップ');
+                    return prev;
+                  }
+
                   if (lastMsg && lastMsg.role === 'user' && lastMsg.id.startsWith('interim-')) {
                     // 暫定メッセージがある場合は更新しない（表示を維持）
                     return prev;
                   } else {
                     // 暫定メッセージがない場合は新規追加
+                    console.log('[デバッグ] Whisper結果から新規ユーザーメッセージ追加');
                     return [...prev, {
                       id: `user-${Date.now()}`,
                       role: 'user',
