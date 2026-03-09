@@ -1265,12 +1265,12 @@ def chat_stream():
                 # ⏱️ パフォーマンス計測: GPT呼び出し開始
                 perf_gpt_start = time.time()
 
-                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=60、最適化設定）", flush=True)
-                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=60、最適化設定）")
+                print("[DEBUG-GENERATE] GPT-4o-mini呼び出し開始（max_tokens=80、最適化設定）", flush=True)
+                logger.info("[ストリーミング開始] GPT-4o-mini応答生成開始（max_tokens=80、最適化設定）")
                 response = openai_client.chat.completions.create(
                     model="gpt-4o-mini",    # 高速モデル（会話のテンポ重視）
                     messages=messages,
-                    max_tokens=60,          # 最適化設定: 1-2文の完結した応答（文章途切れ防止）
+                    max_tokens=80,          # 最適化設定: 2-3文の完結した応答（文章途切れ防止）
                     temperature=0.2,        # 最適化設定: 決定速度重視
                     presence_penalty=0.2,   # 新しいトピックを促進
                     frequency_penalty=0.2,  # 繰り返しを減らす
