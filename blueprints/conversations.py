@@ -574,6 +574,13 @@ def chat():
                         pain_points = base_profile.get('pain_points') or persona.get('pain_points')
                         budget_sense = base_profile.get('budget_sense') or persona.get('budget_sense')
 
+                        # 🚨 重要: 役割を明確に再確認（AIが営業役に切り替わるのを防ぐ）
+                        system_prompt += "\n\n🚨 【役割の再確認】"
+                        system_prompt += "\n**あなたは顧客（経営者・マネージャー）です。絶対に営業担当者になってはいけません。**"
+                        system_prompt += "\n- 営業から提案を受ける立場"
+                        system_prompt += "\n- 質問に答える（質問をたくさんしない）"
+                        system_prompt += "\n- 短く簡潔に応答する（1-2文まで）"
+
                         system_prompt += "\n\n【あなたの設定（必ず守る）】\n"
                         if business_type:
                             system_prompt += f"業種: {business_type}\n"
@@ -1133,6 +1140,13 @@ def chat_stream():
                         business_detail = base_profile.get('business_detail') or persona.get('business_detail')
                         pain_points = base_profile.get('pain_points') or persona.get('pain_points')
                         budget_sense = base_profile.get('budget_sense') or persona.get('budget_sense')
+
+                        # 🚨 重要: 役割を明確に再確認（AIが営業役に切り替わるのを防ぐ）
+                        system_prompt += "\n\n🚨 【役割の再確認】"
+                        system_prompt += "\n**あなたは顧客（経営者・マネージャー）です。絶対に営業担当者になってはいけません。**"
+                        system_prompt += "\n- 営業から提案を受ける立場"
+                        system_prompt += "\n- 質問に答える（質問をたくさんしない）"
+                        system_prompt += "\n- 短く簡潔に応答する（1-2文まで）"
 
                         system_prompt += "\n\n【あなたの設定（必ず守る）】\n"
                         if business_type:
