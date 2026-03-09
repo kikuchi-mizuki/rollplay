@@ -1547,9 +1547,26 @@ function RoleplayApp() {
                 }
               });
 
-              // 🚀 Web Speech最終結果を受信したら即座に録音停止（VADの無音検出を待たない）
-              console.log('🚀 [超高速] Web Speech最終結果により録音を即座に停止');
+              // 🚀 Web Speech最終結果を受信したら即座に録音停止してAI送信開始
+              console.log('🚀 [超高速] Web Speech最終結果により録音停止＆AI送信開始');
+
+              // 送信中フラグを立てる（VAD停止コールバックの重複防止）
+              setIsSending(true);
+              isSendingRef.current = true;
+
+              // 録音を強制停止（VAD停止コールバックが発火するが、フラグによりスキップされる）
               audioRecorderRef.forceStopVADRecording();
+
+              // AI送信を開始（非同期で実行）
+              const t0 = performance.now();
+              handleSendStream(transcript, true, t0, t0).catch((error) => {
+                console.error('AI送信エラー:', error);
+                setIsSending(false);
+                isSendingRef.current = false;
+                if (isVADMode) {
+                  audioRecorderRef.resumeVAD();
+                }
+              });
             }
           }
         });
@@ -1570,6 +1587,12 @@ function RoleplayApp() {
             // 既に送信中の場合はスキップ（重複防止）
             if (isSendingRef.current) {
               console.log('⚠️ 既に送信中のため、この音声をスキップします');
+              return;
+            }
+
+            // 🚨 Web Speech最終結果で既にメッセージが追加されている場合はスキップ（重複防止）
+            if (webSpeechFinalTextRef.current) {
+              console.log('✅ [重複防止] Web Speech最終結果が既に処理済み、VAD停止コールバックをスキップ');
               return;
             }
 
