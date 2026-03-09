@@ -756,8 +756,8 @@ function RoleplayApp() {
               const playDuration = performance.now() - playStartTime;
               console.log(`✅ [再生完了] "${chunkText}" (再生時間: ${playDuration.toFixed(0)}ms)`);
 
-              // チャンク間に自然な間隔を追加（反応速度改善：300ms→150ms）
-              await new Promise(resolve => setTimeout(resolve, 150));
+              // チャンク間に自然な間隔を追加（速度最優先：50ms）
+              await new Promise(resolve => setTimeout(resolve, 50));
             } catch (error) {
               console.error(`❌ [音声再生エラー] "${chunkText}"`, error);
               console.error(`[エラー詳細] タイプ: ${error instanceof Error ? error.message : String(error)}`);
@@ -1525,8 +1525,8 @@ function RoleplayApp() {
             const t0 = performance.now();
             console.log(`[latency] t0: 録音停止 (${t0.toFixed(0)}ms)`);
 
-            // 少し待ってWeb Speech APIの最終結果を取得（非同期処理のため）速度と精度のバランス
-            await new Promise(resolve => setTimeout(resolve, 150));
+            // 少し待ってWeb Speech APIの最終結果を取得（非同期処理のため）速度最優先
+            await new Promise(resolve => setTimeout(resolve, 50));
 
             // Web Speech APIの最終結果があればそれを使用（速度優先）
             if (webSpeechFinalTextRef.current) {
