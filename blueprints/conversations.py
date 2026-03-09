@@ -1484,18 +1484,23 @@ def evaluate_conversation():
                 'error': f'会話が長すぎます（最大{MAX_HISTORY_LENGTH}件）'
             }), 400
 
-        # 営業の発言があるか確認
-        sales_utterances = [msg['text'] for msg in conversation if msg['speaker'] == '営業']
+        # ユーザーの発言があるか確認（シナリオに応じて適切なspeakerをチェック）
+        is_director_scenario = scenario_id and (scenario_id.startswith('director_') or 'director' in scenario_id)
+        expected_speaker = 'ディレクター' if is_director_scenario else '営業'
 
-        if not sales_utterances:
+        user_utterances = [msg['text'] for msg in conversation if msg['speaker'] == expected_speaker]
+
+        logger.info(f"[エンドポイント] シナリオ判定: scenario_id={scenario_id}, is_director={is_director_scenario}, expected_speaker={expected_speaker}")
+
+        if not user_utterances:
             return jsonify({
                 'success': False,
-                'error': '営業の発言が見つかりません'
+                'error': f'{expected_speaker}の発言が見つかりません'
             }), 400
 
         # 講評生成（Week 5改善版: シナリオ別Few-shot対応）
-        # 会話全体（営業と顧客のやり取り）を渡して文脈を評価
-        logger.info(f"[エンドポイント] generate_evaluation_with_gpt4を呼び出し（会話全体: {len(conversation)}件、営業発言数: {len(sales_utterances)}）")
+        # 会話全体を渡して文脈を評価
+        logger.info(f"[エンドポイント] generate_evaluation_with_gpt4を呼び出し（会話全体: {len(conversation)}件、{expected_speaker}発言数: {len(user_utterances)}）")
         evaluation = generate_evaluation_with_gpt4(conversation, scenario_id)
         logger.info(f"[エンドポイント] generate_evaluation_with_gpt4から戻りました。evaluationタイプ: {type(evaluation)}")
         logger.info(f"[エンドポイント] evaluationキー: {list(evaluation.keys()) if isinstance(evaluation, dict) else 'N/A'}")
@@ -1547,6 +1552,19 @@ def evaluate_conversation():
 def generate_evaluation_with_gpt4(conversation, scenario_id=None):
     """GPT-4を使用した営業スキル評価（Week 5改善版: シナリオ別Few-shot対応、会話全体を評価）"""
     logger.info("[評価生成] ========== generate_evaluation_with_gpt4 開始 ==========")
+
+    # シナリオ情報を先に読み込み、user_utterancesを定義
+    scenario_obj = None
+    if scenario_id:
+        scenario_obj = load_scenario_object(scenario_id)
+
+    # シナリオのcategoryフィールドに基づいてディレクター向けか営業向けかを判定
+    is_director = scenario_obj and scenario_obj.get('category') == 'director'
+    user_speaker = 'ディレクター' if is_director else '営業'
+    user_utterances = [msg['text'] for msg in conversation if msg['speaker'] == user_speaker]
+
+    logger.info(f"[評価生成] シナリオ判定: scenario_id={scenario_id}, is_director={is_director}, user_speaker={user_speaker}, 発言数={len(user_utterances)}")
+
     try:
         # 会話全体をフォーマット
         conversation_text = "\n".join([
@@ -1557,11 +1575,9 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         # シナリオ情報とFew-shotサンプルを読み込む
         scenario_context = ""
         few_shot_examples = ""
-        scenario_obj = None
 
         if scenario_id:
-            # シナリオ情報を読み込む
-            scenario_obj = load_scenario_object(scenario_id)
+            # シナリオ情報を使用（既に関数先頭で読み込み済み）
             logger.info(f"[評価生成] シナリオID: {scenario_id}, ロード結果: {scenario_obj is not None}")
             if scenario_obj:
                 logger.info(f"[評価生成] シナリオタイトル: {scenario_obj.get('title', 'N/A')}, カテゴリ: {scenario_obj.get('category', 'N/A')}")
@@ -1604,16 +1620,8 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
                     few_shot_examples += f"クロージング={poor_ex['evaluation']['scores']['closing_skill']}\n"
                     few_shot_examples += f"評価理由: {poor_ex['evaluation']['improvements'][0]}\n"
 
-        # シナリオのcategoryフィールドに基づいてディレクター向けか営業向けかを判定
-        is_director = scenario_obj and scenario_obj.get('category') == 'director'
-        logger.info(f"[評価生成] is_director判定: {is_director}, シナリオカテゴリ: {scenario_obj.get('category') if scenario_obj else 'N/A'}")
-
-        # ユーザーの発言を抽出（シナリオに応じて適切なspeakerを使用）
-        user_speaker = 'ディレクター' if is_director else '営業'
-        user_utterances = [msg['text'] for msg in conversation if msg['speaker'] == user_speaker]
+        # user_textを生成（会話全体のログ用）
         user_text = " ".join(user_utterances)
-
-        logger.info(f"[評価生成] 抽出した発言数: {len(user_utterances)}, speaker={user_speaker}")
         logger.info(f"[評価生成] 会話履歴の詳細: {conversation}")
 
         # Rubricから評価基準を構築（シナリオに応じて切り替え）
@@ -1975,7 +1983,7 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
                 logger.info("[評価生成] フォールバックactionPlanを生成しました")
 
             # 基本情報を追加
-            evaluation['total_utterances'] = len(sales_utterances)
+            evaluation['total_utterances'] = len(user_utterances)
 
             # overallフィールドの正規化（フロントエンド互換性のため）
             if 'overall' not in evaluation or not evaluation['overall']:
@@ -1995,7 +2003,7 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         else:
             # JSON解析に失敗した場合はフォールバック
             logger.warning("[評価生成] JSON解析失敗 - フォールバックを使用")
-            return generate_evaluation_fallback(sales_utterances)
+            return generate_evaluation_fallback(user_utterances)
 
     except Exception as e:
         logger.error(f"[評価生成] GPT-4評価エラー: {e}")
@@ -2003,7 +2011,7 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         import traceback
         logger.error(f"[評価生成] トレースバック:\n{traceback.format_exc()}")
         # フォールバック: 従来の評価ロジック
-        return generate_evaluation_fallback(sales_utterances)
+        return generate_evaluation_fallback(user_utterances)
 
 def generate_evaluation_fallback(sales_utterances):
     """フォールバック用の評価生成（従来のロジック）"""
