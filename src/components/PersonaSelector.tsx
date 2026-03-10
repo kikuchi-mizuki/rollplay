@@ -138,7 +138,11 @@ export function PersonaSelector({ isOpen, onSelect, onClose, initialScenarioId }
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('[PersonaSelector] isOpen=false なので null を返します');
+    return null;
+  }
+  console.log('[PersonaSelector] レンダリング中, isOpen=true');
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-[150] p-0 sm:p-4">
