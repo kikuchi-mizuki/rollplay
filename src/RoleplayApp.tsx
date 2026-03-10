@@ -1783,10 +1783,8 @@ function RoleplayApp() {
               } else {
                 setIsSending(false);
                 isSendingRef.current = false;
-                setToast({
-                  message: result.error || '音声認識に失敗しました。',
-                  type: 'error',
-                });
+                // 音声認識エラーはトースト表示しない（ユーザーに不要な情報）
+                console.error('音声認識エラー:', result.error);
               }
             } catch (error) {
               console.error('音声認識エラー:', error);
@@ -1797,12 +1795,7 @@ function RoleplayApp() {
                 audioRecorderRef.resumeVAD();
                 console.log('🔓 VAD再開（音声認識エラー時）');
               }
-              // エラーメッセージを適切に表示
-              const errorMessage = error instanceof Error ? error.message : '音声認識に失敗しました。';
-              setToast({
-                message: errorMessage,
-                type: 'error',
-              });
+              // 音声認識エラーはトースト表示しない（ユーザーに不要な情報）
             }
           }
         );
