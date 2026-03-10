@@ -107,18 +107,34 @@ export function PersonaSelector({ isOpen, onSelect, onClose, initialScenarioId }
   };
 
   const handleRandomSelect = () => {
-    if (personas.length > 0 && selectedScenarioId) {
+    console.log('[おまかせ] handleRandomSelect開始');
+    console.log('[おまかせ] personas.length:', personas.length);
+    console.log('[おまかせ] selectedScenarioId:', selectedScenarioId);
+    console.log('[おまかせ] initialScenarioId:', initialScenarioId);
+
+    // selectedScenarioIdが設定されていない場合はinitialScenarioIdを使用
+    const scenarioToUse = selectedScenarioId || initialScenarioId;
+    console.log('[おまかせ] 使用するシナリオID:', scenarioToUse);
+
+    if (personas.length > 0 && scenarioToUse) {
       const randomIndex = Math.floor(Math.random() * personas.length);
       const randomPersona = personas[randomIndex];
 
       // デバッグ: 選択されたシナリオを確認
-      const selectedScenario = scenarios.find(s => s.id === selectedScenarioId);
-      console.log('[おまかせ] 選択されたシナリオID:', selectedScenarioId);
+      const selectedScenario = scenarios.find(s => s.id === scenarioToUse);
       console.log('[おまかせ] 選択されたシナリオ:', selectedScenario);
       console.log('[おまかせ] ランダムペルソナ:', randomPersona.persona_name);
+      console.log('[おまかせ] onSelectを呼び出します');
 
-      onSelect(randomPersona.persona_id, selectedScenarioId, selectedDifficulty, randomPersona);
+      onSelect(randomPersona.persona_id, scenarioToUse, selectedDifficulty, randomPersona);
+      console.log('[おまかせ] onSelect呼び出し完了');
+      console.log('[おまかせ] onCloseを呼び出します');
       onClose();
+      console.log('[おまかせ] onClose呼び出し完了');
+    } else {
+      console.log('[おまかせ] 条件が満たされていません');
+      console.log('[おまかせ] personas.length > 0:', personas.length > 0);
+      console.log('[おまかせ] scenarioToUse:', !!scenarioToUse);
     }
   };
 
