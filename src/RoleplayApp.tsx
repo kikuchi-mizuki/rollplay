@@ -466,11 +466,19 @@ function RoleplayApp() {
     console.log('[useEffect] selectedScenarioId変更:', selectedScenarioId);
     console.log('[useEffect] prevScenarioIdRef.current:', prevScenarioIdRef.current);
     console.log('[useEffect] showPersonaSelector:', showPersonaSelector);
+    console.log('[useEffect] selectedPersonaId:', selectedPersonaId);
 
     if (selectedScenarioId && selectedScenarioId !== prevScenarioIdRef.current) {
       console.log('[useEffect] シナリオが変更されました');
       // シナリオが実際に切り替わった場合のみ処理を実行
       prevScenarioIdRef.current = selectedScenarioId;
+
+      // ペルソナが既に選択されている場合は、PersonaSelectorのonSelectから呼ばれている
+      // この場合、ペルソナ情報は既にセットされているので、リセット処理をスキップ
+      if (selectedPersonaId) {
+        console.log('[useEffect] ペルソナが既に選択されているため、リセット処理をスキップ');
+        return;
+      }
 
       // PersonaSelectorが開いている場合は、ユーザーがモーダル内でシナリオを変更した
       // この場合、ペルソナ選択が進行中なので、リセット処理をスキップ
@@ -506,7 +514,7 @@ function RoleplayApp() {
     } else {
       console.log('[useEffect] シナリオIDが同じため、リセット処理をスキップします');
     }
-  }, [selectedScenarioId, showPersonaSelector]);
+  }, [selectedScenarioId, showPersonaSelector, selectedPersonaId]);
 
   // AudioContextのクリーンアップ（メモリリーク防止）
   useEffect(() => {
@@ -2414,12 +2422,28 @@ function RoleplayApp() {
           console.log('[RoleplayApp onSelect] PersonaSelectorから受け取ったpersonaId:', personaId);
           console.log('[RoleplayApp onSelect] 現在のselectedScenarioId:', selectedScenarioId);
 
+          // ペルソナ情報を先にセット（useEffectでリセットされないようにする）
           selectedPersonaIdRef.current = personaId;
           setSelectedPersonaId(personaId);
           console.log('[RoleplayApp onSelect] setSelectedPersonaId完了');
 
+          if (selectedDifficulty) {
+            setDifficulty(selectedDifficulty);
+            console.log('[RoleplayApp onSelect] 難易度設定完了:', selectedDifficulty);
+          }
+
+          if (personaData) {
+            setCurrentPersona(personaData);
+            currentPersonaRef.current = personaData;
+            console.log('[RoleplayApp onSelect] ペルソナ情報セット完了:', personaData.persona_name);
+          }
+
+          // モーダルを閉じる
+          console.log('[RoleplayApp onSelect] setShowPersonaSelector(false)を呼び出します');
+          setShowPersonaSelector(false);
+
           // シナリオIDが変更された場合のみsetSelectedScenarioIdを呼ぶ
-          // （同じシナリオIDの場合はuseEffectでペルソナがリセットされないようにする）
+          // ペルソナ情報が既にセットされているため、useEffectでリセットされない
           if (scenarioId !== selectedScenarioId) {
             console.log('[RoleplayApp onSelect] シナリオIDが異なるため、setSelectedScenarioIdを呼び出します');
             setSelectedScenarioId(scenarioId);
@@ -2427,18 +2451,6 @@ function RoleplayApp() {
             console.log('[RoleplayApp onSelect] シナリオIDが同じため、setSelectedScenarioIdをスキップします');
           }
 
-          if (selectedDifficulty) {
-            setDifficulty(selectedDifficulty);
-            console.log('[RoleplayApp onSelect] 難易度設定完了:', selectedDifficulty);
-          }
-          // ペルソナ情報を即座にセット（バックエンドからの応答を待たない）
-          if (personaData) {
-            setCurrentPersona(personaData);
-            currentPersonaRef.current = personaData;
-            console.log('[RoleplayApp onSelect] ペルソナ情報セット完了:', personaData.persona_name);
-          }
-          console.log('[RoleplayApp onSelect] setShowPersonaSelector(false)を呼び出します');
-          setShowPersonaSelector(false);
           console.log('[RoleplayApp onSelect] 完了');
         }}
         onClose={() => {
