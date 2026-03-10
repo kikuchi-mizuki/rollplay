@@ -465,12 +465,21 @@ function RoleplayApp() {
   useEffect(() => {
     console.log('[useEffect] selectedScenarioId変更:', selectedScenarioId);
     console.log('[useEffect] prevScenarioIdRef.current:', prevScenarioIdRef.current);
+    console.log('[useEffect] showPersonaSelector:', showPersonaSelector);
 
     if (selectedScenarioId && selectedScenarioId !== prevScenarioIdRef.current) {
-      console.log('[useEffect] シナリオが変更されました。リセット処理を実行します');
+      console.log('[useEffect] シナリオが変更されました');
       // シナリオが実際に切り替わった場合のみ処理を実行
       prevScenarioIdRef.current = selectedScenarioId;
 
+      // PersonaSelectorが開いている場合は、ユーザーがモーダル内でシナリオを変更した
+      // この場合、ペルソナ選択が進行中なので、リセット処理をスキップ
+      if (showPersonaSelector) {
+        console.log('[useEffect] PersonaSelector開いているため、リセット処理をスキップ');
+        return;
+      }
+
+      console.log('[useEffect] リセット処理を実行します');
       // シナリオが切り替わったら会話をリセット
       setMessages([]);
       messagesRef.current = []; // Refも同期
@@ -497,7 +506,7 @@ function RoleplayApp() {
     } else {
       console.log('[useEffect] シナリオIDが同じため、リセット処理をスキップします');
     }
-  }, [selectedScenarioId]);
+  }, [selectedScenarioId, showPersonaSelector]);
 
   // AudioContextのクリーンアップ（メモリリーク防止）
   useEffect(() => {
