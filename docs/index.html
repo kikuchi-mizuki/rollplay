@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ショート動画営業ロープレシステム - 使い方ガイド</title>
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50C878;
+            --danger-color: #E74C3C;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "游ゴシック Medium", YuGothic, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #357ABD);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .nav {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .nav ul {
+            list-style: none;
+        }
+
+        .nav li {
+            margin: 8px 0;
+        }
+
+        .nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .nav a:hover {
+            background-color: var(--bg-color);
+            transform: translateX(5px);
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--text-color);
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .step {
+            background: var(--bg-color);
+            padding: 20px;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .step h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .info-box {
+            background: #E8F4FD;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: var(--primary-color);
+        }
+
+        .warning-box {
+            background: #FFF3CD;
+            border-left: 4px solid #FFC107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box strong {
+            color: #856404;
+        }
+
+        .success-box {
+            background: #D4EDDA;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box strong {
+            color: #155724;
+        }
+
+        .scenario-card {
+            background: var(--bg-color);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .scenario-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .scenario-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .badge-beginner {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+
+        .badge-intermediate {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+
+        .badge-advanced {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+
+        .badge-phase {
+            background-color: #E8F4FD;
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: var(--bg-color);
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .image-placeholder {
+            background: var(--bg-color);
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📹 ショート動画営業ロープレシステム</h1>
+            <p>初心者でもすぐに始められる使い方ガイド</p>
+        </header>
+
+        <nav class="nav">
+            <h2>📚 目次</h2>
+            <ul>
+                <li><a href="#overview">システム概要</a></li>
+                <li><a href="#preparation">事前準備</a></li>
+                <li><a href="#basic-usage">基本的な使い方</a></li>
+                <li><a href="#scenarios">シナリオの説明</a></li>
+                <li><a href="#persona">ペルソナの選び方</a></li>
+                <li><a href="#evaluation">講評の見方</a></li>
+                <li><a href="#tips">使いこなすコツ</a></li>
+                <li><a href="#faq">よくある質問</a></li>
+            </ul>
+        </nav>
+
+        <section id="overview">
+            <h2>📖 システム概要</h2>
+            <p>このシステムは、ショート動画制作営業のロープレ（ロールプレイング）練習を、AIを使って一人で行えるシステムです。</p>
+
+            <h3>✨ 主な機能</h3>
+            <ul>
+                <li><strong>音声会話</strong>：マイクで話しかけると、AIお客様が音声で返答します</li>
+                <li><strong>リアルなペルソナ</strong>：美容サロン、飲食店、不動産など、様々な業種のお客様と会話できます</li>
+                <li><strong>段階別シナリオ</strong>：初回面談からクロージングまで、4段階のシナリオを用意</li>
+                <li><strong>詳細な講評</strong>：会話終了後、GPT-4があなたの営業スキルを4項目で評価します</li>
+            </ul>
+
+            <div class="info-box">
+                <strong>💡 こんな方におすすめ</strong>
+                <ul>
+                    <li>新人営業で、実践練習の場が欲しい</li>
+                    <li>営業トークのパターンを増やしたい</li>
+                    <li>クロージングまでの流れを体得したい</li>
+                    <li>客観的な評価が欲しい</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="preparation">
+            <h2>🛠️ 事前準備</h2>
+
+            <h3>必要なもの</h3>
+            <ol>
+                <li><strong>パソコンまたはスマートフォン</strong>
+                    <ul>
+                        <li>Chrome、Safari、Edgeなどのモダンブラウザ</li>
+                        <li>マイク機能が使えるデバイス</li>
+                    </ul>
+                </li>
+                <li><strong>静かな環境</strong>
+                    <ul>
+                        <li>音声認識の精度を上げるため、できるだけ静かな場所で利用してください</li>
+                    </ul>
+                </li>
+                <li><strong>イヤホン・ヘッドセット（推奨）</strong>
+                    <ul>
+                        <li>スピーカーからの音声をマイクが拾ってしまうのを防ぎます</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="warning-box">
+                <strong>⚠️ 初回アクセス時の注意</strong>
+                <p>初めてアクセスすると、ブラウザから「マイクの使用を許可しますか？」と聞かれます。必ず<strong>「許可」</strong>を選択してください。許可しないと音声入力ができません。</p>
+            </div>
+        </section>
+
+        <section id="basic-usage">
+            <h2>🚀 基本的な使い方</h2>
+            <p>以下の手順で、ロープレを始めることができます。</p>
+
+            <div class="step">
+                <h4>ステップ1：システムにアクセス</h4>
+                <p>ブラウザでシステムのURLを開きます。</p>
+                <div class="image-placeholder">
+                    📸 トップページのスクリーンショット（今後追加予定）
+                </div>
+            </div>
+
+            <div class="step">
+                <h4>ステップ2：シナリオを選択</h4>
+                <p>画面上部の「シナリオ選択」から、練習したいシナリオを選びます。</p>
+                <ul>
+                    <li><strong>1次面談</strong>：初回接触、関係構築（初心者向け）</li>
+                    <li><strong>1.5次面談</strong>：2回目、課題ヒアリング（初心者〜中級者向け）</li>
+                    <li><strong>2次面談</strong>：3回目、提案・見積提示（中級者向け）</li>
+                    <li><strong>3次面談</strong>：4回目、クロージング（中級者〜上級者向け）</li>
+                </ul>
+                <div class="image-placeholder">
+                    📸 シナリオ選択画面のスクリーンショット（今後追加予定）
+                </div>
+            </div>
+
+            <div class="step">
+                <h4>ステップ3：ペルソナを選択</h4>
+                <p>「ペルソナ選択」ボタンをクリックして、お客様の業種を選びます。</p>
+                <ul>
+                    <li><strong>おまかせ</strong>：ランダムに選択（推奨）</li>
+                    <li><strong>個別選択</strong>：美容サロン、飲食店、不動産など、特定の業種を選択</li>
+                </ul>
+                <div class="info-box">
+                    <strong>💡 初めての方へ</strong>
+                    <p>最初は「<strong>おまかせ</strong>」でランダム選択がおすすめです。様々な業種のお客様と話すことで、対応力が身につきます。</p>
+                </div>
+                <div class="image-placeholder">
+                    📸 ペルソナ選択画面のスクリーンショット（今後追加予定）
+                </div>
+            </div>
+
+            <div class="step">
+                <h4>ステップ4：難易度を選択</h4>
+                <p>お客様の態度や質問の難易度を3段階から選べます。</p>
+                <ul>
+                    <li><strong>初級</strong>：お客様が協力的で、質問に丁寧に答えてくれます</li>
+                    <li><strong>中級</strong>：適度に警戒心があり、営業のスキルに応じて態度が変わります</li>
+                    <li><strong>上級</strong>：警戒心が強く、簡単には心を開きません</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h4>ステップ5：ロープレ開始</h4>
+                <p>「ロープレ開始」ボタンをクリックすると、AIお客様との会話が始まります。</p>
+                <ol>
+                    <li>画面中央の<strong>マイクボタン</strong>を長押ししながら話します</li>
+                    <li>話し終わったら、マイクボタンから指を離します</li>
+                    <li>AIお客様が音声で返答します</li>
+                    <li>このやり取りを繰り返します</li>
+                </ol>
+                <div class="success-box">
+                    <strong>✅ 上手に話すコツ</strong>
+                    <ul>
+                        <li>マイクボタンを押してから、0.5秒待ってから話し始める</li>
+                        <li>ゆっくり、はっきりと話す</li>
+                        <li>一文ごとに区切って話す（長すぎる文は避ける）</li>
+                    </ul>
+                </div>
+                <div class="image-placeholder">
+                    📸 ロープレ画面のスクリーンショット（今後追加予定）
+                </div>
+            </div>
+
+            <div class="step">
+                <h4>ステップ6：ロープレ終了</h4>
+                <p>会話が一段落したら、「講評をもらう」ボタンをクリックします。</p>
+                <p>GPT-4があなたの営業スキルを分析し、詳細な講評を表示します。</p>
+                <div class="image-placeholder">
+                    📸 講評ボタンのスクリーンショット（今後追加予定）
+                </div>
+            </div>
+        </section>
+
+        <section id="scenarios">
+            <h2>📝 シナリオの説明</h2>
+            <p>シナリオは、営業の商談フェーズに応じて4種類用意されています。</p>
+
+            <div class="scenario-card">
+                <h4>1次面談（初回接触・関係構築）</h4>
+                <div>
+                    <span class="badge badge-beginner">初心者向け</span>
+                    <span class="badge badge-phase">初回接触</span>
+                </div>
+                <p><strong>目標：</strong>お客様の警戒心を解き、信頼関係を構築する</p>
+                <p><strong>お客様の態度：</strong>慎重で、あまり多くを話してくれない</p>
+                <p><strong>重点スキル：</strong></p>
+                <ul>
+                    <li>ヒアリング力（30%）：現状を自然に聞き出す</li>
+                    <li>共感力（30%）：不安を受け止める</li>
+                    <li>提案力（20%）：押し売りせず、軽い提案をする</li>
+                    <li>信頼構築（20%）：次回面談につなげる</li>
+                </ul>
+                <p><strong>会話の流れ：</strong>挨拶 → ニーズ分析 → 軽い提案 → 次回アポイント</p>
+            </div>
+
+            <div class="scenario-card">
+                <h4>1.5次面談（課題ヒアリング）</h4>
+                <div>
+                    <span class="badge badge-beginner">初心者〜中級者向け</span>
+                    <span class="badge badge-phase">2回目の接触</span>
+                </div>
+                <p><strong>目標：</strong>お客様の課題を深く理解し、具体的なニーズを引き出す</p>
+                <p><strong>お客様の態度：</strong>少し心を開いており、質問に答えてくれる</p>
+                <p><strong>重点スキル：</strong></p>
+                <ul>
+                    <li>質問力（35%）：深掘りする質問ができるか</li>
+                    <li>傾聴力（30%）：話をしっかり聞けるか</li>
+                    <li>提案力（20%）：方向性を示せるか</li>
+                    <li>信頼構築（15%）：さらに関係を深める</li>
+                </ul>
+                <p><strong>会話の流れ：</strong>前回の振り返り → 課題の深掘り → 方向性の提示 → 次回提案の予告</p>
+            </div>
+
+            <div class="scenario-card">
+                <h4>2次面談（提案・見積提示）</h4>
+                <div>
+                    <span class="badge badge-intermediate">中級者向け</span>
+                    <span class="badge badge-phase">3回目の接触</span>
+                </div>
+                <p><strong>目標：</strong>具体的な提案と見積を提示し、お客様の理解を得る</p>
+                <p><strong>お客様の態度：</strong>前向きだが、費用対効果を気にしている</p>
+                <p><strong>重点スキル：</strong></p>
+                <ul>
+                    <li>提案力（40%）：具体的で魅力的な提案ができるか</li>
+                    <li>質問力（25%）：懸念点を引き出せるか</li>
+                    <li>傾聴力（20%）：フィードバックを受け止められるか</li>
+                    <li>クロージング（15%）：次のステップを提示できるか</li>
+                </ul>
+                <p><strong>会話の流れ：</strong>挨拶 → 提案説明 → 質疑応答 → 懸念解消 → 次回クロージングの予告</p>
+            </div>
+
+            <div class="scenario-card">
+                <h4>3次面談（クロージング・契約）</h4>
+                <div>
+                    <span class="badge badge-advanced">中級者〜上級者向け</span>
+                    <span class="badge badge-phase">4回目の接触</span>
+                </div>
+                <p><strong>目標：</strong>最終確認を行い、契約につなげる</p>
+                <p><strong>お客様の態度：</strong>ほぼ決定に向かっているが、最終確認が必要</p>
+                <p><strong>重点スキル：</strong></p>
+                <ul>
+                    <li>クロージング力（50%）：自然に契約につなげられるか</li>
+                    <li>提案力（20%）：最終条件を整理できるか</li>
+                    <li>質問力（20%）：最終確認事項を漏れなく把握できるか</li>
+                    <li>共感力（10%）：残る懸念に寄り添えるか</li>
+                </ul>
+                <p><strong>会話の流れ：</strong>挨拶 → 最終確認 → 懸念解消 → 契約条件の確認 → クロージング</p>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 シナリオの選び方</strong>
+                <ul>
+                    <li><strong>初めての方</strong>：まずは「1次面談」から始めましょう</li>
+                    <li><strong>慣れてきたら</strong>：1次→1.5次→2次→3次と順番に練習すると、商談の流れが体得できます</li>
+                    <li><strong>特定スキルを鍛えたい</strong>：苦手なフェーズを重点的に練習しましょう</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="persona">
+            <h2>👥 ペルソナの選び方</h2>
+            <p>ペルソナとは、AIお客様の「設定」のことです。業種、現状、課題、予算感などが設定されています。</p>
+
+            <h3>ペルソナの種類</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>業種</th>
+                        <th>特徴</th>
+                        <th>難易度</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>美容サロン</td>
+                        <td>Instagram重視、ビジュアル重視</td>
+                        <td>★★☆</td>
+                    </tr>
+                    <tr>
+                        <td>飲食店</td>
+                        <td>予算に敏感、効果を重視</td>
+                        <td>★★☆</td>
+                    </tr>
+                    <tr>
+                        <td>不動産</td>
+                        <td>堅実、データ重視</td>
+                        <td>★★★</td>
+                    </tr>
+                    <tr>
+                        <td>フィットネス</td>
+                        <td>SNS活用に前向き</td>
+                        <td>★★☆</td>
+                    </tr>
+                    <tr>
+                        <td>小売店</td>
+                        <td>コスト重視、効果測定に敏感</td>
+                        <td>★★★</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>選び方のポイント</h3>
+            <div class="success-box">
+                <strong>✅ おまかせ（ランダム選択）がおすすめな理由</strong>
+                <ul>
+                    <li>様々な業種のお客様と話すことで、対応力が身につく</li>
+                    <li>予想外の質問や展開に対応する練習になる</li>
+                    <li>実際の営業では、様々な業種のお客様と話す機会があるため、実践的</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 特定の業種を選ぶ場合</strong>
+                <ul>
+                    <li>担当エリアに多い業種を重点的に練習したい</li>
+                    <li>苦手な業種を克服したい</li>
+                    <li>特定の業種の知識を深めたい</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="evaluation">
+            <h2>📊 講評の見方</h2>
+            <p>ロープレ終了後、GPT-4があなたの会話を分析し、以下の4項目で評価します。</p>
+
+            <h3>評価項目（営業向け）</h3>
+            <div class="scenario-card">
+                <h4>1. 質問力（Questioning Skill）</h4>
+                <p>顧客のニーズや課題を適切に引き出す質問ができているか</p>
+                <p><strong>良い例：</strong></p>
+                <ul>
+                    <li>「現在、動画制作で困っていることはありますか？」</li>
+                    <li>「月に何本くらいの投稿を目標にされていますか？」</li>
+                </ul>
+                <p><strong>改善点の例：</strong></p>
+                <ul>
+                    <li>抽象的すぎる質問（「何かお困りですか？」）</li>
+                    <li>クローズドクエスチョンばかり（「動画は作っていますか？」→「はい/いいえ」で終わる）</li>
+                </ul>
+            </div>
+
+            <div class="scenario-card">
+                <h4>2. 傾聴力（Listening Skill）</h4>
+                <p>相手の発言を理解し、適切に受容・共感できているか</p>
+                <p><strong>良い例：</strong></p>
+                <ul>
+                    <li>「なるほど、外注コストが課題なんですね」</li>
+                    <li>「確かに、毎月の制作は大変ですよね」</li>
+                </ul>
+                <p><strong>改善点の例：</strong></p>
+                <ul>
+                    <li>お客様の話を遮る</li>
+                    <li>共感せずに次の質問に移る</li>
+                </ul>
+            </div>
+
+            <div class="scenario-card">
+                <h4>3. 提案力（Proposal Skill）</h4>
+                <p>顧客の課題に対する具体的な解決策を提示できているか</p>
+                <p><strong>良い例：</strong></p>
+                <ul>
+                    <li>「月10本のショート動画を定額で制作できます」</li>
+                    <li>「Instagram用に縦型動画を作成し、リール投稿をサポートします」</li>
+                </ul>
+                <p><strong>改善点の例：</strong></p>
+                <ul>
+                    <li>抽象的な提案（「動画制作をお手伝いします」）</li>
+                    <li>お客様のニーズと合っていない提案</li>
+                </ul>
+            </div>
+
+            <div class="scenario-card">
+                <h4>4. クロージング力（Closing Skill）</h4>
+                <p>次のアクションや決定を促す適切なクロージングができているか</p>
+                <p><strong>良い例：</strong></p>
+                <ul>
+                    <li>「次回、具体的なプランをご提案させていただけますか？」</li>
+                    <li>「来週、サンプル動画をお持ちしますね」</li>
+                </ul>
+                <p><strong>改善点の例：</strong></p>
+                <ul>
+                    <li>次のステップを提示せずに終わる</li>
+                    <li>強引すぎるクロージング（「今日決めてください」）</li>
+                </ul>
+            </div>
+
+            <h3>スコアの見方</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>スコア</th>
+                        <th>評価</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>5点</td>
+                        <td>非常に優れている</td>
+                        <td>プロレベル、模範的なトーク</td>
+                    </tr>
+                    <tr>
+                        <td>4点</td>
+                        <td>優れている</td>
+                        <td>実践的なスキルが十分にある</td>
+                    </tr>
+                    <tr>
+                        <td>3点</td>
+                        <td>平均的</td>
+                        <td>基本スキルはあるが、改善点が複数ある</td>
+                    </tr>
+                    <tr>
+                        <td>2点</td>
+                        <td>要改善</td>
+                        <td>基本スキルが不足している</td>
+                    </tr>
+                    <tr>
+                        <td>1点</td>
+                        <td>大幅な改善が必要</td>
+                        <td>スキルがほとんど発揮されていない</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>💡 講評の活用方法</strong>
+                <ul>
+                    <li><strong>良かった点</strong>：次回も継続して実践しましょう</li>
+                    <li><strong>改善点</strong>：具体的な改善方法が書かれているので、次回のロープレで意識しましょう</li>
+                    <li><strong>具体例</strong>：自分の実際の発言が引用されているので、振り返りに活用しましょう</li>
+                    <li><strong>次回のアクションプラン</strong>：次のロープレで実践すべきことが3つ提示されます</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="tips">
+            <h2>💡 使いこなすコツ</h2>
+
+            <h3>1. 会話を長く続けるコツ</h3>
+            <div class="success-box">
+                <ul>
+                    <li>挨拶だけで終わらず、必ず<strong>ヒアリング → 提案 → クロージング</strong>まで進める</li>
+                    <li>お客様の回答に対して、さらに深掘りする質問をする</li>
+                    <li>会話の途中で「講評をもらう」を押さず、自然な終わり方を目指す</li>
+                </ul>
+            </div>
+
+            <h3>2. スコアを上げるコツ</h3>
+            <div class="success-box">
+                <ul>
+                    <li><strong>質問力</strong>：オープンクエスチョンを使う（「どのような〜」「何が〜」）</li>
+                    <li><strong>傾聴力</strong>：お客様の発言を要約して確認する（「つまり〜ということですね」）</li>
+                    <li><strong>提案力</strong>：具体的な数字を使う（「月10本」「月額5万円」など）</li>
+                    <li><strong>クロージング力</strong>：必ず次のアクションを提示する</li>
+                </ul>
+            </div>
+
+            <h3>3. 音声認識の精度を上げるコツ</h3>
+            <div class="success-box">
+                <ul>
+                    <li>マイクボタンを押してから、0.5秒待ってから話し始める</li>
+                    <li>ゆっくり、はっきりと話す（早口にならない）</li>
+                    <li>一文ごとに区切る（長い文は避ける）</li>
+                    <li>イヤホン・ヘッドセットを使う</li>
+                    <li>静かな環境で練習する</li>
+                </ul>
+            </div>
+
+            <h3>4. 効果的な練習方法</h3>
+            <div class="success-box">
+                <ul>
+                    <li><strong>毎日少しずつ</strong>：1日1回、10分だけでも続ける</li>
+                    <li><strong>シナリオを順番に</strong>：1次→1.5次→2次→3次と順番に練習</li>
+                    <li><strong>同じシナリオを繰り返す</strong>：1つのシナリオを3回以上練習すると、パターンが身につく</li>
+                    <li><strong>講評を読み返す</strong>：次のロープレ前に、前回の講評を見直す</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="faq">
+            <h2>❓ よくある質問</h2>
+
+            <h3>Q1. AIお客様が「すみません、もう一度お願いできますか？」と頻繁に言います</h3>
+            <div class="info-box">
+                <p><strong>A.</strong> 以下を確認してください：</p>
+                <ul>
+                    <li>静かな環境で話していますか？</li>
+                    <li>マイクボタンを押してから、0.5秒待ってから話していますか？</li>
+                    <li>一文が長すぎませんか？（一文は20文字程度が理想）</li>
+                    <li>イヤホン・ヘッドセットを使っていますか？</li>
+                </ul>
+            </div>
+
+            <h3>Q2. 講評のスコアが低いです</h3>
+            <div class="info-box">
+                <p><strong>A.</strong> スコアが低い場合、以下の可能性があります：</p>
+                <ul>
+                    <li>挨拶だけで終わっている → ヒアリング、提案、クロージングまで進めましょう</li>
+                    <li>基本的な質問しかしていない → 深掘りする質問を意識しましょう</li>
+                    <li>会話が短すぎる → 最低でも5往復以上は会話しましょう</li>
+                </ul>
+                <p>講評の「改善点」をよく読んで、次回のロープレで実践してみてください。</p>
+            </div>
+
+            <h3>Q3. AIお客様の声が聞こえません</h3>
+            <div class="info-box">
+                <p><strong>A.</strong> 以下を確認してください：</p>
+                <ul>
+                    <li>デバイスの音量がミュートになっていませんか？</li>
+                    <li>ブラウザの音声再生が許可されていますか？</li>
+                    <li>イヤホンやスピーカーが正しく接続されていますか？</li>
+                </ul>
+            </div>
+
+            <h3>Q4. 会話の途中でやり直したいです</h3>
+            <div class="info-box">
+                <p><strong>A.</strong> 画面右上の「リセット」ボタンをクリックすると、会話をやり直せます。</p>
+            </div>
+
+            <h3>Q5. 講評はどこに保存されますか？</h3>
+            <div class="info-box">
+                <p><strong>A.</strong> 講評は自動的にデータベースに保存されます。過去の講評は「履歴」から確認できます。</p>
+            </div>
+
+            <h3>Q6. スマホでも使えますか？</h3>
+            <div class="info-box">
+                <p><strong>A.</strong> はい、スマートフォンのブラウザでも利用できます。Chrome、Safariなどのモダンブラウザを使用してください。</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 ショート動画営業ロープレシステム</p>
+            <p>不明な点があれば、管理者にお問い合わせください。</p>
+        </footer>
+    </div>
+</body>
+</html>
