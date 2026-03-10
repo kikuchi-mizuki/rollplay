@@ -81,7 +81,8 @@ export function PersonaSelector({ isOpen, onSelect, onClose, initialScenarioId }
           setLoading(false);
         });
     }
-  }, [isOpen, initialScenarioId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // ロール変更時にシナリオを自動切り替え
   useEffect(() => {
