@@ -1,7 +1,6 @@
-import { X, Copy, Check, Download } from 'lucide-react';
+import { X, Copy, Check } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Evaluation, Message } from '../types';
-import { downloadSingleEvaluationCSV } from '../lib/csv';
 
 // 評価項目名のマッピング（営業 vs ディレクター）
 const SKILL_LABELS = {
@@ -64,30 +63,6 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, sc
 
   if (!isOpen || !evaluation) return null;
 
-  const handleDownloadCSV = () => {
-    // 評価データをCSV出力用の形式に変換
-    const evaluationData = {
-      id: 'current',
-      created_at: new Date().toISOString(),
-      scenario_id: 'current_scenario',
-      scores: {
-        questioning_skill: evaluation.scores.questioning / 20, // 100点満点を5段階に戻す
-        listening_skill: evaluation.scores.listening / 20,
-        proposal_skill: evaluation.scores.proposing / 20,
-        closing_skill: evaluation.scores.closing / 20,
-      },
-      total_score: evaluation.scores.total,
-      average_score: evaluation.scores.total / 4,
-      comments: {
-        overall: evaluation.overall,
-        strengths: evaluation.strengths,
-        improvements: evaluation.improvements,
-      },
-    };
-
-    downloadSingleEvaluationCSV(evaluationData, { messages });
-  };
-
   const handleCopy = async () => {
     const text = [
       `【総評】\n${evaluation.overall}`,
@@ -135,15 +110,6 @@ export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, sc
             講評
           </h2>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleDownloadCSV}
-              className="btn-icon text-text-muted hover:text-primary"
-              aria-label="CSV出力"
-              title="CSV出力"
-            >
-              <Download size={20} />
-            </button>
             <button
               type="button"
               onClick={handleCopy}

@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getConversations, getEvaluations, getScenarios } from '../../lib/api';
-import { downloadEvaluationsCSV } from '../../lib/csv';
 import { Message } from '../../types';
-import { History, BarChart3, TrendingUp, Calendar, Download, FileVideo, ChevronDown, ChevronUp } from 'lucide-react';
+import { History, BarChart3, TrendingUp, Calendar, FileVideo, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Conversation {
   id: string;
@@ -237,15 +236,6 @@ export function HistoryPage() {
               <Calendar size={24} />
               評価履歴
             </h2>
-            {evaluations.length > 0 && (
-              <button
-                onClick={() => downloadEvaluationsCSV(evaluations, getScenarioTitle)}
-                className="btn btn-secondary text-sm flex items-center gap-2"
-              >
-                <Download size={16} />
-                CSV出力
-              </button>
-            )}
           </div>
 
           {evaluations.length === 0 ? (
