@@ -516,9 +516,10 @@ export class AudioRecorder {
       const level = (max / 255) * 100;
       this.state.level = level;
 
-      // 音声レベルを定期的にログ出力（2秒ごとに変更して頻度を上げる）
-      if (!this._lastLogTime || Date.now() - this._lastLogTime > 2000) {
-        console.log(`📊 音声レベル: ${level.toFixed(1)} / 閾値: ${this.vadThreshold} / 録音中: ${this.isVadRecording} / AC state: ${this.audioContext?.state}`);
+      // 音声レベルを定期的にログ出力（500msごとに頻度を上げて診断しやすくする）
+      if (!this._lastLogTime || Date.now() - this._lastLogTime > 500) {
+        const statusIcon = level > this.vadThreshold ? '🔊' : '🔇';
+        console.log(`${statusIcon} 音声レベル: ${level.toFixed(1)} / 閾値: ${this.vadThreshold} / 録音: ${this.isVadRecording ? '●' : '○'} / VAD: ${this.vadPaused ? '一時停止' : '待機中'}`);
         this._lastLogTime = Date.now();
       }
 
@@ -815,24 +816,37 @@ export class AudioRecorder {
       };
 
       this.recognition.onerror = (event: any) => {
-        if (event.error !== 'no-speech') {
-          console.warn('⚠️ 音声認識エラー:', event.error);
+        console.warn('⚠️ 音声認識エラー:', event.error);
+        // 'no-speech' エラーも表示（マイクが音声を検出していない可能性がある）
+        if (event.error === 'no-speech') {
+          console.warn('   → マイクが音声を検出していません。音量を確認してください。');
         }
       };
 
       this.recognition.onend = () => {
+        console.log('[Web Speech] onend - 認識終了');
+        console.log(`  vadEnabled: ${this.vadEnabled}, vadPaused: ${this.vadPaused}, transcriptionPaused: ${this.realtimeTranscriptionPaused}`);
+
         // 自動再開（VADモード中、かつ一時停止中でない場合のみ）
         if (this.vadEnabled && !this.vadPaused && !this.realtimeTranscriptionPaused) {
           try {
+            console.log('[Web Speech] 自動再開を試行...');
             this.recognition?.start();
+            console.log('✅ [Web Speech] 自動再開成功');
           } catch (e) {
-            // 既に開始している場合はエラーを無視
+            console.warn('⚠️ [Web Speech] 自動再開失敗:', e);
           }
+        } else {
+          console.log('⏹️ [Web Speech] 自動再開スキップ（一時停止中または無効）');
         }
       };
 
+      this.recognition.onstart = () => {
+        console.log('✅ [Web Speech] 音声認識開始（リスニング中...）');
+      };
+
       this.recognition.start();
-      console.log('✅ リアルタイム文字起こし開始');
+      console.log('[Web Speech] start()呼び出し完了');
     } catch (error) {
       console.warn('⚠️ リアルタイム文字起こし開始エラー:', error);
     }
