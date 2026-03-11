@@ -28,6 +28,7 @@ openai_client = None
 openai_api_key = None
 DEFAULT_SCENARIO_ID = None
 SALES_ROLEPLAY_PROMPT = None
+DIRECTOR_ROLEPLAY_PROMPT = None
 load_scenario_object = None
 select_random_persona_for_scene = None
 select_persona_by_id = None
@@ -54,7 +55,7 @@ def init_blueprint(app):
     app.pyから必要な設定やヘルパー関数を受け取る
     """
     global supabase_client, openai_client, openai_api_key
-    global DEFAULT_SCENARIO_ID, SALES_ROLEPLAY_PROMPT
+    global DEFAULT_SCENARIO_ID, SALES_ROLEPLAY_PROMPT, DIRECTOR_ROLEPLAY_PROMPT
     global load_scenario_object, select_random_persona_for_scene, select_persona_by_id
     global RAG_INDEX, RAG_METADATA, search_rag_patterns
     global load_evaluation_samples, RUBRIC_DATA
@@ -66,6 +67,7 @@ def init_blueprint(app):
     openai_api_key = app.config.get('openai_api_key')
     DEFAULT_SCENARIO_ID = app.config.get('DEFAULT_SCENARIO_ID')
     SALES_ROLEPLAY_PROMPT = app.config.get('SALES_ROLEPLAY_PROMPT')
+    DIRECTOR_ROLEPLAY_PROMPT = app.config.get('DIRECTOR_ROLEPLAY_PROMPT')
     load_scenario_object = app.config.get('load_scenario_object')
     select_random_persona_for_scene = app.config.get('select_random_persona_for_scene')
     select_persona_by_id = app.config.get('select_persona_by_id')
@@ -468,11 +470,14 @@ def chat():
         # Whisper統一版: GPT-4を使用して対話生成
         if openai_api_key and openai_client:
             try:
-                # 会話履歴を構築
-                system_prompt = SALES_ROLEPLAY_PROMPT
+                # シナリオのcategoryに応じてプロンプトを選択
+                is_director = scenario_obj and scenario_obj.get('category') == 'director'
+                system_prompt = DIRECTOR_ROLEPLAY_PROMPT if is_director else SALES_ROLEPLAY_PROMPT
+                logger.info(f"[プロンプト選択] is_director={is_director}, プロンプトタイプ={'DIRECTOR' if is_director else 'SALES'}")
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
+                is_director = scenario_obj and scenario_obj.get('category') == 'director'
                 persona_txt = []
 
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
@@ -522,7 +527,8 @@ def chat():
                     if 'tone' in persona:
                         persona_txt.append(f"トーン・態度: {persona['tone']}")
                     if 'relationship' in persona:
-                        persona_txt.append(f"営業との関係性: {persona['relationship']}")
+                        role_label = "ディレクターとの関係性" if is_director else "営業との関係性"
+                        persona_txt.append(f"{role_label}: {persona['relationship']}")
                     if 'knowledge_level' in persona:
                         persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
                     if 'decision_power' in persona:
@@ -1040,6 +1046,7 @@ def chat_stream():
 
                 # シナリオのguidelinesを取得
                 guidelines = scenario_obj.get('guidelines', []) if scenario_obj else []
+                is_director = scenario_obj and scenario_obj.get('category') == 'director'
                 persona_txt = []
 
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
@@ -1089,7 +1096,8 @@ def chat_stream():
                     if 'tone' in persona:
                         persona_txt.append(f"トーン・態度: {persona['tone']}")
                     if 'relationship' in persona:
-                        persona_txt.append(f"営業との関係性: {persona['relationship']}")
+                        role_label = "ディレクターとの関係性" if is_director else "営業との関係性"
+                        persona_txt.append(f"{role_label}: {persona['relationship']}")
                     if 'knowledge_level' in persona:
                         persona_txt.append(f"知識レベル: {persona['knowledge_level']}")
                     if 'decision_power' in persona:
