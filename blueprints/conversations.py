@@ -1633,7 +1633,9 @@ def evaluate_conversation():
         }), 500
     except Exception as e:
         # 予期しないエラー：詳細をログに記録、ユーザーには一般的なメッセージ
+        import traceback
         logger.error(f"評価生成 - 予期しないエラー: {type(e).__name__}: {e}")
+        logger.error(f"評価生成 - スタックトレース:\n{traceback.format_exc()}")
         return jsonify({
             'success': False,
             'error': '評価生成中にエラーが発生しました。もう一度お試しください'
@@ -1647,6 +1649,10 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
     scenario_obj = None
     if scenario_id:
         scenario_obj = load_scenario_object(scenario_id)
+        if scenario_obj is None:
+            logger.warning(f"[評価生成] ⚠️ シナリオオブジェクトの読み込みに失敗: scenario_id={scenario_id}")
+        else:
+            logger.debug(f"[評価生成] ✅ シナリオオブジェクト読み込み成功: scenario_id={scenario_id}, category={scenario_obj.get('category')}")
 
     # シナリオのcategoryフィールドに基づいてディレクター向けか営業向けかを判定
     is_director = scenario_obj and scenario_obj.get('category') == 'director'
@@ -1963,22 +1969,28 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
 
 【必須】良かった点（strengths）を必ず3つ以上見つけて記載してください。小さな良い点でも評価対象です。"""
 
-        logger.info(f"[評価生成] GPT-4呼び出し開始（ディレクター: {is_director}, 会話文字数: {len(conversation_text)}）")
-        logger.info(f"[評価生成] 会話データ:\n{conversation_text}")
-        logger.info(f"[評価生成] プロンプト文字数: {len(evaluation_prompt)}")
+        logger.debug(f"[評価生成] GPT-4呼び出し開始（ディレクター: {is_director}, 会話文字数: {len(conversation_text)}）")
+        logger.debug(f"[評価生成] 会話データ:\n{conversation_text}")
+        logger.debug(f"[評価生成] プロンプト文字数: {len(evaluation_prompt)}")
 
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": evaluation_prompt}
-            ],
-            max_tokens=2500,  # 詳細フィードバックのためトークン数を増量
-            temperature=0.3
-        )
-        
+        try:
+            response = openai_client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": evaluation_prompt}
+                ],
+                max_tokens=2500,  # 詳細フィードバックのためトークン数を増量
+                temperature=0.3
+            )
+            logger.debug(f"[評価生成] ✅ GPT-4からのレスポンスを受信")
+        except Exception as api_error:
+            logger.error(f"[評価生成] ❌ OpenAI API呼び出しエラー: {type(api_error).__name__}: {api_error}")
+            raise
+
         # JSONレスポンスを解析
         evaluation_text = response.choices[0].message.content.strip()
+        logger.debug(f"[評価生成] レスポンステキスト長: {len(evaluation_text)}文字")
 
         # JSONの開始と終了を検索
         start_idx = evaluation_text.find('{')
@@ -1986,7 +1998,14 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
 
         if start_idx != -1 and end_idx != -1:
             json_text = evaluation_text[start_idx:end_idx]
-            evaluation = json.loads(json_text)
+            logger.debug(f"[評価生成] JSON抽出成功: start_idx={start_idx}, end_idx={end_idx}, json長={len(json_text)}文字")
+            try:
+                evaluation = json.loads(json_text)
+                logger.debug(f"[評価生成] ✅ JSON解析成功")
+            except json.JSONDecodeError as json_error:
+                logger.error(f"[評価生成] ❌ JSON解析エラー: {json_error}")
+                logger.error(f"[評価生成] 問題のJSONテキスト（最初の1000文字）:\n{json_text[:1000]}")
+                raise ValueError(f"GPT-4のレスポンスのJSON解析に失敗: {json_error}")
 
             # ディレクター向けのスコアキー名を営業向けにマッピング（フロントエンド互換性）
             if 'scores' in evaluation:
@@ -2130,17 +2149,6 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
         logger.error(f"[評価生成] トレースバック:\n{traceback.format_exc()}")
         # エラーを再スロー（フォールバックは使用しない）
         raise
-    
-    if proposing < 3:
-        suggestions.append("💡 提案力向上: 相手の課題に対する具体的な解決策とベネフィットを明確に伝えましょう")
-    
-    if closing < 3:
-        suggestions.append("🎯 クロージング力向上: 会話の終わりには必ず次のアクションを明確に提案しましょう")
-    
-    if flow == 'greeting':
-        suggestions.append("🔄 会話の流れ: 挨拶の後は相手の課題やニーズを聞く質問から始めましょう")
-
-    return suggestions
 
 
 # ========================================
