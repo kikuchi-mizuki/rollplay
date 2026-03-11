@@ -1,5 +1,6 @@
 {
   "id": "kickoff_meeting",
+  "category": "sales",
   "title": "キックオフMTG（プロジェクト開始）",
   "description": "契約後の初回ミーティング。既にクライアントとなっているため、協力的で前向き。スムーズな進行管理が求められる。",
   "persona_variations": [

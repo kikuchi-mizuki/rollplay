@@ -58,6 +58,14 @@
       "order": 7
     },
     {
+      "id": "director_kickoff",
+      "file": "director_kickoff.json",
+      "title": "【ディレクター】キックオフMTG（制作開始）",
+      "category": "director",
+      "enabled": true,
+      "order": 8
+    },
+    {
       "id": "rp_intro_v1",
       "file": "rp_intro_v1.json",
       "title": "初回ヒアリング（旧バージョン）",
