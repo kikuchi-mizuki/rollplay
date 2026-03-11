@@ -433,7 +433,8 @@ def chat():
         scenario_obj = load_scenario_object(scenario_id)
 
         # ペルソナ選択ロジック（例外処理の外で定義）
-        is_first_message = len(conversation_history) == 0
+        # 会話履歴にAI（顧客）の発言があるかチェック（フロントエンドがユーザーのメッセージを含めるため、len==0では判定できない）
+        is_first_message = not any(msg.get('speaker') == '顧客' for msg in conversation_history)
         persona = None
 
         if is_first_message:
@@ -993,7 +994,8 @@ def chat_stream():
                 logger.info(f"[プロンプト選択/ストリーミング] is_director={is_director}, プロンプトタイプ={'DIRECTOR' if is_director else 'SALES'}")
 
                 # ペルソナ選択ロジック
-                is_first_message = len(conversation_history) == 0
+                # 会話履歴にAI（顧客）の発言があるかチェック（フロントエンドがユーザーのメッセージを含めるため、len==0では判定できない）
+                is_first_message = not any(msg.get('speaker') == '顧客' for msg in conversation_history)
                 persona = None
 
                 if is_first_message:
