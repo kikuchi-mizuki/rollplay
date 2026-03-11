@@ -2375,7 +2375,6 @@ function RoleplayApp() {
       <EvaluationSheet
         isOpen={showEvaluation}
         evaluation={evaluation}
-        messages={messages}
         scenarioId={selectedScenarioId}
         isLoading={isLoadingEvaluation}
         savingProgress={savingProgress}

@@ -1,6 +1,6 @@
 import { X, Copy, Check } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Evaluation, Message } from '../types';
+import { Evaluation } from '../types';
 
 // 評価項目名のマッピング（営業 vs ディレクター）
 const SKILL_LABELS = {
@@ -27,20 +27,18 @@ function getSkillLabel(skillKey: 'questioning' | 'listening' | 'proposing' | 'cl
  * 講評シートコンポーネント（下からスライドイン）
  * @param isOpen - シートの表示状態
  * @param evaluation - 講評データ
- * @param messages - 会話履歴
  * @param onClose - 閉じる時のコールバック
  */
 interface EvaluationSheetProps {
   isOpen: boolean;
   evaluation: Evaluation | null;
-  messages?: Message[];
   onClose: () => void;
   scenarioId?: string;
   isLoading?: boolean;
   savingProgress?: 'idle' | 'evaluating' | 'saving-conversation' | 'saving-evaluation' | 'uploading-recording' | 'completed';
 }
 
-export function EvaluationSheet({ isOpen, evaluation, messages = [], onClose, scenarioId, isLoading = false, savingProgress = 'idle' }: EvaluationSheetProps) {
+export function EvaluationSheet({ isOpen, evaluation, onClose, scenarioId, isLoading = false, savingProgress = 'idle' }: EvaluationSheetProps) {
   const [activeTab, setActiveTab] = useState<'overall' | 'strengths' | 'improvements' | 'scores' | 'detailed'>(
     'overall'
   );
