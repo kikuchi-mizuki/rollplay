@@ -485,18 +485,32 @@ def chat():
                 print(f"[🔍 デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}", flush=True)
                 logger.info(f"[デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}")
 
+                # 1091行目の直前デバッグ
+                print(f"[🔍 1091行目直前] persona={persona is not None}, is_first_message={is_first_message}, persona_type={type(persona)}, bool(persona and is_first_message)={bool(persona and is_first_message)}", flush=True)
+
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
                 if persona and is_first_message:
+                    print(f"[✅ 1091行目のif文に入りました！]", flush=True)
                     # 🚨 初回メッセージでも役割を明確にする（AIが営業側の質問をするのを防ぐ）
+                    print(f"[🔍 1101行目直前] is_director={is_director}, not is_director={not is_director}", flush=True)
                     if not is_director:
+                        print(f"[✅ 1101行目のif文に入りました！営業シナリオ役割明確化を追加します]", flush=True)
                         logger.info(f"[役割明確化] 初回メッセージ - 営業シナリオの役割明確化を追加")
-                        system_prompt += "\n\n🚨 【役割の明確化 - 初回メッセージ】"
-                        system_prompt += "\n**あなたは顧客（経営者・マネージャー）です。絶対に営業担当者になってはいけません。**"
-                        system_prompt += "\n- あなたはショート動画制作サービスを依頼する側（クライアント）"
-                        system_prompt += "\n- 営業から提案を受ける立場（営業側ではない）"
-                        system_prompt += "\n- 質問に答える（質問をたくさんしない）"
-                        system_prompt += "\n- 営業が挨拶したら、簡潔に挨拶を返してから、営業の質問を待つ"
-                        system_prompt += "\n- 初回は特に慎重で、短く答える（「よろしくお願いします」程度）"
+                        system_prompt += "\n\n🚨🚨🚨 【絶対厳守：初回メッセージの役割】🚨🚨🚨"
+                        system_prompt += "\n**これは最初の挨拶です。あなたは顧客です。営業ではありません。**"
+                        system_prompt += "\n**🚨 絶対に質問をしてはいけません。営業の質問を待ってください。 🚨**"
+                        system_prompt += "\n"
+                        system_prompt += "\n✅ **正しい応答例：**"
+                        system_prompt += "\n- 「よろしくお願いします。」（これだけで十分）"
+                        system_prompt += "\n- 「こちらこそ、よろしくお願いします。」（これだけで十分）"
+                        system_prompt += "\n"
+                        system_prompt += "\n❌ **間違った応答例（絶対にしないこと）：**"
+                        system_prompt += "\n- 「どのようなご提案をいただけますか？」 ← 絶対NG：営業に質問してはいけない"
+                        system_prompt += "\n- 「御社のサービスについて教えてください」 ← 絶対NG：営業に質問してはいけない"
+                        system_prompt += "\n- 「どんな動画が作れますか？」 ← 絶対NG：営業に質問してはいけない"
+                        system_prompt += "\n"
+                        system_prompt += "\n**この後、営業があなたに質問してきます。その質問に答えてください。今は挨拶だけです。**"
+                        print(f"[✅ system_promptに役割明確化を追加完了] '🚨 【役割の明確化' in system_prompt: {'🚨 【役割の明確化' in system_prompt}", flush=True)
 
                     # ペルソナ情報を詳細にシステムプロンプトに追加
                     # base_profileがある場合はそこから、なければフラット化された構造から取得
@@ -998,12 +1012,18 @@ def chat_stream():
                 is_first_message = not any(msg.get('speaker') == '顧客' for msg in conversation_history)
                 persona = None
 
+                print(f"[🔍 リクエストデバッグ] persona_id={repr(persona_id)}, request_persona={'あり' if request_persona else 'なし'}, conversation_id={conversation_id}", flush=True)
+
                 if is_first_message:
                     # 会話開始時: persona_idが指定されている場合はそのペルソナを使用、なければランダム選択
                     if persona_id:
+                        print(f"[🔍 select_persona_by_id呼び出し] persona_id={persona_id}, scenario_id={scenario_id}", flush=True)
                         persona = select_persona_by_id(persona_id, scenario_id)
+                        print(f"[🔍 select_persona_by_id結果] persona={persona is not None}, type={type(persona) if persona else 'None'}, keys={list(persona.keys()) if persona else []}, bool={bool(persona)}", flush=True)
                         if persona:
+                            print(f"[✅ if persona: の中に入りました]", flush=True)
                             base_profile = persona.get('base_profile', {})
+                            print(f"[✅ base_profile取得完了: keys={list(base_profile.keys()) if base_profile else []}]", flush=True)
                             logger.info(f"[ペルソナ選択/ストリーミング] 新規会話: ID指定選択")
                             logger.info(f"  - ペルソナ名: {persona.get('persona_name', 'Unknown')}")
                             logger.info(f"  - ペルソナID: {persona_id}")
@@ -1011,7 +1031,12 @@ def chat_stream():
                             logger.info(f"  - 地域: {base_profile.get('location', 'Unknown')}")
                             logger.info(f"  - 予算感: {base_profile.get('budget_sense', 'Unknown')}")
                         else:
+                            print(f"[⚠️ ペルソナが見つかりません] persona_id={persona_id}", flush=True)
                             logger.warning(f"[ペルソナ選択/ストリーミング] ペルソナが見つかりません (ID: {persona_id})")
+                            # フォールバック: request_personaがあればそれを使用
+                            if request_persona:
+                                print(f"[🔄 フォールバック] request_personaを使用", flush=True)
+                                persona = request_persona
                     else:
                         persona = select_random_persona_for_scene(scenario_id)
                         if persona:
@@ -1061,6 +1086,7 @@ def chat_stream():
                     # conversation_idがない会話継続: フロントエンドから送信されたpersonaを使用
                     if request_persona:
                         persona = request_persona
+                        print(f"[🐛 デバッグ] request_personaから取得したpersonaのキー: {list(persona.keys())}", flush=True)
                         logger.info(f"[ペルソナ選択/ストリーミング] 会話継続: フロントエンドから取得 - {persona.get('name', 'Unknown')}")
                         logger.debug(f"[ペルソナ選択/ストリーミング] persona keys: {list(persona.keys())}, voice_name: {persona.get('voice_name')}, speaking_rate: {persona.get('speaking_rate')}")
                     else:
@@ -1075,18 +1101,32 @@ def chat_stream():
                 print(f"[🔍 デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}", flush=True)
                 logger.info(f"[デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}")
 
+                # 1091行目の直前デバッグ
+                print(f"[🔍 1091行目直前] persona={persona is not None}, is_first_message={is_first_message}, persona_type={type(persona)}, bool(persona and is_first_message)={bool(persona and is_first_message)}", flush=True)
+
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
                 if persona and is_first_message:
+                    print(f"[✅ 1091行目のif文に入りました！]", flush=True)
                     # 🚨 初回メッセージでも役割を明確にする（AIが営業側の質問をするのを防ぐ）
+                    print(f"[🔍 1101行目直前] is_director={is_director}, not is_director={not is_director}", flush=True)
                     if not is_director:
+                        print(f"[✅ 1101行目のif文に入りました！営業シナリオ役割明確化を追加します]", flush=True)
                         logger.info(f"[役割明確化] 初回メッセージ - 営業シナリオの役割明確化を追加")
-                        system_prompt += "\n\n🚨 【役割の明確化 - 初回メッセージ】"
-                        system_prompt += "\n**あなたは顧客（経営者・マネージャー）です。絶対に営業担当者になってはいけません。**"
-                        system_prompt += "\n- あなたはショート動画制作サービスを依頼する側（クライアント）"
-                        system_prompt += "\n- 営業から提案を受ける立場（営業側ではない）"
-                        system_prompt += "\n- 質問に答える（質問をたくさんしない）"
-                        system_prompt += "\n- 営業が挨拶したら、簡潔に挨拶を返してから、営業の質問を待つ"
-                        system_prompt += "\n- 初回は特に慎重で、短く答える（「よろしくお願いします」程度）"
+                        system_prompt += "\n\n🚨🚨🚨 【絶対厳守：初回メッセージの役割】🚨🚨🚨"
+                        system_prompt += "\n**これは最初の挨拶です。あなたは顧客です。営業ではありません。**"
+                        system_prompt += "\n**🚨 絶対に質問をしてはいけません。営業の質問を待ってください。 🚨**"
+                        system_prompt += "\n"
+                        system_prompt += "\n✅ **正しい応答例：**"
+                        system_prompt += "\n- 「よろしくお願いします。」（これだけで十分）"
+                        system_prompt += "\n- 「こちらこそ、よろしくお願いします。」（これだけで十分）"
+                        system_prompt += "\n"
+                        system_prompt += "\n❌ **間違った応答例（絶対にしないこと）：**"
+                        system_prompt += "\n- 「どのようなご提案をいただけますか？」 ← 絶対NG：営業に質問してはいけない"
+                        system_prompt += "\n- 「御社のサービスについて教えてください」 ← 絶対NG：営業に質問してはいけない"
+                        system_prompt += "\n- 「どんな動画が作れますか？」 ← 絶対NG：営業に質問してはいけない"
+                        system_prompt += "\n"
+                        system_prompt += "\n**この後、営業があなたに質問してきます。その質問に答えてください。今は挨拶だけです。**"
+                        print(f"[✅ system_promptに役割明確化を追加完了] '🚨 【役割の明確化' in system_prompt: {'🚨 【役割の明確化' in system_prompt}", flush=True)
 
                     # ペルソナ情報を詳細にシステムプロンプトに追加
                     # base_profileがある場合はそこから、なければフラット化された構造から取得
@@ -1312,6 +1352,11 @@ def chat_stream():
                     logger.debug(f"  履歴[{i}] {msg.get('speaker', '不明')}: {msg.get('text', '')[:50]}...")
 
                 messages = [{"role": "system", "content": system_prompt}]
+                print(f"[🔍 GPT呼び出し直前] '🚨 【役割の明確化' in system_prompt: {'🚨 【役割の明確化' in system_prompt}, system_prompt長さ: {len(system_prompt)}", flush=True)
+                if '🚨 【役割の明確化' in system_prompt:
+                    print(f"[✅ system_promptに役割明確化が含まれています！]", flush=True)
+                else:
+                    print(f"[❌ system_promptに役割明確化が含まれていません！]", flush=True)
 
                 # 🎯 超高速化: 会話履歴を最小限に（6→4件、テンポ最優先）
                 for msg in conversation_history[-4:]:  # 最新4件まで（テンポ最優先、直近の文脈で十分）
@@ -2051,12 +2096,12 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
 
         try:
             response = openai_client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4o",  # gpt-4o: 128Kトークン対応（長い会話でも問題なし）
                 messages=[
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": evaluation_prompt}
                 ],
-                max_tokens=2500,  # GPT-4のコンテキスト制限8192トークンに対応（プロンプト約5400 + 生成2500 = 約7900トークン）
+                max_tokens=2500,  # 詳細な講評生成のため2500トークンを確保（128K対応なので余裕あり）
                 temperature=0.3
             )
             logger.debug(f"[評価生成] ✅ GPT-4からのレスポンスを受信")
