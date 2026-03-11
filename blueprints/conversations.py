@@ -480,8 +480,23 @@ def chat():
                 is_director = scenario_obj and scenario_obj.get('category') == 'director'
                 persona_txt = []
 
+                # デバッグ: is_first_messageとpersonaの状態を確認
+                print(f"[🔍 デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}", flush=True)
+                logger.info(f"[デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}")
+
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
                 if persona and is_first_message:
+                    # 🚨 初回メッセージでも役割を明確にする（AIが営業側の質問をするのを防ぐ）
+                    if not is_director:
+                        logger.info(f"[役割明確化] 初回メッセージ - 営業シナリオの役割明確化を追加")
+                        system_prompt += "\n\n🚨 【役割の明確化 - 初回メッセージ】"
+                        system_prompt += "\n**あなたは顧客（経営者・マネージャー）です。絶対に営業担当者になってはいけません。**"
+                        system_prompt += "\n- あなたはショート動画制作サービスを依頼する側（クライアント）"
+                        system_prompt += "\n- 営業から提案を受ける立場（営業側ではない）"
+                        system_prompt += "\n- 質問に答える（質問をたくさんしない）"
+                        system_prompt += "\n- 営業が挨拶したら、簡潔に挨拶を返してから、営業の質問を待つ"
+                        system_prompt += "\n- 初回は特に慎重で、短く答える（「よろしくお願いします」程度）"
+
                     # ペルソナ情報を詳細にシステムプロンプトに追加
                     # base_profileがある場合はそこから、なければフラット化された構造から取得
                     base_profile = persona.get('base_profile', {})
@@ -971,8 +986,11 @@ def chat_stream():
                     yield f"data: {json.dumps({'error': 'OpenAI API未設定'})}\n\n"
                     return
 
-                # システムプロンプト構築（共有ペルソナを使用）
-                system_prompt = SALES_ROLEPLAY_PROMPT
+                # シナリオのcategoryに応じてプロンプトを選択
+                is_director = scenario_obj and scenario_obj.get('category') == 'director'
+                system_prompt = DIRECTOR_ROLEPLAY_PROMPT if is_director else SALES_ROLEPLAY_PROMPT
+                print(f"[🎯 プロンプト選択] is_director={is_director}, プロンプト={'DIRECTOR' if is_director else 'SALES'}", flush=True)
+                logger.info(f"[プロンプト選択/ストリーミング] is_director={is_director}, プロンプトタイプ={'DIRECTOR' if is_director else 'SALES'}")
 
                 # ペルソナ選択ロジック
                 is_first_message = len(conversation_history) == 0
@@ -1051,8 +1069,23 @@ def chat_stream():
                 is_director = scenario_obj and scenario_obj.get('category') == 'director'
                 persona_txt = []
 
+                # デバッグ: is_first_messageとpersonaの状態を確認
+                print(f"[🔍 デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}", flush=True)
+                logger.info(f"[デバッグ] is_first_message={is_first_message}, len(conversation_history)={len(conversation_history)}, persona={persona is not None}, is_director={is_director}")
+
                 # 会話開始時のみ、詳細なペルソナ情報をシステムプロンプトに追加
                 if persona and is_first_message:
+                    # 🚨 初回メッセージでも役割を明確にする（AIが営業側の質問をするのを防ぐ）
+                    if not is_director:
+                        logger.info(f"[役割明確化] 初回メッセージ - 営業シナリオの役割明確化を追加")
+                        system_prompt += "\n\n🚨 【役割の明確化 - 初回メッセージ】"
+                        system_prompt += "\n**あなたは顧客（経営者・マネージャー）です。絶対に営業担当者になってはいけません。**"
+                        system_prompt += "\n- あなたはショート動画制作サービスを依頼する側（クライアント）"
+                        system_prompt += "\n- 営業から提案を受ける立場（営業側ではない）"
+                        system_prompt += "\n- 質問に答える（質問をたくさんしない）"
+                        system_prompt += "\n- 営業が挨拶したら、簡潔に挨拶を返してから、営業の質問を待つ"
+                        system_prompt += "\n- 初回は特に慎重で、短く答える（「よろしくお願いします」程度）"
+
                     # ペルソナ情報を詳細にシステムプロンプトに追加
                     # base_profileがある場合はそこから、なければフラット化された構造から取得
                     base_profile = persona.get('base_profile', {})
@@ -2013,7 +2046,7 @@ def generate_evaluation_with_gpt4(conversation, scenario_id=None):
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": evaluation_prompt}
                 ],
-                max_tokens=3500,  # 30分のロールプレイに対応した詳細な講評（安定性とコストのバランスを考慮）
+                max_tokens=2500,  # GPT-4のコンテキスト制限8192トークンに対応（プロンプト約5400 + 生成2500 = 約7900トークン）
                 temperature=0.3
             )
             logger.debug(f"[評価生成] ✅ GPT-4からのレスポンスを受信")
